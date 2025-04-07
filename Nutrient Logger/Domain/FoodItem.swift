@@ -11,7 +11,7 @@ public enum FoodItemError: Error {
     case cannotApplyMultiplePortions
 }
 
-public class FoodItem: Codable {
+public class FoodItem: DatabaseEntity, Codable {
     
     public var id: Int = -1
     public var created: Date = Date.now

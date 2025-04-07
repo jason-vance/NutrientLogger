@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Nutrient: Codable {
+public class Nutrient: DatabaseEntity, Codable {
     
     public var id: Int = -1
     public var created: Date = Date.now

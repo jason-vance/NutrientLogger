@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		567B99B22DA47843005CC6D3 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 567B99B12DA47843005CC6D3 /* SQLite */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		567B992F2DA3C42C005CC6D3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -35,14 +39,29 @@
 			membershipExceptions = (
 				Domain/FoodItem.swift,
 				Domain/Nutrient.swift,
+				Domain/NutrientFoodPair.swift,
 				Domain/NutrientGroup.swift,
 				Domain/Portion.swift,
 				Domain/WeightUnit.swift,
 				Extensions/ArrayExtensions.swift,
+				Extensions/DateExtensions.swift,
 				Extensions/SequenceExtensions.swift,
+				FdcDatabase/BundledFdcDatabase.swift,
+				FdcDatabase/Domain/FdcFood.swift,
+				FdcDatabase/Domain/FdcFoodContainingNutrientCount.swift,
 				FdcDatabase/Domain/FdcNutrient.swift,
+				FdcDatabase/Domain/FdcNutrientFoodPair.swift,
+				FdcDatabase/Domain/FdcNutrientLink.swift,
+				FdcDatabase/Domain/FdcPortion.swift,
+				FdcDatabase/Domain/FdcSearchableFood.swift,
 				FdcDatabase/FdcNutrientGroupMapper.swift,
+				FdcDatabase/FdcSearchableFoodDatabase.swift,
+				FdcDatabase/FdcSupportingDataDatabase.swift,
+				LocalData/Domain/DatabaseEntity.swift,
 				Scenes/FoodSearch/FtsQueryGenerator.swift,
+				Scenes/FoodSearch/RemoteDatabase.swift,
+				Scenes/FoodSearch/SearchCategory.swift,
+				Scenes/FoodSearch/SearchResult.swift,
 				Scenes/NutrientDetails/NutrientExplanation.swift,
 			);
 			target = 567B992D2DA3C42C005CC6D3 /* Nutrient LoggerTests */;
@@ -75,6 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				567B99B22DA47843005CC6D3 /* SQLite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,6 +155,7 @@
 			);
 			name = "Nutrient Logger";
 			packageProductDependencies = (
+				567B99B12DA47843005CC6D3 /* SQLite */,
 			);
 			productName = "Nutrient Logger";
 			productReference = 567B991F2DA3C42B005CC6D3 /* Nutrient Logger.app */;
@@ -219,6 +240,9 @@
 			);
 			mainGroup = 567B99162DA3C42B005CC6D3;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				567B99B02DA47843005CC6D3 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 567B99202DA3C42B005CC6D3 /* Products */;
 			projectDirPath = "";
@@ -595,6 +619,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		567B99B02DA47843005CC6D3 /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		567B99B12DA47843005CC6D3 /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 567B99B02DA47843005CC6D3 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
+			productName = SQLite;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 567B99172DA3C42B005CC6D3 /* Project object */;
 }
