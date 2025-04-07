@@ -29,9 +29,30 @@
 		567B99382DA3C42C005CC6D3 /* Nutrient LoggerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Nutrient LoggerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		567B995D2DA3C990005CC6D3 /* Exceptions for "Nutrient Logger" folder in "Nutrient LoggerTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Domain/Nutrient.swift,
+				Domain/NutrientGroup.swift,
+				Domain/WeightUnit.swift,
+				Extensions/ArrayExtensions.swift,
+				Extensions/SequenceExtensions.swift,
+				FdcDatabase/Domain/FdcNutrient.swift,
+				FdcDatabase/FdcNutrientGroupMapper.swift,
+				Scenes/FoodSearch/FtsQueryGenerator.swift,
+				Scenes/NutrientDetails/NutrientExplanation.swift,
+			);
+			target = 567B992D2DA3C42C005CC6D3 /* Nutrient LoggerTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		567B99212DA3C42B005CC6D3 /* Nutrient Logger */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				567B995D2DA3C990005CC6D3 /* Exceptions for "Nutrient Logger" folder in "Nutrient LoggerTests" target */,
+			);
 			path = "Nutrient Logger";
 			sourceTree = "<group>";
 		};
@@ -178,6 +199,7 @@
 					};
 					567B992D2DA3C42C005CC6D3 = {
 						CreatedOnToolsVersion = 16.3;
+						LastSwiftMigration = 1630;
 						TestTargetID = 567B991E2DA3C42B005CC6D3;
 					};
 					567B99372DA3C42C005CC6D3 = {
@@ -460,6 +482,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QTXW6735S3;
@@ -469,6 +492,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jasonsapps.Nutrient-LoggerTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nutrient Logger.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nutrient Logger";
@@ -479,6 +503,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QTXW6735S3;
