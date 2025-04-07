@@ -27,6 +27,22 @@ public extension TimeInterval {
 }
 
 public extension Date {
+    
+    func relativeDateString(usingClock clock: Clock = SystemClock()) -> String {
+        let today = clock.today
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today)!
+        let aboutAWeekAgo = Calendar.current.date(byAdding: .day, value: -6, to: today)!
+
+        if (self >= today) {
+            return "Today"
+        } else if (self >= yesterday) {
+            return "Yesterday"
+        } else if (self >= aboutAWeekAgo) {
+            return self.toString("EEEE")
+        }
+        return self.toString("d MMM yyyy")
+    }
+    
     static func from(year: Int, month: Int, day: Int, hr: Int = 0, min: Int = 0, sec: Int = 0, timeZone: TimeZone? = nil) -> Date {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = timeZone ?? TimeZone.current

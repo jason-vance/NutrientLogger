@@ -1,6 +1,15 @@
 {
-  "originHash" : "5159b221f6f1c89c9aeaec2f71f817065c0a2e6bd478fbaa68b5eb19d368e462",
+  "originHash" : "c12dd172356d42db1665fbc9287cc1e688b4ad5beef379eea080e0a9351c0994",
   "pins" : [
+    {
+      "identity" : "rijndaelswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/superk589/RijndaelSwift.git",
+      "state" : {
+        "revision" : "54ea36cab3b022cf060458c98b4a5089f5bd72dc",
+        "version" : "0.3.0"
+      }
+    },
     {
       "identity" : "sqlite.swift",
       "kind" : "remoteSourceControl",
