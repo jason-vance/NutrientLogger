@@ -63,6 +63,7 @@
 				LocalData/Domain/FoodNutrientLink.swift,
 				LocalData/LocalDatabase.swift,
 				LocalData/LocalSqliteDatabase.swift,
+				Monetization/AdProvider.swift,
 				Scenes/FoodSearch/FtsQueryGenerator.swift,
 				Scenes/FoodSearch/RemoteDatabase.swift,
 				Scenes/FoodSearch/SearchCategory.swift,
@@ -71,6 +72,7 @@
 				Scenes/LogFood/Workers/FoodSaver.swift,
 				Scenes/LogFood/Workers/MealFoodSaver.swift,
 				Scenes/NutrientDetails/NutrientExplanation.swift,
+				Scenes/User/Workers/UserService.swift,
 				Utils/NutrientLoggerAnalytics.swift,
 			);
 			target = 567B992D2DA3C42C005CC6D3 /* Nutrient LoggerTests */;
