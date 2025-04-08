@@ -14,6 +14,7 @@ public protocol UserService {
 }
 
 public class DefaultUserService: UserService {
+    
     private var userFileDir: URL {
         get { FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! }
     }

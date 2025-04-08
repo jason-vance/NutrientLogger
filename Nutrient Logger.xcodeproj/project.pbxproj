@@ -10,6 +10,8 @@
 		567B99B22DA47843005CC6D3 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 567B99B12DA47843005CC6D3 /* SQLite */; };
 		567B9A722DA48A57005CC6D3 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 567B9A712DA48A57005CC6D3 /* SwiftSoup */; };
 		567B9A862DA48C05005CC6D3 /* RijndaelSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 567B9A852DA48C05005CC6D3 /* RijndaelSwift */; };
+		567B9AEF2DA49FFE005CC6D3 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 567B9AEE2DA49FFE005CC6D3 /* Swinject */; };
+		567B9AF22DA4A011005CC6D3 /* SwinjectAutoregistration in Frameworks */ = {isa = PBXBuildFile; productRef = 567B9AF12DA4A011005CC6D3 /* SwinjectAutoregistration */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -161,7 +163,9 @@
 			files = (
 				567B99B22DA47843005CC6D3 /* SQLite in Frameworks */,
 				567B9A862DA48C05005CC6D3 /* RijndaelSwift in Frameworks */,
+				567B9AF22DA4A011005CC6D3 /* SwinjectAutoregistration in Frameworks */,
 				567B9A722DA48A57005CC6D3 /* SwiftSoup in Frameworks */,
+				567B9AEF2DA49FFE005CC6D3 /* Swinject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -225,6 +229,8 @@
 				567B99B12DA47843005CC6D3 /* SQLite */,
 				567B9A712DA48A57005CC6D3 /* SwiftSoup */,
 				567B9A852DA48C05005CC6D3 /* RijndaelSwift */,
+				567B9AEE2DA49FFE005CC6D3 /* Swinject */,
+				567B9AF12DA4A011005CC6D3 /* SwinjectAutoregistration */,
 			);
 			productName = "Nutrient Logger";
 			productReference = 567B991F2DA3C42B005CC6D3 /* Nutrient Logger.app */;
@@ -313,6 +319,8 @@
 				567B99B02DA47843005CC6D3 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
 				567B9A702DA48A57005CC6D3 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				567B9A842DA48C05005CC6D3 /* XCRemoteSwiftPackageReference "RijndaelSwift" */,
+				567B9AED2DA49FFE005CC6D3 /* XCRemoteSwiftPackageReference "Swinject" */,
+				567B9AF02DA4A011005CC6D3 /* XCRemoteSwiftPackageReference "SwinjectAutoregistration" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 567B99202DA3C42B005CC6D3 /* Products */;
@@ -716,6 +724,22 @@
 				minimumVersion = 0.3.0;
 			};
 		};
+		567B9AED2DA49FFE005CC6D3 /* XCRemoteSwiftPackageReference "Swinject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Swinject/Swinject.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.1;
+			};
+		};
+		567B9AF02DA4A011005CC6D3 /* XCRemoteSwiftPackageReference "SwinjectAutoregistration" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Swinject/SwinjectAutoregistration.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -733,6 +757,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 567B9A842DA48C05005CC6D3 /* XCRemoteSwiftPackageReference "RijndaelSwift" */;
 			productName = RijndaelSwift;
+		};
+		567B9AEE2DA49FFE005CC6D3 /* Swinject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 567B9AED2DA49FFE005CC6D3 /* XCRemoteSwiftPackageReference "Swinject" */;
+			productName = Swinject;
+		};
+		567B9AF12DA4A011005CC6D3 /* SwinjectAutoregistration */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 567B9AF02DA4A011005CC6D3 /* XCRemoteSwiftPackageReference "SwinjectAutoregistration" */;
+			productName = SwinjectAutoregistration;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
