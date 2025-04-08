@@ -10,25 +10,45 @@ import Foundation
 enum DashboardMealList {
     
     public static func from(_ foods: [FoodItem]) -> [Meal] {
-        let meals = [MealTime: Meal]()
+        let meals: [MealTime: Meal] = [
+            .none: .init(),
+            .breakfast: .init(),
+            .lunch: .init(),
+            .dinner: .init(),
+            .eveningSnack: .init(),
+            .morningSnack: .init(),
+        ]
         
         for food in foods {
             meals[food.mealTime ?? .none, default: .init()].append(food)
         }
 
-        return meals.map { $0.value }
+        return meals.compactMap {
+            $0.value.foods.count > 0 ? $0.value : nil
+        }
     }
     
     public class Meal: Identifiable {
         
         private(set) var foods: [FoodItem] = []
         
-        public var name: String {
-            foods.first?.mealTime?.rawValue ?? "<Unnamed Meal>"
-        }
+        var mealTime: MealTime { foods.first?.mealTime ?? .none }
+        
+        public var name: String { mealTime.rawValue }
 
         public func append(_ food: FoodItem) {
             foods.append(food)
         }
+    }
+}
+
+extension DashboardMealList.Meal: Comparable {
+    static func == (lhs: DashboardMealList.Meal, rhs: DashboardMealList.Meal) -> Bool {
+        lhs.mealTime == rhs.mealTime
+        && lhs.foods == rhs.foods
+    }
+    
+    static func < (lhs: DashboardMealList.Meal, rhs: DashboardMealList.Meal) -> Bool {
+        lhs.mealTime < rhs.mealTime
     }
 }

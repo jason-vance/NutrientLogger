@@ -7,19 +7,17 @@
 
 import Foundation
 
-public final class SimpleDate {
-    
-    public typealias RawValue = UInt32
-    
+typealias SimpleDate = UInt32
+
+extension SimpleDate {
+
     static var today: SimpleDate { .init(date: .now)! }
     
-    let rawValue: RawValue
+    var year: Int { Int(self / 10000) }
+    var month: Int { Int((self % 10000) / 100) }
+    var day: Int { Int(self % 100) }
     
-    var year: Int { Int(rawValue / 10000) }
-    var month: Int { Int((rawValue % 10000) / 100) }
-    var day: Int { Int(rawValue % 100) }
-    
-    init?(rawValue: RawValue) {
+    init?(rawValue: UInt32) {
         let year = Int(rawValue / 10000)
         let month = Int((rawValue % 10000) / 100)
         let day = Int(rawValue % 100)
@@ -35,7 +33,7 @@ public final class SimpleDate {
             return nil // Invalid date
         }
         
-        self.rawValue = rawValue
+        self = rawValue
     }
     
     init?(year: Int, month: Int, day: Int) {
@@ -46,7 +44,7 @@ public final class SimpleDate {
         }
         
         // Combine year, month, and day into a UInt32 in the format yyyymmdd
-        self.rawValue = UInt32(year * 10000 + month * 100 + day)
+        self = UInt32(year * 10000 + month * 100 + day)
     }
     
     init?(date: Date) {
@@ -62,7 +60,7 @@ public final class SimpleDate {
         }
         
         // Combine year, month, and day into a UInt32 in the format yyyymmdd
-        self.rawValue = UInt32(year * 10000 + month * 100 + day)
+        self = UInt32(year * 10000 + month * 100 + day)
     }
     
     // Function to convert rawValue back to Date
@@ -97,7 +95,7 @@ public final class SimpleDate {
 extension SimpleDate {
     
     static func startOfMonth(containing date: SimpleDate) -> SimpleDate {
-        let rawValue = date.rawValue - (date.rawValue % 100) + 1
+        let rawValue = date - (date % 100) + 1
         return SimpleDate(rawValue: rawValue)!
     }
     
@@ -108,7 +106,7 @@ extension SimpleDate {
     }
     
     static func startOfYear(containing date: SimpleDate) -> SimpleDate {
-        let rawValue = date.rawValue - (date.rawValue % 10000) + 101
+        let rawValue = date - (date % 10000) + 101
         return SimpleDate(rawValue: rawValue)!
     }
     
@@ -119,29 +117,9 @@ extension SimpleDate {
     }
 }
 
-extension SimpleDate: Equatable {
-    public static func == (lhs: SimpleDate, rhs: SimpleDate) -> Bool {
-        lhs.rawValue == rhs.rawValue
-    }
-}
-
-extension SimpleDate: Comparable {
-    public static func < (lhs: SimpleDate, rhs: SimpleDate) -> Bool {
-        lhs.rawValue < rhs.rawValue
-    }
-}
-
-extension SimpleDate: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(rawValue)
-    }
-}
-
-extension SimpleDate: Codable { }
-
 extension SimpleDate {
     
-    public func formatted() -> String {
+    func formatted() -> String {
         guard let date = toDate() else {
             return "<???>"
         }
@@ -149,7 +127,7 @@ extension SimpleDate {
         return date.relativeDateString()
     }
     
-    public func daysTo(_ other: SimpleDate) -> Int {
+    func daysTo(_ other: SimpleDate) -> Int {
         guard let date1 = toDate(), let date2 = other.toDate() else {
             return Int.max
         }

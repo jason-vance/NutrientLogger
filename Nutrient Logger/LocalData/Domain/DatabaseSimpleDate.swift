@@ -7,14 +7,14 @@
 
 import Foundation
 
-public typealias DatabaseSimpleDate = Int64
+typealias DatabaseSimpleDate = Int64
 
-public extension DatabaseSimpleDate {
+extension DatabaseSimpleDate {
     static func from(_ date: SimpleDate) -> DatabaseSimpleDate {
-        return DatabaseSimpleDate(date.rawValue)
+        return DatabaseSimpleDate(date)
     }
     
     func toSimpleDate() -> SimpleDate? {
-        return SimpleDate(rawValue: SimpleDate.RawValue(self))
+        return SimpleDate(rawValue: SimpleDate(self))
     }
 }

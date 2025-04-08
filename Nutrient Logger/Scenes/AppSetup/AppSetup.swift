@@ -27,9 +27,7 @@ class AppSetup {
         await registerUserMealsDatabase()
         await registerRemoteDatabase()
         
-#if SCREENSHOTS
         doMocksForScreenshots()
-#endif
     }
     
     fileprivate static func doMocksForScreenshots() {

@@ -15,6 +15,32 @@ enum MealTime: String {
     case morningSnack = "Morning Snack"
     case afternoonSnack = "Afternoon Snack"
     case eveningSnack = "Evening Snack"
+    
+    var order: Int {
+        switch self {
+        case .breakfast:
+            return 1
+        case .morningSnack:
+            return 2
+        case .lunch:
+            return 3
+        case .afternoonSnack:
+            return 4
+        case .dinner:
+            return 5
+        case .eveningSnack:
+            return 6
+        case .none:
+            return 7
+        }
+    }
 }
 
 extension MealTime: Codable {}
+
+extension MealTime: Comparable {
+    
+    static func < (lhs: MealTime, rhs: MealTime) -> Bool {
+        lhs.order < rhs.order
+    }
+}

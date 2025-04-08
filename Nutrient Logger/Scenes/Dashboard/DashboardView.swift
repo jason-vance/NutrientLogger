@@ -13,16 +13,17 @@ struct DashboardView: View {
     @Environment(\.scenePhase) private var scenePhase
     
     @State private var date: SimpleDate = .today
-    @State private var foods: [FoodItem] = [.dashboardSample]
+    @State private var foods: [FoodItem] = []
     
     private let localDatabase: LocalDatabase = swinjectContainer~>LocalDatabase.self
     
     private func fetchFoods() {
-        foods = []
+        self.foods = []
         
         Task {
             do {
-                foods = try localDatabase.getFoodsOrderedByDateLogged(date)
+                let foods = try localDatabase.getFoodsOrderedByDateLogged(date)
+                self.foods = foods
             } catch {
                 print("Failed to fetch foods: \(error)")
             }
@@ -65,6 +66,7 @@ struct DashboardView: View {
     @ViewBuilder private func WhatIAteSection() -> some View {
         if !foods.isEmpty {
             let meals = DashboardMealList.from(foods)
+                .sorted { $0.mealTime < $1.mealTime }
             
             Section {
                 ForEach(meals) { meal in
