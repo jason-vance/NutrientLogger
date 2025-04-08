@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class MockUserMealAnalytics: UserMealAnalytics {
+class MockUserMealAnalytics: UserMealAnalytics {
     
     public var loadMealFailures = [Error]()
     public var foodsAdded = [FoodItem]()

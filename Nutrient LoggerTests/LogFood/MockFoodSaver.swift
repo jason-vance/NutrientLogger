@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class MockFoodSaver: FoodSaver {
+class MockFoodSaver: FoodSaver {
     public var foodSaverType: FoodSaverType
     public var needsPortion: Bool
     public var needsDateTime: Bool

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class MockRemoteDatabase: RemoteDatabase {
+class MockRemoteDatabase: RemoteDatabase {
     public var errorToThrow: Error?
     
     public var result_for_search = SearchResult([])

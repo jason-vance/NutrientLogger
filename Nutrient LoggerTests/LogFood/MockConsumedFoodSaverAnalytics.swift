@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class MockConsumedFoodSaverAnalytics: ConsumedFoodSaverAnalytics {
+class MockConsumedFoodSaverAnalytics: ConsumedFoodSaverAnalytics {
     public var foodsLogged = [FoodItem]()
     public var foodLoggedFailures = [FoodItem]()
     

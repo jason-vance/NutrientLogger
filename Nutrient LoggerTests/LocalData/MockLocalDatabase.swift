@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class MockLocalDatabase: LocalDatabase {
+class MockLocalDatabase: LocalDatabase {
     public var hasDataChanged: Bool = false
     
     public var errorToThrow: Error?
@@ -32,7 +32,7 @@ public class MockLocalDatabase: LocalDatabase {
         savedFoods.append(food)
     }
     
-    public func getFoodsOrderedByDateLogged(_ date: Date) throws -> [FoodItem] {
+    public func getFoodsOrderedByDateLogged(_ date: SimpleDate) throws -> [FoodItem] {
         if let error = errorToThrow {
             throw error
         }
