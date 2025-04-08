@@ -20,11 +20,19 @@ struct ContentView: View {
     @ViewBuilder private func AppSetupRouter() -> some View {
         ZStack {
             if isSetup {
-                NavigationStack {
-                    Text("Is Setup")
-                }
+                MainContent()
             } else {
                 AppSetupView(isSetup: $isSetup)
+            }
+        }
+    }
+    
+    @ViewBuilder private func MainContent() -> some View {
+        TabView {
+            Tab("Dashboard", systemImage: "gauge.with.dots.needle.33percent") {
+                NavigationStack {
+                    DashboardView()
+                }
             }
         }
     }

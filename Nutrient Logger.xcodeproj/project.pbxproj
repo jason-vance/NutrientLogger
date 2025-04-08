@@ -103,6 +103,7 @@
 				LocalData/LocalDatabase.swift,
 				LocalData/LocalSqliteDatabase.swift,
 				Monetization/AdProvider.swift,
+				Scenes/Dashboard/DashboardView.swift,
 				Scenes/Dashboard/NutrientDataAggregator.swift,
 				Scenes/FoodSearch/FtsQueryGenerator.swift,
 				Scenes/FoodSearch/RemoteDatabase.swift,
