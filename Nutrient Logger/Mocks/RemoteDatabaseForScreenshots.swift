@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class RemoteDatabaseForScreenshots: RemoteDatabase {
+class RemoteDatabaseForScreenshots: RemoteDatabase {
     
     public func search(_ query: String) throws -> SearchResult {
         var foods = [SearchResultItem]()

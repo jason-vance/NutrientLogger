@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Thiamin_RDIs : AbstractNutrientRdis {
+class Thiamin_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Thiamin
         super.init(nutrientFdcNumber)

@@ -12,7 +12,7 @@ struct DashboardView: View {
     
     @Environment(\.scenePhase) private var scenePhase
     
-    @State private var date: Date = .now
+    @State private var date: SimpleDate = .today
     @State private var foods: [FoodItem] = [.dashboardSample]
     
     private let localDatabase: LocalDatabase = swinjectContainer~>LocalDatabase.self
@@ -71,7 +71,7 @@ struct DashboardView: View {
                     Text(meal.name)
                         .font(.footnote.bold())
                         .listRowDefaultModifiers()
-                    ForEach(foods) { food in
+                    ForEach(meal.foods) { food in
                         DashboardFoodRow(food: food)
                     }
                 }

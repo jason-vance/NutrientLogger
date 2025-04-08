@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Boron_RDIs : AbstractNutrientRdis {
+class Boron_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Boron_B
         super.init(nutrientFdcNumber)

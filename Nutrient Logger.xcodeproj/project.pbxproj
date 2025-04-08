@@ -42,6 +42,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Domain/FoodItem.swift,
+				Domain/MealTime.swift,
 				Domain/Nutrient.swift,
 				Domain/NutrientFoodPair.swift,
 				Domain/NutrientGroup.swift,
@@ -79,6 +80,7 @@
 				Domain/Rdi/SpecificNutrients/VitaminK_RDIs.swift,
 				Domain/Rdi/SpecificNutrients/Zinc_RDIs.swift,
 				Domain/Rdi/UsdaNutrientRdiLibrary.swift,
+				Domain/SimpleDate.swift,
 				Domain/WeightUnit.swift,
 				Extensions/ArrayExtensions.swift,
 				Extensions/CGFloatExtensions.swift,
@@ -99,7 +101,9 @@
 				FdcDatabase/FdcNutrientGroupMapper.swift,
 				FdcDatabase/FdcSearchableFoodDatabase.swift,
 				FdcDatabase/FdcSupportingDataDatabase.swift,
+				LocalData/Domain/DatabaseDate.swift,
 				LocalData/Domain/DatabaseEntity.swift,
+				LocalData/Domain/DatabaseSimpleDate.swift,
 				LocalData/Domain/DeletedFood.swift,
 				LocalData/Domain/FoodNutrientLink.swift,
 				LocalData/LocalDatabase.swift,
@@ -107,7 +111,6 @@
 				Monetization/AdProvider.swift,
 				Scenes/Dashboard/DashboardFoodRow.swift,
 				Scenes/Dashboard/DashboardMealList.swift,
-				Scenes/Dashboard/DashboardView.swift,
 				Scenes/Dashboard/NutrientDataAggregator.swift,
 				Scenes/FoodSearch/FtsQueryGenerator.swift,
 				Scenes/FoodSearch/RemoteDatabase.swift,

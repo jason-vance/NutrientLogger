@@ -16,7 +16,7 @@ public class SwiftSoupHTMLDocumentLoader: HTMLDocumentLoader {
     public func load(_ url: String) async -> Document {
         return await Task.init(priority: .userInitiated) {
             do {
-                let html = try String(contentsOf: URL(string: url)!)
+                let html = try String(contentsOf: URL(string: url)!, encoding: .utf8)
                 return try SwiftSoup.parse(html)
             } catch {
                 print("Error parsing html: \(error.localizedDescription)")

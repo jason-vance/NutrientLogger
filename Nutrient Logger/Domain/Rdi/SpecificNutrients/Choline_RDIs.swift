@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Choline_RDIs : AbstractNutrientRdis {
+class Choline_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Choline_Total
         super.init(nutrientFdcNumber)

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol RemoteDatabase {
+protocol RemoteDatabase {
     func search(_ query: String) throws -> SearchResult
     func getFood(_ foodId: String) throws -> FoodItem?
     func getPortions(_ food: FoodItem) throws -> [Portion]

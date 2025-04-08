@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Molybdenum_RDIs : AbstractNutrientRdis {
+class Molybdenum_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Molybdenum_Mo
         super.init(nutrientFdcNumber)

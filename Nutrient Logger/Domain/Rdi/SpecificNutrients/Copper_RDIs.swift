@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Copper_RDIs : AbstractNutrientRdis {
+class Copper_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Copper_Cu
         super.init(nutrientFdcNumber)

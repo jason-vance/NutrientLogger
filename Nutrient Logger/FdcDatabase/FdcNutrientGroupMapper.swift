@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class FdcNutrientGroupMapper {
+class FdcNutrientGroupMapper {
     public static let GroupNumber_Other = "-1"
     public static let GroupNumber_Proximates = "951"
     public static let GroupNumber_AminoAcids = "500"

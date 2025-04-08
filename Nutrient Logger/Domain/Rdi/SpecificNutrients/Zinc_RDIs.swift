@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Zinc_RDIs : AbstractNutrientRdis {
+class Zinc_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Zinc_Zn
         super.init(nutrientFdcNumber)

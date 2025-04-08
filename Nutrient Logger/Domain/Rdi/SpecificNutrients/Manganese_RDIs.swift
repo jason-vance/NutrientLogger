@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Manganese_RDIs : AbstractNutrientRdis {
+class Manganese_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Manganese_Mn
         super.init(nutrientFdcNumber)

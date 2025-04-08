@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class ConsumedFoodSaver: FoodSaver {
+class ConsumedFoodSaver: FoodSaver {
     
     public var foodSaverType: FoodSaverType { .consumedFoodSaver }
     

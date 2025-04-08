@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-public protocol AnalyticsEngine {
+protocol AnalyticsEngine {
     var eventSearch: String { get }
     var parameterSearchTerm: String { get }
     var parameterValue: String { get }
@@ -17,13 +17,13 @@ public protocol AnalyticsEngine {
     func logEvent(_ event: String, withParameters parameters: [String:Any])
 }
 
-public protocol UserProfileAnalytics {
+protocol UserProfileAnalytics {
     func userSetGender(_ gender: Gender)
     func userSetBirthdate(_ birthdate: Date)
     func userSetPreferredColor(_ colorName: ColorName)
 }
 
-public protocol UserMealsAnalytics {
+protocol UserMealsAnalytics {
     func loadMenuFailed(_ error: Error)
     func mealCreated()
     func mealCreationFailed(_ error: Error)
@@ -33,7 +33,7 @@ public protocol UserMealsAnalytics {
     func mealDeletingFailed(_ error: Error)
 }
 
-public protocol UserMealAnalytics {
+protocol UserMealAnalytics {
     func loadMealFailed(_ error: Error)
     func foodAddedToMeal(_ food: FoodItem)
     func addFoodToMealFailed(_ food: FoodItem)
@@ -41,12 +41,12 @@ public protocol UserMealAnalytics {
     func deletingFoodFromMealFailed(_ error: Error)
 }
 
-public protocol ConsumedFoodSaverAnalytics {
+protocol ConsumedFoodSaverAnalytics {
     func foodLogged(_ food: FoodItem)
     func foodLogFailed(_ food: FoodItem)
 }
 
-public protocol NutrientLoggerAnalytics {
+protocol NutrientLoggerAnalytics {
     func foodSearched(_ query: String)
     func unableToLeaveFeedback()
     func feedbackLeft()
@@ -65,7 +65,7 @@ public protocol NutrientLoggerAnalytics {
     func removeAdsRestored()
 }
 
-public class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMealsAnalytics, UserMealAnalytics, ConsumedFoodSaverAnalytics {
+class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMealsAnalytics, UserMealAnalytics, ConsumedFoodSaverAnalytics {
     private let maxLength = 100
 
     private let eventFoodLogFailed = "food_log_failed"

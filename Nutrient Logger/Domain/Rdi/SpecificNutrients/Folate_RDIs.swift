@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Folate_RDIs : AbstractNutrientRdis {
+class Folate_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Folate_DFE
         super.init(nutrientFdcNumber)

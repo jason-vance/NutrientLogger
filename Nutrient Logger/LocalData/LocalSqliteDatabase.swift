@@ -8,7 +8,7 @@
 import Foundation
 import SQLite
 
-public class LocalSqliteDatabase: LocalDatabase {
+class LocalSqliteDatabase: LocalDatabase {
     
     private var dbName: String { "data.db" }
     private var dbDir: URL { FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! }
@@ -104,14 +104,13 @@ public class LocalSqliteDatabase: LocalDatabase {
         hasDataChanged = true
     }
     
-    public func getFoodsOrderedByDateLogged(_ date: Date) throws -> [FoodItem] {
-        let dateStart = DatabaseDate.from(Calendar.current.startOfDay(for: date))
-        let dateEnd = DatabaseDate.from(Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: 1, to: date)!))
+    public func getFoodsOrderedByDateLogged(_ date: SimpleDate) throws -> [FoodItem] {
+        let date = DatabaseDate.from(date)
         
         let db = try Connection(dbPath)
         
         let foodQuery = Tables.foodItem
-            .where(Columns.dateLogged >= dateStart && Columns.dateLogged < dateEnd)
+            .where(Columns.dateLogged == date)
             .order(Columns.dateLogged)
         let foodRows = try db.prepare(foodQuery)
         var foods = foodRows.map { FoodItemWrapper($0).food }
@@ -252,7 +251,7 @@ fileprivate enum Columns {
     public static var amount = Expression<Double>("Amount")
     public static var portionName = Expression<String>("PortionName")
     public static var gramWeight = Expression<Double>("GramWeight")
-    public static var dateLogged = Expression<DatabaseDate>("DateLogged")
+    public static var dateLogged = Expression<DatabaseSimpleDate>("DateLogged")
     public static var fdcNumber = Expression<String>("FdcNumber")
     public static var unitName = Expression<String>("UnitName")
     public static var foodId = Expression<Int>("FoodId")
@@ -292,7 +291,7 @@ fileprivate class FoodItemWrapper: DatabaseEntityWrapper<FoodItem> {
             portionName: row[Columns.portionName],
             amount: row[Columns.amount]
         )
-        food.dateLogged = row[Columns.dateLogged].toDate()
+        food.dateLogged = row[Columns.dateLogged].toSimpleDate()
         
         super.init(row, food)
     }
@@ -309,7 +308,8 @@ fileprivate class FoodItemWrapper: DatabaseEntityWrapper<FoodItem> {
             Columns.amount <- food.amount,
             Columns.portionName <- food.portionName,
             Columns.gramWeight <- food.gramWeight,
-            Columns.dateLogged <- DatabaseDate.from(food.dateLogged)
+            //TODO: Is .today appropriate here
+            Columns.dateLogged <- DatabaseSimpleDate.from(food.dateLogged ?? .today)
         ] }
     }
 }
@@ -327,7 +327,7 @@ fileprivate class NutrientWrapper: DatabaseEntityWrapper<Nutrient> {
             unitName: row[Columns.unitName],
             amount: row[Columns.amount]
         )
-        nutrient.dateLogged = row[Columns.dateLogged].toDate()
+        nutrient.dateLogged = row[Columns.dateLogged].toSimpleDate()
         
         super.init(row, nutrient)
     }
@@ -354,7 +354,7 @@ fileprivate class NutrientWrapper: DatabaseEntityWrapper<Nutrient> {
         )
         nutrient.id = try! row.get(Columns.id)
         nutrient.created = try! row.get(Columns.created).toDate()
-        nutrient.dateLogged = try! row.get(Columns.dateLogged).toDate()
+        nutrient.dateLogged = try! row.get(Columns.dateLogged).toSimpleDate()
         return nutrient
     }
     
@@ -369,7 +369,8 @@ fileprivate class NutrientWrapper: DatabaseEntityWrapper<Nutrient> {
             Columns.name <- nutrient.name,
             Columns.amount <- nutrient.amount,
             Columns.unitName <- nutrient.unitName,
-            Columns.dateLogged <- DatabaseDate.from(nutrient.dateLogged)
+            //TODO: Is .today appropriate here
+            Columns.dateLogged <- DatabaseSimpleDate.from(nutrient.dateLogged ?? .today)
         ] }
     }
 }

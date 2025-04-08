@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class PantothenicAcid_RDIs : AbstractNutrientRdis {
+class PantothenicAcid_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_PantothenicAcid
         super.init(nutrientFdcNumber)

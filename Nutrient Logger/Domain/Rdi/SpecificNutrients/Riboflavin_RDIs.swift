@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Riboflavin_RDIs : AbstractNutrientRdis {
+class Riboflavin_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Riboflavin
         super.init(nutrientFdcNumber)

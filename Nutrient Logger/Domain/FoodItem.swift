@@ -11,7 +11,8 @@ public enum FoodItemError: Error {
     case cannotApplyMultiplePortions
 }
 
-public class FoodItem: DatabaseEntity, Codable {
+//TODO: Add MealTime (ie breakfast, lunch, dinner, etc)
+class FoodItem: DatabaseEntity, Codable {
     
     public var id: Int = -1
     public var created: Date = Date.now
@@ -21,7 +22,7 @@ public class FoodItem: DatabaseEntity, Codable {
     public var amount: Double = 0
     public var portionName: String = ""
     public var gramWeight: Double = 0
-    public var dateLogged: Date = Date.distantPast {
+    public var dateLogged: SimpleDate? {
         didSet {
             nutrientGroups.forEach { group in
                 group.nutrients.forEach { nutrient in
@@ -30,6 +31,16 @@ public class FoodItem: DatabaseEntity, Codable {
             }
         }
     }
+    public var mealTime: MealTime? {
+        didSet {
+            nutrientGroups.forEach { group in
+                group.nutrients.forEach { nutrient in
+                    nutrient.mealTime = mealTime
+                }
+            }
+        }
+    }
+    
     public var nutrientGroups: [NutrientGroup] = []
     
     private var portion: Portion?
@@ -103,8 +114,9 @@ extension FoodItem: Equatable {
 extension FoodItem {
     static let dashboardSample: FoodItem = {
         let sample = FoodItem(name: "Honey")
+        sample.dateLogged = .today
+        sample.mealTime = .breakfast
         sample.amount = 1
-        sample.dateLogged = Date()
         sample.portionName = "tbsp"
         return sample
     }()

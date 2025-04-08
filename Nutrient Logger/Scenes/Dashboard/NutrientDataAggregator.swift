@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class NutrientDataAggregator {
+class NutrientDataAggregator {
     public var nutrientGroups = [NutrientGroup]()
     public var nutrientsByNutrientNumber = [String:[NutrientFoodPair]]()
 

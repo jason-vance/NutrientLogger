@@ -279,7 +279,6 @@ class NutrientExplanationLoaderTests {
         let section = explanation.sections[0]
         #expect("What is vitamin A and what does it do?" == section.header)
         #expect(section.text.isEmpty)
-        #expect(section.subsections != nil)
         #expect(2 == section.subsections.count)
         var subsection = section.subsections[0]
         #expect("Cancer" == subsection.header)
@@ -310,7 +309,6 @@ class NutrientExplanationLoaderTests {
         var section = explanation.sections[0]
         #expect("What is vitamin A and what does it do?" == section.header)
         #expect(section.text.isEmpty)
-        #expect(section.subsections != nil)
         #expect(2 == section.subsections.count)
         var subsection = section.subsections[0]
         #expect("Cancer" == subsection.header)

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class VitaminC_RDIs : AbstractNutrientRdis {
+class VitaminC_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_VitaminC_TotalAscorbicAcid
         super.init(nutrientFdcNumber)

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class BundledFdcDatabase: RemoteDatabase {
+class BundledFdcDatabase: RemoteDatabase {
     private static let portion_QuantityNotSpecified = "Quantity not specified"
     private static let portion_DefaultAmount: Double = 1
     

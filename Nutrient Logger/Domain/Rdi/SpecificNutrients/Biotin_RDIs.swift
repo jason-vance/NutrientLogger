@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Biotin_RDIs : AbstractNutrientRdis {
+class Biotin_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Biotin
         super.init(nutrientFdcNumber)

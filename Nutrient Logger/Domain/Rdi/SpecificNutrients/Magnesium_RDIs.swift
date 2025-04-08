@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Magnesium_RDIs : AbstractNutrientRdis {
+class Magnesium_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Magnesium_Mg
         super.init(nutrientFdcNumber)

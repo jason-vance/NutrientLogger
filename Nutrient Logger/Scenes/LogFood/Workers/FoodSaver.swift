@@ -7,16 +7,16 @@
 
 import Foundation
 
-public enum FoodSaverType {
+enum FoodSaverType {
     case consumedFoodSaver
     case mealFoodSaver
 }
 
-public enum FoodSaverErrors: Error {
+enum FoodSaverErrors: Error {
     case mealIdNotSet
 }
 
-public protocol FoodSaver {
+protocol FoodSaver {
     var foodSaverType: FoodSaverType { get }
     var needsPortion: Bool { get }
     var needsDateTime: Bool { get }

@@ -7,7 +7,8 @@
 
 import Foundation
 
-public class Nutrient: DatabaseEntity, Codable {
+//TODO: Add MealTime (ie breakfast, lunch, dinner, etc)
+class Nutrient: DatabaseEntity, Codable {
     
     public var id: Int = -1
     public var created: Date = Date.now
@@ -16,9 +17,20 @@ public class Nutrient: DatabaseEntity, Codable {
     public let name: String
     public var amount: Double
     public let unitName: String
-    public var dateLogged: Date = Date.distantPast
+    public var dateLogged: SimpleDate?
+    public var mealTime: MealTime?
     
-    public init(id: Int, created: Date, fdcId: Int, fdcNumber: String, name: String, amount: Double, unitName: String, dateLogged: Date) {
+    public init(
+        id: Int,
+        created: Date,
+        fdcId: Int,
+        fdcNumber: String,
+        name: String,
+        amount: Double,
+        unitName: String,
+        dateLogged: SimpleDate?,
+        mealTime: MealTime?
+    ) {
         self.id = id
         self.created = created
         self.fdcId = fdcId
@@ -27,6 +39,7 @@ public class Nutrient: DatabaseEntity, Codable {
         self.amount = amount
         self.unitName = unitName
         self.dateLogged = dateLogged
+        self.mealTime = mealTime
     }
     
     public init(fdcId: Int = -1, fdcNumber: String, name: String, unitName: String, amount: Double = 0) {
@@ -46,7 +59,8 @@ public class Nutrient: DatabaseEntity, Codable {
             name: name,
             amount: amount,
             unitName: unitName,
-            dateLogged: dateLogged
+            dateLogged: dateLogged,
+            mealTime: mealTime
         )
     }
     

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Potassium_RDIs : AbstractNutrientRdis {
+class Potassium_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Potassium_K
         super.init(nutrientFdcNumber)

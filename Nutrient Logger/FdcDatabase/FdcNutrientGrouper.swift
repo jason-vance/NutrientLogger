@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class FdcNutrientGrouper {
+class FdcNutrientGrouper {
 
     public static func group(_ nutrients: [Nutrient]) -> [NutrientGroup] {
         var groups = [String:NutrientGroup]()

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class MealFoodSaver: FoodSaver {
+class MealFoodSaver: FoodSaver {
 
     private let unknownId = -1
 

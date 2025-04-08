@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Chromium_RDIs : AbstractNutrientRdis {
+class Chromium_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Chromium_Cr
         super.init(nutrientFdcNumber)

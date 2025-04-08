@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Iron_RDIs : AbstractNutrientRdis {
+class Iron_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Iron_Fe
         super.init(nutrientFdcNumber)

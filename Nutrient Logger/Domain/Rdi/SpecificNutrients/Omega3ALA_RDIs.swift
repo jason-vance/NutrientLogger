@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Omega3ALA_RDIs : AbstractNutrientRdis {
+class Omega3ALA_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_18_3_N_3_C_C_C_ALA
         super.init(nutrientFdcNumber)

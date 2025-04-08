@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Sodium_RDIs : AbstractNutrientRdis {
+class Sodium_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Sodium_Na
         super.init(nutrientFdcNumber)

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Iodine_RDIs : AbstractNutrientRdis {
+class Iodine_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Iodine_I
         super.init(nutrientFdcNumber)

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct WeightUnit: Hashable, Equatable {
+struct WeightUnit: Hashable, Equatable {
     private static let unknownName = "?"
     private static let unknownGramAmount = 0.0
 

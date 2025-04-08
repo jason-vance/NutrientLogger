@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class VitaminK_RDIs : AbstractNutrientRdis {
+class VitaminK_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_VitaminK_Phylloquinone
         super.init(nutrientFdcNumber)

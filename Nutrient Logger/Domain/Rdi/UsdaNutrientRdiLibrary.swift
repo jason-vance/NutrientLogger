@@ -7,11 +7,11 @@
 
 import Foundation
 
-public protocol NutrientRdiLibrary {
+protocol NutrientRdiLibrary {
     func getRdis(_ nutrientNumber: String) -> NutrientRdis?
 }
 
-public class UsdaNutrientRdiLibrary: NutrientRdiLibrary {
+class UsdaNutrientRdiLibrary: NutrientRdiLibrary {
     let rdis: [String:NutrientRdis]
     
     public static func create() -> UsdaNutrientRdiLibrary {

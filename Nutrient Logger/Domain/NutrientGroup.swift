@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class NutrientGroup: Codable {
+class NutrientGroup: Codable {
     public var fdcNumber: String
     public var name: String
     public var rank: Int

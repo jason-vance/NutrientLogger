@@ -7,14 +7,14 @@
 
 import Foundation
 
-public protocol NutrientRdis {
+protocol NutrientRdis {
     var nutrientFdcNumber: String { get }
     func getRdi(_ user: User) -> LifeStageNutrientRdi?
     func getRdi(_ gender: Gender, _ age: TimeInterval) -> LifeStageNutrientRdi?
     func addLifeStageRdi(_ rdi: LifeStageNutrientRdi)
 }
 
-public class AbstractNutrientRdis: NutrientRdis {
+class AbstractNutrientRdis: NutrientRdis {
     private var lifeStageRdis: [LifeStageNutrientRdi] = [LifeStageNutrientRdi]()
     
     public let nutrientFdcNumber: String

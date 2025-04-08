@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Phosphorus_RDIs : AbstractNutrientRdis {
+class Phosphorus_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Phosphorus_P
         super.init(nutrientFdcNumber)

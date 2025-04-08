@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class LifeStageNutrientRdi {
+class LifeStageNutrientRdi {
     private let secondsInYear = 365.0 * 86400.0
 
     public var nutrientFdcNumber: String = ""

@@ -7,14 +7,14 @@
 
 import Foundation
 
-public class LocalDatabaseForScreenshots: LocalDatabase {
+class LocalDatabaseForScreenshots: LocalDatabase {
     public var hasDataChanged: Bool { false }
     
     public func resetHasDataChanged() {}
     
     public func saveFoodItem(_ food: FoodItem) throws {}
     
-    public func getFoodsOrderedByDateLogged(_ date: Date) throws -> [FoodItem] {
+    public func getFoodsOrderedByDateLogged(_ date: SimpleDate) throws -> [FoodItem] {
         let decoder = JSONDecoder()
         
         return [

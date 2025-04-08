@@ -8,7 +8,7 @@
 import Foundation
 import SQLite
 
-public class FdcSearchableFoodDatabase {
+class FdcSearchableFoodDatabase {
     private enum Errors: Error {
         case ftsTableAlreadyCreated
     }

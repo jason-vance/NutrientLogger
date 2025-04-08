@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Niacin_RDIs : AbstractNutrientRdis {
+class Niacin_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Niacin
         super.init(nutrientFdcNumber)

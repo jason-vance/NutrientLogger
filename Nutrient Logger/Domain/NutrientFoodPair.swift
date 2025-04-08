@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct NutrientFoodPair {
+struct NutrientFoodPair {
     public let nutrient: Nutrient
     public let food: FoodItem
 }

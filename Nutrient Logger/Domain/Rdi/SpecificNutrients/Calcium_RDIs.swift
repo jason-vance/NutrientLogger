@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Calcium_RDIs : AbstractNutrientRdis {
+class Calcium_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca
         super.init(nutrientFdcNumber)

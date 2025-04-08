@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Selenium_RDIs : AbstractNutrientRdis {
+class Selenium_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_Selenium_Se
         super.init(nutrientFdcNumber)

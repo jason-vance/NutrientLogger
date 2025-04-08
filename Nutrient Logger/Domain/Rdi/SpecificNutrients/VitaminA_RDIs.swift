@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class VitaminA_RDIs : AbstractNutrientRdis {
+class VitaminA_RDIs : AbstractNutrientRdis {
     public init() {
         let nutrientFdcNumber = FdcNutrientGroupMapper.NutrientNumber_VitaminA_RAE
         super.init(nutrientFdcNumber)
