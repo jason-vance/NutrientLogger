@@ -93,3 +93,19 @@ public class FoodItem: DatabaseEntity, Codable {
         return rvGroups
     }
 }
+
+extension FoodItem: Equatable {
+    public static func == (lhs: FoodItem, rhs: FoodItem) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
+extension FoodItem {
+    static let dashboardSample: FoodItem = {
+        let sample = FoodItem(name: "Honey")
+        sample.amount = 1
+        sample.dateLogged = Date()
+        sample.portionName = "tbsp"
+        return sample
+    }()
+}

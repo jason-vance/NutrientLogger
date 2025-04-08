@@ -11,7 +11,7 @@ import UIKit
 
 public enum UI {
     public enum CornerRadius {
-        public static let cell = medium
+        public static let listRow = medium
         public static let dialogContainer = large
         
         public static let xlarge = 16.0
@@ -25,8 +25,8 @@ public enum UI {
     }
     
     public enum FontSize {
-        public static let cellTitle = UIFont.labelFontSize
-        public static let cellSubtitle = UIFont.systemFontSize
+        public static let listRowTitle = UIFont.labelFontSize
+        public static let listRowSubtitle = UIFont.systemFontSize
         
         public static let dialogTitle: CGFloat = 18
         public static let dialogMessage: CGFloat = 16

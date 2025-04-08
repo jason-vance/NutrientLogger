@@ -1,0 +1,51 @@
+//
+//  DashboardFoodRow.swift
+//  Nutrient Logger
+//
+//  Created by Jason Vance on 4/7/25.
+//
+
+import SwiftUI
+
+struct DashboardFoodRow: View {
+    
+    let food: FoodItem
+    
+    var body: some View {
+        NavigationLink {
+            Text("Detail")
+        } label: {
+            RowContent()
+        }
+        .listRowDefaultModifiers()
+        .padding(.horizontal)
+        .padding(.vertical, 10)
+        .background {
+            RoundedRectangle(cornerRadius: .cornerRadiusListRow, style: .continuous)
+                .fill(.shadow(.drop(radius: .shadowRadiusDefault)))
+                .fill(.white)
+                
+        }
+    }
+    
+    @ViewBuilder private func RowContent() -> some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(food.name)
+                    .font(.headline)
+                Text("\(food.amount.formatted()) \(food.portionName)")
+                    .font(.callout)
+            }
+            Spacer()
+        }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        List {
+            DashboardFoodRow(food: .dashboardSample)
+        }
+        .listDefaultModifiers()
+    }
+}

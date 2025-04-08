@@ -6,10 +6,28 @@
 //
 
 import SwiftUI
+import SwinjectAutoregistration
 
 struct DashboardView: View {
     
     @Environment(\.scenePhase) private var scenePhase
+    
+    @State private var date: Date = .now
+    @State private var foods: [FoodItem] = [.dashboardSample]
+    
+    private let localDatabase: LocalDatabase = swinjectContainer~>LocalDatabase.self
+    
+    private func fetchFoods() {
+        foods = []
+        
+        Task {
+            do {
+                foods = try localDatabase.getFoodsOrderedByDateLogged(date)
+            } catch {
+                print("Failed to fetch foods: \(error)")
+            }
+        }
+    }
     
     var navigationTitle: String {
         let date = Date.now
@@ -29,20 +47,44 @@ struct DashboardView: View {
     
     var body: some View {
         List {
-            
+            WhatIAteSection()
         }
+        .listDefaultModifiers()
         .toolbar { Toolbar() }
         .navigationTitle(Text(navigationTitle))
+        .onChange(of: date, initial: true) { fetchFoods() }
+        .animation(.snappy, value: foods)
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
-            Text("Hello")
+            Text("Date Control")
+        }
+    }
+    
+    @ViewBuilder private func WhatIAteSection() -> some View {
+        if !foods.isEmpty {
+            let meals = DashboardMealList.from(foods)
+            
+            Section {
+                ForEach(meals) { meal in
+                    Text(meal.name)
+                        .font(.footnote.bold())
+                        .listRowDefaultModifiers()
+                    ForEach(foods) { food in
+                        DashboardFoodRow(food: food)
+                    }
+                }
+            } header: {
+                Text("What I Ate Today")
+            }
         }
     }
 }
 
 #Preview {
+    let _ = swinjectContainer.autoregister(LocalDatabase.self) { LocalDatabaseForScreenshots() }
+    
     NavigationStack {
         DashboardView()
     }
