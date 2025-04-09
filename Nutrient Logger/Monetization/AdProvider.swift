@@ -12,7 +12,7 @@ public protocol AdProvider {
     func loadBannerAdIntoContainer(_ screen: UIViewController, _ view: UIView)
 }
 
-//TODO: Uncomment this when appropriate
+//TODO: MVP: Uncomment this when appropriate
 //public class GoogleAdProvider: AdProvider {
 //    public static let testAdUnitId: String = "ca-app-pub-3940256099942544/2934735716"
 //    

@@ -13,7 +13,8 @@ struct DashboardFoodRow: View {
     
     var body: some View {
         NavigationLink {
-            Text("Detail")
+            //TODO: MVP: Navigate somewhere real
+            Text("Food Detail")
         } label: {
             RowContent()
         }

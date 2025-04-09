@@ -7,8 +7,7 @@
 
 import Foundation
 
-//TODO: Add MealTime (ie breakfast, lunch, dinner, etc)
-class Nutrient: DatabaseEntity, Codable {
+class Nutrient: DatabaseEntity, Codable, Identifiable {
     
     public var id: Int = -1
     public var created: Date = Date.now

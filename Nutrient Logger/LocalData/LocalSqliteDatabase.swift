@@ -308,7 +308,7 @@ fileprivate class FoodItemWrapper: DatabaseEntityWrapper<FoodItem> {
             Columns.amount <- food.amount,
             Columns.portionName <- food.portionName,
             Columns.gramWeight <- food.gramWeight,
-            //TODO: Is .today appropriate here
+            //TODO: MVP: Is .today appropriate here
             Columns.dateLogged <- DatabaseSimpleDate.from(food.dateLogged ?? .today)
         ] }
     }
@@ -332,7 +332,7 @@ fileprivate class NutrientWrapper: DatabaseEntityWrapper<Nutrient> {
         super.init(row, nutrient)
     }
     
-    //TODO: Make sure this still works
+    //TODO: MVP: Make sure this still works
     static func fromAbridged(_ row: Row) -> Nutrient {
         let nutrient = Nutrient(
             fdcNumber: try! row.get(Columns.fdcNumber),
@@ -343,7 +343,7 @@ fileprivate class NutrientWrapper: DatabaseEntityWrapper<Nutrient> {
         return nutrient
     }
     
-    //TODO: Make sure this still works
+    //TODO: MVP: Make sure this still works
     static func fromFull(_ row: Row) -> Nutrient {
         let nutrient = Nutrient(
             fdcId: try! row.get(Columns.fdcId),
@@ -369,7 +369,7 @@ fileprivate class NutrientWrapper: DatabaseEntityWrapper<Nutrient> {
             Columns.name <- nutrient.name,
             Columns.amount <- nutrient.amount,
             Columns.unitName <- nutrient.unitName,
-            //TODO: Is .today appropriate here
+            //TODO: MVP: Is .today appropriate here
             Columns.dateLogged <- DatabaseSimpleDate.from(nutrient.dateLogged ?? .today)
         ] }
     }

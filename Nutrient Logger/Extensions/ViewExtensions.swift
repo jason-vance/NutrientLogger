@@ -21,4 +21,10 @@ extension View {
             .listRowBackground(Color.clear)
             .listRowSeparator(.hidden)
     }
+    
+    func listSubsectionHeader() -> some View {
+        self
+            .font(.footnote.bold())
+            .listRowDefaultModifiers()
+    }
 }

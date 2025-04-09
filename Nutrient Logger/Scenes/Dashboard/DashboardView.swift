@@ -46,20 +46,36 @@ struct DashboardView: View {
         }
     }
     
+    private func onChangeDate(old: SimpleDate, new: SimpleDate) {
+        guard foods.isEmpty || old != new else {
+            return
+        }
+        
+        fetchFoods()
+    }
+    
     var body: some View {
         List {
+            MyNutrientsSection()
             WhatIAteSection()
         }
         .listDefaultModifiers()
         .toolbar { Toolbar() }
         .navigationTitle(Text(navigationTitle))
-        .onChange(of: date, initial: true) { fetchFoods() }
+        .onChange(of: date, initial: true) { onChangeDate(old: $0, new: $1) }
         .animation(.snappy, value: foods)
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
+            //TODO: MVP: Make a real date control
             Text("Date Control")
+        }
+    }
+    
+    @ViewBuilder private func MyNutrientsSection() -> some View {
+        if !foods.isEmpty {
+            DashboardNutrientSection(foods: foods)
         }
     }
     
@@ -71,8 +87,7 @@ struct DashboardView: View {
             Section {
                 ForEach(meals) { meal in
                     Text(meal.name)
-                        .font(.footnote.bold())
-                        .listRowDefaultModifiers()
+                        .listSubsectionHeader()
                     ForEach(meal.foods) { food in
                         DashboardFoodRow(food: food)
                     }
@@ -86,7 +101,9 @@ struct DashboardView: View {
 
 #Preview {
     let _ = swinjectContainer.autoregister(LocalDatabase.self) { LocalDatabaseForScreenshots() }
-    
+    let _ = swinjectContainer.autoregister(UserService.self) { UserServiceForScreenshots() }
+    let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) { UsdaNutrientRdiLibrary.create() }
+
     NavigationStack {
         DashboardView()
     }

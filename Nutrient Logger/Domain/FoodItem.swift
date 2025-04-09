@@ -11,7 +11,6 @@ public enum FoodItemError: Error {
     case cannotApplyMultiplePortions
 }
 
-//TODO: Add MealTime (ie breakfast, lunch, dinner, etc)
 class FoodItem: DatabaseEntity, Codable {
     
     public var id: Int = -1

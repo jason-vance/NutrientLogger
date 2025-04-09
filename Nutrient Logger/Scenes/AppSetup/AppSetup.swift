@@ -15,7 +15,7 @@ let swinjectContainer = Container()
 class AppSetup {
     
     static func doSetup() async {
-        //TODO: Uncomment when firebase is added
+        //TODO: MVP: Uncomment when firebase is added
 //        FirebaseApp.configure()
         
 //        setupAnalytics()
@@ -63,7 +63,7 @@ class AppSetup {
         swinjectContainer.autoregister(RemoteDatabase.self) { db }
     }
     
-    //TODO: Uncomment when AdMob is added
+    //TODO: MVP: Uncomment when AdMob is added
 //    fileprivate static func setupAdProvider() {
 ////        IocContainer.shared.register(type: AdProvider.self, component: MockAdProvider())
 ////        return
@@ -90,7 +90,7 @@ class AppSetup {
 //        IocContainer.shared.register(type: AdProvider.self, component: GoogleAdProvider(adUnitId: adUnitId))
 //    }
     
-    //TODO: Uncomment when firebase is added
+    //TODO: MVP: Uncomment when firebase is added
 //    fileprivate static func setupAnalytics() {
 //        let analyticsEngine = FirebaseAnalytics()
 //        let analytics = DefaultAnalytics(analyticsEngine: analyticsEngine)
