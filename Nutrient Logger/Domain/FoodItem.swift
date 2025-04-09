@@ -11,7 +11,7 @@ public enum FoodItemError: Error {
     case cannotApplyMultiplePortions
 }
 
-class FoodItem: DatabaseEntity, Codable {
+struct FoodItem: DatabaseEntity, Codable {
     
     public var id: Int = -1
     public var created: Date = Date.now
@@ -76,18 +76,21 @@ class FoodItem: DatabaseEntity, Codable {
         self.gramWeight = gramWeight
     }
 
-    public func applyPortion(_ portion: Portion) throws {
+    public func applyingPortion(_ portion: Portion) throws -> FoodItem {
         if (self.portion != nil) {
+            print("cannotApplyMultiplePortions")
             throw FoodItemError.cannotApplyMultiplePortions
         }
 
         let multiplier = (portion.amount * portion.gramWeight) / gramWeight
 
-        self.portion = portion
-        amount = portion.amount
-        portionName = portion.name
-        gramWeight = portion.gramWeight
-        nutrientGroups = FoodItem.nutrientGroupsWithPortionApplied(nutrientGroups, multiplier)
+        var food = self
+        food.portion = portion
+        food.amount = portion.amount
+        food.portionName = portion.name
+        food.gramWeight = portion.gramWeight
+        food.nutrientGroups = FoodItem.nutrientGroupsWithPortionApplied(nutrientGroups, multiplier)
+        return food
     }
     
     private static func nutrientGroupsWithPortionApplied(_ nutrientGroups: [NutrientGroup], _ multiplier: Double) -> [NutrientGroup] {
@@ -112,7 +115,7 @@ extension FoodItem: Equatable {
 
 extension FoodItem {
     static let dashboardSample: FoodItem = {
-        let sample = FoodItem(name: "Honey")
+        var sample = FoodItem(name: "Honey")
         sample.dateLogged = .today
         sample.mealTime = .breakfast
         sample.amount = 1

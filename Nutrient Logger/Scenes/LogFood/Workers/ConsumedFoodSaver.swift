@@ -28,7 +28,7 @@ class ConsumedFoodSaver: FoodSaver {
 
     public func saveFoodItem(_ food: FoodItem, _ portion: Portion) throws {
         do {
-            try food.applyPortion(portion)
+            let food = try food.applyingPortion(portion)
             try db.saveFoodItem(food)
             analytics?.foodLogged(food)
         } catch {

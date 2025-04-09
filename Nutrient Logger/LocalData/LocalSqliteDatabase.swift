@@ -117,7 +117,8 @@ class LocalSqliteDatabase: LocalDatabase {
         
         try removeDeletedFoods(db, &foods)
         
-        return try foods.map { food in
+        return try foods.map {
+            var food = $0
             food.nutrientGroups = try getAbridgedNutrients(db, food)
             return food
         }
@@ -184,7 +185,7 @@ class LocalSqliteDatabase: LocalDatabase {
         
         let db = try Connection(dbPath)
         if let row = try db.pluck(query) {
-            let food = FoodItemWrapper(row).food
+            var food = FoodItemWrapper(row).food
             food.nutrientGroups = try getFullNutrients(db, food)
             return food
         }
@@ -283,7 +284,7 @@ fileprivate class FoodItemWrapper: DatabaseEntityWrapper<FoodItem> {
     }
     
     init(_ row: Row) {
-        let food = FoodItem(
+        var food = FoodItem(
             fdcId: row[Columns.fdcId],
             name: row[Columns.name],
             fdcType: row[Columns.fdcType],
