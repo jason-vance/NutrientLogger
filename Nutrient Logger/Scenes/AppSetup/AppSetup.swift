@@ -7,10 +7,7 @@
 
 import Foundation
 import RijndaelSwift
-import Swinject
 import SwinjectAutoregistration
-
-let swinjectContainer = Container()
 
 class AppSetup {
     

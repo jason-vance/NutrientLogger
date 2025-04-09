@@ -22,6 +22,7 @@ struct DashboardFoodRow: View {
         .padding(.horizontal)
         .padding(.vertical, 10)
         .background {
+            //TODO: MVP: Background is flashing when appearing
             RoundedRectangle(cornerRadius: .cornerRadiusListRow, style: .continuous)
                 .fill(.shadow(.drop(radius: .shadowRadiusDefault)))
                 .fill(.white)

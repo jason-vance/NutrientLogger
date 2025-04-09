@@ -18,8 +18,6 @@ struct DashboardView: View {
     private let localDatabase: LocalDatabase = swinjectContainer~>LocalDatabase.self
     
     private func fetchFoods() {
-        self.foods = []
-        
         Task {
             do {
                 let foods = try localDatabase.getFoodsOrderedByDateLogged(date)
@@ -68,10 +66,50 @@ struct DashboardView: View {
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
-            //TODO: MVP: Make a real date control
-            Text("Date Control")
+            DateButton()
         }
     }
+    
+    @ViewBuilder private func DateButton() -> some View {
+        HStack {
+            DecrementDateButton()
+            Button {
+                
+            } label: {
+                Text(date.formatted())
+            }
+            .overlay{
+                DatePicker(
+                    "",
+                    selection: .init(
+                        get: { date.toDate() ?? .now },
+                        set: { date = SimpleDate(date: $0)! }
+                    ),
+                    displayedComponents: [.date]
+                )
+                .blendMode(.destinationOver) //MARK: use this extension to keep the clickable functionality
+            }
+            .padding(.horizontal)
+            IncrementDateButton()
+        }
+    }
+    
+    @ViewBuilder private func DecrementDateButton() -> some View {
+        Button {
+            date = date.adding(days: -1)
+        } label: {
+            Image(systemName: "chevron.backward")
+        }
+    }
+    
+    @ViewBuilder private func IncrementDateButton() -> some View {
+        Button {
+            date = date.adding(days: 1)
+        } label: {
+            Image(systemName: "chevron.forward")
+        }
+    }
+
     
     @ViewBuilder private func MyNutrientsSection() -> some View {
         if !foods.isEmpty {

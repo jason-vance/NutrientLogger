@@ -31,16 +31,23 @@ public extension Date {
     func relativeDateString(usingClock clock: Clock = SystemClock()) -> String {
         let today = clock.today
         let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today)!
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+        let future = Calendar.current.date(byAdding: .day, value: 2, to: today)!
         let aboutAWeekAgo = Calendar.current.date(byAdding: .day, value: -6, to: today)!
-
-        if (self >= today) {
+        
+        if self >= tomorrow && self < future {
+            return "Tomorrow"
+        }
+        if self >= today && self < tomorrow {
             return "Today"
-        } else if (self >= yesterday) {
+        }
+        if self >= yesterday && self < today {
             return "Yesterday"
-        } else if (self >= aboutAWeekAgo) {
+        }
+        if self >= aboutAWeekAgo && self < yesterday {
             return self.toString("EEEE")
         }
-        return self.toString("d MMM yyyy")
+        return self.formatted(date: .abbreviated, time: .omitted)
     }
     
     static func from(year: Int, month: Int, day: Int, hr: Int = 0, min: Int = 0, sec: Int = 0, timeZone: TimeZone? = nil) -> Date {
