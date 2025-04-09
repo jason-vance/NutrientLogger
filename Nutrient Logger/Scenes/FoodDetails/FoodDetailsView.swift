@@ -178,6 +178,7 @@ struct FoodDetailsView: View {
         
         List {
             NutritionFactsCap(isTop: true)
+            
             NutritionFactsFoodName()
             NutritionFactsLine(UIConsts.lineWidth_Thin)
             NutritionFactsPortion()
@@ -193,6 +194,26 @@ struct FoodDetailsView: View {
             Carbohydrates(&nutrients)
             Protein(&nutrients)
             NutritionFactsLine(UIConsts.lineWidth_ExtraThick)
+            
+            VitaminA(&nutrients)
+            VitaminB(&nutrients)
+            VitaminC(&nutrients)
+            VitaminD(&nutrients)
+            VitaminE(&nutrients)
+            VitaminK(&nutrients)
+            Minerals(&nutrients)
+            Folate(&nutrients)
+            Choline(&nutrients)
+            OtherVitamins(&nutrients)
+            OtherVarious(&nutrients)
+            Phytosterols(&nutrients)
+            OtherAcids(&nutrients)
+            AminoAcids(&nutrients)
+            FattyAcids(&nutrients)
+            
+            OtherNutrients(&nutrients)
+            
+            NutritionFactsCap(isTop: false)
         }
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
         .listDefaultModifiers()
@@ -565,6 +586,554 @@ struct FoodDetailsView: View {
         }
     }
     
+    @ViewBuilder private func VitaminA(_ nutrients: inout [Nutrient]) -> some View {
+        let vitaminAIU = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminA_IU)
+        let vitaminARae = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminA_RAE)
+        let retinol = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Retinol)
+        let betaCarotene = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Carotene_Beta)
+        let cisBetaCarotene = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Cis_Carotene_Beta)
+        let transBetaCarotene = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Trans_Carotene_Beta)
+        let alphaCarotene = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Carotene_Alpha)
+        let cryptoxanthinAlpha = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Cryptoxanthin_Alpha)
+        let cryptoxanthinBeta = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Cryptoxanthin_Beta)
+
+        if let vitaminAIU = vitaminAIU {
+            NutrientRow(vitaminAIU)
+        }
+        if let vitaminARae = vitaminARae {
+            NutrientRow(vitaminARae)
+        }
+        if let retinol = retinol {
+            NutrientRow(retinol, indentLevel: 1)
+        }
+        if let betaCarotene = betaCarotene {
+            NutrientRow(betaCarotene, indentLevel: 1)
+        }
+        if let cisBetaCarotene = cisBetaCarotene {
+            NutrientRow(cisBetaCarotene, indentLevel: 1)
+        }
+        if let transBetaCarotene = transBetaCarotene {
+            NutrientRow(transBetaCarotene, indentLevel: 1)
+        }
+        if let alphaCarotene = alphaCarotene {
+            NutrientRow(alphaCarotene, indentLevel: 1)
+        }
+        if let cryptoxanthinAlpha = cryptoxanthinAlpha {
+            NutrientRow(cryptoxanthinAlpha, indentLevel: 1)
+        }
+        if let cryptoxanthinBeta = cryptoxanthinBeta {
+            NutrientRow(cryptoxanthinBeta, indentLevel: 1)
+        }
+    }
+    
+    @ViewBuilder private func VitaminB(_ nutrients: inout [Nutrient]) -> some View {
+        let thiamin = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Thiamin)
+        let riboflavin = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Riboflavin)
+        let niacin = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Niacin)
+        let pantothenicAcid = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_PantothenicAcid)
+        let vitaminB6 = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminB6)
+        let biotin = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Biotin)
+        let vitaminB12 = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminB12)
+        let vitaminB12Added = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminB12_Added)
+
+        if let thiamin = thiamin {
+            NutrientRow(thiamin)
+        }
+        if let riboflavin = riboflavin {
+            NutrientRow(riboflavin)
+        }
+        if let niacin = niacin {
+            NutrientRow(niacin)
+        }
+        if let pantothenicAcid = pantothenicAcid {
+            NutrientRow(pantothenicAcid)
+        }
+        if let vitaminB6 = vitaminB6 {
+            NutrientRow(vitaminB6)
+        }
+        if let biotin = biotin {
+            NutrientRow(biotin)
+        }
+        if let vitaminB12 = vitaminB12 {
+            NutrientRow(vitaminB12)
+        }
+        if let vitaminB12Added = vitaminB12Added {
+            NutrientRow(vitaminB12Added)
+        }
+    }
+    
+    @ViewBuilder private func VitaminC(_ nutrients: inout [Nutrient]) -> some View {
+        let vitaminC = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminC_TotalAscorbicAcid)
+
+        if let vitaminC = vitaminC {
+            NutrientRow(vitaminC)
+        }
+    }
+    
+    @ViewBuilder private func VitaminD(_ nutrients: inout [Nutrient]) -> some View {
+        let vitaminDIu = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminD_D2_Plus_D3_IU)
+        let vitaminD = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminD_D2_Plus_D3)
+        let vitaminD2 = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminD_D2)
+        let vitaminDCholecalciferol = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminD3_Cholecalciferol)
+        let hydroxycholecalciferol = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Hydroxycholecalciferol)
+
+        if let vitaminDIu = vitaminDIu {
+            NutrientRow(vitaminDIu)
+        }
+        if let vitaminD = vitaminD {
+            NutrientRow(vitaminD)
+        }
+        if let vitaminD2 = vitaminD2 {
+            NutrientRow(vitaminD2)
+        }
+        if let vitaminDCholecalciferol = vitaminDCholecalciferol {
+            NutrientRow(vitaminDCholecalciferol)
+        }
+        if let hydroxycholecalciferol = hydroxycholecalciferol {
+            NutrientRow(hydroxycholecalciferol)
+        }
+    }
+    
+    @ViewBuilder private func VitaminE(_ nutrients: inout [Nutrient]) -> some View {
+        let vitaminEAdded = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminE_Added)
+        let vitaminETocopherol = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminE_Alpha_Tocopherol)
+        let vitaminELabel = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminE_LabelEntryPrimarily)
+        let vitaminE = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminE)
+        let betaToco = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Tocopherol_Beta)
+        let gammaToco = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Tocopherol_Gamma)
+        let deltaToco = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Tocopherol_Delta)
+        let alphaTocotri = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Tocotrienol_Alpha)
+        let betaTocotri = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Tocotrienol_Beta)
+        let gammaTocotri = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Tocotrienol_Gamma)
+        let deltaTocotri = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Tocotrienol_Delta)
+
+        if let vitaminEAdded = vitaminEAdded {
+            NutrientRow(vitaminEAdded)
+        }
+        if let vitaminETocopherol = vitaminETocopherol {
+            NutrientRow(vitaminETocopherol)
+        }
+        if let vitaminELabel = vitaminELabel {
+            NutrientRow(vitaminELabel)
+        }
+        if let vitaminE = vitaminE {
+            NutrientRow(vitaminE)
+        }
+        if let betaToco = betaToco {
+            NutrientRow(betaToco)
+        }
+        if let gammaToco = gammaToco {
+            NutrientRow(gammaToco)
+        }
+        if let deltaToco = deltaToco {
+            NutrientRow(deltaToco)
+        }
+        if let alphaTocotri = alphaTocotri {
+            NutrientRow(alphaTocotri)
+        }
+        if let betaTocotri = betaTocotri {
+            NutrientRow(betaTocotri)
+        }
+        if let gammaTocotri = gammaTocotri {
+            NutrientRow(gammaTocotri)
+        }
+        if let deltaTocotri = deltaTocotri {
+            NutrientRow(deltaTocotri)
+        }
+    }
+    
+    @ViewBuilder private func VitaminK(_ nutrients: inout [Nutrient]) -> some View {
+        let vitaminKMena = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminK_Menaquinone_4)
+        let vitaminKDihydro = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminK_Dihydrophylloquinone)
+        let vitaminKPhyllo = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_VitaminK_Phylloquinone)
+
+        if let vitaminKMena = vitaminKMena {
+            NutrientRow(vitaminKMena)
+        }
+        if let vitaminKDihydro = vitaminKDihydro {
+            NutrientRow(vitaminKDihydro)
+        }
+        if let vitaminKPhyllo = vitaminKPhyllo {
+            NutrientRow(vitaminKPhyllo)
+        }
+    }
+    
+    @ViewBuilder private func Minerals(_ nutrients: inout [Nutrient]) -> some View {
+        let calcium = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca)
+        let chlorine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Chlorine_Cl)
+        let iron = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Iron_Fe)
+        let magnesium = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Magnesium_Mg)
+        let phosphorus = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Phosphorus_P)
+        let potassium = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Potassium_K)
+        let sulfur = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Sulfur_S)
+        let zinc = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Zinc_Zn)
+        let chromium = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Chromium_Cr)
+        let cobalt = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Cobalt_Co)
+        let copper = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Copper_Cu)
+        let fluoride = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Fluoride_F)
+        let iodine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Iodine_I)
+        let manganese = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Manganese_Mn)
+        let molybdenum = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Molybdenum_Mo)
+        let selenium = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Selenium_Se)
+        let boron = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Boron_B)
+        let nickel = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Nickel_Ni)
+
+        if let calcium = calcium {
+            NutrientRow(calcium)
+        }
+        if let chlorine = chlorine {
+            NutrientRow(chlorine)
+        }
+        if let iron = iron {
+            NutrientRow(iron)
+        }
+        if let magnesium = magnesium {
+            NutrientRow(magnesium)
+        }
+        if let phosphorus = phosphorus {
+            NutrientRow(phosphorus)
+        }
+        if let potassium = potassium {
+            NutrientRow(potassium)
+        }
+        if let sulfur = sulfur {
+            NutrientRow(sulfur)
+        }
+        if let zinc = zinc {
+            NutrientRow(zinc)
+        }
+        if let chromium = chromium {
+            NutrientRow(chromium)
+        }
+        if let cobalt = cobalt {
+            NutrientRow(cobalt)
+        }
+        if let copper = copper {
+            NutrientRow(copper)
+        }
+        if let fluoride = fluoride {
+            NutrientRow(fluoride)
+        }
+        if let iodine = iodine {
+            NutrientRow(iodine)
+        }
+        if let manganese = manganese {
+            NutrientRow(manganese)
+        }
+        if let molybdenum = molybdenum {
+            NutrientRow(molybdenum)
+        }
+        if let selenium = selenium {
+            NutrientRow(selenium)
+        }
+        if let boron = boron {
+            NutrientRow(boron)
+        }
+        if let nickel = nickel {
+            NutrientRow(nickel)
+        }
+    }
+    
+    @ViewBuilder private func Folate(_ nutrients: inout [Nutrient]) -> some View {
+        let folateDfe = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Folate_DFE)
+        let folate = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Folate_Total)
+        let folateFood = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Folate_Food)
+        let methylTetrahydrofolate = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_MethylTetrahydrofolate)
+        let folicAcid = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_FolicAcid)
+        let formylFolicAcid = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_FormylFolicAcid)
+        let formylTetraHydrofolicAcid = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_FormylTetrahyrdofolicAcid)
+
+        if let folateDfe = folateDfe {
+            NutrientRow(folateDfe)
+        }
+        if let folate = folate {
+            NutrientRow(folate)
+        }
+        if let folateFood = folateFood {
+            NutrientRow(folateFood)
+        }
+        if let methylTetrahydrofolate = methylTetrahydrofolate {
+            NutrientRow(methylTetrahydrofolate)
+        }
+        if let folicAcid = folicAcid {
+            NutrientRow(folicAcid)
+        }
+        if let formylFolicAcid = formylFolicAcid {
+            NutrientRow(formylFolicAcid)
+        }
+        if let formylTetraHydrofolicAcid = formylTetraHydrofolicAcid {
+            NutrientRow(formylTetraHydrofolicAcid)
+        }
+    }
+    
+    @ViewBuilder private func Choline(_ nutrients: inout [Nutrient]) -> some View {
+        let choline = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Choline_Total)
+        let cholineFree = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Choline_Free)
+        let cholineGlycero = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Choline_FromGlycerophosphocholine)
+        let cholinePhospho = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Choline_FromPhosphocholine)
+        let cholinePhosphotidyl = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Choline_FromPhosphotidylCholine)
+        let cholineSphing = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Choline_FromSphingomyelin)
+
+        if let choline = choline {
+            NutrientRow(choline)
+        }
+        if let cholineFree = cholineFree {
+            NutrientRow(cholineFree)
+        }
+        if let cholineGlycero = cholineGlycero {
+            NutrientRow(cholineGlycero)
+        }
+        if let cholinePhospho = cholinePhospho {
+            NutrientRow(cholinePhospho)
+        }
+        if let cholinePhosphotidyl = cholinePhosphotidyl {
+            NutrientRow(cholinePhosphotidyl)
+        }
+        if let cholineSphing = cholineSphing {
+            NutrientRow(cholineSphing)
+        }
+    }
+    
+    @ViewBuilder private func OtherVitamins(_ nutrients: inout [Nutrient]) -> some View {
+        let lycopene = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Lycopene)
+        let cisLycopene = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Cis_Lycopene)
+        let transLycopene = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Trans_Lycopene)
+        let luteinZeaxanthin = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Lutein_Zeaxanthin)
+        let lutein = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Lutein)
+        let zeaxanthin = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Zeaxanthin)
+        let cisLuteinZeaXanthin = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Cis_Lutein_Zeaxanthin)
+        let betaine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Betaine)
+
+        if let lycopene = lycopene {
+            NutrientRow(lycopene)
+        }
+        if let cisLycopene = cisLycopene {
+            NutrientRow(cisLycopene)
+        }
+        if let transLycopene = transLycopene {
+            NutrientRow(transLycopene)
+        }
+        if let luteinZeaxanthin = luteinZeaxanthin {
+            NutrientRow(luteinZeaxanthin)
+        }
+        if let lutein = lutein {
+            NutrientRow(lutein)
+        }
+        if let zeaxanthin = zeaxanthin {
+            NutrientRow(zeaxanthin)
+        }
+        if let cisLuteinZeaXanthin = cisLuteinZeaXanthin {
+            NutrientRow(cisLuteinZeaXanthin)
+        }
+        if let betaine = betaine {
+            NutrientRow(betaine)
+        }
+    }
+    
+    @ViewBuilder private func OtherVarious(_ nutrients: inout [Nutrient]) -> some View {
+        let caffeine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Caffeine)
+        let theobromine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Theobromine)
+        let egcg = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Epigallocatechin3Gallate)
+        let phytoene = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Phytoene)
+        let phytofluene = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Phytofluene)
+
+        if let caffeine = caffeine {
+            NutrientRow(caffeine)
+        }
+        if let theobromine = theobromine {
+            NutrientRow(theobromine)
+        }
+        if let egcg = egcg {
+            NutrientRow(egcg)
+        }
+        if let phytoene = phytoene {
+            NutrientRow(phytoene)
+        }
+        if let phytofluene = phytofluene {
+            NutrientRow(phytofluene)
+        }
+    }
+    
+    @ViewBuilder private func Phytosterols(_ nutrients: inout [Nutrient]) -> some View {
+        let phytosterols = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Phytosterols)
+        let phytosterolsOther = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_PhytosterolsOther)
+        let stigmasterol = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Stigmasterol)
+        let campesterol = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Campesterol)
+        let brassicasterol = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Brassicasterol)
+        let betaSitosterol = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Beta_Sitosterol)
+        let campestanol = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Campestanol)
+        let betaSitostanol = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Beta_Sitostanol)
+        let delta5Avenasterol = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Delta5Avenasterol)
+
+        if let phytosterols = phytosterols {
+            NutrientRow(phytosterols)
+        }
+        if let phytosterolsOther = phytosterolsOther {
+            NutrientRow(phytosterolsOther)
+        }
+        if let stigmasterol = stigmasterol {
+            NutrientRow(stigmasterol)
+        }
+        if let campesterol = campesterol {
+            NutrientRow(campesterol)
+        }
+        if let brassicasterol = brassicasterol {
+            NutrientRow(brassicasterol)
+        }
+        if let betaSitosterol = betaSitosterol {
+            NutrientRow(betaSitosterol)
+        }
+        if let campestanol = campestanol {
+            NutrientRow(campestanol)
+        }
+        if let betaSitostanol = betaSitostanol {
+            NutrientRow(betaSitostanol)
+        }
+        if let delta5Avenasterol = delta5Avenasterol {
+            NutrientRow(delta5Avenasterol)
+        }
+    }
+    
+    @ViewBuilder private func OtherAcids(_ nutrients: inout [Nutrient]) -> some View {
+        let aceticAcid = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_AceticAcid)
+        let citricAcid = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_CitricAcid)
+        let lacticAcid = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_LacticAcid)
+        let malicAcid = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_MalicAcid)
+
+        if let aceticAcid = aceticAcid {
+            NutrientRow(aceticAcid)
+        }
+        if let citricAcid = citricAcid {
+            NutrientRow(citricAcid)
+        }
+        if let lacticAcid = lacticAcid {
+            NutrientRow(lacticAcid)
+        }
+        if let malicAcid = malicAcid {
+            NutrientRow(malicAcid)
+        }
+    }
+    
+    @ViewBuilder private func AminoAcids(_ nutrients: inout [Nutrient]) -> some View {
+        let tryptophan = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Tryptophan)
+        let threonine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Threonine)
+        let isoleucine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Isoleucine)
+        let leucine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Leucine)
+        let lysine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Lysine)
+        let methionine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Methionine)
+        let cystine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Cystine)
+        let phenylalanine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Phenylalanine)
+        let tyrosine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Tyrosine)
+        let valine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Valine)
+        let arginine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Arginine)
+        let histidine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Histidine)
+        let alanine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Alanine)
+        let apsarticAcid = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_AsparticAcid)
+        let glutemicAcid = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_GlutamicAcid)
+        let glycine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Glycine)
+        let proline = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Proline)
+        let serine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Serine)
+        let hydroxyproline = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Hydroxyproline)
+        let cysteine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Cysteine)
+        let glutamine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Glutamine)
+        let taurine = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_Taurine)
+
+        if let tryptophan = tryptophan {
+            NutrientRow(tryptophan)
+        }
+        if let threonine = threonine {
+            NutrientRow(threonine)
+        }
+        if let isoleucine = isoleucine {
+            NutrientRow(isoleucine)
+        }
+        if let leucine = leucine {
+            NutrientRow(leucine)
+        }
+        if let lysine = lysine {
+            NutrientRow(lysine)
+        }
+        if let methionine = methionine {
+            NutrientRow(methionine)
+        }
+        if let cystine = cystine {
+            NutrientRow(cystine)
+        }
+        if let phenylalanine = phenylalanine {
+            NutrientRow(phenylalanine)
+        }
+        if let tyrosine = tyrosine {
+            NutrientRow(tyrosine)
+        }
+        if let valine = valine {
+            NutrientRow(valine)
+        }
+        if let arginine = arginine {
+            NutrientRow(arginine)
+        }
+        if let histidine = histidine {
+            NutrientRow(histidine)
+        }
+        if let alanine = alanine {
+            NutrientRow(alanine)
+        }
+        if let apsarticAcid = apsarticAcid {
+            NutrientRow(apsarticAcid)
+        }
+        if let glutemicAcid = glutemicAcid {
+            NutrientRow(glutemicAcid)
+        }
+        if let glycine = glycine {
+            NutrientRow(glycine)
+        }
+        if let proline = proline {
+            NutrientRow(proline)
+        }
+        if let serine = serine {
+            NutrientRow(serine)
+        }
+        if let hydroxyproline = hydroxyproline {
+            NutrientRow(hydroxyproline)
+        }
+        if let cysteine = cysteine {
+            NutrientRow(cysteine)
+        }
+        if let glutamine = glutamine {
+            NutrientRow(glutamine)
+        }
+        if let taurine = taurine {
+            NutrientRow(taurine)
+        }
+    }
+    
+    @ViewBuilder private func FattyAcids(_ nutrients: inout [Nutrient]) -> some View {
+        let ala = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_18_3_N_3_C_C_C_ALA)
+        let epa = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_20_5_N_3_EPA)
+        let dpa = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_22_5_N_3_DPA)
+        let dha = removeNutrient(&nutrients, FdcNutrientGroupMapper.NutrientNumber_22_6_N_3_DHA)
+
+        if let ala = ala {
+            NutrientRow(ala)
+        }
+        if let epa = epa {
+            NutrientRow(epa)
+        }
+        if let dpa = dpa {
+            NutrientRow(dpa)
+        }
+        if let dha = dha {
+            NutrientRow(dha)
+        }
+    }
+    
+    @ViewBuilder private func OtherNutrients(_ nutrients: inout [Nutrient]) -> some View {
+        let last = nutrients.last
+        
+        ForEach(nutrients) { nutrient in
+            NutrientRow(nutrient, showDivider: nutrient.fdcNumber != last?.fdcNumber)
+        }
+    }
+    
     @ViewBuilder private func NutrientRow(
         _ nutrient: Nutrient,
         indentLevel: Int = 0,
@@ -596,7 +1165,7 @@ struct FoodDetailsView: View {
                 }
            }
             .padding(.horizontal, 0.1)
-            .padding(.leading, CGFloat(indentLevel) * UIConsts.margin)
+            .padding(.leading, CGFloat(indentLevel) * 16)
             Rectangle()
                 .frame(width: UIConsts.outlineWidth, height: .infinity)
         }
