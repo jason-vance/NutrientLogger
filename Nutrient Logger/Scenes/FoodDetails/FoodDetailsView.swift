@@ -42,8 +42,19 @@ struct FoodDetailsView: View {
     
     @State private var prototypeFood: FoodItem?
     @State private var food: FoodItem?
+    
     @State private var portions: [Portion] = []
     @State private var selectedPortion: Portion?
+    @State private var portionAmountValue: Double = 1
+    @State private var portionAmountFormatter: NumberFormatter = {
+        var nf = NumberFormatter()
+        nf.numberStyle = .decimal
+        nf.groupingSeparator = ""
+        return nf
+    }()
+    
+    //TODO: MVP: Intelligently choose the initial meal time
+    @State private var selectedMealTime: MealTime = .breakfast
     
     @State private var showDeleteConfirmation: Bool = false
     
@@ -115,12 +126,21 @@ struct FoodDetailsView: View {
         }
     }
     
-    private func onSelected(portion: Portion) {
-        selectedPortion = portion
-        do {
-            food = try prototypeFood?.applyingPortion(portion)
-        } catch {
-            print("Failed to apply portion. Error: \(error.localizedDescription)")
+    private func applyPortion() {
+        Task {
+            if let portion = selectedPortion {
+                selectedPortion = .init(
+                    name: portion.name,
+                    amount: portionAmountValue,
+                    gramWeight: portion.gramWeight
+                )
+                
+                do {
+                    food = try prototypeFood?.applyingPortion(selectedPortion!)
+                } catch {
+                    print("Failed to apply portion. Error: \(error.localizedDescription)")
+                }
+            }
         }
     }
     
@@ -173,10 +193,15 @@ struct FoodDetailsView: View {
         var nutrients = displayNutrients
         
         List {
+            FoodName()
+            PortionField()
+            PortionAmountField()
+            MealTimeField()
+            
             NutritionFactsCap(isTop: true)
             
-            NutritionFactsFoodName()
-            NutritionFactsLine(UIConsts.lineWidth_Thin)
+//            NutritionFactsFoodName()
+//            NutritionFactsLine(UIConsts.lineWidth_Thin)
             NutritionFactsPortion()
             NutritionFactsLine(UIConsts.lineWidth_ExtraThick)
             
@@ -217,6 +242,7 @@ struct FoodDetailsView: View {
         .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
         .onAppear { fetchFoodAndPortions() }
+        .onChange(of: portionAmountValue) { applyPortion() }
         .confirmationDialog(
             "Delete Food?\n\nAre you sure you want to delete \"\(food?.name ?? "this food")\"?",
             isPresented: $showDeleteConfirmation,
@@ -270,10 +296,76 @@ struct FoodDetailsView: View {
         }
     }
     
+    @ViewBuilder private func FoodName() -> some View {
+        HStack {
+            Text(food?.name ?? "Food Name")
+                .font(.title.bold())
+                .listRowDefaultModifiers()
+            Spacer()
+        }
+    }
+    
+    @ViewBuilder private func PortionField() -> some View {
+        HStack {
+            Text("Portion")
+            Spacer()
+            SwiftUI.Menu {
+                ForEach(portions, id: \.self) { portion in
+                    Button(portion.name) {
+                        selectedPortion = portion
+                        applyPortion()
+                    }
+                }
+            } label: {
+                Text(selectedPortion?.name ?? "Select Portion")
+                    .bold()
+            }
+        }
+        .listRowDefaultModifiers()
+    }
+
+    @ViewBuilder private func PortionAmountField() -> some View {
+        HStack {
+            Text("Portion Amount")
+            Spacer()
+            TextField(
+                "Portion Amount",
+                value: .init(
+                    get: { portionAmountValue },
+                    set: { portionAmountValue = $0 <= 0 ? 1 : $0 }
+                ),
+                formatter: portionAmountFormatter
+            )
+            .keyboardType(.decimalPad)
+            .multilineTextAlignment(.trailing)
+            .bold()
+            .foregroundStyle(Color.accentColor)
+        }
+        .listRowDefaultModifiers()
+    }
+    
+    @ViewBuilder private func MealTimeField() -> some View {
+        HStack {
+            Text("Meal Time")
+            Spacer()
+            SwiftUI.Menu {
+                ForEach(MealTime.validFields, id: \.self) { mealTime in
+                    Button(mealTime.rawValue) {
+                        selectedMealTime = mealTime
+                    }
+                }
+            } label: {
+                Text(selectedMealTime.rawValue)
+                    .bold()
+            }
+        }
+        .listRowDefaultModifiers()
+    }
+    
     @ViewBuilder private func NutritionFactsCap(isTop: Bool) -> some View {
         Rectangle()
             .fill(Color.black)
-            .frame(width: .infinity, height: 2)
+            .frame(height: 2)
             .padding(.top, (isTop) ? UIConsts.outlineMargin : 0)
             .padding(.bottom, (isTop) ? 0 : UIConsts.outlineMargin)
             .nutritionFactsRow()
@@ -295,13 +387,14 @@ struct FoodDetailsView: View {
     @ViewBuilder private func NutritionFactsLine(_ width: CGFloat) -> some View {
         HStack {
             Rectangle()
-                .frame(width: UIConsts.outlineWidth, height: .infinity)
+                .frame(width: UIConsts.outlineWidth)
             Spacer()
             Rectangle()
-                .frame(width: .infinity, height: width)
+                .frame(height: width)
+                .padding(.vertical, 2)
             Spacer()
             Rectangle()
-                .frame(width: UIConsts.outlineWidth, height: .infinity)
+                .frame(width: UIConsts.outlineWidth)
         }
         .nutritionFactsRow()
     }
@@ -309,7 +402,7 @@ struct FoodDetailsView: View {
     @ViewBuilder private func NutritionFactsPortion() -> some View {
         HStack {
             Rectangle()
-                .frame(width: UIConsts.outlineWidth, height: .infinity)
+                .frame(width: UIConsts.outlineWidth)
             VStack {
                 HStack {
                     Text("Portion size")
@@ -320,33 +413,15 @@ struct FoodDetailsView: View {
                 }
                 HStack {
                     Spacer()
-                    PortionsMenu()
+                    Text(portionValue)
+                        .font(.system(size: UIConsts.portionFontSize).bold())
                 }
             }
             .padding(.leading, 0.1)
             Rectangle()
-                .frame(width: UIConsts.outlineWidth, height: .infinity)
+                .frame(width: UIConsts.outlineWidth)
         }
         .nutritionFactsRow()
-    }
-    
-    //TODO: Make sure this changes nutrients and everything else correctly
-    @ViewBuilder private func PortionsMenu() -> some View {
-        if mode == .loggedFood {
-            Text(portionValue)
-                .font(.system(size: UIConsts.portionFontSize).bold())
-        } else {
-            SwiftUI.Menu {
-                ForEach(portions, id: \.self) { portion in
-                    Button(portion.name) {
-                        onSelected(portion: portion)
-                    }
-                }
-            } label: {
-                Text(portionValue)
-                    .font(.system(size: UIConsts.portionFontSize).bold())
-            }
-        }
     }
     
     @ViewBuilder private func Calories(_ nutrients: inout [Nutrient]) -> some View {
@@ -354,7 +429,7 @@ struct FoodDetailsView: View {
         
         HStack {
             Rectangle()
-                .frame(width: UIConsts.outlineWidth, height: .infinity)
+                .frame(width: UIConsts.outlineWidth)
             VStack {
                 HStack {
                     Text("Amount per portion")
@@ -371,7 +446,7 @@ struct FoodDetailsView: View {
             }
             .padding(.horizontal, 0.1)
             Rectangle()
-                .frame(width: UIConsts.outlineWidth, height: .infinity)
+                .frame(width: UIConsts.outlineWidth)
         }
         .nutritionFactsRow()
         
@@ -1141,7 +1216,7 @@ struct FoodDetailsView: View {
 
         HStack {
             Rectangle()
-                .frame(width: UIConsts.outlineWidth, height: .infinity)
+                .frame(width: UIConsts.outlineWidth)
             HStack {
                 Text(nutrient.name)
                     .font(.system(size: UIConsts.nutrientFontSize))
@@ -1163,7 +1238,7 @@ struct FoodDetailsView: View {
             .padding(.horizontal, 0.1)
             .padding(.leading, CGFloat(indentLevel) * 16)
             Rectangle()
-                .frame(width: UIConsts.outlineWidth, height: .infinity)
+                .frame(width: UIConsts.outlineWidth)
         }
         .nutritionFactsRow()
         

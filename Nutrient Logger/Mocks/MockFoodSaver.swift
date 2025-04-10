@@ -8,6 +8,7 @@
 import Foundation
 
 class MockFoodSaver: FoodSaver {
+    
     public var foodSaverType: FoodSaverType
     public var needsPortion: Bool
     public var needsDateTime: Bool
@@ -16,7 +17,11 @@ class MockFoodSaver: FoodSaver {
     public var savedPortion: Portion?
     public var errorToThrow: Error?
     
-    public init(foodSaverType: FoodSaverType, needsPortion: Bool, needsDateTime: Bool) {
+    public init(
+        foodSaverType: FoodSaverType = .consumedFoodSaver,
+        needsPortion: Bool = false,
+        needsDateTime: Bool = false
+    ) {
         self.foodSaverType = foodSaverType
         self.needsPortion = needsPortion
         self.needsDateTime = needsDateTime

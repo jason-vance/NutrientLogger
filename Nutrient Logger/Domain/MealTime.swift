@@ -34,6 +34,10 @@ enum MealTime: String {
             return 7
         }
     }
+    
+    static let validFields: [MealTime] = [
+        .breakfast, .morningSnack, .lunch, .afternoonSnack, .dinner, .eveningSnack
+    ]
 }
 
 extension MealTime: Codable {}
