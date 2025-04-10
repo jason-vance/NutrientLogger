@@ -34,6 +34,11 @@ struct ContentView: View {
                     DashboardView()
                 }
             }
+            Tab("Search", systemImage: "magnifyingglass") {
+                NavigationStack {
+                    FoodSearchView()
+                }
+            }
         }
     }
 

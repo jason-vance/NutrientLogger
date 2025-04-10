@@ -10,14 +10,14 @@ import Foundation
 class MockRemoteDatabase: RemoteDatabase {
     public var errorToThrow: Error?
     
-    public var result_for_search = SearchResult([])
+    public var result_for_search: [FdcSearchableFood] = []
     public var foods_for_getFood: [String:FoodItem] = [:]
     public var portions_for_getPortions = [Portion]()
     public var nutrients_for_getAllNutrients = [Nutrient]()
     public var nutrients_for_getAllNutrientsLinkedToFoods = [Nutrient]()
     public var foods_for_getFoodsContainingNutrient = [NutrientFoodPair]()
 
-    public func search(_ query: String) throws -> SearchResult {
+    public func search(_ query: String) throws -> [FdcSearchableFood] {
         if let error = errorToThrow {
             throw error
         }

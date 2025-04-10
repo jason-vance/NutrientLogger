@@ -81,9 +81,7 @@ struct FoodDetailsView: View {
                 portions = try remoteDatabase.getPortions(food)
                 
                 if let portion = selectedPortion {
-                    print("applying portion \(portion.name)")
                     food = try food.applyingPortion(portion)
-                    print("applied portion \(food.portionName)")
                     self.food = food
                 }
             } else {
@@ -218,6 +216,7 @@ struct FoodDetailsView: View {
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
         .listDefaultModifiers()
         .environment(\.defaultMinListRowHeight, 1)
+        .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
         .onChange(of: selectedPortion ?? Portion.defaultPortion) { fetchFoodAndPortions() }
         .onAppear { fetchFoodAndPortions() }

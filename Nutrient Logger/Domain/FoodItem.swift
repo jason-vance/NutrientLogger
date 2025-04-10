@@ -78,7 +78,6 @@ struct FoodItem: DatabaseEntity, Codable {
 
     public func applyingPortion(_ portion: Portion) throws -> FoodItem {
         if (self.portion != nil) {
-            print("cannotApplyMultiplePortions")
             throw FoodItemError.cannotApplyMultiplePortions
         }
 

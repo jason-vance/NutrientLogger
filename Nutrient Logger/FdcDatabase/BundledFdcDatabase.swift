@@ -162,7 +162,7 @@ class BundledFdcDatabase: RemoteDatabase {
         )
     }
 
-    public func search(_ query: String) throws -> SearchResult {
+    public func search(_ query: String) throws -> [FdcSearchableFood] {
         let ftsQuery = FtsQueryGenerator.generateFrom(query)
 
         var foods = [FdcSearchableFood]()
@@ -170,9 +170,7 @@ class BundledFdcDatabase: RemoteDatabase {
         foods.append(contentsOf: try surveyData.search(ftsQuery))
         foods = foods.sorted { $0.rank < $1.rank }
 
-        return SearchResult(foods.map {
-            SearchResultItem(obj: $0.fdcId, name: $0.description, category: .remoteDatabaseFoods)
-        })
+        return foods
     }
 
     public func getAllNutrientsLinkedToFoods() throws -> [Nutrient] {

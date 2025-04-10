@@ -20,7 +20,7 @@ public class MockUserMealsDatabase: UserMealsDatabase {
     
     public var errorToThrow: Error?
     
-    public func search(_ query: String) throws -> SearchResult { SearchResult([]) }
+    public func search(_ query: String) throws -> [UserMealsSearchableMeal] { [] }
 
     public func getMenu() throws -> Menu {
         if let error = errorToThrow {

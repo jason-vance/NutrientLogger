@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol UserMealsDatabase {
-    func search(_ query: String) throws -> SearchResult
+    func search(_ query: String) throws -> [UserMealsSearchableMeal]
     func getMenu() throws -> Menu
     func saveMeal(_ meal: Meal) throws
     func getMeal(_ id: Int) throws -> Meal

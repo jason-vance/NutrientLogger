@@ -15,7 +15,7 @@ class AppSetup {
         //TODO: MVP: Uncomment when firebase is added
 //        FirebaseApp.configure()
         
-//        setupAnalytics()
+        setupAnalytics()
 //        setupAdProvider()
         
         registerNutrientRdiLibrary()
@@ -24,10 +24,11 @@ class AppSetup {
         await registerUserMealsDatabase()
         await registerRemoteDatabase()
         
-        doMocksForScreenshots()
+//        doMocksForScreenshots()
     }
     
     fileprivate static func doMocksForScreenshots() {
+        swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { MockNutrientLoggerAnalytics() }
         swinjectContainer.autoregister(UserService.self) { UserServiceForScreenshots() }
         swinjectContainer.autoregister(AdProvider.self) { MockAdProvider() }
         swinjectContainer.autoregister(LocalDatabase.self) { LocalDatabaseForScreenshots() }
@@ -87,14 +88,14 @@ class AppSetup {
 //        IocContainer.shared.register(type: AdProvider.self, component: GoogleAdProvider(adUnitId: adUnitId))
 //    }
     
-    //TODO: MVP: Uncomment when firebase is added
-//    fileprivate static func setupAnalytics() {
+    fileprivate static func setupAnalytics() {
 //        let analyticsEngine = FirebaseAnalytics()
-//        let analytics = DefaultAnalytics(analyticsEngine: analyticsEngine)
-//        
-//        IocContainer.shared.register(type: NutrientLoggerAnalytics.self, component: analytics)
-//        IocContainer.shared.register(type: UserProfileAnalytics.self, component: analytics)
-//        IocContainer.shared.register(type: UserMealsAnalytics.self, component: analytics)
-//        IocContainer.shared.register(type: UserMealAnalytics.self, component: analytics)
-//    }
+        //TODO: MVP: Use FirebaseAnalytics engine when it is added
+        let analytics = DefaultAnalytics(analyticsEngine: MockAnalyticsEngine())
+        
+        swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { analytics }
+        swinjectContainer.autoregister(UserProfileAnalytics.self) { analytics }
+        swinjectContainer.autoregister(UserMealsAnalytics.self) { analytics }
+        swinjectContainer.autoregister(UserMealAnalytics.self) { analytics }
+    }
 }

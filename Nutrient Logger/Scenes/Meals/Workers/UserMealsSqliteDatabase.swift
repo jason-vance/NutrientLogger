@@ -126,10 +126,9 @@ public class UserMealsSqliteDatabase: UserMealsDatabase {
         })
     }
     
-    public func search(_ query: String) throws -> SearchResult {
-        if query.isEmpty {
-            return SearchResult([])
-        }
+    public func search(_ query: String) throws -> [UserMealsSearchableMeal] {
+        if query.isEmpty { return [] }
+        
         let ftsQuery = FtsQueryGenerator.generateFrom(query)
 
         let search = Tables.searchableMeal
@@ -144,14 +143,11 @@ public class UserMealsSqliteDatabase: UserMealsDatabase {
             .order(Columns.rank)
             
         let db = try Connection(dbPath)
-        let results = try db.prepare(search)
+        return try db.prepare(search)
             .map { SearchableMealWrapper($0).searchableMeal }
             .filter { !isMealDeleted(db, $0.mealId) }
             .filter { !isFoodDeleted(db, $0.foodId) }
             .map { applyCurrentName(db, $0) }
-            .map { SearchResultItem(obj: $0.mealId, name: $0.mealName, category: .userMeals) }
-
-        return SearchResult(results)
     }
     
     private func applyCurrentName(_ db: Connection, _ meal: UserMealsSearchableMeal) -> UserMealsSearchableMeal {

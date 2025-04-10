@@ -9,10 +9,16 @@ import Foundation
 
 public class UserMealsDatabaseForScreenshots: UserMealsDatabase {
     
-    public func search(_ query: String) throws -> SearchResult {
-        var meals = [SearchResultItem]()
-        meals.append(SearchResultItem(obj: 4, name: "Usual Weekday Breakfast", category: .userMeals))
-        return SearchResult(meals)
+    public func search(_ query: String) throws -> [UserMealsSearchableMeal] {
+        [
+            .init(
+                mealId: 4,
+                foodId: 4,
+                mealName: "Usual Weekday Breakfast",
+                foodName: "Usual Weekday Breakfast",
+                rank: 0
+            )
+        ]
     }
     
     public func getMenu() throws -> Menu {

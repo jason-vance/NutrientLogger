@@ -9,29 +9,29 @@ import Foundation
 
 class RemoteDatabaseForScreenshots: RemoteDatabase {
     
-    public func search(_ query: String) throws -> SearchResult {
-        var foods = [SearchResultItem]()
-        foods.append(SearchResultItem(obj: -1, name: "Pork sausage", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Pork and beef sausage", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Polish sausage, pork", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Sausage, smoked link sausage, pork", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Turkey or chicken and pork sausage", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Sausage, smoked link sausage, pork and beef", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Pork sausage, reduced sodium", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Pork sausage rice links", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Pork sausage, reduced fat", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Braunschweiger (a liver sausage), pork", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Liver sausage, liverwurst, pork", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Luncheon sausage, pork and beef", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Sausage, Berliner, pork, beef", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Pork sausage, link/patty, unprepared", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Pork sausage, reduced sodium, cooked", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Sausage, Italian, pork, mild, raw", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Sausage, Polish, pork and beef, smoked", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Sausage, pork and beef, fresh, cooked", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Sausage, pork and turkey, pre-cooked", category: .remoteDatabaseFoods))
-        foods.append(SearchResultItem(obj: -1, name: "Sausage, chicken, beef, pork, skinless, smoked", category: .remoteDatabaseFoods))
-        return SearchResult(foods)
+    public func search(_ query: String) throws -> [FdcSearchableFood] {
+        [
+            .init(fdcId: 1, description: "Pork sausage", rank: 0),
+            .init(fdcId: 2, description: "Pork and beef sausage", rank: 0),
+            .init(fdcId: 3, description: "Polish sausage, pork", rank: 0),
+            .init(fdcId: 4, description: "Sausage, smoked link sausage, pork", rank: 0),
+            .init(fdcId: 5, description: "Turkey or chicken and pork sausage", rank: 0),
+            .init(fdcId: 6, description: "Sausage, smoked link sausage, pork and beef", rank: 0),
+            .init(fdcId: 7, description: "Pork sausage, reduced sodium", rank: 0),
+            .init(fdcId: 8, description: "Pork sausage rice links", rank: 0),
+            .init(fdcId: 9, description: "Pork sausage, reduced fat", rank: 0),
+            .init(fdcId: 10, description: "Braunschweiger (a liver sausage), pork", rank: 0),
+            .init(fdcId: 11, description: "Liver sausage, liverwurst, pork", rank: 0),
+            .init(fdcId: 21, description: "Luncheon sausage, pork and beef", rank: 0),
+            .init(fdcId: 31, description: "Sausage, Berliner, pork, beef", rank: 0),
+            .init(fdcId: 41, description: "Pork sausage, link/patty, unprepared", rank: 0),
+            .init(fdcId: 51, description: "Pork sausage, reduced sodium, cooked", rank: 0),
+            .init(fdcId: 61, description: "Sausage, Italian, pork, mild, raw", rank: 0),
+            .init(fdcId: 71, description: "Sausage, Polish, pork and beef, smoked", rank: 0),
+            .init(fdcId: 81, description: "Sausage, pork and beef, fresh, cooked", rank: 0),
+            .init(fdcId: 91, description: "Sausage, pork and turkey, pre-cooked", rank: 0),
+            .init(fdcId: 100, description: "Sausage, chicken, beef, pork, skinless, smoked", rank: 0),
+        ]
     }
     
     public func getFood(_ foodId: String) throws -> FoodItem? {
