@@ -6,14 +6,29 @@
 //
 
 import SwiftUI
+import SwiftData
 import SwinjectAutoregistration
 
 //TODO: Add suggestions (recent searches, recently logged, etc)
-//TODO: MVP: Save/load recent searches
 //TODO: MVP: Make sure recently logged foods are getting fetched
 //TODO: MVP: Make sure ContentUnavailableView is shown at appopriate times
 struct FoodSearchView: View {
     
+    @Environment(\.modelContext) private var modelContext
+    
+    @Model
+    class RecentSearch {
+        var query: String
+        var date: Date
+        
+        init(query: String, date: Date) {
+            self.query = query
+            self.date = date
+        }
+    }
+    
+    @Query private var recentSearches: [RecentSearch]
+
     enum SearchResult: Identifiable, Equatable {
         case recentSearch(String)
         case recentlyLoggedFood(FoodItem)
@@ -67,14 +82,13 @@ struct FoodSearchView: View {
         }
     }
     
-    struct SearchResultsSection: Identifiable {
-        var id: UUID
+    struct SearchResultsSection: Identifiable, Equatable {
+        var id: String { name }
         let name: String
         let symbol: String
         let results: [SearchResult]
         
         init(name: String, symbol: String, results: [SearchResult]) {
-            self.id = UUID()
             self.name = name
             self.symbol = symbol
             self.results = results
@@ -103,6 +117,30 @@ struct FoodSearchView: View {
         ]
     }
     
+    private func fetchInitialSuggestions() {
+        if searchResults.isEmpty {
+            searchResults.append(contentsOf: fetchRecentSearches())
+            searchResults.append(contentsOf: fetchRecentlyLoggedFoods())
+        }
+    }
+    
+    private func fetchRecentSearches() -> [SearchResult] {
+        recentSearches
+            .sorted { $0.date > $1.date }
+            .prefix(5)
+            .map { SearchResult.recentSearch($0.query) }
+    }
+    
+    private func fetchRecentlyLoggedFoods() -> [SearchResult] {
+        do {
+            return try localDatabase.getRecentlyLoggedFoods(30)
+                .map(SearchResult.recentlyLoggedFood)
+        } catch {
+            print("Failed to fetch recently logged foods: \(error.localizedDescription)")
+        }
+        return []
+    }
+    
     private func doSearch() {
         guard !searchText.isEmpty else { return }
 
@@ -121,6 +159,15 @@ struct FoodSearchView: View {
                     results.append(contentsOf: result)
                 }
                 return results
+            }
+            
+            if !searchResults.isEmpty {
+                if let previous = recentSearches.first(where: { $0.query.lowercased() == searchText.lowercased() }) {
+                    previous.query = searchText
+                    previous.date = .now
+                } else {
+                    modelContext.insert(RecentSearch(query: searchText, date: .now))
+                }
             }
             
             isLoading = false
@@ -195,16 +242,6 @@ struct FoodSearchView: View {
         }.value
     }
     
-    private func fetchRecentlyLoggedFoods() -> [SearchResult] {
-        do {
-            let foods = try localDatabase.getRecentlyLoggedFoods(50)
-            return foods.map { SearchResult.recentlyLoggedFood($0) }
-        } catch {
-            print("Error loading recent foods: \(error.localizedDescription)")
-        }
-        return []
-    }
-    
     var body: some View {
         List {
             if searchResults.isEmpty && !isSearching && !isLoading {
@@ -240,6 +277,7 @@ struct FoodSearchView: View {
             prompt: Text("Foods, Meals, Nutrients...")
         )
         .onSubmit(of: .search) { doSearch() }
+        .onAppear { fetchInitialSuggestions() }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
         .overlay {
