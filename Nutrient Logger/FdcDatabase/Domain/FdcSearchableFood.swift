@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct FdcSearchableFood {
+public struct FdcSearchableFood: Equatable {
     public let fdcId: Int
     public let description: String
     public let rank: Double

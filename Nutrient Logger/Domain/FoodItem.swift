@@ -108,7 +108,7 @@ struct FoodItem: DatabaseEntity, Codable {
 
 extension FoodItem: Equatable {
     public static func == (lhs: FoodItem, rhs: FoodItem) -> Bool {
-        return lhs.id == rhs.id
+        return lhs.id == rhs.id && lhs.fdcId == rhs.fdcId
     }
 }
 

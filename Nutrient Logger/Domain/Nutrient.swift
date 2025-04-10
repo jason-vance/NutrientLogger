@@ -78,3 +78,9 @@ class Nutrient: DatabaseEntity, Codable, Identifiable {
         return nutrients.sorted(by: byLetterVsNumber, byName)
     }
 }
+
+extension Nutrient: Equatable {
+    public static func == (lhs: Nutrient, rhs: Nutrient) -> Bool {
+        return lhs.id == rhs.id && lhs.fdcId == rhs.fdcId
+    }
+}

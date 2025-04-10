@@ -14,7 +14,7 @@ import SwinjectAutoregistration
 //TODO: MVP: Make sure ContentUnavailableView is shown at appopriate times
 struct FoodSearchView: View {
     
-    enum SearchResult: Identifiable {
+    enum SearchResult: Identifiable, Equatable {
         case recentSearch(String)
         case recentlyLoggedFood(FoodItem)
         case fdcFood(FdcSearchableFood)
@@ -89,6 +89,7 @@ struct FoodSearchView: View {
     @Environment(\.isSearching) private var isSearching
 
     @State private var searchText: String = ""
+    @State private var isLoading: Bool = false
     
     @State private var searchResults: [SearchResult] = []
     
@@ -107,6 +108,8 @@ struct FoodSearchView: View {
 
         analytics.foodSearched(searchText)
         
+        searchResults = []
+        isLoading = true
         Task {
             searchResults = await withTaskGroup(of: Array<SearchResult>.self) { group in
                 group.addTask { await self.searchForRemoteFoods(searchText) }
@@ -119,6 +122,8 @@ struct FoodSearchView: View {
                 }
                 return results
             }
+            
+            isLoading = false
         }
         
         Task {
@@ -202,7 +207,7 @@ struct FoodSearchView: View {
     
     var body: some View {
         List {
-            if searchResults.isEmpty && !isSearching {
+            if searchResults.isEmpty && !isSearching && !isLoading {
                 ContentUnavailableView(
                     "No Results",
                     systemImage: "square.dashed",
@@ -228,6 +233,8 @@ struct FoodSearchView: View {
             }
         }
         .listDefaultModifiers()
+        .animation(.snappy, value: searchText)
+        .animation(.snappy, value: searchResults)
         .searchable(
             text: $searchText,
             prompt: Text("Foods, Meals, Nutrients...")
@@ -235,6 +242,12 @@ struct FoodSearchView: View {
         .onSubmit(of: .search) { doSearch() }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
+        .overlay {
+            if isLoading {
+                ProgressView()
+                    .progressViewStyle(.circular)
+            }
+        }
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {

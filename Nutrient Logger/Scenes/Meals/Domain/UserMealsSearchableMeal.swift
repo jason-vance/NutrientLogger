@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct UserMealsSearchableMeal {
+public struct UserMealsSearchableMeal: Equatable {
     public var mealId: Int
     public var foodId: Int
     public var mealName: String
