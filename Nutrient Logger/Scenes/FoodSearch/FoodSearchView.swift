@@ -9,9 +9,7 @@ import SwiftUI
 import SwiftData
 import SwinjectAutoregistration
 
-//TODO: Add suggestions (recent searches, recently logged, etc)
 //TODO: MVP: Make sure recently logged foods are getting fetched
-//TODO: MVP: Make sure ContentUnavailableView is shown at appopriate times
 struct FoodSearchView: View {
     
     @Environment(\.modelContext) private var modelContext
@@ -103,6 +101,7 @@ struct FoodSearchView: View {
     @Environment(\.isSearching) private var isSearching
 
     @State private var searchText: String = ""
+    @State private var hasSearched: Bool = false
     @State private var isLoading: Bool = false
     
     @State private var searchResults: [SearchResult] = []
@@ -146,6 +145,7 @@ struct FoodSearchView: View {
 
         analytics.foodSearched(searchText)
         
+        hasSearched = true
         searchResults = []
         isLoading = true
         Task {
@@ -244,9 +244,9 @@ struct FoodSearchView: View {
     
     var body: some View {
         List {
-            if searchResults.isEmpty && !isSearching && !isLoading {
+            if searchResults.isEmpty && hasSearched && !isLoading {
                 ContentUnavailableView(
-                    "No Results",
+                    "\"\(searchText)\"",
                     systemImage: "square.dashed",
                     description: Text("Nothing was found. Try searching for a different term.")
                 )
@@ -276,6 +276,7 @@ struct FoodSearchView: View {
             text: $searchText,
             prompt: Text("Foods, Meals, Nutrients...")
         )
+        .onChange(of: searchText) { hasSearched = false }
         .onSubmit(of: .search) { doSearch() }
         .onAppear { fetchInitialSuggestions() }
         .navigationBarTitleDisplayMode(.inline)
