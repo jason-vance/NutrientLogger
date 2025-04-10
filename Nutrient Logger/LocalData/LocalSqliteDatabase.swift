@@ -321,7 +321,7 @@ fileprivate class NutrientWrapper: DatabaseEntityWrapper<Nutrient> {
     }
     
     init(_ row: Row) {
-        let nutrient = Nutrient(
+        var nutrient = Nutrient(
             fdcId: row[Columns.fdcId],
             fdcNumber: row[Columns.fdcNumber],
             name: row[Columns.name],
@@ -346,7 +346,7 @@ fileprivate class NutrientWrapper: DatabaseEntityWrapper<Nutrient> {
     
     //TODO: MVP: Make sure this still works
     static func fromFull(_ row: Row) -> Nutrient {
-        let nutrient = Nutrient(
+        var nutrient = Nutrient(
             fdcId: try! row.get(Columns.fdcId),
             fdcNumber: try! row.get(Columns.fdcNumber),
             name: try! row.get(Columns.name),

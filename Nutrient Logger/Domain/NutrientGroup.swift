@@ -7,7 +7,7 @@
 
 import Foundation
 
-class NutrientGroup: Codable, Identifiable {
+struct NutrientGroup: Codable, Identifiable, Equatable {
     var id: String { fdcNumber }
     public var fdcNumber: String
     public var name: String

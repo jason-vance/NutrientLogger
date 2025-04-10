@@ -23,19 +23,25 @@ struct FoodItem: DatabaseEntity, Codable {
     public var gramWeight: Double = 0
     public var dateLogged: SimpleDate? {
         didSet {
-            nutrientGroups.forEach { group in
-                group.nutrients.forEach { nutrient in
+            nutrientGroups = nutrientGroups.map { group in
+                let nutrients = group.nutrients.map { nutrient in
+                    var nutrient = nutrient
                     nutrient.dateLogged = dateLogged
+                    return nutrient
                 }
+                return .init(fdcNumber: group.fdcNumber, name: group.name, nutrients: nutrients)
             }
         }
     }
     public var mealTime: MealTime? {
         didSet {
-            nutrientGroups.forEach { group in
-                group.nutrients.forEach { nutrient in
+            nutrientGroups = nutrientGroups.map { group in
+                let nutrients = group.nutrients.map { nutrient in
+                    var nutrient = nutrient
                     nutrient.mealTime = mealTime
+                    return nutrient
                 }
+                return .init(fdcNumber: group.fdcNumber, name: group.name, nutrients: nutrients)
             }
         }
     }
@@ -96,21 +102,17 @@ struct FoodItem: DatabaseEntity, Codable {
         var rvGroups = [NutrientGroup]()
         
         for group in nutrientGroups {
-            group.nutrients = group.nutrients.map { nutrient in
+            let nutrients = group.nutrients.map { nutrient in
                 nutrient.withAmount(nutrient.amount * multiplier)
             }
-            rvGroups.append(group)
+            rvGroups.append(.init(fdcNumber: group.fdcNumber, name: group.name, nutrients: nutrients))
         }
         
         return rvGroups
     }
 }
 
-extension FoodItem: Equatable {
-    public static func == (lhs: FoodItem, rhs: FoodItem) -> Bool {
-        return lhs.id == rhs.id && lhs.fdcId == rhs.fdcId
-    }
-}
+extension FoodItem: Equatable { }
 
 extension FoodItem {
     static let dashboardSample: FoodItem = {

@@ -70,7 +70,7 @@ class BundledFdcDatabase: RemoteDatabase {
         let nutrientLinks = try getNutrientLinks(food.fdcId)
         let nutrients = try supportingData.getNutrients(nutrientLinks)
 
-        let group = FdcNutrientGroupMapper.makeGroupNutrient(FdcNutrientGroupMapper.GroupNumber_Other)
+        var group = FdcNutrientGroupMapper.makeGroupNutrient(FdcNutrientGroupMapper.GroupNumber_Other)
         group.nutrients = nutrientsFrom(nutrients)
 
         var groups = [NutrientGroup]()

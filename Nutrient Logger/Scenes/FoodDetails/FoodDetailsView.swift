@@ -40,6 +40,7 @@ struct FoodDetailsView: View {
     
     @Environment(\.presentationMode) var presentationMode
     
+    @State private var prototypeFood: FoodItem?
     @State private var food: FoodItem?
     @State private var portions: [Portion] = []
     @State private var selectedPortion: Portion?
@@ -66,33 +67,25 @@ struct FoodDetailsView: View {
     private func fetchLoggedFoodAndPortions() {
         do {
             food = try localDatabase.getFood(foodId)
-            portions = []
         } catch {
-            food = nil
-            portions = []
             print("Failed to fetch logged food with id \(foodId): \(error.localizedDescription)")
         }
     }
     
     private func fetchRemoteFoodAndPortions() {
         do {
-            food = try remoteDatabase.getFood(String(foodId))
-            if var food = food {
+            prototypeFood = try remoteDatabase.getFood(String(foodId))
+            if let food = prototypeFood {
                 portions = try remoteDatabase.getPortions(food)
+                selectedPortion = portions.first
                 
                 if let portion = selectedPortion {
-                    food = try food.applyingPortion(portion)
-                    self.food = food
+                    self.food = try food.applyingPortion(portion)
                 }
             } else {
-                portions = []
-                selectedPortion = nil
                 print("Failed to find remote food with id \(foodId)")
             }
         } catch {
-            food = nil
-            portions = []
-            selectedPortion = nil
             print("Failed to fetch remote food with id \(foodId): \(error.localizedDescription)")
         }
     }
@@ -122,10 +115,15 @@ struct FoodDetailsView: View {
         }
     }
     
-    private func apply(portion: Portion) {
-        food = try? food?.applyingPortion(portion)
+    private func onSelected(portion: Portion) {
+        selectedPortion = portion
+        do {
+            food = try prototypeFood?.applyingPortion(portion)
+        } catch {
+            print("Failed to apply portion. Error: \(error.localizedDescription)")
+        }
     }
-
+    
     private var isLoggedFood: Bool {
         mode == .loggedFood
     }
@@ -218,7 +216,6 @@ struct FoodDetailsView: View {
         .environment(\.defaultMinListRowHeight, 1)
         .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
-        .onChange(of: selectedPortion ?? Portion.defaultPortion) { fetchFoodAndPortions() }
         .onAppear { fetchFoodAndPortions() }
         .confirmationDialog(
             "Delete Food?\n\nAre you sure you want to delete \"\(food?.name ?? "this food")\"?",
@@ -342,7 +339,7 @@ struct FoodDetailsView: View {
             SwiftUI.Menu {
                 ForEach(portions, id: \.self) { portion in
                     Button(portion.name) {
-                        selectedPortion = portion
+                        onSelected(portion: portion)
                     }
                 }
             } label: {
@@ -1187,6 +1184,9 @@ fileprivate extension View {
 }
 
 #Preview {
+    let _ = swinjectContainer.autoregister(NutrientLoggerAnalytics.self) {
+        MockNutrientLoggerAnalytics()
+    }
     let _ = swinjectContainer.autoregister(UserService.self) {
         UserServiceForScreenshots()
     }

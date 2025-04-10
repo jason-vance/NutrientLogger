@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Nutrient: DatabaseEntity, Codable, Identifiable {
+struct Nutrient: DatabaseEntity, Codable, Identifiable {
     
     public var id: Int = -1
     public var created: Date = Date.now
@@ -79,8 +79,4 @@ class Nutrient: DatabaseEntity, Codable, Identifiable {
     }
 }
 
-extension Nutrient: Equatable {
-    public static func == (lhs: Nutrient, rhs: Nutrient) -> Bool {
-        return lhs.id == rhs.id && lhs.fdcId == rhs.fdcId
-    }
-}
+extension Nutrient: Equatable { }
