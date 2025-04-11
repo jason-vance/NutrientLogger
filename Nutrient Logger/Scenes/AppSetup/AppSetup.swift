@@ -23,6 +23,7 @@ class AppSetup {
         registerLocalDatabase()
         await registerUserMealsDatabase()
         await registerRemoteDatabase()
+        registerFoodSaver()
         
 //        doMocksForScreenshots()
     }
@@ -61,6 +62,14 @@ class AppSetup {
         swinjectContainer.autoregister(RemoteDatabase.self) { db }
     }
     
+    private static func registerFoodSaver() {
+        let foodSaver = ConsumedFoodSaver(
+            localDatabase: swinjectContainer~>LocalDatabase.self,
+            analytics: swinjectContainer~>ConsumedFoodSaverAnalytics.self
+        )
+        swinjectContainer.autoregister(FoodSaver.self) { foodSaver }
+    }
+    
     //TODO: MVP: Uncomment when AdMob is added
 //    fileprivate static func setupAdProvider() {
 ////        IocContainer.shared.register(type: AdProvider.self, component: MockAdProvider())
@@ -97,5 +106,6 @@ class AppSetup {
         swinjectContainer.autoregister(UserProfileAnalytics.self) { analytics }
         swinjectContainer.autoregister(UserMealsAnalytics.self) { analytics }
         swinjectContainer.autoregister(UserMealAnalytics.self) { analytics }
+        swinjectContainer.autoregister(ConsumedFoodSaverAnalytics.self) { analytics }
     }
 }

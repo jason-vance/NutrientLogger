@@ -8,6 +8,7 @@
 import SwiftUI
 import SwinjectAutoregistration
 
+//TODO: MVP: Add a toast-like notification for when a food is successfully saved
 struct FoodDetailsView: View {
     
     enum UIConsts {
@@ -55,7 +56,8 @@ struct FoodDetailsView: View {
     
     //TODO: MVP: Intelligently choose the initial meal time
     @State private var selectedMealTime: MealTime = .breakfast
-    
+    @State private var logDate: SimpleDate = .today
+
     @State private var showDeleteConfirmation: Bool = false
     
     @State private var showAlert: Bool = false
@@ -69,6 +71,8 @@ struct FoodDetailsView: View {
     
     private let user = (swinjectContainer~>UserService.self).currentUser
     private let rdiLibrary = swinjectContainer~>NutrientRdiLibrary.self
+    
+    private let foodSaver = swinjectContainer~>FoodSaver.self
     
     private func show(alert: String) {
         showAlert = true
@@ -184,6 +188,29 @@ struct FoodDetailsView: View {
         return nutrient
     }
     
+    private func saveFood() {
+        guard var food = prototypeFood else {
+            show(alert: "`prototypeFood` is nil")
+            return
+        }
+        food.dateLogged = logDate
+        food.mealTime = selectedMealTime
+        
+        let selectedPortion = selectedPortion ?? .defaultPortion
+        let portion = Portion(
+            name: selectedPortion.name,
+            amount: portionAmountValue,
+            gramWeight: selectedPortion.gramWeight
+        )
+        
+        do {
+            try foodSaver.saveFoodItem(food, portion)
+            presentationMode.wrappedValue.dismiss()
+        } catch {
+            print("Failed to save food item: \(error.localizedDescription)")
+        }
+    }
+    
     init(foodId: Int, mode: Mode) {
         self.foodId = foodId
         self.mode = mode
@@ -194,9 +221,10 @@ struct FoodDetailsView: View {
         
         List {
             FoodName()
+            DateField()
+            MealTimeField()
             PortionField()
             PortionAmountField()
-            MealTimeField()
             
             NutritionFactsCap(isTop: true)
             
@@ -288,11 +316,10 @@ struct FoodDetailsView: View {
     }
     
     @ViewBuilder private func SaveButton() -> some View {
-        NavigationLink {
-            //TODO: Navigate somewhere real
-            Text("Add food")
+        Button {
+            saveFood()
         } label: {
-            Image(systemName: "plus")
+            Image(systemName: "checkmark")
         }
     }
     
@@ -340,6 +367,31 @@ struct FoodDetailsView: View {
             .multilineTextAlignment(.trailing)
             .bold()
             .foregroundStyle(Color.accentColor)
+        }
+        .listRowDefaultModifiers()
+    }
+    
+    @ViewBuilder private func DateField() -> some View {
+        HStack {
+            Text("Date")
+            Spacer()
+            Button {
+                
+            } label: {
+                Text(logDate.formatted())
+                    .bold()
+            }
+            .overlay{
+                DatePicker(
+                    "",
+                    selection: .init(
+                        get: { logDate.toDate() ?? .now },
+                        set: { logDate = SimpleDate(date: $0)! }
+                    ),
+                    displayedComponents: [.date]
+                )
+                .blendMode(.destinationOver) //MARK: use this extension to keep the clickable functionality
+            }
         }
         .listRowDefaultModifiers()
     }
