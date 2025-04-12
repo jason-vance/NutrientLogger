@@ -37,12 +37,15 @@ struct ConsumedNutrientChart: View {
         rdi?.unit.name ?? ""
     }
     
-    private var recommendedValue: Double {
-        rdi?.recommendedAmount ?? 0
+    private var recommendedValue: Double? {
+        guard let rdi else { return nil }
+        guard rdi.recommendedAmount > 0, rdi.recommendedAmount < .greatestFiniteMagnitude else { return nil }
+        return rdi.recommendedAmount
     }
     
-    private var recommendedString: String {
-        "Recommended Amount: \(recommendedValue.formatted(maxDigits: 2))\(weightUnit)"
+    private var recommendedString: String? {
+        guard let recommendedValue else { return nil }
+        return "Recommended Amount: \(recommendedValue.formatted(maxDigits: 2))\(weightUnit)"
     }
     
     private var upperLimit: Double? {
@@ -65,7 +68,7 @@ struct ConsumedNutrientChart: View {
                 chartValues.map { $0.value }.max() ?? 0
             }
         }()
-        let max = max(maxNutrientValue, recommendedValue)
+        let max = max(maxNutrientValue, recommendedValue ?? 0)
         return max
     }
     
@@ -165,23 +168,25 @@ struct ConsumedNutrientChart: View {
         unitsPerHeight: CGFloat,
         capsuleSize: CGFloat
     ) -> some View {
-        let offset = -(recommendedValue * unitsPerHeight)
-        
-        VStack {
-            Spacer()
-            Rectangle()
-                .frame(height: 1)
-                .offset(y: offset)
-                .overlay(alignment: .bottom) {
-                    HStack {
-                        Text(recommendedString)
-                            .font(.caption)
-                        Spacer()
-                    }
+        if let recommendedValue = recommendedValue, let recommendedString = recommendedString {
+            let offset = -(recommendedValue * unitsPerHeight)
+            
+            VStack {
+                Spacer()
+                Rectangle()
+                    .frame(height: 1)
                     .offset(y: offset)
-                }
+                    .overlay(alignment: .bottom) {
+                        HStack {
+                            Text(recommendedString)
+                                .font(.caption)
+                            Spacer()
+                        }
+                        .offset(y: offset)
+                    }
+            }
+            .foregroundStyle(Color.black.opacity(0.5))
         }
-        .foregroundStyle(Color.black.opacity(0.5))
     }
     
     @ViewBuilder private func UpperLimit(

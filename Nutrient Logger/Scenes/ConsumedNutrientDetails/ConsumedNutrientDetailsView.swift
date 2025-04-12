@@ -9,7 +9,7 @@ import SwiftUI
 import SwinjectAutoregistration
 
 //TODO: MVP: Add explanation view
-//TODO: MVP: Add some kind of chart
+//TODO: MVP: Fix chart not showing values (saved foods have no date/mealtime)
 struct ConsumedNutrientDetailsView: View {
     
     @Environment(\.presentationMode) private var presentationMode
@@ -24,6 +24,8 @@ struct ConsumedNutrientDetailsView: View {
     private let nutrient: Nutrient
     private let nutrientFoodPairs: [NutrientFoodPair]
     private let rdi: LifeStageNutrientRdi?
+    
+    private var user: User { userService.currentUser }
 
     private var hasRdi: Bool { recommendedAmount != nil || upperLimit != nil }
     
@@ -70,6 +72,7 @@ struct ConsumedNutrientDetailsView: View {
             AmountRow()
             RecommendedAmountRow()
             UpperLimitRow()
+            Chart()
         }
         .listDefaultModifiers()
         .navigationBarBackButtonHidden()
@@ -142,6 +145,18 @@ struct ConsumedNutrientDetailsView: View {
             }
             .listRowDefaultModifiers()
         }
+    }
+    
+    @ViewBuilder private func Chart() -> some View {
+        let rdi = nutrientRdiLibrary.getRdis(nutrient.fdcNumber)?.getRdi(user)
+        
+        ConsumedNutrientChart(
+            nutrientFoodPairs: nutrientFoodPairs,
+            rdi: rdi,
+            style: .cumulative
+        )
+        .frame(height: 250)
+        .listRowDefaultModifiers()
     }
 }
 

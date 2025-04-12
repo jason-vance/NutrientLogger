@@ -16,7 +16,7 @@ class AppSetup {
 //        FirebaseApp.configure()
         
         setupAnalytics()
-//        setupAdProvider()
+        setupAdProvider()
         
         registerNutrientRdiLibrary()
         await registerUserService()
@@ -71,9 +71,10 @@ class AppSetup {
     }
     
     //TODO: MVP: Uncomment when AdMob is added
-//    fileprivate static func setupAdProvider() {
-////        IocContainer.shared.register(type: AdProvider.self, component: MockAdProvider())
-////        return
+    fileprivate static func setupAdProvider() {
+        let adProvider = MockAdProvider()
+        swinjectContainer.autoregister(AdProvider.self) { adProvider }
+        return
 //
 //#if DEBUG
 //        let adUnitId = GoogleAdProvider.testAdUnitId
@@ -95,7 +96,7 @@ class AppSetup {
 //#endif
 //
 //        IocContainer.shared.register(type: AdProvider.self, component: GoogleAdProvider(adUnitId: adUnitId))
-//    }
+    }
     
     fileprivate static func setupAnalytics() {
 //        let analyticsEngine = FirebaseAnalytics()
