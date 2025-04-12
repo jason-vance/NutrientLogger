@@ -8,7 +8,6 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Add data (current amount, recommended amount, upper limit)
 //TODO: MVP: Add explanation view
 //TODO: MVP: Add some kind of chart
 struct NutrientDetailsView: View {
@@ -69,7 +68,9 @@ struct NutrientDetailsView: View {
     
     var body: some View {
         List {
-            
+            AmountRow()
+            RecommendedAmountRow()
+            UpperLimitRow()
         }
         .listDefaultModifiers()
         .navigationBarBackButtonHidden()
@@ -108,6 +109,40 @@ struct NutrientDetailsView: View {
         .opacity(isExplanationLoaded ? 1 : 0)
         .animation(.snappy, value: isExplanationLoaded)
         .animation(.snappy, value: showExplanation)
+    }
+    
+    @ViewBuilder private func AmountRow() -> some View {
+        HStack {
+            Text("Amount Consumed")
+            Spacer()
+            Text(amount)
+                .bold()
+        }
+        .listRowDefaultModifiers()
+    }
+    
+    @ViewBuilder private func RecommendedAmountRow() -> some View {
+        if let recommendedAmount = recommendedAmount {
+            HStack {
+                Text("Recommended Amount")
+                Spacer()
+                Text(recommendedAmount)
+                    .bold()
+            }
+            .listRowDefaultModifiers()
+        }
+    }
+    
+    @ViewBuilder private func UpperLimitRow() -> some View {
+        if let upperLimit = upperLimit {
+            HStack {
+                Text("Upper Limit")
+                Spacer()
+                Text(upperLimit)
+                    .bold()
+            }
+            .listRowDefaultModifiers()
+        }
     }
 }
 
