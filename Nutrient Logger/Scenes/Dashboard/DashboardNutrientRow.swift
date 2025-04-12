@@ -23,8 +23,10 @@ struct DashboardNutrientRow: View {
     
     var body: some View {
         NavigationLink {
-            //TODO: MVP: Navigate somewhere real
-            Text("Nutrient Details")
+            ConsumedNutrientDetailsView(
+                nutrient: nutrients.first!.nutrient,
+                nutrientFoodPairs: nutrients
+            )
         } label: {
             RowContent()
         }
@@ -58,11 +60,14 @@ struct DashboardNutrientRow: View {
 #Preview {
     let _ = swinjectContainer.autoregister(UserService.self) { UserServiceForScreenshots() }
     let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) { UsdaNutrientRdiLibrary.create() }
-    
+    let _ = swinjectContainer.autoregister(AdProvider.self) { MockAdProvider() }
+
     let food = try! RemoteDatabaseForScreenshots().getFood("asdf")!
 
-    List {
-        DashboardNutrientSection(foods: [food])
+    NavigationStack {
+        List {
+            DashboardNutrientSection(foods: [food])
+        }
+        .listDefaultModifiers()
     }
-    .listDefaultModifiers()
 }

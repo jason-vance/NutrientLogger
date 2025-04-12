@@ -1,5 +1,5 @@
 //
-//  NutrientDetailsView.swift
+//  ConsumedNutrientDetailsView.swift
 //  Nutrient Logger
 //
 //  Created by Jason Vance on 4/11/25.
@@ -10,21 +10,21 @@ import SwinjectAutoregistration
 
 //TODO: MVP: Add explanation view
 //TODO: MVP: Add some kind of chart
-struct NutrientDetailsView: View {
+struct ConsumedNutrientDetailsView: View {
     
     @Environment(\.presentationMode) private var presentationMode
     
     private let adProvider = swinjectContainer~>AdProvider.self
     private let nutrientRdiLibrary = swinjectContainer~>NutrientRdiLibrary.self
     private let userService = swinjectContainer~>UserService.self
-    
+
     @State private var isExplanationLoaded: Bool = false
     @State private var showExplanation: Bool = false
     
     private let nutrient: Nutrient
     private let nutrientFoodPairs: [NutrientFoodPair]
     private let rdi: LifeStageNutrientRdi?
-    
+
     private var hasRdi: Bool { recommendedAmount != nil || upperLimit != nil }
     
     private var nutrientUnit: WeightUnit {
@@ -58,12 +58,11 @@ struct NutrientDetailsView: View {
     
     init(
         nutrient: Nutrient,
-        nutrientFoodPairs: [NutrientFoodPair],
-        rdi: LifeStageNutrientRdi?
+        nutrientFoodPairs: [NutrientFoodPair]
     ) {
         self.nutrient = nutrient
         self.nutrientFoodPairs = nutrientFoodPairs
-        self.rdi = rdi
+        self.rdi = nutrientRdiLibrary.getRdis(nutrient.fdcNumber)?.getRdi(userService.currentUser)
     }
     
     var body: some View {
@@ -184,21 +183,10 @@ struct NutrientDetailsView: View {
         )
     ]
     
-    let rdi: LifeStageNutrientRdi = .create(
-        nutrientFdcNumber: "301",
-        gender: .female,
-        minAgeYears: 18,
-        maxAgeYears: 65,
-        recommendedAmount: 1000,
-        upperLimit: 1200,
-        unit: .gram
-    )
-    
     NavigationStack {
-        NutrientDetailsView(
+        ConsumedNutrientDetailsView(
             nutrient: nutrient,
-            nutrientFoodPairs: nutrientFoodPairs,
-            rdi: rdi
+            nutrientFoodPairs: nutrientFoodPairs
         )
     }
 }
