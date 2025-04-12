@@ -8,6 +8,7 @@
 import Foundation
 
 public class MockUserService: UserService {
+    
     public var currentUser: User
     
     public init(currentUser: User) {

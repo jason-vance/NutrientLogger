@@ -8,7 +8,9 @@
 import Foundation
 import UIKit
 
+//TODO: MVP: Change birthdate to SimpleDate
 public struct User: Codable {
+    
     public static var birthdateNotSet = Date.distantPast
     
     public var gender: Gender = Gender.unknown
@@ -19,4 +21,10 @@ public struct User: Codable {
     public func getUserAge() -> TimeInterval {
         return Date.now.timeIntervalSince(birthdate)
     }
+    
+    public static let sample: User = .init(
+        gender: .male,
+        birthdate: .from(year: 1987, month: 6, day: 16),
+        preferredColorName: .indigo
+    )
 }
