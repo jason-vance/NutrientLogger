@@ -9,9 +9,13 @@ import SwiftUI
 import SwinjectAutoregistration
 
 //TODO: MVP: Add explanation view
-//TODO: MVP: Add contributing foods
-//TODO: MVP: Fix chart not showing values (saved foods have no date/mealtime)
 struct ConsumedNutrientDetailsView: View {
+    
+    private struct MealFoods: Identifiable {
+        var id: MealTime { mealTime }
+        let mealTime: MealTime
+        let foods: [FoodItem]
+    }
     
     @Environment(\.presentationMode) private var presentationMode
     
@@ -59,6 +63,21 @@ struct ConsumedNutrientDetailsView: View {
         return "\(upperLimitAmountStr)\(unitName)"
     }
     
+    private var mealFoods: [MealFoods] {
+        var mealTimeFoodMap: [MealTime: [FoodItem]] = [:]
+        
+        nutrientFoodPairs
+            .map { $0.food }
+            .forEach { food in
+                mealTimeFoodMap[food.mealTime ?? .none, default: []].append(food)
+            }
+        
+        return mealTimeFoodMap
+            .reduce(into: []) { result, element in
+                result.append(MealFoods(mealTime: element.key, foods: element.value))
+            }
+    }
+    
     init(
         nutrient: Nutrient,
         nutrientFoodPairs: [NutrientFoodPair]
@@ -74,6 +93,7 @@ struct ConsumedNutrientDetailsView: View {
             RecommendedAmountRow()
             UpperLimitRow()
             Chart()
+            FoodsSection()
         }
         .listDefaultModifiers()
         .navigationBarBackButtonHidden()
@@ -159,6 +179,20 @@ struct ConsumedNutrientDetailsView: View {
         .frame(height: 250)
         .listRowDefaultModifiers()
     }
+    
+    @ViewBuilder private func FoodsSection() -> some View {
+        Section {
+            ForEach(mealFoods) { mealFoods in
+                Text(mealFoods.mealTime.rawValue)
+                    .listSubsectionHeader()
+                ForEach(mealFoods.foods) { food in
+                    DashboardFoodRow(food: food)
+                }
+            }
+        } header: {
+            Text("Foods")
+        }
+    }
 }
 
 #Preview {
@@ -178,19 +212,27 @@ struct ConsumedNutrientDetailsView: View {
         unitName: "g"
     )
     
-    let food: FoodItem = .init(
-        fdcId: 1097512,
-        name: "Milk",
-        fdcType: "survey",
-        nutrientGroups: [
-            .init(
-                fdcNumber: "300",
-                name: "Minerals",
-                nutrients: [nutrient]
-            )
-        ],
-        gramWeight: 100
-    )
+    let food: FoodItem = {
+        var food = FoodItem(
+            fdcId: 1097512,
+            name: "Milk",
+            fdcType: "survey",
+            nutrientGroups: [
+                .init(
+                    fdcNumber: "300",
+                    name: "Minerals",
+                    nutrients: [nutrient]
+                )
+            ],
+            gramWeight: 100,
+        )
+        food.mealTime = .breakfast
+        
+        food.portionName = "cup (236 ml)"
+        food.amount = 1
+        
+        return food
+    }()
     
     let nutrientFoodPairs: [NutrientFoodPair] = [
         .init(
