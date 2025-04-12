@@ -41,6 +41,7 @@ class LocalSqliteDatabase: LocalDatabase {
             t.column(Columns.portionName)
             t.column(Columns.gramWeight)
             t.column(Columns.dateLogged)
+            t.column(Columns.mealTime)
         })
     }
     
@@ -54,6 +55,7 @@ class LocalSqliteDatabase: LocalDatabase {
             t.column(Columns.amount)
             t.column(Columns.unitName)
             t.column(Columns.dateLogged)
+            t.column(Columns.mealTime)
         })
     }
     
@@ -119,26 +121,27 @@ class LocalSqliteDatabase: LocalDatabase {
         
         return try foods.map {
             var food = $0
-            food.nutrientGroups = try getAbridgedNutrients(db, food)
+            food.nutrientGroups = try getFullNutrients(db, food)
             return food
         }
     }
     
-    private func getAbridgedNutrients(_ db: Connection, _ food: FoodItem) throws -> [NutrientGroup] {
-        let query = Tables.nutrient
-            .join(Tables.foodNutrientLink,
-                  on: Tables.nutrient[Columns.id] == Tables.foodNutrientLink[Columns.nutrientId])
-            .select(
-                Tables.nutrient[Columns.fdcNumber],
-                Tables.nutrient[Columns.name],
-                Tables.nutrient[Columns.unitName],
-                Tables.nutrient[Columns.amount])
-            .where(Columns.foodId == food.id)
-        
-        let rows = try db.prepare(query)
-        let nutrients = rows.map { NutrientWrapper.fromAbridged($0) }
-        return FdcNutrientGrouper.group(nutrients)
-    }
+    //TODO: MVP: Try to figure out why getFoodsOrderedByDateLogged was originally calling this instead of getFullNutrients
+//    private func getAbridgedNutrients(_ db: Connection, _ food: FoodItem) throws -> [NutrientGroup] {
+//        let query = Tables.nutrient
+//            .join(Tables.foodNutrientLink,
+//                  on: Tables.nutrient[Columns.id] == Tables.foodNutrientLink[Columns.nutrientId])
+//            .select(
+//                Tables.nutrient[Columns.fdcNumber],
+//                Tables.nutrient[Columns.name],
+//                Tables.nutrient[Columns.unitName],
+//                Tables.nutrient[Columns.amount])
+//            .where(Columns.foodId == food.id)
+//        
+//        let rows = try db.prepare(query)
+//        let nutrients = rows.map { NutrientWrapper.fromAbridged($0) }
+//        return FdcNutrientGrouper.group(nutrients)
+//    }
     
     private func getFullNutrients(_ db: Connection, _ food: FoodItem) throws -> [NutrientGroup] {
         let query = Tables.nutrient
@@ -152,7 +155,9 @@ class LocalSqliteDatabase: LocalDatabase {
                 Tables.nutrient[Columns.amount],
                 Tables.nutrient[Columns.id],
                 Tables.nutrient[Columns.created],
-                Tables.nutrient[Columns.dateLogged])
+                Tables.nutrient[Columns.dateLogged],
+                Tables.nutrient[Columns.mealTime]
+            )
             .where(Columns.foodId == food.id)
         
         let rows = try db.prepare(query)
@@ -224,7 +229,9 @@ class LocalSqliteDatabase: LocalDatabase {
                     Columns.amount,
                     Columns.portionName,
                     Columns.gramWeight,
-                    Columns.dateLogged)
+                    Columns.dateLogged,
+                    Columns.mealTime
+            )
             .group(Columns.fdcId)
             .order(Columns.created.desc)
             .limit(limit)
@@ -253,6 +260,7 @@ fileprivate enum Columns {
     public static var portionName = Expression<String>("PortionName")
     public static var gramWeight = Expression<Double>("GramWeight")
     public static var dateLogged = Expression<DatabaseSimpleDate>("DateLogged")
+    public static var mealTime = Expression<DatabaseMealTime>("MealTime")
     public static var fdcNumber = Expression<String>("FdcNumber")
     public static var unitName = Expression<String>("UnitName")
     public static var foodId = Expression<Int>("FoodId")
@@ -293,7 +301,8 @@ fileprivate class FoodItemWrapper: DatabaseEntityWrapper<FoodItem> {
             amount: row[Columns.amount]
         )
         food.dateLogged = row[Columns.dateLogged].toSimpleDate()
-        
+        food.mealTime = row[Columns.mealTime].toMealTime()
+
         super.init(row, food)
     }
     
@@ -310,7 +319,8 @@ fileprivate class FoodItemWrapper: DatabaseEntityWrapper<FoodItem> {
             Columns.portionName <- food.portionName,
             Columns.gramWeight <- food.gramWeight,
             //TODO: MVP: Is .today appropriate here
-            Columns.dateLogged <- DatabaseSimpleDate.from(food.dateLogged ?? .today)
+            Columns.dateLogged <- DatabaseSimpleDate.from(food.dateLogged ?? .today),
+            Columns.mealTime <- DatabaseMealTime.from(food.mealTime ?? .none)
         ] }
     }
 }
@@ -329,7 +339,8 @@ fileprivate class NutrientWrapper: DatabaseEntityWrapper<Nutrient> {
             amount: row[Columns.amount]
         )
         nutrient.dateLogged = row[Columns.dateLogged].toSimpleDate()
-        
+        nutrient.mealTime = row[Columns.mealTime].toMealTime()
+
         super.init(row, nutrient)
     }
     
@@ -356,6 +367,7 @@ fileprivate class NutrientWrapper: DatabaseEntityWrapper<Nutrient> {
         nutrient.id = try! row.get(Columns.id)
         nutrient.created = try! row.get(Columns.created).toDate()
         nutrient.dateLogged = try! row.get(Columns.dateLogged).toSimpleDate()
+        nutrient.mealTime = try! row.get(Columns.mealTime).toMealTime()
         return nutrient
     }
     
@@ -371,7 +383,8 @@ fileprivate class NutrientWrapper: DatabaseEntityWrapper<Nutrient> {
             Columns.amount <- nutrient.amount,
             Columns.unitName <- nutrient.unitName,
             //TODO: MVP: Is .today appropriate here
-            Columns.dateLogged <- DatabaseSimpleDate.from(nutrient.dateLogged ?? .today)
+            Columns.dateLogged <- DatabaseSimpleDate.from(nutrient.dateLogged ?? .today),
+            Columns.mealTime <- DatabaseMealTime.from(nutrient.mealTime ?? .none)
         ] }
     }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 import SwinjectAutoregistration
 
 //TODO: MVP: Add explanation view
+//TODO: MVP: Add contributing foods
 //TODO: MVP: Fix chart not showing values (saved foods have no date/mealtime)
 struct ConsumedNutrientDetailsView: View {
     

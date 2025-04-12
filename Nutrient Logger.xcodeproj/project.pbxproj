@@ -104,6 +104,7 @@
 				FdcDatabase/FdcSupportingDataDatabase.swift,
 				LocalData/Domain/DatabaseDate.swift,
 				LocalData/Domain/DatabaseEntity.swift,
+				LocalData/Domain/DatabaseMealTime.swift,
 				LocalData/Domain/DatabaseSimpleDate.swift,
 				LocalData/Domain/DeletedFood.swift,
 				LocalData/Domain/FoodNutrientLink.swift,
