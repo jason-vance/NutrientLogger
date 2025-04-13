@@ -6,14 +6,14 @@
 //
 
 import Foundation
-import UIKit
+import SwiftUI
 
 struct User: Codable {
     
     public var gender: Gender = Gender.unknown
     public var birthdate: SimpleDate? = nil
     public var preferredColorName: ColorName = ColorName.indigo
-    public var preferredColor: UIColor { ColorPalettes.colorFrom(name: preferredColorName) }
+    public var preferredColor: Color { ColorPalettes.colorFrom(name: preferredColorName) }
 
     public func getUserAge() -> TimeInterval? {
         guard let birthdate = birthdate?.toDate() else { return nil }

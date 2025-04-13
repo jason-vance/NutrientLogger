@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import UIKit
+import SwiftUI
 
 public class ColorPaletteService {
     public static func getColorPaletteFor(number: Int) -> ColorPalette {
@@ -51,26 +51,26 @@ public class ColorPaletteService {
 }
 
 public class ColorPalette {
-    public let primary: UIColor
-    public let secondary: UIColor
-    public let text: UIColor
+    public let primary: Color
+    public let secondary: Color
+    public let text: Color
     
-    init(primary: UIColor, secondary: UIColor, text: UIColor) {
+    init(primary: Color, secondary: Color, text: Color) {
         self.primary = primary
         self.secondary = secondary
         self.text = text
     }
     
-    convenience init(primary: UIColor) {
+    convenience init(primary: Color) {
         self.init(primary: primary, secondary: .white, text: .white)
     }
 }
 
 public class AppColorPalette: ColorPalette {
-    public var success: UIColor
-    public var error: UIColor
+    public var success: Color
+    public var error: Color
     
-    init(primary: UIColor, secondary: UIColor, text: UIColor, success: UIColor, error: UIColor) {
+    init(primary: Color, secondary: Color, text: Color, success: Color, error: Color) {
         self.success = success
         self.error = error
         super.init(primary: primary, secondary: secondary, text: text)
@@ -79,43 +79,43 @@ public class AppColorPalette: ColorPalette {
 
 public class ColorPalettes {
     public static let app = AppColorPalette(
-        primary: .systemBackground,
-        secondary: .systemBackground,
-        text: .label,
-        success: .systemGreen,
-        error: .systemRed
+        primary: .primary,
+        secondary: .primary,
+        text: .secondary,
+        success: .green,
+        error: .red
     )
-    public static let red = ColorPalette(primary: .systemRed)
-    public static let yellow = ColorPalette(primary: .systemYellow)
-    public static let blue = ColorPalette(primary: .systemBlue)
-    public static let purple = ColorPalette(primary: .systemPurple)
-    public static let orange = ColorPalette(primary: .systemOrange)
-    public static let green = ColorPalette(primary: .systemGreen)
-    public static let indigo = ColorPalette(primary: .systemIndigo)
-    public static let pink = ColorPalette(primary: .systemPink)
-    public static let teal = ColorPalette(primary: .systemTeal)
-    public static let mint = ColorPalette(primary: .systemMint)
-    public static let cyan = ColorPalette(primary: .systemCyan)
-    public static let brown = ColorPalette(primary: .systemBrown)
+    public static let red = ColorPalette(primary: .red)
+    public static let yellow = ColorPalette(primary: .yellow)
+    public static let blue = ColorPalette(primary: .blue)
+    public static let purple = ColorPalette(primary: .purple)
+    public static let orange = ColorPalette(primary: .orange)
+    public static let green = ColorPalette(primary: .green)
+    public static let indigo = ColorPalette(primary: .indigo)
+    public static let pink = ColorPalette(primary: .pink)
+    public static let teal = ColorPalette(primary: .teal)
+    public static let mint = ColorPalette(primary: .mint)
+    public static let cyan = ColorPalette(primary: .cyan)
+    public static let brown = ColorPalette(primary: .brown)
     
     public static let palettes: [ColorPalette] = [red, teal, blue, indigo, green, pink, purple, orange, mint, cyan]
     
-    public static let allColors: [(ColorName,UIColor)] = [
-        (ColorName.red, .systemRed),
-        (ColorName.indigo, .systemIndigo),
-        (ColorName.blue, .systemBlue),
-        (ColorName.green, .systemGreen),
-        (ColorName.pink, .systemPink),
-        (ColorName.purple, .systemPurple),
-        (ColorName.teal, .systemTeal),
-        (ColorName.mint, .systemMint),
-        (ColorName.orange, .systemOrange),
-        (ColorName.yellow, .systemYellow),
-        (ColorName.cyan, .systemCyan),
-        (ColorName.brown, .systemBrown),
+    public static let allColors: [(ColorName,Color)] = [
+        (ColorName.red, .red),
+        (ColorName.indigo, .indigo),
+        (ColorName.blue, .blue),
+        (ColorName.green, .green),
+        (ColorName.pink, .pink),
+        (ColorName.purple, .purple),
+        (ColorName.teal, .teal),
+        (ColorName.mint, .mint),
+        (ColorName.orange, .orange),
+        (ColorName.yellow, .yellow),
+        (ColorName.cyan, .cyan),
+        (ColorName.brown, .brown),
     ]
     
-    public static func colorFrom(name: ColorName) -> UIColor { allColors.first(where: { $0.0 == name })!.1 }
+    public static func colorFrom(name: ColorName) -> Color { allColors.first(where: { $0.0 == name })!.1 }
 }
 
 public final class ColorName {
