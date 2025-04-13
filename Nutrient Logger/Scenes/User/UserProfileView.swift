@@ -70,7 +70,7 @@ struct UserProfileView: View {
     
     @ViewBuilder private func GenderField() -> some View {
         HStack {
-            Text("Gender")
+            Text("Sex")
             Spacer()
             SwiftUI.Menu {
                 Button(Gender.male.rawValue) {
