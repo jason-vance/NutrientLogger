@@ -8,7 +8,6 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Add explanation view
 struct ConsumedNutrientDetailsView: View {
     
     private struct MealFoods: Identifiable {
@@ -25,6 +24,7 @@ struct ConsumedNutrientDetailsView: View {
 
     @State private var isExplanationLoaded: Bool = false
     @State private var showExplanation: Bool = false
+    @State private var infoString: AttributedString = ""
     
     private let nutrient: Nutrient
     private let nutrientFoodPairs: [NutrientFoodPair]
@@ -78,6 +78,22 @@ struct ConsumedNutrientDetailsView: View {
             }
     }
     
+    private func loadExplanation() {
+        guard NutrientExplanationMaker.canMakeFor(nutrient.fdcNumber) else {
+            isExplanationLoaded = false
+            return
+        }
+
+        Task {
+            do {
+                infoString = try await NutrientExplanationMaker.make(nutrient.fdcNumber)
+                isExplanationLoaded = true
+            } catch {
+                print("Failed to load explanation for \(nutrient.name): \(error)")
+            }
+        }
+    }
+    
     init(
         nutrient: Nutrient,
         nutrientFoodPairs: [NutrientFoodPair]
@@ -99,6 +115,7 @@ struct ConsumedNutrientDetailsView: View {
         .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
+        .onAppear { loadExplanation() }
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
@@ -123,8 +140,11 @@ struct ConsumedNutrientDetailsView: View {
     }
     
     @ViewBuilder private func InfoButton() -> some View {
-        Button {
-            showExplanation.toggle()
+        NavigationLink {
+            NutrientInfoView(
+                nutrientName: nutrient.name,
+                infoString: infoString
+            )
         } label: {
             Image(systemName: showExplanation ? "x.circle" : "info.circle")
         }

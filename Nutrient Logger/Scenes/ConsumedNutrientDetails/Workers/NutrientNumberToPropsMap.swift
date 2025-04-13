@@ -7,6 +7,7 @@
 
 import Foundation
 
+//TODO: Bundle html into app
 public class NutrientNumberToPropsMap {
     public class PostLoadRule {
         public var applyTo: (NutrientExplanation) -> Void

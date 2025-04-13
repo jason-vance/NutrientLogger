@@ -100,14 +100,13 @@ public class NutrientExplanation {
         }
 
         public class SectionTable {
-            public var rows: Int = 0
+            public var rows: Int { cells.count / columns }
             public var columns: Int = 0
             public var cells = [Cell]()
 
             public init() { }
 
             public init(_ columns: Int, _ cellContents: [String]) {
-                rows = cellContents.count / columns
                 self.columns = columns
 
                 for i in 0..<cellContents.count {

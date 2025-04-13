@@ -45,7 +45,7 @@ public class NutrientExplanationLoader {
     }
 
     private static func findMainContent(_ node: Node) -> Node? {
-        let id_CenterContent = "center_content"
+        let id_CenterContent = "fact-sheet"
         
         for child in node.getChildNodes() {
             let id = try? child.attr("id")
@@ -326,15 +326,16 @@ public class NutrientExplanationLoader {
             rows.append(contentsOf: headNode?.getChildNodes().filter({ SectionTableRowName == ($0 as? Element)?.tagName() }) ?? [])
             rows.append(contentsOf: bodyNode?.getChildNodes().filter({ SectionTableRowName == ($0 as? Element)?.tagName() }) ?? [])
 
-            table.rows = rows.count
             table.columns = rows[0].getChildNodes().filter({ SectionTableHeadCellName == ($0 as? Element)?.tagName() }).count
 
             table.cells = [NutrientExplanation.Section.SectionTable.Cell]()
             for row in rows {
                 for cell in row.getChildNodes() {
-                    let cellTag = (cell as? Element)?.tagName()
-                    
-                    if (SectionTableDataCellName == cellTag || SectionTableHeadCellName == cellTag) {
+                    if let cellTag = (cell as? Element)?.tagName() {
+                        guard SectionTableDataCellName == cellTag || SectionTableHeadCellName == cellTag else  {
+                            continue
+                        }
+                        
                         table.cells.append(NutrientExplanation.Section.SectionTable.Cell(
                             text: sanitizedInnerText(cell)
                         ))

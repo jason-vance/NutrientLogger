@@ -49,15 +49,11 @@ public class AttributedStringBuilder {
             public let leftText: String
             public let rightText: String
             public let fontSize: CGFloat
-            public let textColor: UIColor
-            public let backgroundColor: UIColor
             
-            public init(leftText: String, rightText: String, fontSize: CGFloat, textColor: UIColor, backgroundColor: UIColor) {
+            public init(leftText: String, rightText: String, fontSize: CGFloat) {
                 self.leftText = leftText
                 self.rightText = rightText
                 self.fontSize = fontSize
-                self.textColor = textColor
-                self.backgroundColor = backgroundColor
             }
         }
     }
@@ -145,9 +141,9 @@ public class AttributedStringBuilder {
         var text = ""
         for point in points {
             for _ in 0..<point.indentationLevel {
-                text.append("\t")
+                text.append(" ")
             }
-            text.append("•\t\(point.text)\n")
+            text.append("• \(point.text)\n")
         }
 
         let span = NSMutableAttributedString(string: text)
@@ -203,12 +199,9 @@ public class AttributedStringBuilder {
     private func addTableRow(_ sb: inout String, _ row: TwoColumnTable.Row, _ isHeader: Bool = false) {
         let tag = (isHeader) ? "th" : "td"
         
-        let backgroundColor = colorToHex(row.backgroundColor)
-        let textColor = colorToHex(row.textColor)
-
-        sb.append("<tr style=\"color:\(textColor);\">")
-        sb.append("<\(tag) style=\"text-align:left;background-color:\(backgroundColor);\"><span style=\"text-align:left;background-color:\(backgroundColor);\">\(row.leftText)</span></\(tag)>")
-        sb.append("<\(tag) style=\"text-align:right;background-color:\(backgroundColor);\"><span style=\"text-align:right;background-color:\(backgroundColor);\">\(row.rightText)</span></\(tag)>")
+        sb.append("<tr>")
+        sb.append("<\(tag)><span>\(row.leftText):</span>")
+        sb.append("<span style=\"font-weight:bold;\"> \(row.rightText)</span></\(tag)>")
         sb.append("</tr>")
     }
 
