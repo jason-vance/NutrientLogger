@@ -268,6 +268,7 @@ struct FoodDetailsView: View {
         .listDefaultModifiers()
         .environment(\.defaultMinListRowHeight, 1)
         .navigationBarBackButtonHidden()
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
         .onAppear { fetchFoodAndPortions() }
         .onChange(of: portionAmountValue) { applyPortion() }
@@ -330,6 +331,7 @@ struct FoodDetailsView: View {
                 .listRowDefaultModifiers()
             Spacer()
         }
+        .listRowDefaultModifiers()
     }
     
     @ViewBuilder private func PortionField() -> some View {

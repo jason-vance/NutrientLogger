@@ -8,23 +8,21 @@
 import Foundation
 import UIKit
 
-//TODO: MVP: Change birthdate to SimpleDate
-public struct User: Codable {
-    
-    public static var birthdateNotSet = Date.distantPast
+struct User: Codable {
     
     public var gender: Gender = Gender.unknown
-    public var birthdate: Date = birthdateNotSet
+    public var birthdate: SimpleDate? = nil
     public var preferredColorName: ColorName = ColorName.indigo
     public var preferredColor: UIColor { ColorPalettes.colorFrom(name: preferredColorName) }
 
-    public func getUserAge() -> TimeInterval {
+    public func getUserAge() -> TimeInterval? {
+        guard let birthdate = birthdate?.toDate() else { return nil }
         return Date.now.timeIntervalSince(birthdate)
     }
     
     public static let sample: User = .init(
         gender: .male,
-        birthdate: .from(year: 1987, month: 6, day: 16),
+        birthdate: .init(year: 1987, month: 6, day: 16),
         preferredColorName: .indigo
     )
 }

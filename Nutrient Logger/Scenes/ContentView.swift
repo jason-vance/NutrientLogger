@@ -39,6 +39,11 @@ struct ContentView: View {
                     FoodSearchView()
                 }
             }
+            Tab("Profile", systemImage: "person.crop.circle") {
+                NavigationStack {
+                    UserProfileView()
+                }
+            }
         }
     }
 

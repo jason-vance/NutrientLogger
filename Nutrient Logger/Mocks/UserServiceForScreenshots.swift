@@ -7,11 +7,11 @@
 
 import Foundation
 
-public class UserServiceForScreenshots: UserService {
+class UserServiceForScreenshots: UserService {
     public var currentUser: User {
         User(
             gender: .female,
-            birthdate: Date.from(year: 1988, month: 5, day: 15),
+            birthdate: .init(year: 1988, month: 5, day: 15),
             preferredColorName: ColorName.indigo)
     }
     

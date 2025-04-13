@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class MockUserService: UserService {
+class MockUserService: UserService {
     
     public var currentUser: User
     

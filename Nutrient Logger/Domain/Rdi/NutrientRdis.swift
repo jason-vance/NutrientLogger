@@ -25,7 +25,7 @@ class AbstractNutrientRdis: NutrientRdis {
 
     public func getRdi(_ user: User) -> LifeStageNutrientRdi? {
         let userGender = user.gender
-        let userAge = user.getUserAge()
+        guard let userAge = user.getUserAge() else { return nil }
 
         return getRdi(userGender, userAge)
     }

@@ -8,12 +8,12 @@
 import Foundation
 import UIKit
 
-public protocol UserService {
+protocol UserService {
     var currentUser: User { get }
     func save(user: User) async throws
 }
 
-public class DefaultUserService: UserService {
+class DefaultUserService: UserService {
     
     private var userFileDir: URL {
         get { FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! }
