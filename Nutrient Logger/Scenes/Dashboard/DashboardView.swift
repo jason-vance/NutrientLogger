@@ -93,6 +93,7 @@ struct DashboardView: View {
             .padding(.horizontal)
             IncrementDateButton()
         }
+        .bold()
     }
     
     @ViewBuilder private func DecrementDateButton() -> some View {
