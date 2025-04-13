@@ -8,6 +8,7 @@
 import SwiftUI
 import SwinjectAutoregistration
 
+//TODO: MVP: Save user data when it changes
 struct UserProfileView: View {
     
     private let userService = swinjectContainer~>UserService.self
@@ -23,6 +24,9 @@ struct UserProfileView: View {
     var body: some View {
         List {
             ProfileSettingsSection()
+            //TODO: Add custom nutrient goals
+            UserMealsSection()
+            NutrientLibrarySection()
         }
         .listDefaultModifiers()
         .navigationBarTitle("User Profile")
@@ -151,6 +155,50 @@ struct UserProfileView: View {
                         .stroke(.black, style: .init(lineWidth: 2))
                         .opacity(preferredColorName.wrappedValue == colorName ? 1 : 0)
                 }
+        }
+    }
+    
+    @ViewBuilder private func UserMealsSection() -> some View {
+        Section {
+            NavigationLink {
+                Text("My Recipes/Meals")
+//TODO: MVP: Navigate to UserMealsView()
+            } label: {
+                VStack {
+                    HStack {
+                        Text("My Recipes/Meals")
+                        Spacer()
+                    }
+                    HStack {
+                        Text("Group several food items together for easy logging")
+                        Spacer()
+                    }
+                    .font(.caption)
+                }
+            }
+            .listRowDefaultModifiers()
+        }
+    }
+    
+    @ViewBuilder private func NutrientLibrarySection() -> some View {
+        Section {
+            NavigationLink {
+                Text("NutrientLibraryView")
+//TODO: MVP: Navigate to NutrientLibraryView()
+            } label: {
+                VStack {
+                    HStack {
+                        Text("Browse Nutrients")
+                        Spacer()
+                    }
+                    HStack {
+                        Text("Learn about each nutrient and what kinds of foods contain them")
+                        Spacer()
+                    }
+                    .font(.caption)
+                }
+            }
+            .listRowDefaultModifiers()
         }
     }
 }
