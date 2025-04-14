@@ -10,8 +10,8 @@ import SwinjectAutoregistration
 
 struct DashboardNutrientRow: View {
     
-    private let userService = swinjectContainer~>UserService.self
-    private let rdiLibrary = swinjectContainer~>NutrientRdiLibrary.self
+    @Inject private var userService: UserService
+    @Inject private var rdiLibrary: NutrientRdiLibrary
     
     let nutrients: [NutrientFoodPair]
     

@@ -11,7 +11,7 @@ import SwinjectAutoregistration
 //TODO: MVP: Save user data when it changes
 struct UserProfileView: View {
     
-    private let userService = swinjectContainer~>UserService.self
+    @Inject private var userService: UserService
     
     @State private var user: User?
     

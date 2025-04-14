@@ -16,7 +16,7 @@ struct DashboardView: View {
     @State private var date: SimpleDate = .today
     @State private var foods: [FoodItem] = []
     
-    private let localDatabase: LocalDatabase = swinjectContainer~>LocalDatabase.self
+    @Inject private var localDatabase: LocalDatabase
     
     private func fetchFoods() {
         Task {

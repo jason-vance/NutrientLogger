@@ -66,13 +66,13 @@ struct FoodDetailsView: View {
     let foodId: Int
     let mode: Mode
     
-    private let localDatabase = swinjectContainer~>LocalDatabase.self
-    private let remoteDatabase = swinjectContainer~>RemoteDatabase.self
-    
-    private let user = (swinjectContainer~>UserService.self).currentUser
-    private let rdiLibrary = swinjectContainer~>NutrientRdiLibrary.self
-    
-    private let foodSaver = swinjectContainer~>FoodSaver.self
+    @Inject private var localDatabase: LocalDatabase
+    @Inject private var remoteDatabase: RemoteDatabase
+    @Inject private var userService: UserService
+    @Inject private var rdiLibrary: NutrientRdiLibrary
+    @Inject private var foodSaver: FoodSaver
+
+    private var user: User { userService.currentUser }
     
     private func show(alert: String) {
         showAlert = true

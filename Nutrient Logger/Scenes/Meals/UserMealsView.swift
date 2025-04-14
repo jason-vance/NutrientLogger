@@ -12,9 +12,9 @@ struct UserMealsView: View {
     
     @Environment(\.presentationMode) private var presentationMode
     
-    private let mealsDatabase = swinjectContainer~>UserMealsDatabase.self
-    private let analytics = swinjectContainer~>UserMealsAnalytics.self
-    
+    @Inject private var mealsDatabase: UserMealsDatabase
+    @Inject private var analytics: UserMealsAnalytics
+
     @State private var isLoading: Bool = true
     @State private var meals: [Meal]? = nil
     

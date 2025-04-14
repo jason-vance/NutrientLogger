@@ -93,10 +93,10 @@ struct FoodSearchView: View {
         }
     }
     
-    private let localDatabase = swinjectContainer~>LocalDatabase.self
-    private let remoteDatabase = swinjectContainer~>RemoteDatabase.self
-    private let userMealsDatabase = swinjectContainer~>UserMealsDatabase.self
-    private let analytics = swinjectContainer~>NutrientLoggerAnalytics.self
+    @Inject private var localDatabase: LocalDatabase
+    @Inject private var remoteDatabase: RemoteDatabase
+    @Inject private var userMealsDatabase: UserMealsDatabase
+    @Inject private var analytics: NutrientLoggerAnalytics
     
     @Environment(\.isSearching) private var isSearching
 

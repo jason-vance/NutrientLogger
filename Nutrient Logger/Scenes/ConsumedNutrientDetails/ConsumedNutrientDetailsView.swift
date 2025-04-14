@@ -18,17 +18,17 @@ struct ConsumedNutrientDetailsView: View {
     
     @Environment(\.presentationMode) private var presentationMode
     
-    private let adProvider = swinjectContainer~>AdProvider.self
-    private let nutrientRdiLibrary = swinjectContainer~>NutrientRdiLibrary.self
-    private let userService = swinjectContainer~>UserService.self
+    @Inject private var adProvider: AdProvider
+    @Inject private var nutrientRdiLibrary: NutrientRdiLibrary
+    @Inject private var userService: UserService
 
     @State private var isExplanationLoaded: Bool = false
     @State private var showExplanation: Bool = false
     @State private var infoString: AttributedString = ""
+    @State private var rdi: LifeStageNutrientRdi? = nil
     
     private let nutrient: Nutrient
     private let nutrientFoodPairs: [NutrientFoodPair]
-    private let rdi: LifeStageNutrientRdi?
     
     private var user: User { userService.currentUser }
 
@@ -100,6 +100,7 @@ struct ConsumedNutrientDetailsView: View {
     ) {
         self.nutrient = nutrient
         self.nutrientFoodPairs = nutrientFoodPairs
+        
         self.rdi = nutrientRdiLibrary.getRdis(nutrient.fdcNumber)?.getRdi(userService.currentUser)
     }
     

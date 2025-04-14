@@ -12,8 +12,8 @@ struct EditMealView: View {
     
     @Environment(\.presentationMode) private var presentationMode
     
-    private let mealsDatabase = swinjectContainer~>UserMealsDatabase.self
-    private let analytics = swinjectContainer~>UserMealsAnalytics.self
+    @Inject var mealsDatabase: UserMealsDatabase
+    @Inject var analytics: UserMealsAnalytics
     
     let meal: Meal?
     
