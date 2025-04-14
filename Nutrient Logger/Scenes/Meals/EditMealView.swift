@@ -8,6 +8,8 @@
 import SwiftUI
 import SwinjectAutoregistration
 
+//TODO: MVP: Save meal button
+//TODO: MVP: Discard confirmation dialog
 struct EditMealView: View {
     
     @Environment(\.presentationMode) private var presentationMode
@@ -15,13 +17,26 @@ struct EditMealView: View {
     @Inject var mealsDatabase: UserMealsDatabase
     @Inject var analytics: UserMealsAnalytics
     
-    let meal: Meal?
+    @State var meal: Meal?
     
     @State private var isLoading: Bool = true
     
+    private var mealNameBinding: Binding<String> {
+        .init(
+            get: { meal?.name ?? "" },
+            set: {
+                if let _ = meal {
+                    self.meal?.name = $0
+                } else {
+                    meal = Meal(name: $0)
+                }
+            }
+        )
+    }
+    
     var body: some View {
         List {
-            //TODO: MVP: Name Field
+            NameField()
             //TODO: MVP: Food List
             //TODO: MVP: Some Nutrition Facts?
         }
@@ -31,6 +46,7 @@ struct EditMealView: View {
         .overlay(alignment: .bottomTrailing) {
             AddFoodButton()
         }
+        .scrollDismissesKeyboard(.immediately)
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
@@ -56,6 +72,17 @@ struct EditMealView: View {
             //TODO: MVP: Navigate to FoodSearchView() { foods.append($0) }
             Text("FoodSearchView() { foods.append($0) }")
         }
+    }
+    
+    @ViewBuilder private func NameField() -> some View {
+        Section(header: Text("Meal Name")) {
+            TextField(
+                "Meal Name",
+                text: mealNameBinding,
+                axis: .vertical,
+            )
+        }
+        .listRowDefaultModifiers()
     }
 }
 

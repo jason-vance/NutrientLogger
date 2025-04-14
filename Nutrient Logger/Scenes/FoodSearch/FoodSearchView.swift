@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 import SwinjectAutoregistration
 
-//TODO: MVP: Make sure recently logged foods are getting fetched
 struct FoodSearchView: View {
     
     @Environment(\.modelContext) private var modelContext
