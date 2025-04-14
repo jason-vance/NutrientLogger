@@ -161,8 +161,7 @@ struct UserProfileView: View {
     @ViewBuilder private func UserMealsSection() -> some View {
         Section {
             NavigationLink {
-                Text("My Recipes/Meals")
-//TODO: MVP: Navigate to UserMealsView()
+                UserMealsView()
             } label: {
                 VStack {
                     HStack {

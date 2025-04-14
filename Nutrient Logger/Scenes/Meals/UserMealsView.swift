@@ -34,7 +34,12 @@ struct UserMealsView: View {
         List {
             if let meals = meals {
                 if meals.isEmpty {
-                    ContentUnavailableView("No Meals... Yet!", systemImage: "fryingpan")
+                    ContentUnavailableView(
+                        "No Meals... Yet!",
+                        systemImage: "frying.pan",
+                        description: Text("You haven't created any meals yet. Tap the plus (+) button in the bottom right corner to get started!")
+                    )
+                    .listRowDefaultModifiers()
                 } else {
                     ForEach(meals) { meal in
                         MealRow(meal)
@@ -83,8 +88,7 @@ struct UserMealsView: View {
     
     @ViewBuilder private func MealRow(_ meal: Meal) -> some View {
         NavigationLink {
-            //TODO: Navigate to EditMealView()
-            Text("EditMealView: \(meal.name)")
+            EditMealView(meal: meal)
         } label: {
             Text(meal.name)
         }
@@ -98,8 +102,7 @@ struct UserMealsView: View {
     
     @ViewBuilder private func AddMealButton() -> some View {
         NavigationFab(systemName: "plus") {
-            //TODO: Navigaite to EditMealView()
-            Text("EditMealView: new meal")
+            EditMealView(meal: nil)
         }
     }
 }
