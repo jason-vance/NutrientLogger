@@ -64,10 +64,10 @@ public class UserMealsSqliteDatabase: UserMealsDatabase {
     }
     
     private func putAllMealsAndFoodsIntoSearchableMeal(_ db: Connection) throws {
-        let menu = try getMenu()
+        let meals = try getMeals()
         
         try db.transaction {
-            for meal in menu.meals {
+            for meal in meals {
                 let insert = Tables.searchableMeal.insert(SearchableMealWrapper(meal, nil).setters)
                 try db.run(insert)
                 
@@ -167,13 +167,7 @@ public class UserMealsSqliteDatabase: UserMealsDatabase {
         return rvMeal
     }
     
-    public func getMenu() throws -> Menu {
-        let menu = Menu()
-        menu.add(try getMeals())
-        return menu
-    }
-    
-    private func getMeals() throws -> [Meal] {
+    public func getMeals() throws -> [Meal] {
         let db = try Connection(dbPath)
         
         var meals = [Meal]()

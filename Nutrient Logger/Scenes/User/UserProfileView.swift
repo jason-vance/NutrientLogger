@@ -76,7 +76,7 @@ struct UserProfileView: View {
         HStack {
             Text("Sex")
             Spacer()
-            SwiftUI.Menu {
+            Menu {
                 Button(Gender.male.rawValue) {
                     user?.gender = .male
                 }

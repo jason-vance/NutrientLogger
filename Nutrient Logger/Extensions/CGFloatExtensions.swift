@@ -12,4 +12,6 @@ extension CGFloat {
     static let cornerRadiusListRow: CGFloat = 8
     
     static let shadowRadiusDefault: CGFloat = 3
+    
+    static let fabButtonSize: CGFloat = 64
 }

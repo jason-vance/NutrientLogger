@@ -7,7 +7,8 @@
 
 import Foundation
 
-public struct Meal : DatabaseEntity {
+public struct Meal : DatabaseEntity, Identifiable {
+    
     public var id: Int = -1
     public var created: Date = Date.now
     public var name: String

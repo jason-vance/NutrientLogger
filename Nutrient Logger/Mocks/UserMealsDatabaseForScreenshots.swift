@@ -21,17 +21,14 @@ public class UserMealsDatabaseForScreenshots: UserMealsDatabase {
         ]
     }
     
-    public func getMenu() throws -> Menu {
+    public func getMeals() throws -> [Meal] {
         var meals = [Meal]()
         meals.append(Meal(id: 4, name: "Usual Weekday Breakfast" ))
         meals.append(Meal(id: 5, name: "Ultimate BLT" ))
         meals.append(Meal(id: 3, name: "Chicken Pasta Dinner" ))
         meals.append(try getMeal(0))
 
-        let menu = Menu()
-        menu.add(meals)
-
-        return menu
+        return meals
     }
     
     public func saveMeal(_ meal: Meal) throws {}

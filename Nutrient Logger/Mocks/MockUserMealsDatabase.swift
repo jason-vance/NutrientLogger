@@ -15,18 +15,17 @@ public class MockUserMealsDatabase: UserMealsDatabase {
     public var savedMealDeletes = [MealDelete]()
     public var savedFoodDeletes = [FoodDelete]()
 
-    public var menuToReturnForGetMenu = Menu()
     public var mealToReturnForGetMeal = Meal(name: "Meal")
     
     public var errorToThrow: Error?
     
     public func search(_ query: String) throws -> [UserMealsSearchableMeal] { [] }
-
-    public func getMenu() throws -> Menu {
+    
+    public func getMeals() throws -> [Meal] {
         if let error = errorToThrow {
             throw error
         }
-        return menuToReturnForGetMenu
+        return [mealToReturnForGetMeal]
     }
 
     public func saveMeal(_ meal: Meal) throws {

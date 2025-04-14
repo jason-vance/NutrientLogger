@@ -338,7 +338,7 @@ struct FoodDetailsView: View {
         HStack {
             Text("Portion")
             Spacer()
-            SwiftUI.Menu {
+            Menu {
                 ForEach(portions, id: \.self) { portion in
                     Button(portion.name) {
                         selectedPortion = portion
@@ -402,7 +402,7 @@ struct FoodDetailsView: View {
         HStack {
             Text("Meal Time")
             Spacer()
-            SwiftUI.Menu {
+            Menu {
                 ForEach(MealTime.validFields, id: \.self) { mealTime in
                     Button(mealTime.rawValue) {
                         selectedMealTime = mealTime

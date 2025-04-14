@@ -147,7 +147,6 @@
 				Scenes/Meals/Domain/Meal.swift,
 				Scenes/Meals/Domain/MealDelete.swift,
 				Scenes/Meals/Domain/MealRename.swift,
-				Scenes/Meals/Domain/Menu.swift,
 				Scenes/Meals/Workers/UserMealsDatabase.swift,
 				Scenes/User/Domain/Gender.swift,
 				Scenes/User/Domain/User.swift,
