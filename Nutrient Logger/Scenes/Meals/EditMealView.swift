@@ -21,6 +21,10 @@ struct EditMealView: View {
     
     @State private var isLoading: Bool = true
     
+    private var hasFoods: Bool {
+        meal?.anyFoods ?? false
+    }
+    
     private var mealNameBinding: Binding<String> {
         .init(
             get: { meal?.name ?? "" },
@@ -37,6 +41,7 @@ struct EditMealView: View {
     var body: some View {
         List {
             NameField()
+            FoodsSection()
             //TODO: MVP: Food List
             //TODO: MVP: Some Nutrition Facts?
         }
@@ -83,6 +88,24 @@ struct EditMealView: View {
             )
         }
         .listRowDefaultModifiers()
+    }
+    
+    @ViewBuilder private func FoodsSection() -> some View {
+        Section(header: Text("Foods")) {
+            if hasFoods {
+                ForEach(meal!.foodPortionPairs) { food in
+                    //TODO: MVP: Make a EditMealFoodRow()
+                    Text(food.foodName)
+                }
+            } else {
+                ContentUnavailableView(
+                    "Add Some Foods!",
+                    systemImage: "carrot",
+                    description: Text("You haven't added any foods to this meal yet. Tap the plus (+) button in the bottom right corner to get started!")
+                )
+                .listRowDefaultModifiers()
+            }
+        }
     }
 }
 
