@@ -8,7 +8,6 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Make meal editing work
 //TODO: MVP: Discard confirmation dialog
 struct EditMealView: View {
     
@@ -18,6 +17,7 @@ struct EditMealView: View {
     @Inject var analytics: UserMealsAnalytics
     
     private let meal: Meal?
+    @State private var isPrepopulated: Bool = false
     @State var mealName: String = ""
     @State var foodsWithPortions: [Meal.FoodWithPortion] = []
     
@@ -37,10 +37,24 @@ struct EditMealView: View {
         !foodsWithPortions.isEmpty
     }
     
+    private func prepopulateMeal() {
+        if let meal = meal, !isPrepopulated {
+            self.mealName = meal.name
+            self.foodsWithPortions = meal.foodsWithPortions
+            
+            isPrepopulated = true
+        }
+    }
+    
     private func saveMeal() {
-        let meal = Meal(name: mealName)
-        meal.addFoods(foodsWithPortions)
-        modelContext.insert(meal)
+        if let meal = meal {
+            meal.name = mealName
+            meal.foodsWithPortions = foodsWithPortions
+        } else {
+            let meal = Meal(name: mealName)
+            meal.addFoods(foodsWithPortions)
+            modelContext.insert(meal)
+        }
         
         presentationMode.wrappedValue.dismiss()
     }
@@ -74,6 +88,7 @@ struct EditMealView: View {
                 }
             }
         }
+        .onAppear { prepopulateMeal() }
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {

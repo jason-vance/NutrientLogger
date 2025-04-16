@@ -11,18 +11,18 @@ import SwiftData
 @Model
 class Meal: Identifiable {
     
-    public var created: Date = Date.now
-    public var name: String
+    var created: Date = Date.now
+    var name: String
     
     @Relationship(deleteRule: .cascade)
-    private var foods: [FoodWithPortion] = []
+    var foodsWithPortions: [FoodWithPortion] = []
     
     public init(name: String) {
         self.name = name
     }
     
     public var foodCount: Int {
-        get { foods.count }
+        get { foodsWithPortions.count }
     }
 
     public func equalNameAndFoodCount(_ other: Meal) -> Bool {
@@ -31,7 +31,7 @@ class Meal: Identifiable {
     }
 
     public var anyFoods: Bool {
-        get { !foods.isEmpty }
+        get { !foodsWithPortions.isEmpty }
     }
 
     public func addFood(_ foodWithPortion: FoodWithPortion) {
@@ -39,11 +39,7 @@ class Meal: Identifiable {
     }
 
     public func addFoods(_ foods: [FoodWithPortion]) {
-        self.foods.append(contentsOf: foods)
-    }
-
-    public var foodPortionPairs: [FoodWithPortion] {
-        get { foods }
+        self.foodsWithPortions.append(contentsOf: foods)
     }
 
     @Model
@@ -51,7 +47,7 @@ class Meal: Identifiable {
         
         public var created: Date = Date.now
         
-        @Relationship(inverse: \Meal.foods)
+        @Relationship(inverse: \Meal.foodsWithPortions)
         public var meal: Meal?
         
         public var foodFdcId: Int
