@@ -8,6 +8,7 @@
 import SwiftUI
 import SwinjectAutoregistration
 
+//TODO: MVP: Remove mealTime when adding to meal
 //TODO: MVP: Add a toast-like notification for when a food is successfully saved
 struct FoodDetailsView: View {
     

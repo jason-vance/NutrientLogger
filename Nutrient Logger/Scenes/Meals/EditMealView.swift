@@ -8,13 +8,13 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Save meal button
+//TODO: MVP: Make meal editing work
 //TODO: MVP: Discard confirmation dialog
 struct EditMealView: View {
     
     @Environment(\.presentationMode) private var presentationMode
-    
-    @Inject var mealsDatabase: UserMealsDatabase
+    @Environment(\.modelContext) private var modelContext
+
     @Inject var analytics: UserMealsAnalytics
     
     private let meal: Meal?
@@ -37,11 +37,23 @@ struct EditMealView: View {
         !foodsWithPortions.isEmpty
     }
     
+    private func saveMeal() {
+        let meal = Meal(name: mealName)
+        meal.addFoods(foodsWithPortions)
+        modelContext.insert(meal)
+        
+        presentationMode.wrappedValue.dismiss()
+    }
+    
+    private var canSave: Bool {
+        !mealName.isEmpty
+        && hasFoods
+    }
+    
     var body: some View {
         List {
             NameField()
             FoodsSection()
-            //TODO: MVP: Food List
             //TODO: MVP: Some Nutrition Facts?
         }
         .listDefaultModifiers()
@@ -72,6 +84,9 @@ struct EditMealView: View {
         ToolbarItem(placement: .topBarLeading) {
             BackButton()
         }
+        ToolbarItem(placement: .topBarTrailing) {
+            SaveButton()
+        }
     }
     
     @ViewBuilder private func BackButton() -> some View {
@@ -80,6 +95,15 @@ struct EditMealView: View {
         } label: {
             Image(systemName: "arrow.backward")
         }
+    }
+    
+    @ViewBuilder private func SaveButton() -> some View {
+        Button {
+            saveMeal()
+        } label: {
+            Image(systemName: "checkmark")
+        }
+        .disabled(!canSave)
     }
     
     @ViewBuilder private func AddFoodButton() -> some View {
@@ -138,7 +162,6 @@ struct EditMealView: View {
 }
 
 #Preview {
-    let _ = swinjectContainer.autoregister(UserMealsDatabase.self) {UserMealsDatabaseForScreenshots()}
     let _ = swinjectContainer.autoregister(UserMealsAnalytics.self) {MockUserMealsAnalytics()}
     let _ = swinjectContainer.autoregister(LocalDatabase.self) { LocalDatabaseForScreenshots() }
     let _ = swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }

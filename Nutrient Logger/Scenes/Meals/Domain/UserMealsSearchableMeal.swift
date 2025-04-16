@@ -7,11 +7,19 @@
 
 import Foundation
 
-public struct UserMealsSearchableMeal: Equatable {
-    public var mealId: Int
+struct UserMealsSearchableMeal: Equatable {
+    public var meal: Meal
     public var foodId: Int
-    public var mealName: String
     public var foodName: String
     public var rank: Double
+    
+    var mealName: String { meal.name }
+    
+    init(meal: Meal) {
+        self.meal = meal
+        self.foodId = -1
+        self.foodName = ""
+        self.rank = 0
+    }
 }
 

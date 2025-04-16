@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 import SwinjectAutoregistration
 
+//TODO: Add recently searched to meal food searching?
 //TODO: Auto focus search bar
 struct FoodSearchView: View {
     
@@ -66,6 +67,7 @@ struct FoodSearchView: View {
         }
     }
     
+    @Query private var meals: [Meal]
     @Query private var recentSearches: [RecentSearch]
 
     enum SearchResult: Identifiable, Equatable {
@@ -81,7 +83,7 @@ struct FoodSearchView: View {
             case .recentlyLoggedFood(let food): return "recentlyLoggedFood-\(food.fdcId)"
             case .fdcFood(let food): return "fdcFood-\(food.fdcId)"
             case .fdcNutrient(let nutrient): return "fdcNutrient-\(nutrient.fdcId)"
-            case .userMeal(let meal): return "userMeal-\(meal.mealId)"
+            case .userMeal(let meal): return "userMeal-\(meal.meal.id)"
             }
         }
         
@@ -137,7 +139,6 @@ struct FoodSearchView: View {
     
     @Inject private var localDatabase: LocalDatabase
     @Inject private var remoteDatabase: RemoteDatabase
-    @Inject private var userMealsDatabase: UserMealsDatabase
     @Inject private var analytics: NutrientLoggerAnalytics
     
     @Environment(\.isSearching) private var isSearching
@@ -287,14 +288,11 @@ struct FoodSearchView: View {
     }
     
     private func searchUserMeals(_ query: String) async -> [SearchResult] {
-        do {
-            return try userMealsDatabase
-                .search(query)
-                .map { SearchResult.userMeal($0) }
-        } catch {
-            print("Could not complete meal search: \(error.localizedDescription)")
-        }
-        return []
+        let tokens = query.split(separator: " ")
+        return meals
+            .filter { $0.name.containsAny(of: tokens) }
+            .map { UserMealsSearchableMeal(meal: $0) }
+            .map { SearchResult.userMeal($0) }
     }
     
     //TODO: MVP: Uncomment this when ready for review prompting
@@ -495,7 +493,6 @@ struct FoodSearchView: View {
 #Preview {
     let _ = swinjectContainer.autoregister(LocalDatabase.self) { LocalDatabaseForScreenshots() }
     let _ = swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
-    let _ = swinjectContainer.autoregister(UserMealsDatabase.self) { UserMealsDatabaseForScreenshots() }
     let _ = swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { MockNutrientLoggerAnalytics() }
 
     NavigationStack {

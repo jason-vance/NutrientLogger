@@ -33,6 +33,7 @@ protocol UserMealsAnalytics {
     func mealDeletingFailed(_ error: Error)
 }
 
+//TODO: Make sure these are being used
 protocol UserMealAnalytics {
     func loadMealFailed(_ error: Error)
     func foodAddedToMeal(_ food: FoodItem)

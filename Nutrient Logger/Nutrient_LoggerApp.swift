@@ -12,7 +12,8 @@ import SwiftData
 struct Nutrient_LoggerApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            FoodSearchView.RecentSearch.self
+            FoodSearchView.RecentSearch.self,
+            Meal.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

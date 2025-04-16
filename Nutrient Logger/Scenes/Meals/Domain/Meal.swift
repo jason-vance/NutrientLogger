@@ -6,23 +6,21 @@
 //
 
 import Foundation
+import SwiftData
 
-public struct Meal : DatabaseEntity, Identifiable {
+@Model
+class Meal: Identifiable {
     
-    public var id: Int = -1
     public var created: Date = Date.now
     public var name: String
-    private var foods: [FoodWithPortion] = []
     
-    public init(id: Int, name: String) {
-        self.id = id
-        self.name = name
-    }
+    @Relationship(deleteRule: .cascade)
+    private var foods: [FoodWithPortion] = []
     
     public init(name: String) {
         self.name = name
     }
-
+    
     public var foodCount: Int {
         get { foods.count }
     }
@@ -36,11 +34,11 @@ public struct Meal : DatabaseEntity, Identifiable {
         get { !foods.isEmpty }
     }
 
-    public mutating func addFood(_ foodWithPortion: FoodWithPortion) {
+    public func addFood(_ foodWithPortion: FoodWithPortion) {
         addFoods([ foodWithPortion ])
     }
 
-    public mutating func addFoods(_ foods: [FoodWithPortion]) {
+    public func addFoods(_ foods: [FoodWithPortion]) {
         self.foods.append(contentsOf: foods)
     }
 
@@ -48,10 +46,14 @@ public struct Meal : DatabaseEntity, Identifiable {
         get { foods }
     }
 
-    public struct FoodWithPortion : DatabaseEntity, Equatable {
-        public var id: Int = -1
+    @Model
+    class FoodWithPortion: Equatable {
+        
         public var created: Date = Date.now
-        public var mealId: Int
+        
+        @Relationship(inverse: \Meal.foods)
+        public var meal: Meal?
+        
         public var foodFdcId: Int
         public var foodName: String
         public var portionAmount: Double
@@ -60,15 +62,13 @@ public struct Meal : DatabaseEntity, Identifiable {
         
         public init(foodFdcId: Int) {
             self.foodFdcId = foodFdcId
-            mealId = -1
             foodName = ""
             portionAmount = 0
             portionGramWeight = 0
             portionName = ""
         }
         
-        public init(mealId: Int, foodFdcId: Int, foodName: String, portionAmount: Double, portionGramWeight: Double, portionName: String) {
-            self.mealId = mealId
+        public init(foodFdcId: Int, foodName: String, portionAmount: Double, portionGramWeight: Double, portionName: String) {
             self.foodFdcId = foodFdcId
             self.foodName = foodName
             self.portionAmount = portionAmount
@@ -77,18 +77,11 @@ public struct Meal : DatabaseEntity, Identifiable {
         }
         
         init(food: FoodItem, portion: Portion) {
-            self.mealId = -1
             self.foodFdcId = food.fdcId
             self.foodName = food.name
             self.portionAmount = portion.amount
             self.portionGramWeight = portion.gramWeight
             self.portionName = portion.name
-        }
-        
-        public func withId(_ id: Int) -> FoodWithPortion {
-            var copy = self
-            copy.id = id
-            return copy
         }
     }
 }

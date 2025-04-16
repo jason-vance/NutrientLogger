@@ -7,43 +7,29 @@
 
 import SwiftUI
 import SwinjectAutoregistration
+import SwiftData
 
 struct UserMealsView: View {
     
     @Environment(\.presentationMode) private var presentationMode
     
-    @Inject private var mealsDatabase: UserMealsDatabase
     @Inject private var analytics: UserMealsAnalytics
 
     @State private var isLoading: Bool = true
-    @State private var meals: [Meal]? = nil
+    @Query private var meals: [Meal]
     
-    private func fetchMeals() {
-        isLoading = true
-        Task {
-            do {
-                meals = try mealsDatabase.getMeals()
-            } catch {
-                print("Failed to fetch meals: \(error)")
-            }
-            isLoading = false
-        }
-    }
-
     var body: some View {
         List {
-            if let meals = meals {
-                if meals.isEmpty {
-                    ContentUnavailableView(
-                        "No Meals... Yet!",
-                        systemImage: "frying.pan",
-                        description: Text("You haven't created any meals yet. Tap the plus (+) button in the bottom right corner to get started!")
-                    )
-                    .listRowDefaultModifiers()
-                } else {
-                    ForEach(meals) { meal in
-                        MealRow(meal)
-                    }
+            if meals.isEmpty {
+                ContentUnavailableView(
+                    "No Meals... Yet!",
+                    systemImage: "frying.pan",
+                    description: Text("You haven't created any meals yet. Tap the plus (+) button in the bottom right corner to get started!")
+                )
+                .listRowDefaultModifiers()
+            } else {
+                ForEach(meals) { meal in
+                    MealRow(meal)
                 }
             }
             SpaceForFab()
@@ -51,20 +37,8 @@ struct UserMealsView: View {
         .listDefaultModifiers()
         .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
-        .onAppear { fetchMeals() }
         .overlay(alignment: .bottomTrailing) {
             AddMealButton()
-        }
-        .overlay {
-            if isLoading {
-                ZStack {
-                    Rectangle()
-                        .fill(.regularMaterial)
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                }
-                .ignoresSafeArea()
-            }
         }
     }
     
@@ -108,7 +82,6 @@ struct UserMealsView: View {
 }
 
 #Preview {
-    let _ = swinjectContainer.autoregister(UserMealsDatabase.self) {UserMealsDatabaseForScreenshots()}
     let _ = swinjectContainer.autoregister(UserMealsAnalytics.self) {MockUserMealsAnalytics()}
 
     NavigationStack {
