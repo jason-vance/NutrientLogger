@@ -9,7 +9,7 @@ import Foundation
 
 extension String {
     
-    func containsAny(of strs: [any StringProtocol]) -> Bool {
-        strs.first { self.contains($0) } != nil
+    func caseInsensitiveContainsAny(of strs: [any StringProtocol]) -> Bool {
+        strs.first { self.localizedCaseInsensitiveContains($0) } != nil
     }
 }

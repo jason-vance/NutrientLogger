@@ -290,7 +290,7 @@ struct FoodSearchView: View {
     private func searchUserMeals(_ query: String) async -> [SearchResult] {
         let tokens = query.split(separator: " ")
         return meals
-            .filter { $0.name.containsAny(of: tokens) }
+            .filter { $0.name.caseInsensitiveContainsAny(of: tokens) }
             .map { UserMealsSearchableMeal(meal: $0) }
             .map { SearchResult.userMeal($0) }
     }
