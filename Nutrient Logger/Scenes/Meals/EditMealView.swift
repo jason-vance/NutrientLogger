@@ -8,6 +8,7 @@
 import SwiftUI
 import SwinjectAutoregistration
 
+//TODO: MVP: Dismiss FoodSearchView when a food is added
 //TODO: MVP: Save meal button
 //TODO: MVP: Discard confirmation dialog
 struct EditMealView: View {
@@ -17,25 +18,22 @@ struct EditMealView: View {
     @Inject var mealsDatabase: UserMealsDatabase
     @Inject var analytics: UserMealsAnalytics
     
-    @State var meal: Meal?
+    private let meal: Meal?
+    @State var mealName: String = ""
+    @State var foodsWithPortions: [Meal.FoodWithPortion] = []
+    
+    init(mealToEdit meal: Meal) {
+        self.meal = meal
+    }
+    
+    init() {
+        self.meal = nil
+    }
     
     @State private var isLoading: Bool = true
     
     private var hasFoods: Bool {
-        meal?.anyFoods ?? false
-    }
-    
-    private var mealNameBinding: Binding<String> {
-        .init(
-            get: { meal?.name ?? "" },
-            set: {
-                if let _ = meal {
-                    self.meal?.name = $0
-                } else {
-                    meal = Meal(name: $0)
-                }
-            }
-        )
+        !foodsWithPortions.isEmpty
     }
     
     var body: some View {
@@ -52,11 +50,12 @@ struct EditMealView: View {
             AddFoodButton()
         }
         .scrollDismissesKeyboard(.immediately)
+        .animation(.snappy, value: meal)
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
-            Text(meal?.name ?? "New Meal")
+            Text(mealName)
                 .bold()
         }
         ToolbarItem(placement: .topBarLeading) {
@@ -65,17 +64,20 @@ struct EditMealView: View {
     }
     
     @ViewBuilder private func BackButton() -> some View {
-        Button(action: {
+        Button {
             presentationMode.wrappedValue.dismiss()
-        }) {
+        } label: {
             Image(systemName: "arrow.backward")
         }
     }
     
     @ViewBuilder private func AddFoodButton() -> some View {
         NavigationFab(systemName: "plus") {
-            //TODO: MVP: Navigate to FoodSearchView() { foods.append($0) }
-            Text("FoodSearchView() { foods.append($0) }")
+            FoodSearchView(
+                searchFunction: .addFoodToMeal
+            ) { food, portion in
+                foodsWithPortions.append(.init(food: food, portion: portion))
+            }
         }
     }
     
@@ -83,9 +85,10 @@ struct EditMealView: View {
         Section(header: Text("Meal Name")) {
             TextField(
                 "Meal Name",
-                text: mealNameBinding,
+                text: $mealName,
                 axis: .vertical,
             )
+            .textFieldStyle(.roundedBorder)
         }
         .listRowDefaultModifiers()
     }
@@ -93,9 +96,11 @@ struct EditMealView: View {
     @ViewBuilder private func FoodsSection() -> some View {
         Section(header: Text("Foods")) {
             if hasFoods {
-                ForEach(meal!.foodPortionPairs) { food in
-                    //TODO: MVP: Make a EditMealFoodRow()
-                    Text(food.foodName)
+                ForEach(foodsWithPortions) { food in
+                    FoodRow(food)
+                }
+                .onDelete {
+                    foodsWithPortions.remove(atOffsets: $0)
                 }
             } else {
                 ContentUnavailableView(
@@ -107,13 +112,34 @@ struct EditMealView: View {
             }
         }
     }
+    
+    @ViewBuilder private func FoodRow(_ foodWithPortion: Meal.FoodWithPortion) -> some View {
+        VStack {
+            HStack {
+                Text(foodWithPortion.foodName)
+                    .bold()
+                Spacer()
+            }
+            HStack {
+                Text("\(foodWithPortion.portionAmount.formatted()) \(foodWithPortion.portionName)")
+                    .font(.caption)
+                Spacer()
+            }
+        }
+        .listRowDefaultModifiers()
+    }
 }
 
 #Preview {
     let _ = swinjectContainer.autoregister(UserMealsDatabase.self) {UserMealsDatabaseForScreenshots()}
     let _ = swinjectContainer.autoregister(UserMealsAnalytics.self) {MockUserMealsAnalytics()}
-    
+    let _ = swinjectContainer.autoregister(LocalDatabase.self) { LocalDatabaseForScreenshots() }
+    let _ = swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
+    let _ = swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { MockNutrientLoggerAnalytics() }
+    let _ = swinjectContainer.autoregister(UserService.self) { UserServiceForScreenshots() }
+    let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) { UsdaNutrientRdiLibrary.create() }
+
     NavigationStack {
-        EditMealView(meal: nil)
+        EditMealView()
     }
 }

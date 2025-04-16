@@ -6,10 +6,9 @@
 //
 
 import Foundation
+import SwinjectAutoregistration
 
-class ConsumedFoodSaver: FoodSaver {
-    
-    public var foodSaverType: FoodSaverType { .consumedFoodSaver }
+class ConsumedFoodSaverDelegate: FoodSaverDelegate {
     
     public var needsPortion: Bool { true }
     
@@ -37,4 +36,13 @@ class ConsumedFoodSaver: FoodSaver {
             throw error
         }
     }
+}
+
+extension FoodSaver {
+    static let forConsumedFoods: FoodSaver = FoodSaver(
+        delegate: ConsumedFoodSaverDelegate(
+            localDatabase: swinjectContainer~>LocalDatabase.self,
+            analytics: swinjectContainer~>ConsumedFoodSaverAnalytics.self
+        )
+    )
 }

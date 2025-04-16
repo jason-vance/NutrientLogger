@@ -9,7 +9,48 @@ import SwiftUI
 import SwiftData
 import SwinjectAutoregistration
 
+//TODO: Auto focus search bar
 struct FoodSearchView: View {
+    
+    enum SearchFunction {
+        case defaultSearchFunction
+        case addFoodToMeal
+        
+        var shouldIncludeRecentSearches: Bool {
+            switch self {
+            case .defaultSearchFunction: return true
+            case .addFoodToMeal: return false
+            }
+        }
+        
+        var shouldIncludeRecentlyLoggedFoods: Bool {
+            switch self {
+            case .defaultSearchFunction: return true
+            case .addFoodToMeal: return true
+            }
+        }
+        
+        var shouldIncludeFdcFoods: Bool {
+            switch self {
+            case .defaultSearchFunction: return true
+            case .addFoodToMeal: return true
+            }
+        }
+        
+        var shouldIncludeFdcNutrients: Bool {
+            switch self {
+            case .defaultSearchFunction: return true
+            case .addFoodToMeal: return false
+            }
+        }
+        
+        var shouldIncludeUserMeals: Bool {
+            switch self {
+            case .defaultSearchFunction: return true
+            case .addFoodToMeal: return false
+            }
+        }
+    }
     
     @Environment(\.modelContext) private var modelContext
     
@@ -92,6 +133,7 @@ struct FoodSearchView: View {
         }
     }
     
+    
     @Inject private var localDatabase: LocalDatabase
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var userMealsDatabase: UserMealsDatabase
@@ -105,20 +147,57 @@ struct FoodSearchView: View {
     
     @State private var searchResults: [SearchResult] = []
     
+    let searchFunction: SearchFunction
+    let onFoodSaved: (FoodItem, Portion) throws -> Void
+
     private var groupedSearchResults: [SearchResultsSection] {
         [
-            .init(name: "Recent Searches", symbol: "magnifyingglass", results: searchResults.filter { $0.isRecentSearch }),
-            .init(name: "Recently Logged", symbol: "arrow.clockwise.circle", results: searchResults.filter { $0.isRecentlyLoggedFood }),
-            .init(name: "Nutrients", symbol: "atom", results: searchResults.filter { $0.isFdcNutrient }),
-            .init(name: "Your Resuable Meals", symbol: "frying.pan", results: searchResults.filter { $0.isUserMeal }),
-            .init(name: "Foods", symbol: "carrot", results: searchResults.filter { $0.isFdcFood }),
+            .init(
+                name: "Recent Searches",
+                symbol: "magnifyingglass",
+                results: searchResults.filter {
+                    $0.isRecentSearch && searchFunction.shouldIncludeRecentSearches
+                }
+            ),
+            .init(
+                name: "Recently Logged",
+                symbol: "arrow.clockwise.circle",
+                results: searchResults.filter {
+                    $0.isRecentlyLoggedFood && searchFunction.shouldIncludeRecentlyLoggedFoods
+                }
+            ),
+            .init(
+                name: "Nutrients",
+                symbol: "atom",
+                results: searchResults.filter {
+                    $0.isFdcNutrient && searchFunction.shouldIncludeFdcNutrients
+                }
+            ),
+            .init(
+                name: "Your Resuable Meals",
+                symbol: "frying.pan",
+                results: searchResults.filter {
+                    $0.isUserMeal && searchFunction.shouldIncludeUserMeals
+                }
+            ),
+            .init(
+                name: "Foods",
+                symbol: "carrot",
+                results: searchResults.filter {
+                    $0.isFdcFood && searchFunction.shouldIncludeFdcFoods
+                }
+            ),
         ]
     }
     
     private func fetchInitialSuggestions() {
         if searchResults.isEmpty {
-            searchResults.append(contentsOf: fetchRecentSearches())
-            searchResults.append(contentsOf: fetchRecentlyLoggedFoods())
+            if searchFunction.shouldIncludeRecentSearches {
+                searchResults.append(contentsOf: fetchRecentSearches())
+            }
+            if searchFunction.shouldIncludeRecentlyLoggedFoods {
+                searchResults.append(contentsOf: fetchRecentlyLoggedFoods())
+            }
         }
     }
     
@@ -149,9 +228,15 @@ struct FoodSearchView: View {
         isLoading = true
         Task {
             searchResults = await withTaskGroup(of: Array<SearchResult>.self) { group in
-                group.addTask { await self.searchForRemoteFoods(searchText) }
-                group.addTask { await self.searchUserMeals(searchText) }
-                group.addTask { await self.searchRemoteNutrients(searchText) }
+                if searchFunction.shouldIncludeFdcFoods {
+                    group.addTask { await self.searchForRemoteFoods(searchText) }
+                }
+                if searchFunction.shouldIncludeUserMeals {
+                    group.addTask { await self.searchUserMeals(searchText) }
+                }
+                if searchFunction.shouldIncludeFdcNutrients {
+                    group.addTask { await self.searchRemoteNutrients(searchText) }
+                }
                 
                 var results: [SearchResult] = []
                 for await result in group {
@@ -241,6 +326,14 @@ struct FoodSearchView: View {
         }.value
     }
     
+    init(
+        searchFunction: SearchFunction = .defaultSearchFunction,
+        onFoodSaved: @escaping (FoodItem, Portion) throws -> Void
+    ) {
+        self.searchFunction = searchFunction
+        self.onFoodSaved = onFoodSaved
+    }
+    
     var body: some View {
         List {
             if searchResults.isEmpty && hasSearched && !isLoading {
@@ -326,7 +419,11 @@ struct FoodSearchView: View {
     
     @ViewBuilder private func RecentlyLoggedFoodRow(_ food: FoodItem) -> some View {
         NavigationLink {
-            FoodDetailsView(foodId: food.fdcId, mode: .searchResult)
+            FoodDetailsView(
+                foodId: food.fdcId,
+                mode: .searchResult,
+                onFoodSaved: onFoodSaved
+            )
         } label: {
             HStack {
                 Text(food.name)
@@ -338,7 +435,11 @@ struct FoodSearchView: View {
     
     @ViewBuilder private func FdcFoodRow(_ food: FdcSearchableFood) -> some View {
         NavigationLink {
-            FoodDetailsView(foodId: food.fdcId, mode: .searchResult)
+            FoodDetailsView(
+                foodId: food.fdcId,
+                mode: .searchResult,
+                onFoodSaved: onFoodSaved
+            )
         } label: {
             HStack {
                 Text(food.description)
@@ -384,6 +485,6 @@ struct FoodSearchView: View {
     let _ = swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { MockNutrientLoggerAnalytics() }
 
     NavigationStack {
-        FoodSearchView()
+        FoodSearchView(onFoodSaved: FoodSaver.mock.saveFoodItem)
     }
 }

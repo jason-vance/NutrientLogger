@@ -7,19 +7,33 @@
 
 import Foundation
 
-enum FoodSaverType {
-    case consumedFoodSaver
-    case mealFoodSaver
-}
-
 enum FoodSaverErrors: Error {
     case mealIdNotSet
 }
 
-protocol FoodSaver {
-    var foodSaverType: FoodSaverType { get }
+protocol FoodSaverDelegate {
     var needsPortion: Bool { get }
     var needsDateTime: Bool { get }
     
     func saveFoodItem(_ food: FoodItem, _ portion: Portion) throws
+}
+
+class FoodSaver: ObservableObject {
+    var delegate: FoodSaverDelegate
+    
+    init(delegate: FoodSaverDelegate) {
+        self.delegate = delegate
+    }
+    
+    var needsPortion: Bool {
+        delegate.needsPortion
+    }
+    
+    var needsDateTime: Bool {
+        delegate.needsDateTime
+    }
+    
+    func saveFoodItem(_ food: FoodItem, _ portion: Portion) throws {
+        try delegate.saveFoodItem(food, portion)
+    }
 }

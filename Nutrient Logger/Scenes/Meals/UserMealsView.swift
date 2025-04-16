@@ -88,7 +88,7 @@ struct UserMealsView: View {
     
     @ViewBuilder private func MealRow(_ meal: Meal) -> some View {
         NavigationLink {
-            EditMealView(meal: meal)
+            EditMealView(mealToEdit: meal)
         } label: {
             Text(meal.name)
         }
@@ -102,7 +102,7 @@ struct UserMealsView: View {
     
     @ViewBuilder private func AddMealButton() -> some View {
         NavigationFab(systemName: "plus") {
-            EditMealView(meal: nil)
+            EditMealView()
         }
     }
 }

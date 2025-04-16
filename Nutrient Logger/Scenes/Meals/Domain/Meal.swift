@@ -48,7 +48,7 @@ public struct Meal : DatabaseEntity, Identifiable {
         get { foods }
     }
 
-    public struct FoodWithPortion : DatabaseEntity {
+    public struct FoodWithPortion : DatabaseEntity, Equatable {
         public var id: Int = -1
         public var created: Date = Date.now
         public var mealId: Int
@@ -76,6 +76,15 @@ public struct Meal : DatabaseEntity, Identifiable {
             self.portionName = portionName
         }
         
+        init(food: FoodItem, portion: Portion) {
+            self.mealId = -1
+            self.foodFdcId = food.fdcId
+            self.foodName = food.name
+            self.portionAmount = portion.amount
+            self.portionGramWeight = portion.gramWeight
+            self.portionName = portion.name
+        }
+        
         public func withId(_ id: Int) -> FoodWithPortion {
             var copy = self
             copy.id = id
@@ -84,6 +93,4 @@ public struct Meal : DatabaseEntity, Identifiable {
     }
 }
 
-public extension Meal {
-    
-}
+extension Meal: Equatable { }

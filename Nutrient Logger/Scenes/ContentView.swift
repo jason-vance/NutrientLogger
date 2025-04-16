@@ -36,7 +36,7 @@ struct ContentView: View {
             }
             Tab("Search", systemImage: "magnifyingglass") {
                 NavigationStack {
-                    FoodSearchView()
+                    FoodSearchView(onFoodSaved: FoodSaver.forConsumedFoods.saveFoodItem)
                 }
             }
             Tab("Profile", systemImage: "person.crop.circle") {

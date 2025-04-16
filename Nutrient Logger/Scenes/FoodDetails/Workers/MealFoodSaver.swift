@@ -6,13 +6,12 @@
 //
 
 import Foundation
+import SwinjectAutoregistration
 
-class MealFoodSaver: FoodSaver {
+class MealFoodSaverDelegate: FoodSaverDelegate {
 
     private let unknownId = -1
 
-    public var foodSaverType: FoodSaverType { .mealFoodSaver }
-    
     public var needsPortion: Bool { true }
     
     public var needsDateTime: Bool { false }
@@ -56,5 +55,16 @@ class MealFoodSaver: FoodSaver {
             portionName: portion.name
         )
     }
-    
+}
+
+extension FoodSaver {
+    static func forMeal(_ meal: Meal) -> FoodSaver {
+        FoodSaver(
+            delegate: MealFoodSaverDelegate(
+                meal: meal,
+                db: swinjectContainer~>UserMealsDatabase.self,
+                analytics: swinjectContainer~>UserMealAnalytics.self
+            )
+        )
+    }
 }

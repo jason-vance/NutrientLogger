@@ -23,7 +23,6 @@ class AppSetup {
         registerLocalDatabase()
         await registerUserMealsDatabase()
         await registerRemoteDatabase()
-        registerFoodSaver()
         
 //        doMocksForScreenshots()
     }
@@ -60,14 +59,6 @@ class AppSetup {
     private static func registerRemoteDatabase() async {
         let db = try! await BundledFdcDatabase()
         swinjectContainer.autoregister(RemoteDatabase.self) { db }
-    }
-    
-    private static func registerFoodSaver() {
-        let foodSaver = ConsumedFoodSaver(
-            localDatabase: swinjectContainer~>LocalDatabase.self,
-            analytics: swinjectContainer~>ConsumedFoodSaverAnalytics.self
-        )
-        swinjectContainer.autoregister(FoodSaver.self) { foodSaver }
     }
     
     //TODO: MVP: Uncomment when AdMob is added

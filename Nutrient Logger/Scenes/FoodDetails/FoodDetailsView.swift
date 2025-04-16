@@ -65,12 +65,12 @@ struct FoodDetailsView: View {
     
     let foodId: Int
     let mode: Mode
-    
+    let onFoodSaved: (FoodItem, Portion) throws -> Void
+
     @Inject private var localDatabase: LocalDatabase
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var userService: UserService
     @Inject private var rdiLibrary: NutrientRdiLibrary
-    @Inject private var foodSaver: FoodSaver
 
     private var user: User { userService.currentUser }
     
@@ -204,16 +204,21 @@ struct FoodDetailsView: View {
         )
         
         do {
-            try foodSaver.saveFoodItem(food, portion)
+            try onFoodSaved(food, portion)
             presentationMode.wrappedValue.dismiss()
         } catch {
             print("Failed to save food item: \(error.localizedDescription)")
         }
     }
     
-    init(foodId: Int, mode: Mode) {
+    init(
+        foodId: Int,
+        mode: Mode,
+        onFoodSaved: @escaping (FoodItem, Portion) throws -> Void
+    ) {
         self.foodId = foodId
         self.mode = mode
+        self.onFoodSaved = onFoodSaved
     }
     
     var body: some View {
@@ -1328,13 +1333,12 @@ fileprivate extension View {
     let _ = swinjectContainer.autoregister(LocalDatabase.self) {
         LocalDatabaseForScreenshots()
     }
-    let _ = swinjectContainer.autoregister(FoodSaver.self) {
-        ConsumedFoodSaver(
-            localDatabase: swinjectContainer.resolve(LocalDatabase.self)!,
-            analytics: MockConsumedFoodSaverAnalytics())
-    }
     
     NavigationStack {
-        FoodDetailsView(foodId: 1234, mode: .searchResult)
+        FoodDetailsView(
+            foodId: 1234,
+            mode: .searchResult,
+            onFoodSaved: { _, _ in }
+        )
     }
 }
