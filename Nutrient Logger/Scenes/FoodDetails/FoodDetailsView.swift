@@ -8,6 +8,7 @@
 import SwiftUI
 import SwinjectAutoregistration
 
+//TODO: MVP: Make sure logged food saving works (after conversion to SwiftData)
 //TODO: MVP: Remove mealTime when adding to meal
 //TODO: MVP: Add a toast-like notification for when a food is successfully saved
 struct FoodDetailsView: View {
@@ -269,6 +270,10 @@ struct FoodDetailsView: View {
             OtherNutrients(&nutrients)
             
             NutritionFactsCap(isTop: false)
+            
+            if mode == .loggedFood {
+                DeleteButton()
+            }
         }
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
         .listDefaultModifiers()
@@ -298,11 +303,7 @@ struct FoodDetailsView: View {
             BackButton()
         }
         ToolbarItem(placement: .topBarTrailing) {
-            if mode == .searchResult {
-                SaveButton()
-            } else {
-                DeleteButton()
-            }
+            SaveButton()
         }
     }
     
@@ -318,8 +319,14 @@ struct FoodDetailsView: View {
         Button {
             showDeleteConfirmation = true
         } label: {
-            Image(systemName: "trash")
+            HStack{
+                Spacer()
+                Text("Delete")
+                    .foregroundStyle(.red)
+                Spacer()
+            }
         }
+        .listRowDefaultModifiers()
     }
     
     @ViewBuilder private func SaveButton() -> some View {

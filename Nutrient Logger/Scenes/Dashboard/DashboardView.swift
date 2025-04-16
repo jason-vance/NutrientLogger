@@ -8,7 +8,7 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: logged foods don't show up immediately
+//TODO: MVP: logged foods don't show up/disappear immediately when added/removed
 struct DashboardView: View {
     
     @Environment(\.scenePhase) private var scenePhase

@@ -82,6 +82,7 @@ struct FoodItem: DatabaseEntity, Codable {
         self.gramWeight = gramWeight
     }
 
+    //TODO: MVP: allow for applying a new portion
     public func applyingPortion(_ portion: Portion) throws -> FoodItem {
         if (self.portion != nil) {
             throw FoodItemError.cannotApplyMultiplePortions

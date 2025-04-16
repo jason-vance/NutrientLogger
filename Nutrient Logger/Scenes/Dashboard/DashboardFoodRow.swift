@@ -13,8 +13,11 @@ struct DashboardFoodRow: View {
     
     var body: some View {
         NavigationLink {
-            //TODO: MVP: Navigate somewhere real
-            Text("Food Detail")
+            FoodDetailsView(
+                foodId: food.id,
+                mode: .loggedFood,
+                onFoodSaved: { _,_ in assertionFailure("Should not be called") }
+            )
         } label: {
             RowContent()
                 .padding(.horizontal)
