@@ -52,8 +52,9 @@ struct FoodSearchView: View {
         }
     }
     
+    @Environment(\.presentationMode) private var presentationMode
     @Environment(\.modelContext) private var modelContext
-    
+
     @Model
     class RecentSearch {
         var query: String
@@ -385,6 +386,19 @@ struct FoodSearchView: View {
         ToolbarItem(placement: .principal) {
             Text("Search")
                 .bold()
+        }
+        ToolbarItem(placement: .topBarLeading) {
+            BackButton()
+        }
+    }
+    
+    @ViewBuilder private func BackButton() -> some View {
+        if searchFunction == .addFoodToMeal {
+            Button {
+                presentationMode.wrappedValue.dismiss()
+            } label: {
+                Image(systemName: "xmark")
+            }
         }
     }
     

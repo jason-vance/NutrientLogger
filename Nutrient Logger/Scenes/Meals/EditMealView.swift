@@ -8,7 +8,6 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Dismiss FoodSearchView when a food is added
 //TODO: MVP: Save meal button
 //TODO: MVP: Discard confirmation dialog
 struct EditMealView: View {
@@ -21,6 +20,8 @@ struct EditMealView: View {
     private let meal: Meal?
     @State var mealName: String = ""
     @State var foodsWithPortions: [Meal.FoodWithPortion] = []
+    
+    @State private var showFoodSearch: Bool = false
     
     init(mealToEdit meal: Meal) {
         self.meal = meal
@@ -51,6 +52,16 @@ struct EditMealView: View {
         }
         .scrollDismissesKeyboard(.immediately)
         .animation(.snappy, value: meal)
+        .fullScreenCover(isPresented: $showFoodSearch) {
+            NavigationStack {
+                FoodSearchView(
+                    searchFunction: .addFoodToMeal
+                ) { food, portion in
+                    foodsWithPortions.append(.init(food: food, portion: portion))
+                    showFoodSearch = false
+                }
+            }
+        }
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
@@ -72,12 +83,8 @@ struct EditMealView: View {
     }
     
     @ViewBuilder private func AddFoodButton() -> some View {
-        NavigationFab(systemName: "plus") {
-            FoodSearchView(
-                searchFunction: .addFoodToMeal
-            ) { food, portion in
-                foodsWithPortions.append(.init(food: food, portion: portion))
-            }
+        ButtonFab(systemName: "plus") {
+            showFoodSearch = true
         }
     }
     

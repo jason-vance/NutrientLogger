@@ -16,24 +16,51 @@ struct NavigationFab<Content>: View where Content: View {
         NavigationLink {
             destination()
         } label: {
-            Image(systemName: systemName)
-                .font(.title)
-                .bold()
-                .foregroundStyle(.white)
-                .padding()
-                .frame(width: .fabButtonSize, height: .fabButtonSize)
-                .background {
-                    Circle()
-                        .fill(Color.blue)
-                        .shadow(color: .black, radius: .shadowRadiusDefault)
-                }
+            FabLabel(systemName: systemName)
         }
         .padding()
+    }
+}
+
+struct ButtonFab: View {
+    
+    let systemName: String
+    let action: () -> Void
+
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            FabLabel(systemName: systemName)
+        }
+        .padding()
+    }
+}
+
+fileprivate struct FabLabel: View {
+    
+    let systemName: String
+    
+    var body: some View {
+        Image(systemName: systemName)
+            .font(.title)
+            .bold()
+            .foregroundStyle(.white)
+            .padding()
+            .frame(width: .fabButtonSize, height: .fabButtonSize)
+            .background {
+                Circle()
+                    .fill(Color.blue)
+                    .shadow(color: .black, radius: .shadowRadiusDefault)
+            }
     }
 }
 
 #Preview {
     NavigationFab(systemName: "plus") {
         Text("Destination")
+    }
+    ButtonFab(systemName: "plus") {
+        print("Hello")
     }
 }
