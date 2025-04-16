@@ -21,6 +21,11 @@ struct DashboardNutrientRow: View {
     
     var currentAmount: Double { nutrients.reduce(0.0) { $0 + $1.nutrient.amount } }
     
+    var colorPalette: ColorPalette {
+        let groupNumber = FdcNutrientGroupMapper.groupNumberForNutrient(fdcNumber)
+        return ColorPaletteService.getColorPaletteFor(number: groupNumber)
+    }
+    
     var body: some View {
         NavigationLink {
             ConsumedNutrientDetailsView(
@@ -29,17 +34,16 @@ struct DashboardNutrientRow: View {
             )
         } label: {
             RowContent()
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+                .background {
+                    RoundedRectangle(cornerRadius: .cornerRadiusListRow, style: .continuous)
+                        .fill(.shadow(.drop(radius: .shadowRadiusDefault)))
+                        .fill(colorPalette.primary.gradient)
+                }
         }
         .listRowDefaultModifiers()
-        .padding(.horizontal)
-        .padding(.vertical, 10)
-        .background {
-            //TODO: MVP: Background is flashing when appearing
-            RoundedRectangle(cornerRadius: .cornerRadiusListRow, style: .continuous)
-                .fill(.shadow(.drop(radius: .shadowRadiusDefault)))
-                .fill(.white)
-                
-        }
+        .tint(colorPalette.secondary)
     }
     
     @ViewBuilder private func RowContent() -> some View {
@@ -54,6 +58,7 @@ struct DashboardNutrientRow: View {
                     .font(.headline)
             }
         }
+        .foregroundStyle(colorPalette.text)
     }
 }
 

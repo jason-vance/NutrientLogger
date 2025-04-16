@@ -17,17 +17,16 @@ struct DashboardFoodRow: View {
             Text("Food Detail")
         } label: {
             RowContent()
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+                .background {
+                    RoundedRectangle(cornerRadius: .cornerRadiusListRow, style: .continuous)
+                        .fill(.shadow(.drop(radius: .shadowRadiusDefault)))
+                        .fill(.white)
+                    
+                }
         }
         .listRowDefaultModifiers()
-        .padding(.horizontal)
-        .padding(.vertical, 10)
-        .background {
-            //TODO: MVP: Background is flashing when appearing
-            RoundedRectangle(cornerRadius: .cornerRadiusListRow, style: .continuous)
-                .fill(.shadow(.drop(radius: .shadowRadiusDefault)))
-                .fill(.white)
-                
-        }
     }
     
     @ViewBuilder private func RowContent() -> some View {
