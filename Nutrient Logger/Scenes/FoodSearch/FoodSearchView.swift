@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 import SwinjectAutoregistration
 
-//TODO: Add recently searched to meal food searching?
 //TODO: Auto focus search bar
 struct FoodSearchView: View {
     
@@ -20,7 +19,7 @@ struct FoodSearchView: View {
         var shouldIncludeRecentSearches: Bool {
             switch self {
             case .defaultSearchFunction: return true
-            case .addFoodToMeal: return false
+            case .addFoodToMeal: return true
             }
         }
         
