@@ -144,7 +144,7 @@ class LocalSqliteDatabase: LocalDatabase {
             .where(Columns.foodId == food.id)
         
         let rows = try db.prepare(query)
-        let nutrients = rows.map { NutrientWrapper.fromFull($0) }
+        let nutrients = rows.map { NutrientWrapper.from($0) }
         return FdcNutrientGrouper.group(nutrients)
     }
     
@@ -301,7 +301,6 @@ fileprivate class FoodItemWrapper: DatabaseEntityWrapper<FoodItem> {
             Columns.amount <- food.amount,
             Columns.portionName <- food.portionName,
             Columns.gramWeight <- food.gramWeight,
-            //TODO: MVP: Is .today appropriate here
             Columns.dateLogged <- DatabaseSimpleDate.from(food.dateLogged ?? .today),
             Columns.mealTime <- DatabaseMealTime.from(food.mealTime ?? .none)
         ] }
@@ -327,19 +326,7 @@ fileprivate class NutrientWrapper: DatabaseEntityWrapper<Nutrient> {
         super.init(row, nutrient)
     }
     
-    //TODO: MVP: Make sure this still works
-    static func fromAbridged(_ row: Row) -> Nutrient {
-        let nutrient = Nutrient(
-            fdcNumber: try! row.get(Columns.fdcNumber),
-            name: try! row.get(Columns.name),
-            unitName: try! row.get(Columns.unitName),
-            amount: try! row.get(Columns.amount)
-        )
-        return nutrient
-    }
-    
-    //TODO: MVP: Make sure this still works
-    static func fromFull(_ row: Row) -> Nutrient {
+    static func from(_ row: Row) -> Nutrient {
         var nutrient = Nutrient(
             fdcId: try! row.get(Columns.fdcId),
             fdcNumber: try! row.get(Columns.fdcNumber),
@@ -365,7 +352,6 @@ fileprivate class NutrientWrapper: DatabaseEntityWrapper<Nutrient> {
             Columns.name <- nutrient.name,
             Columns.amount <- nutrient.amount,
             Columns.unitName <- nutrient.unitName,
-            //TODO: MVP: Is .today appropriate here
             Columns.dateLogged <- DatabaseSimpleDate.from(nutrient.dateLogged ?? .today),
             Columns.mealTime <- DatabaseMealTime.from(nutrient.mealTime ?? .none)
         ] }
