@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 import SwinjectAutoregistration
 
-//TODO: Auto focus search bar
 struct FoodSearchView: View {
     
     enum SearchFunction {

@@ -78,7 +78,7 @@ struct EditMealView: View {
         }
         .scrollDismissesKeyboard(.immediately)
         .animation(.snappy, value: meal)
-        .fullScreenCover(isPresented: $showFoodSearch) {
+        .sheet(isPresented: $showFoodSearch) {
             NavigationStack {
                 FoodSearchView(
                     searchFunction: .addFoodToMeal
