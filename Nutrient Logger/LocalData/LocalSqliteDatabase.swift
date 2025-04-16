@@ -126,23 +126,6 @@ class LocalSqliteDatabase: LocalDatabase {
         }
     }
     
-    //TODO: MVP: Try to figure out why getFoodsOrderedByDateLogged was originally calling this instead of getFullNutrients
-//    private func getAbridgedNutrients(_ db: Connection, _ food: FoodItem) throws -> [NutrientGroup] {
-//        let query = Tables.nutrient
-//            .join(Tables.foodNutrientLink,
-//                  on: Tables.nutrient[Columns.id] == Tables.foodNutrientLink[Columns.nutrientId])
-//            .select(
-//                Tables.nutrient[Columns.fdcNumber],
-//                Tables.nutrient[Columns.name],
-//                Tables.nutrient[Columns.unitName],
-//                Tables.nutrient[Columns.amount])
-//            .where(Columns.foodId == food.id)
-//        
-//        let rows = try db.prepare(query)
-//        let nutrients = rows.map { NutrientWrapper.fromAbridged($0) }
-//        return FdcNutrientGrouper.group(nutrients)
-//    }
-    
     private func getFullNutrients(_ db: Connection, _ food: FoodItem) throws -> [NutrientGroup] {
         let query = Tables.nutrient
             .join(Tables.foodNutrientLink,
