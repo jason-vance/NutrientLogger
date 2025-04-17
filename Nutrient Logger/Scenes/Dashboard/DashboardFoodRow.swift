@@ -11,11 +11,19 @@ struct DashboardFoodRow: View {
     
     let food: ConsumedFood
     
+    private func onFoodSaved(foodItem: FoodItem, portion: Portion) {
+        food.portionAmount = portion.amount
+        food.portionGramWeight = portion.gramWeight
+        food.portionName = portion.name
+        food.dateLogged = foodItem.dateLogged ?? food.dateLogged
+        food.mealTime = foodItem.mealTime ?? food.mealTime
+    }
+    
     var body: some View {
         NavigationLink {
             FoodDetailsView(
                 mode: .loggedFood(food: food),
-                onFoodSaved: { _,_ in assertionFailure("Should not be called") }
+                onFoodSaved: onFoodSaved
             )
         } label: {
             RowContent()

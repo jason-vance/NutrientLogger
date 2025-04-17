@@ -8,9 +8,9 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Make sure logged food saving works (after conversion to SwiftData)
+//TODO: MVP: Populate fields correctly for loggedFoods
 //TODO: MVP: Remove mealTime when adding to meal
-//TODO: MVP: Add a toast-like notification for when a food is successfully saved
+//TODO: Add a toast-like notification for when a food is successfully saved
 struct FoodDetailsView: View {
     
     enum UIConsts {
