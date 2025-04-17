@@ -8,7 +8,7 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Discard confirmation dialog
+//TODO: Add some Nutrition Facts?
 struct EditMealView: View {
     
     @Environment(\.presentationMode) private var presentationMode
@@ -22,7 +22,8 @@ struct EditMealView: View {
     @State var foodsWithPortions: [Meal.FoodWithPortion] = []
     
     @State private var showFoodSearch: Bool = false
-    
+    @State private var showDiscardDialog: Bool = false
+
     init(mealToEdit meal: Meal) {
         self.meal = meal
     }
@@ -35,6 +36,14 @@ struct EditMealView: View {
     
     private var hasFoods: Bool {
         !foodsWithPortions.isEmpty
+    }
+    
+    private var hasChanges: Bool {
+        if let meal = meal {
+            return meal.name != mealName || meal.foodsWithPortions != foodsWithPortions
+        } else {
+            return !mealName.isEmpty || hasFoods
+        }
     }
     
     private func prepopulateMeal() {
@@ -68,7 +77,6 @@ struct EditMealView: View {
         List {
             NameField()
             FoodsSection()
-            //TODO: MVP: Some Nutrition Facts?
         }
         .listDefaultModifiers()
         .navigationBarBackButtonHidden()
@@ -90,6 +98,14 @@ struct EditMealView: View {
             }
         }
         .onAppear { prepopulateMeal() }
+        .confirmationDialog(
+            "Discard Changes?\n\nAre you sure you want to leave? Any unsaved changes will be lost.",
+            isPresented: $showDiscardDialog,
+            titleVisibility: .visible,
+        ) {
+            Button("Discard", role: .destructive) { presentationMode.wrappedValue.dismiss() }
+            Button("Cancel", role: .cancel) { }
+        }
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
@@ -107,7 +123,11 @@ struct EditMealView: View {
     
     @ViewBuilder private func BackButton() -> some View {
         Button {
-            presentationMode.wrappedValue.dismiss()
+            if hasChanges {
+                showDiscardDialog = true
+            } else {
+                presentationMode.wrappedValue.dismiss()
+            }
         } label: {
             Image(systemName: "arrow.backward")
         }

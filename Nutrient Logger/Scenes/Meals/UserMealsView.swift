@@ -9,14 +9,23 @@ import SwiftUI
 import SwinjectAutoregistration
 import SwiftData
 
+//TODO: MVP: Add confirmation dialog to meal deleting
 struct UserMealsView: View {
     
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.presentationMode) private var presentationMode
-    
+
     @Inject private var analytics: UserMealsAnalytics
 
     @State private var isLoading: Bool = true
     @Query private var meals: [Meal]
+    
+    private func deleteMeals(at offsets: IndexSet) {
+        for offset in offsets {
+            let mealToDelete = meals[offset]
+            modelContext.delete(mealToDelete)
+        }
+    }
     
     var body: some View {
         List {
@@ -31,6 +40,7 @@ struct UserMealsView: View {
                 ForEach(meals) { meal in
                     MealRow(meal)
                 }
+                .onDelete { deleteMeals(at: $0) }
             }
             SpaceForFab()
         }
