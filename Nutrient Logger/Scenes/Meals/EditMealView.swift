@@ -81,7 +81,8 @@ struct EditMealView: View {
         .sheet(isPresented: $showFoodSearch) {
             NavigationStack {
                 FoodSearchView(
-                    searchFunction: .addFoodToMeal
+                    searchFunction: .addFoodToMeal,
+                    askForDateAndMealTime: false
                 ) { food, portion in
                     foodsWithPortions.append(.init(food: food, portion: portion))
                     showFoodSearch = false

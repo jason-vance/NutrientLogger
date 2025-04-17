@@ -147,6 +147,7 @@ struct FoodSearchView: View {
     @State private var searchResults: [SearchResult] = []
     
     let searchFunction: SearchFunction
+    let askForDateAndMealTime: Bool
     let onFoodSaved: (FoodItem, Portion) throws -> Void
 
     private var groupedSearchResults: [SearchResultsSection] {
@@ -330,9 +331,11 @@ struct FoodSearchView: View {
     
     init(
         searchFunction: SearchFunction = .defaultSearchFunction,
+        askForDateAndMealTime: Bool = true,
         onFoodSaved: @escaping (FoodItem, Portion) throws -> Void
     ) {
         self.searchFunction = searchFunction
+        self.askForDateAndMealTime = askForDateAndMealTime
         self.onFoodSaved = onFoodSaved
     }
     
@@ -436,6 +439,7 @@ struct FoodSearchView: View {
         NavigationLink {
             FoodDetailsView(
                 mode: .searchResult(fdcId: food.fdcId),
+                askForDateAndMealTime: askForDateAndMealTime,
                 onFoodSaved: onFoodSaved
             )
         } label: {
@@ -451,6 +455,7 @@ struct FoodSearchView: View {
         NavigationLink {
             FoodDetailsView(
                 mode: .searchResult(fdcId: food.fdcId),
+                askForDateAndMealTime: askForDateAndMealTime,
                 onFoodSaved: onFoodSaved
             )
         } label: {

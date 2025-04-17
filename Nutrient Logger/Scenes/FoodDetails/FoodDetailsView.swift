@@ -8,7 +8,6 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Remove mealTime when adding to meal
 //TODO: Add a toast-like notification for when a food is successfully saved
 struct FoodDetailsView: View {
     
@@ -73,6 +72,7 @@ struct FoodDetailsView: View {
     @State private var alertTitle: String = ""
     
     let mode: Mode
+    let askForDateAndMealTime: Bool
     let onFoodSaved: (FoodItem, Portion) throws -> Void
 
     @Inject private var remoteDatabase: RemoteDatabase
@@ -216,9 +216,11 @@ struct FoodDetailsView: View {
     
     init(
         mode: Mode,
+        askForDateAndMealTime: Bool = true,
         onFoodSaved: @escaping (FoodItem, Portion) throws -> Void
     ) {
         self.mode = mode
+        self.askForDateAndMealTime = askForDateAndMealTime
         self.onFoodSaved = onFoodSaved
     }
     
@@ -227,8 +229,10 @@ struct FoodDetailsView: View {
         
         List {
             FoodName()
-            DateField()
-            MealTimeField()
+            if askForDateAndMealTime {
+                DateField()
+                MealTimeField()
+            }
             PortionField()
             PortionAmountField()
             
