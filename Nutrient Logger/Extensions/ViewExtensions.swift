@@ -27,4 +27,13 @@ extension View {
             .font(.footnote.bold())
             .listRowDefaultModifiers()
     }
+    
+    func underlined(_ isUnderlined: Bool = true, color: Color, lineWidth: CGFloat = 1) -> some View {
+        self
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(isUnderlined ? color : Color.clear)
+                    .frame(height: lineWidth)
+            }
+    }
 }

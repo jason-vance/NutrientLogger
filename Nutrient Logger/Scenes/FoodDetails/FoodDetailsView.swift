@@ -9,6 +9,7 @@ import SwiftUI
 import SwinjectAutoregistration
 
 //TODO: Add a toast-like notification for when a food is successfully saved
+//TODO: Add a mealTime parameter (like MyFitnessPal)
 struct FoodDetailsView: View {
     
     enum UIConsts {
@@ -62,8 +63,8 @@ struct FoodDetailsView: View {
         return nf
     }()
     
-    //TODO: MVP: Intelligently choose the initial meal time
-    @State private var selectedMealTime: MealTime = .breakfast
+    @State private var selectedMealTime: MealTime = .none
+    
     @State private var logDate: SimpleDate = .today
 
     @State private var showDeleteConfirmation: Bool = false
@@ -180,6 +181,14 @@ struct FoodDetailsView: View {
 
         nutrients = nutrients.filter { $0.fdcId != nutrient.fdcId }
         return nutrient
+    }
+    
+    private var isMealTimeValid: Bool {
+        !askForDateAndMealTime || selectedMealTime != .none
+    }
+    
+    private var canSave: Bool {
+        isMealTimeValid
     }
     
     private func saveFood() {
@@ -339,6 +348,7 @@ struct FoodDetailsView: View {
         } label: {
             Image(systemName: "checkmark")
         }
+        .disabled(!canSave)
     }
     
     @ViewBuilder private func FoodName() -> some View {
@@ -428,6 +438,7 @@ struct FoodDetailsView: View {
             } label: {
                 Text(selectedMealTime.rawValue)
                     .bold()
+                    .underlined(!canSave, color: .red, lineWidth: 1)
             }
         }
         .listRowDefaultModifiers()
