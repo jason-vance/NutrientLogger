@@ -79,19 +79,17 @@ struct ConsumedNutrientDetailsView: View {
             }
     }
     
-    private func loadExplanation() {
+    private func loadExplanation() async {
         guard NutrientExplanationMaker.canMakeFor(nutrient.fdcNumber) else {
             isExplanationLoaded = false
             return
         }
 
-        Task {
-            do {
-                infoString = try await NutrientExplanationMaker.make(nutrient.fdcNumber)
-                isExplanationLoaded = true
-            } catch {
-                print("Failed to load explanation for \(nutrient.name): \(error)")
-            }
+        do {
+            infoString = try await NutrientExplanationMaker.make(nutrient.fdcNumber)
+            isExplanationLoaded = true
+        } catch {
+            print("Failed to load explanation for \(nutrient.name): \(error)")
         }
     }
     
@@ -117,7 +115,7 @@ struct ConsumedNutrientDetailsView: View {
         .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
-        .onAppear { loadExplanation() }
+        .task { await loadExplanation() }
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {

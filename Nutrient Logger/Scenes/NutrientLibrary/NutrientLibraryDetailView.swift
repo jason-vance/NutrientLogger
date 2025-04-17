@@ -8,7 +8,6 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Add nutrient info
 struct NutrientLibraryDetailView: View {
     
     @Environment(\.presentationMode) var presentationMode
@@ -17,8 +16,24 @@ struct NutrientLibraryDetailView: View {
     
     @Inject private var remoteDatabase: RemoteDatabase
     
-    @State private var infoLoaded: Bool = false
+    @State private var isExplanationLoaded: Bool = false
+    @State private var showExplanation: Bool = false
+    @State private var infoString: AttributedString = ""
     @State private var pairs: [NutrientFoodPair] = []
+    
+    private func loadExplanation() async {
+        guard NutrientExplanationMaker.canMakeFor(nutrient.fdcNumber) else {
+            isExplanationLoaded = false
+            return
+        }
+
+        do {
+            infoString = try await NutrientExplanationMaker.make(nutrient.fdcNumber)
+            isExplanationLoaded = true
+        } catch {
+            print("Failed to load explanation for \(nutrient.name): \(error)")
+        }
+    }
     
     private func fetchFoodItems() async {
         do {
@@ -43,6 +58,7 @@ struct NutrientLibraryDetailView: View {
         .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
         .task { await fetchFoodItems() }
+        .task { await loadExplanation() }
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
@@ -53,14 +69,32 @@ struct NutrientLibraryDetailView: View {
         ToolbarItem(placement: .topBarLeading) {
             BackButton()
         }
+        ToolbarItem(placement: .topBarTrailing) {
+            InfoButton()
+        }
     }
     
     @ViewBuilder private func BackButton() -> some View {
-        Button(action: {
+        Button {
             presentationMode.wrappedValue.dismiss()
-        }) {
+        } label: {
             Image(systemName: "arrow.backward")
         }
+    }
+    
+    @ViewBuilder private func InfoButton() -> some View {
+        NavigationLink {
+            NutrientInfoView(
+                nutrientName: nutrient.name,
+                infoString: infoString
+            )
+        } label: {
+            Image(systemName: showExplanation ? "x.circle" : "info.circle")
+        }
+        .disabled(!isExplanationLoaded)
+        .opacity(isExplanationLoaded ? 1 : 0)
+        .animation(.snappy, value: isExplanationLoaded)
+        .animation(.snappy, value: showExplanation)
     }
     
     @ViewBuilder private func FoodRow(_ pair: NutrientFoodPair) -> some View {
