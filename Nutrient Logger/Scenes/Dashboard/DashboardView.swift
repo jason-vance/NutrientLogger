@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 import SwinjectAutoregistration
 
 //TODO: MVP: logged foods don't show up/disappear immediately when added/removed
@@ -13,19 +14,31 @@ struct DashboardView: View {
     
     @Environment(\.scenePhase) private var scenePhase
     
-    @State private var date: SimpleDate = .today
-    @State private var foods: [FoodItem] = []
+    @Inject private var remoteDatabase: RemoteDatabase
     
-    @Inject private var localDatabase: LocalDatabase
+    @State private var date: SimpleDate = .today
+    @Query private var consumedFoods: [ConsumedFood]
+    
+    private var todaysConsumedFoods: [ConsumedFood] {
+        consumedFoods
+            .filter { $0.dateLogged == date }
+            .sorted { $0.name < $1.name }
+    }
+    
+    @State private var foodItems: [FoodItem] = []
     
     private func fetchFoods() {
         Task {
-            do {
-                let foods = try localDatabase.getFoodsOrderedByDateLogged(date)
-                self.foods = foods
-            } catch {
-                print("Failed to fetch foods: \(error)")
-            }
+            foodItems = todaysConsumedFoods
+                .compactMap { consumedFood in
+                    do {
+                        let food = try remoteDatabase.getFood(String(consumedFood.fdcId))
+                        return try food?.applyingPortion(consumedFood.portion)
+                    } catch {
+                        print("Failed to fetch food with id \(consumedFood.fdcId): \(error)")
+                    }
+                    return nil
+                }
         }
     }
     
@@ -45,14 +58,6 @@ struct DashboardView: View {
         }
     }
     
-    private func onChangeDate(old: SimpleDate, new: SimpleDate) {
-        guard foods.isEmpty || old != new else {
-            return
-        }
-        
-        fetchFoods()
-    }
-    
     var body: some View {
         List {
             MyNutrientsSection()
@@ -61,8 +66,10 @@ struct DashboardView: View {
         .listDefaultModifiers()
         .toolbar { Toolbar() }
         .navigationTitle(Text(navigationTitle))
-        .onChange(of: date, initial: true) { onChangeDate(old: $0, new: $1) }
-        .animation(.snappy, value: foods)
+        .onChange(of: todaysConsumedFoods, initial: true) { fetchFoods() }
+        .animation(.snappy, value: date)
+        .animation(.snappy, value: todaysConsumedFoods)
+        .animation(.snappy, value: foodItems)
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
@@ -114,14 +121,14 @@ struct DashboardView: View {
 
     
     @ViewBuilder private func MyNutrientsSection() -> some View {
-        if !foods.isEmpty {
-            DashboardNutrientSection(foods: foods)
+        if !foodItems.isEmpty {
+            DashboardNutrientSection(foods: foodItems)
         }
     }
     
     @ViewBuilder private func WhatIAteSection() -> some View {
-        if !foods.isEmpty {
-            let meals = DashboardMealList.from(foods)
+        if !todaysConsumedFoods.isEmpty {
+            let meals = DashboardMealList.from(todaysConsumedFoods)
                 .sorted { $0.mealTime < $1.mealTime }
             
             Section {
@@ -140,7 +147,7 @@ struct DashboardView: View {
 }
 
 #Preview {
-    let _ = swinjectContainer.autoregister(LocalDatabase.self) { LocalDatabaseForScreenshots() }
+    let _ = swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
     let _ = swinjectContainer.autoregister(UserService.self) { UserServiceForScreenshots() }
     let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) { UsdaNutrientRdiLibrary.create() }
 

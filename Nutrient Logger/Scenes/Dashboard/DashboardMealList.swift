@@ -9,7 +9,7 @@ import Foundation
 
 enum DashboardMealList {
     
-    public static func from(_ foods: [FoodItem]) -> [Meal] {
+    public static func from(_ foods: [ConsumedFood]) -> [Meal] {
         let meals: [MealTime: Meal] = [
             .none: .init(),
             .breakfast: .init(),
@@ -20,7 +20,7 @@ enum DashboardMealList {
         ]
         
         for food in foods {
-            meals[food.mealTime ?? .none, default: .init()].append(food)
+            meals[food.mealTime, default: .init()].append(food)
         }
 
         return meals.compactMap {
@@ -30,13 +30,13 @@ enum DashboardMealList {
     
     public class Meal: Identifiable {
         
-        private(set) var foods: [FoodItem] = []
+        private(set) var foods: [ConsumedFood] = []
         
         var mealTime: MealTime { foods.first?.mealTime ?? .none }
         
         public var name: String { mealTime.rawValue }
 
-        public func append(_ food: FoodItem) {
+        public func append(_ food: ConsumedFood) {
             foods.append(food)
         }
     }

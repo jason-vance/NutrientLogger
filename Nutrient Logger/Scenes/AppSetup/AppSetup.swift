@@ -20,7 +20,6 @@ class AppSetup {
         
         registerNutrientRdiLibrary()
         await registerUserService()
-        registerLocalDatabase()
         await registerRemoteDatabase()
         
 //        doMocksForScreenshots()
@@ -30,7 +29,6 @@ class AppSetup {
         swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { MockNutrientLoggerAnalytics() }
         swinjectContainer.autoregister(UserService.self) { UserServiceForScreenshots() }
         swinjectContainer.autoregister(AdProvider.self) { MockAdProvider() }
-        swinjectContainer.autoregister(LocalDatabase.self) { LocalDatabaseForScreenshots() }
         //TODO: Add meals to modelContext for screenshots
 //        swinjectContainer.autoregister(UserMealsDatabase.self) { UserMealsDatabaseForScreenshots() }
         swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
@@ -44,11 +42,6 @@ class AppSetup {
     private static func registerUserService() async {
         let userService = await DefaultUserService.create()
         swinjectContainer.autoregister(UserService.self) { userService }
-    }
-    
-    private static func registerLocalDatabase() {
-        let db = try! LocalSqliteDatabase()
-        swinjectContainer.autoregister(LocalDatabase.self) { db }
     }
     
     private static func registerRemoteDatabase() async {

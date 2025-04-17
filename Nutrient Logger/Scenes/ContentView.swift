@@ -10,6 +10,8 @@ import SwiftData
 
 struct ContentView: View {
     
+    @Environment(\.modelContext) private var modelContext
+    
     @State private var isSetup: Bool = false
     
     var body: some View {
@@ -36,7 +38,7 @@ struct ContentView: View {
             }
             Tab("Search", systemImage: "magnifyingglass") {
                 NavigationStack {
-                    FoodSearchView(onFoodSaved: FoodSaver.forConsumedFoods.saveFoodItem)
+                    FoodSearchView(onFoodSaved: FoodSaver.forConsumedFoods(modelContext: modelContext).saveFoodItem)
                 }
             }
             Tab("Profile", systemImage: "person.crop.circle") {

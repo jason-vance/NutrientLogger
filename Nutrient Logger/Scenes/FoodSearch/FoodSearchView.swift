@@ -70,7 +70,7 @@ struct FoodSearchView: View {
 
     enum SearchResult: Identifiable, Equatable {
         case recentSearch(String)
-        case recentlyLoggedFood(FoodItem)
+        case recentlyLoggedFood(ConsumedFood)
         case fdcFood(FdcSearchableFood)
         case fdcNutrient(Nutrient)
         case userMeal(UserMealsSearchableMeal)
@@ -135,7 +135,6 @@ struct FoodSearchView: View {
     }
     
     
-    @Inject private var localDatabase: LocalDatabase
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var analytics: NutrientLoggerAnalytics
     
@@ -210,7 +209,11 @@ struct FoodSearchView: View {
     
     private func fetchRecentlyLoggedFoods() -> [SearchResult] {
         do {
-            return try localDatabase.getRecentlyLoggedFoods(30)
+            var descriptor = FetchDescriptor<ConsumedFood>(
+                sortBy: [ .init(\.created, order: .reverse) ]
+            )
+            descriptor.fetchLimit = 30
+            return try modelContext.fetch(descriptor)
                 .map(SearchResult.recentlyLoggedFood)
         } catch {
             print("Failed to fetch recently logged foods: \(error.localizedDescription)")
@@ -257,9 +260,7 @@ struct FoodSearchView: View {
             isLoading = false
         }
         
-        Task {
-            await self.promptForReview()
-        }
+        promptForReview()
     }
     
     private func searchRemoteNutrients(_ query: String) async -> [SearchResult] {
@@ -294,33 +295,37 @@ struct FoodSearchView: View {
     }
     
     //TODO: MVP: Uncomment this when ready for review prompting
-    private func promptForReview() async {
-        if (await shouldPromptForReview()) {
+    private func promptForReview() {
+        if shouldPromptForReview() {
 //            let prompt = ReviewPrompter(screen: self as! UIViewController)
 //            prompt.promptUserForReview(areYouEnjoyingPrompt: "Are you enjoying Nutrient Logger?")
         }
     }
 
-    private func shouldPromptForReview() async -> Bool {
-        return await Task.init(priority: .userInitiated) {
-            do {
-                guard let earliestFood = try localDatabase.getEarliestFood()
-                else {
-                    return false
-                }
-                guard let mostRecentFood = try localDatabase.getMostRecentFood()
-                else {
-                    return false
-                }
-
-                let timeDiff = abs(mostRecentFood.created.distance(to: earliestFood.created))
-                let fiveDays = TimeInterval.fromDays(0.5)
-                return timeDiff > fiveDays
-            } catch {
-                print("Error checking least and most recently logged food items: \(error.localizedDescription)")
-                return false
-            }
-        }.value
+    private func shouldPromptForReview() -> Bool {
+        guard let earliestFood = {
+            var descriptor = FetchDescriptor<ConsumedFood>(
+                sortBy: [ .init(\.created, order: .forward) ]
+            )
+            descriptor.fetchLimit = 1
+            return try? modelContext.fetch(descriptor).first
+        }() else {
+            return false
+        }
+        
+        guard let mostRecentFood = {
+            var descriptor = FetchDescriptor<ConsumedFood>(
+                sortBy: [ .init(\.created, order: .reverse) ]
+            )
+            descriptor.fetchLimit = 1
+            return try? modelContext.fetch(descriptor).first
+        }() else {
+            return false
+        }
+        
+        let timeDiff = abs(mostRecentFood.created.distance(to: earliestFood.created))
+        let roughlyOneDay = TimeInterval.fromDays(0.75)
+        return timeDiff > roughlyOneDay
     }
     
     init(
@@ -427,11 +432,10 @@ struct FoodSearchView: View {
         .listRowDefaultModifiers()
     }
     
-    @ViewBuilder private func RecentlyLoggedFoodRow(_ food: FoodItem) -> some View {
+    @ViewBuilder private func RecentlyLoggedFoodRow(_ food: ConsumedFood) -> some View {
         NavigationLink {
             FoodDetailsView(
-                foodId: food.fdcId,
-                mode: .searchResult,
+                mode: .searchResult(fdcId: food.fdcId),
                 onFoodSaved: onFoodSaved
             )
         } label: {
@@ -446,8 +450,7 @@ struct FoodSearchView: View {
     @ViewBuilder private func FdcFoodRow(_ food: FdcSearchableFood) -> some View {
         NavigationLink {
             FoodDetailsView(
-                foodId: food.fdcId,
-                mode: .searchResult,
+                mode: .searchResult(fdcId: food.fdcId),
                 onFoodSaved: onFoodSaved
             )
         } label: {
@@ -489,7 +492,6 @@ struct FoodSearchView: View {
 }
 
 #Preview {
-    let _ = swinjectContainer.autoregister(LocalDatabase.self) { LocalDatabaseForScreenshots() }
     let _ = swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
     let _ = swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { MockNutrientLoggerAnalytics() }
 

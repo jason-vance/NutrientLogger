@@ -12,6 +12,7 @@ import SwiftData
 struct Nutrient_LoggerApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
+            ConsumedFood.self,
             FoodSearchView.RecentSearch.self,
             Meal.self
         ])

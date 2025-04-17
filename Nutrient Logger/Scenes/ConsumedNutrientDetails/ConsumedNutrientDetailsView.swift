@@ -207,7 +207,7 @@ struct ConsumedNutrientDetailsView: View {
                 Text(mealFoods.mealTime.rawValue)
                     .listSubsectionHeader()
                 ForEach(mealFoods.foods) { food in
-                    DashboardFoodRow(food: food)
+                    ConsumedNutrientDetailsFoodRow(food: food)
                 }
             }
         } header: {

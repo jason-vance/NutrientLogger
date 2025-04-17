@@ -7,6 +7,7 @@
 
 import Foundation
 import SwinjectAutoregistration
+import SwiftData
 
 class ConsumedFoodSaverDelegate: FoodSaverDelegate {
     
@@ -14,35 +15,39 @@ class ConsumedFoodSaverDelegate: FoodSaverDelegate {
     
     public var needsDateTime: Bool { true }
     
-    private let db: LocalDatabase
+    private let modelContext: ModelContext
     private let analytics: ConsumedFoodSaverAnalytics?
     
     public init(
-        localDatabase: LocalDatabase,
+        modelContext: ModelContext,
         analytics: ConsumedFoodSaverAnalytics?
     ) {
-        self.db = localDatabase
+        self.modelContext = modelContext
         self.analytics = analytics
     }
 
     public func saveFoodItem(_ food: FoodItem, _ portion: Portion) throws {
-        do {
-            let food = try food.applyingPortion(portion)
-            try db.saveFoodItem(food)
-            analytics?.foodLogged(food)
-        } catch {
-            print("Error while saving consumed food: \(error.localizedDescription)")
-            analytics?.foodLogFailed(food)
-            throw error
-        }
+        let consumedFood = ConsumedFood(
+            fdcId: food.fdcId,
+            name: food.name,
+            portionAmount: portion.amount,
+            portionGramWeight: portion.gramWeight,
+            portionName: portion.name,
+            dateLogged: food.dateLogged ?? .today,
+            mealTime: food.mealTime ?? .none
+        )
+        modelContext.insert(consumedFood)
+        analytics?.foodLogged(food)
     }
 }
 
 extension FoodSaver {
-    static let forConsumedFoods: FoodSaver = FoodSaver(
-        delegate: ConsumedFoodSaverDelegate(
-            localDatabase: swinjectContainer~>LocalDatabase.self,
-            analytics: swinjectContainer~>ConsumedFoodSaverAnalytics.self
+    static func forConsumedFoods(modelContext: ModelContext) -> FoodSaver {
+        FoodSaver(
+            delegate: ConsumedFoodSaverDelegate(
+                modelContext: modelContext,
+                analytics: swinjectContainer~>ConsumedFoodSaverAnalytics.self
+            )
         )
-    )
+    }
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 
+//TODO: MVP: Remove as much of this as possible
 protocol LocalDatabase {
     var hasDataChanged: Bool { get }
     func resetHasDataChanged()

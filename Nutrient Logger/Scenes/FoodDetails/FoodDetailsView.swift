@@ -37,12 +37,20 @@ struct FoodDetailsView: View {
     }
     
     enum Mode {
-        case searchResult
-        case loggedFood
+        case searchResult(fdcId: Int)
+        case loggedFood(food: ConsumedFood)
+        
+        var isLoggedFood: Bool {
+            switch self {
+            case .loggedFood: return true
+            default: return false
+            }
+        }
     }
     
+    @Environment(\.modelContext) var modelContext
     @Environment(\.presentationMode) var presentationMode
-    
+
     @State private var prototypeFood: FoodItem?
     @State private var food: FoodItem?
     
@@ -65,15 +73,22 @@ struct FoodDetailsView: View {
     @State private var showAlert: Bool = false
     @State private var alertTitle: String = ""
     
-    let foodId: Int
     let mode: Mode
     let onFoodSaved: (FoodItem, Portion) throws -> Void
 
-    @Inject private var localDatabase: LocalDatabase
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var userService: UserService
     @Inject private var rdiLibrary: NutrientRdiLibrary
 
+    private var fdcId: Int {
+        switch mode {
+        case .searchResult(let fdcId):
+            return fdcId
+        case .loggedFood(let food):
+            return food.fdcId
+        }
+    }
+    
     private var user: User { userService.currentUser }
     
     private func show(alert: String) {
@@ -81,17 +96,9 @@ struct FoodDetailsView: View {
         alertTitle = alert
     }
     
-    private func fetchLoggedFoodAndPortions() {
+    private func fetchFoodAndPortions() {
         do {
-            food = try localDatabase.getFood(foodId)
-        } catch {
-            print("Failed to fetch logged food with id \(foodId): \(error.localizedDescription)")
-        }
-    }
-    
-    private func fetchRemoteFoodAndPortions() {
-        do {
-            prototypeFood = try remoteDatabase.getFood(String(foodId))
+            prototypeFood = try remoteDatabase.getFood(String(fdcId))
             if let food = prototypeFood {
                 portions = try remoteDatabase.getPortions(food)
                 selectedPortion = portions.first
@@ -100,36 +107,30 @@ struct FoodDetailsView: View {
                     self.food = try food.applyingPortion(portion)
                 }
             } else {
-                print("Failed to find remote food with id \(foodId)")
+                print("Failed to find remote food with id \(fdcId)")
             }
         } catch {
-            print("Failed to fetch remote food with id \(foodId): \(error.localizedDescription)")
+            print("Failed to fetch remote food with id \(fdcId): \(error.localizedDescription)")
         }
     }
 
-    private func fetchFoodAndPortions() {
-        if isLoggedFood {
-            fetchLoggedFoodAndPortions()
-        } else {
-            fetchRemoteFoodAndPortions()
-        }
-    }
-    
     private func deleteFood() {
         guard let food = self.food else {
             show(alert: "Failed to delete. Food doesn't appear to exist")
             return
         }
-        
-        do {
-            try localDatabase.deleteFood(food)
-            presentationMode.wrappedValue.dismiss()
-        } catch {
-            show(alert: "Could not delete food: \(error.localizedDescription)")
-            if let analytics = swinjectContainer.resolve(NutrientLoggerAnalytics.self) {
-                analytics.errorDeletingFood(error)
+        guard let consumedFood = {
+            switch mode {
+            case .loggedFood(let food): return food
+            default: return nil
             }
+        }() else {
+            show(alert: "Failed to delete. Food doesn't appear to be a logged food")
+            return
         }
+        
+        modelContext.delete(consumedFood)
+        presentationMode.wrappedValue.dismiss()
     }
     
     private func applyPortion() {
@@ -148,10 +149,6 @@ struct FoodDetailsView: View {
                 }
             }
         }
-    }
-    
-    private var isLoggedFood: Bool {
-        mode == .loggedFood
     }
     
     private var portionGrams: String {
@@ -214,11 +211,9 @@ struct FoodDetailsView: View {
     }
     
     init(
-        foodId: Int,
         mode: Mode,
         onFoodSaved: @escaping (FoodItem, Portion) throws -> Void
     ) {
-        self.foodId = foodId
         self.mode = mode
         self.onFoodSaved = onFoodSaved
     }
@@ -271,7 +266,7 @@ struct FoodDetailsView: View {
             
             NutritionFactsCap(isTop: false)
             
-            if mode == .loggedFood {
+            if mode.isLoggedFood {
                 DeleteButton()
             }
         }
@@ -1338,14 +1333,10 @@ fileprivate extension View {
     let _ = swinjectContainer.autoregister(RemoteDatabase.self) {
         RemoteDatabaseForScreenshots()
     }
-    let _ = swinjectContainer.autoregister(LocalDatabase.self) {
-        LocalDatabaseForScreenshots()
-    }
     
     NavigationStack {
         FoodDetailsView(
-            foodId: 1234,
-            mode: .searchResult,
+            mode: .searchResult(fdcId: 1234),
             onFoodSaved: { _, _ in }
         )
     }
