@@ -77,8 +77,7 @@ struct NutrientLibraryView: View {
     
     @ViewBuilder private func NutrientRow(_ nutrient: Nutrient) -> some View {
         NavigationLink {
-            //TODO: MVP: Navigate to NutrientLibraryDetailsView
-            Text("NutrientLibraryDetailsView")
+            NutrientLibraryDetailView(nutrient: nutrient)
         } label: {
             HStack {
                 Text(nutrient.name)

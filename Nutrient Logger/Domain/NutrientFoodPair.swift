@@ -7,7 +7,10 @@
 
 import Foundation
 
-struct NutrientFoodPair {
+struct NutrientFoodPair: Equatable, Identifiable {
+    
+    var id: String { "\(nutrient.fdcNumber)-\(food.fdcId)" }
+    
     public let nutrient: Nutrient
     public let food: FoodItem
 }
