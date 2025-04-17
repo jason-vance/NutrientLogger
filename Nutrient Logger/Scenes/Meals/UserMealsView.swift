@@ -9,7 +9,6 @@ import SwiftUI
 import SwinjectAutoregistration
 import SwiftData
 
-//TODO: MVP: Add confirmation dialog to meal deleting
 struct UserMealsView: View {
     
     @Environment(\.modelContext) private var modelContext
@@ -45,6 +44,7 @@ struct UserMealsView: View {
             SpaceForFab()
         }
         .listDefaultModifiers()
+        .animation(.snappy, value: meals)
         .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
         .overlay(alignment: .bottomTrailing) {

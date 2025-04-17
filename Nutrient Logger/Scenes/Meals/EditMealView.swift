@@ -86,6 +86,7 @@ struct EditMealView: View {
         }
         .scrollDismissesKeyboard(.immediately)
         .animation(.snappy, value: meal)
+        .animation(.snappy, value: foodsWithPortions)
         .sheet(isPresented: $showFoodSearch) {
             NavigationStack {
                 FoodSearchView(
