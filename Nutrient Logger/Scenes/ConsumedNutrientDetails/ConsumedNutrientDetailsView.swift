@@ -8,6 +8,7 @@
 import SwiftUI
 import SwinjectAutoregistration
 
+//TODO: MVP: Add colors
 struct ConsumedNutrientDetailsView: View {
     
     private struct MealFoods: Identifiable {

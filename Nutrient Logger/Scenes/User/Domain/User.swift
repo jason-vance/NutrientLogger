@@ -26,3 +26,5 @@ struct User: Codable {
         preferredColorName: .indigo
     )
 }
+
+extension User: Equatable { }

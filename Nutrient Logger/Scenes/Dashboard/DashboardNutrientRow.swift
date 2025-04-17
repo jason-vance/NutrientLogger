@@ -8,6 +8,9 @@
 import SwiftUI
 import SwinjectAutoregistration
 
+//TODO: MVP: Add chart
+//TODO: MVP: Tweak colors
+//TODO: Add various styles/sizes of row
 struct DashboardNutrientRow: View {
     
     @Inject private var userService: UserService

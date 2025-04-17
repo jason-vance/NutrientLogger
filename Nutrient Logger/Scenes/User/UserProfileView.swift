@@ -8,7 +8,6 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Save user data when it changes
 struct UserProfileView: View {
     
     @Inject private var userService: UserService
@@ -21,6 +20,17 @@ struct UserProfileView: View {
         self.user = userService.currentUser
     }
     
+    private func saveUser() {
+        guard let user else { return }
+        Task {
+            do {
+                try await userService.save(user: user)
+            } catch {
+                print("Failed to save user: \(error.localizedDescription)")
+            }
+        }
+    }
+    
     var body: some View {
         List {
             ProfileSettingsSection()
@@ -31,6 +41,7 @@ struct UserProfileView: View {
         .listDefaultModifiers()
         .navigationBarTitle("User Profile")
         .onAppear { fetchUser() }
+        .onChange(of: user) { saveUser() }
         .sheet(isPresented: $showFavoriteColorPicker) {
             FavoriteColorPicker(.init(
                 get: { user?.preferredColorName ?? .indigo },
