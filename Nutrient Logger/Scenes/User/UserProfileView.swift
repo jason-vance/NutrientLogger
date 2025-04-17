@@ -193,8 +193,7 @@ struct UserProfileView: View {
     @ViewBuilder private func NutrientLibrarySection() -> some View {
         Section {
             NavigationLink {
-                Text("NutrientLibraryView")
-//TODO: MVP: Navigate to NutrientLibraryView()
+                NutrientLibraryView()
             } label: {
                 VStack {
                     HStack {
