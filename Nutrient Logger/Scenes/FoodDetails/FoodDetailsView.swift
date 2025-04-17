@@ -115,10 +115,6 @@ struct FoodDetailsView: View {
     }
 
     private func deleteFood() {
-        guard let food = self.food else {
-            show(alert: "Failed to delete. Food doesn't appear to exist")
-            return
-        }
         guard let consumedFood = {
             switch mode {
             case .loggedFood(let food): return food
