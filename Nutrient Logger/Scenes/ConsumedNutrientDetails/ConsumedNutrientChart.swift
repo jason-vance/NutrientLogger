@@ -219,9 +219,7 @@ struct ConsumedNutrientChart: View {
 }
 
 #Preview {
-    let db = LocalDatabaseForScreenshots()
-    let foods = try! db.getFoodsOrderedByDateLogged(.today)
-    let pairs = NutrientDataAggregator(foods)
+    let pairs = NutrientDataAggregator(FoodItem.sampleFoods)
         .nutrientsByNutrientNumber[FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca]
     
     let rdi = UsdaNutrientRdiLibrary

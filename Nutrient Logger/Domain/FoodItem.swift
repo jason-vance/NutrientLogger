@@ -11,7 +11,7 @@ public enum FoodItemError: Error {
     case cannotApplyMultiplePortions
 }
 
-struct FoodItem: DatabaseEntity, Codable {
+struct FoodItem: Identifiable, Codable {
     
     public var id: Int = -1
     public var created: Date = Date.now

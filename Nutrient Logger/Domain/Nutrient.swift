@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Nutrient: DatabaseEntity, Codable, Identifiable {
+struct Nutrient: Codable, Identifiable {
     
     public var id: Int = -1
     public var created: Date = Date.now
