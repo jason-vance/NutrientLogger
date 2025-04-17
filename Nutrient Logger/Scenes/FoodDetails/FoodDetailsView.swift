@@ -8,7 +8,7 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Populate fields correctly for loggedFoods
+//TODO: MVP: Lipids are repeating in nutrition facts
 //TODO: MVP: Remove mealTime when adding to meal
 //TODO: Add a toast-like notification for when a food is successfully saved
 struct FoodDetailsView: View {
@@ -210,6 +210,15 @@ struct FoodDetailsView: View {
         }
     }
     
+    private func populateFieldsIfNeeded() {
+        if case .loggedFood(let food) = mode {
+            self.logDate = food.dateLogged
+            self.selectedMealTime = food.mealTime
+            self.portionAmountValue = food.portion.amount
+            self.selectedPortion = food.portion
+        }
+    }
+    
     init(
         mode: Mode,
         onFoodSaved: @escaping (FoodItem, Portion) throws -> Void
@@ -277,6 +286,7 @@ struct FoodDetailsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
         .onAppear { fetchFoodAndPortions() }
+        .onAppear { populateFieldsIfNeeded() }
         .onChange(of: portionAmountValue) { applyPortion() }
         .confirmationDialog(
             "Delete Food?\n\nAre you sure you want to delete \"\(food?.name ?? "this food")\"?",
