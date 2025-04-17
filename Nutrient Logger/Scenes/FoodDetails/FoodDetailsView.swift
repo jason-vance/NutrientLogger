@@ -8,7 +8,6 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Lipids are repeating in nutrition facts
 //TODO: MVP: Remove mealTime when adding to meal
 //TODO: Add a toast-like notification for when a food is successfully saved
 struct FoodDetailsView: View {
@@ -1266,6 +1265,7 @@ struct FoodDetailsView: View {
     }
     
     @ViewBuilder private func OtherNutrients(_ nutrients: inout [Nutrient]) -> some View {
+        let nutrients = nutrients.sorted { $0.fdcNumber < $1.fdcNumber }
         let last = nutrients.last
         
         ForEach(nutrients) { nutrient in

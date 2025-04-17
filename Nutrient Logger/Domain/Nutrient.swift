@@ -9,7 +9,7 @@ import Foundation
 
 struct Nutrient: Codable, Identifiable {
     
-    public var id: Int = -1
+    public var id: Int { fdcId }
     public var created: Date = Date.now
     public let fdcId: Int
     public let fdcNumber: String
@@ -20,7 +20,6 @@ struct Nutrient: Codable, Identifiable {
     public var mealTime: MealTime?
     
     public init(
-        id: Int,
         created: Date,
         fdcId: Int,
         fdcNumber: String,
@@ -30,7 +29,6 @@ struct Nutrient: Codable, Identifiable {
         dateLogged: SimpleDate?,
         mealTime: MealTime?
     ) {
-        self.id = id
         self.created = created
         self.fdcId = fdcId
         self.fdcNumber = fdcNumber
@@ -51,7 +49,6 @@ struct Nutrient: Codable, Identifiable {
     
     public func withAmount(_ amount: Double) -> Nutrient {
         return Nutrient(
-            id: id,
             created: created,
             fdcId: fdcId,
             fdcNumber: fdcNumber,
