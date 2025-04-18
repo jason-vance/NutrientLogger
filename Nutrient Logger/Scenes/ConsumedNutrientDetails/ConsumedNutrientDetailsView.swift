@@ -8,7 +8,7 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Foods don't have correct meal time
+//TODO: MVP: Foods don't have nutrient amount
 struct ConsumedNutrientDetailsView: View {
     
     private struct MealFoods: Identifiable {
@@ -82,6 +82,7 @@ struct ConsumedNutrientDetailsView: View {
             .reduce(into: []) { result, element in
                 result.append(MealFoods(mealTime: element.key, foods: element.value))
             }
+            .sorted { $0.mealTime < $1.mealTime }
     }
     
     private func loadExplanation() async {
@@ -216,7 +217,7 @@ struct ConsumedNutrientDetailsView: View {
                 }
             }
         } header: {
-            Text("Foods")
+            Text("Contributing Foods")
         }
     }
 }

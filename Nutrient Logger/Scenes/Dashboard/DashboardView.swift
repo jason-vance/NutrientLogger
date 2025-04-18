@@ -31,8 +31,11 @@ struct DashboardView: View {
             foodItems = todaysConsumedFoods
                 .compactMap { consumedFood in
                     do {
-                        let food = try remoteDatabase.getFood(String(consumedFood.fdcId))
-                        return try food?.applyingPortion(consumedFood.portion)
+                        var food = try remoteDatabase.getFood(String(consumedFood.fdcId))
+                        food = try food?.applyingPortion(consumedFood.portion)
+                        food?.dateLogged = consumedFood.dateLogged
+                        food?.mealTime = consumedFood.mealTime
+                        return food
                     } catch {
                         print("Failed to fetch food with id \(consumedFood.fdcId): \(error)")
                     }
