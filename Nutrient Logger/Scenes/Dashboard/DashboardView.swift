@@ -49,7 +49,9 @@ struct DashboardView: View {
         
         let hour = Calendar.current.component(.hour, from: date)
         
-        if hour >= 0 && hour < 12 {
+        if hour >= 0 && hour < 2 {
+            return "Try Sleep?"
+        } else if hour >= 2 && hour < 12 {
             return "Good Morning"
         } else if hour >= 12 && hour < 16 {
             return "Good Afternoon"
