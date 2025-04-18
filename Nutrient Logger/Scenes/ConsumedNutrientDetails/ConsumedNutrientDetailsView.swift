@@ -8,7 +8,6 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Foods don't have nutrient amount
 struct ConsumedNutrientDetailsView: View {
     
     private struct MealFoods: Identifiable {
@@ -213,7 +212,10 @@ struct ConsumedNutrientDetailsView: View {
                 Text(mealFoods.mealTime.rawValue)
                     .listSubsectionHeader()
                 ForEach(mealFoods.foods) { food in
-                    ConsumedNutrientDetailsFoodRow(food: food)
+                    ConsumedNutrientDetailsFoodRow(
+                        nutrientNumber: nutrient.fdcNumber,
+                        food: food
+                    )
                 }
             }
         } header: {

@@ -9,7 +9,14 @@ import SwiftUI
 
 struct ConsumedNutrientDetailsFoodRow: View {
     
+    let nutrientNumber: String
     let food: FoodItem
+    
+    private var nutrient: Nutrient? {
+        return food.nutrientGroups
+            .reduce(into: []) { result, group in result += group.nutrients }
+            .first(where: { $0.fdcNumber == nutrientNumber })
+    }
     
     var body: some View {
         RowContent()
@@ -27,8 +34,14 @@ struct ConsumedNutrientDetailsFoodRow: View {
     @ViewBuilder private func RowContent() -> some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(food.name)
-                    .font(.headline)
+                HStack(alignment: .top) {
+                    Text(food.name)
+                        .font(.headline)
+                    Spacer()
+                    if let nutrient {
+                        Text("\(nutrient.amount.formatted(maxDigits: 2))\(nutrient.unitName)")
+                    }
+                }
                 Text("\(food.amount.formatted()) \(food.portionName)")
                     .font(.callout)
             }
@@ -40,7 +53,10 @@ struct ConsumedNutrientDetailsFoodRow: View {
 #Preview {
     NavigationStack {
         List {
-            ConsumedNutrientDetailsFoodRow(food: .dashboardSample)
+            ConsumedNutrientDetailsFoodRow(
+                nutrientNumber: FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca,
+                food: .dashboardSample
+            )
         }
         .listDefaultModifiers()
     }
