@@ -43,7 +43,7 @@ struct ConsumedNutrientDetailsFoodRow: View {
                     }
                 }
                 Text("\(food.amount.formatted()) \(food.portionName)")
-                    .font(.callout)
+                    .font(.footnote)
             }
             Spacer()
         }

@@ -45,7 +45,7 @@ struct DashboardFoodRow: View {
                 Text(food.name)
                     .font(.headline)
                 Text("\(food.portionAmount.formatted()) \(food.portionName)")
-                    .font(.callout)
+                    .font(.footnote)
             }
             Spacer()
         }

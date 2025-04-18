@@ -9,11 +9,37 @@ import SwiftUI
 
 //TODO: MVP: Implement this
 struct LogMealView: View {
+    
+    let meal: Meal
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        List {
+            ForEach(meal.foodsWithPortions) { foodWithPortion in
+                FoodRow(foodWithPortion)
+            }
+        }
+        .listDefaultModifiers()
+    }
+    
+    @ViewBuilder private func FoodRow(_ foodWithPortion: Meal.FoodWithPortion) -> some View {
+        VStack {
+            HStack {
+                Text(foodWithPortion.foodName)
+                Spacer()
+            }
+            .bold()
+            HStack {
+                Text("\(foodWithPortion.portionAmount.formatted(maxDigits: 2)) \(foodWithPortion.portionName)")
+                Spacer()
+            }
+            .font(.footnote)
+        }
+        .listRowDefaultModifiers()
     }
 }
 
 #Preview {
-    LogMealView()
+    NavigationStack {
+        LogMealView(meal: .sample)
+    }
 }
