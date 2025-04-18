@@ -235,12 +235,14 @@ struct ConsumedNutrientChart: View {
             style: .individual
         )
         .frame(height: 250)
+        .foregroundStyle(Color.red.gradient)
         ConsumedNutrientChart(
             nutrientFoodPairs: pairs!,
             rdi: rdi,
             style: .cumulative
         )
         .frame(height: 250)
+        .foregroundStyle(Color.blue)
     }
     .listDefaultModifiers()
 }

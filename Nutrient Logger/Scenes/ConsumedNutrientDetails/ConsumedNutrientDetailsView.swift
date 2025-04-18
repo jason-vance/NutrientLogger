@@ -8,7 +8,7 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Add colors
+//TODO: MVP: Foods don't have correct meal time
 struct ConsumedNutrientDetailsView: View {
     
     private struct MealFoods: Identifiable {
@@ -30,6 +30,11 @@ struct ConsumedNutrientDetailsView: View {
     
     private let nutrient: Nutrient
     private let nutrientFoodPairs: [NutrientFoodPair]
+    
+    private var colorPalette: ColorPalette {
+        let num = FdcNutrientGroupMapper.groupNumberForNutrient(nutrient.fdcNumber)
+        return ColorPaletteService.getColorPaletteFor(number: num)
+    }
     
     private var user: User { userService.currentUser }
 
@@ -197,6 +202,7 @@ struct ConsumedNutrientDetailsView: View {
             style: .cumulative
         )
         .frame(height: 250)
+        .foregroundStyle(colorPalette.primary.gradient)
         .listRowDefaultModifiers()
     }
     
