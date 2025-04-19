@@ -469,9 +469,7 @@ struct FoodSearchView: View {
     
     @ViewBuilder private func FdcNutrientRow(_ nutrient: Nutrient) -> some View {
         NavigationLink {
-            //TODO: MVP: Navigate to NutrientDetailsView
-            Text("Nutrient Details")
-//            NutrientDetailsView(nutrientId: nutrient.fdcId)
+            NutrientLibraryDetailView(nutrient: nutrient)
         } label: {
             HStack {
                 Text(nutrient.name)
