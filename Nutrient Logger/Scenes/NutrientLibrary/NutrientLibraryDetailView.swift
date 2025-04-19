@@ -11,7 +11,8 @@ import SwinjectAutoregistration
 struct NutrientLibraryDetailView: View {
     
     @Environment(\.presentationMode) var presentationMode
-    
+    @Environment(\.modelContext) var modelContext
+
     let nutrient: Nutrient
     
     @Inject private var remoteDatabase: RemoteDatabase
@@ -99,7 +100,10 @@ struct NutrientLibraryDetailView: View {
     
     @ViewBuilder private func FoodRow(_ pair: NutrientFoodPair) -> some View {
         NavigationLink {
-            //TODO: MVP: Navigate to food details
+            FoodDetailsView(
+                mode: .searchResult(fdcId: pair.food.fdcId),
+                onFoodSaved: FoodSaver.forConsumedFoods(modelContext: modelContext).saveFoodItem
+            )
         } label: {
             HStack {
                 VStack {

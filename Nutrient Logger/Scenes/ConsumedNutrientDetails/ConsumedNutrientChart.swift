@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-//TODO: MVP: This seems to have broken
 struct ConsumedNutrientChart: View {
     
     let capsuleSpacing: CGFloat = 4
