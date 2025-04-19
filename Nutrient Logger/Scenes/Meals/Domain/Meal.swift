@@ -86,7 +86,7 @@ extension Meal: Equatable { }
 
 extension Meal {
     static var sample: Meal {
-        let meal = Meal(name: "Smaple Meal")
+        let meal = Meal(name: "Sample Meal")
         meal.addFoods(FoodItem.sampleFoods.prefix(3).map { food in
             let portion = Portion(name: food.portionName, amount: food.amount, gramWeight: food.gramWeight)
             return FoodWithPortion(food: food, portion: portion)

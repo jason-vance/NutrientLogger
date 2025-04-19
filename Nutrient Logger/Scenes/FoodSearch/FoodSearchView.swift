@@ -483,9 +483,7 @@ struct FoodSearchView: View {
     
     @ViewBuilder private func UserMealRow(_ meal: UserMealsSearchableMeal) -> some View {
         NavigationLink {
-            //TODO: MVP: Navigate to MealDetailsView
-            Text("Meal Details")
-//            MealDetailsView(mealId: meal.mealId)
+            LogMealView(meal: meal.meal)
         } label: {
             HStack {
                 Text(meal.mealName)

@@ -16,6 +16,7 @@ enum DashboardMealList {
             .lunch: .init(),
             .dinner: .init(),
             .eveningSnack: .init(),
+            .afternoonSnack: .init(),
             .morningSnack: .init(),
         ]
         
