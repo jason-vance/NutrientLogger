@@ -18,7 +18,6 @@ struct ConsumedNutrientDetailsView: View {
     
     @Environment(\.presentationMode) private var presentationMode
     
-    @Inject private var adProvider: AdProvider
     @Inject private var nutrientRdiLibrary: NutrientRdiLibrary
     @Inject private var userService: UserService
 
@@ -225,9 +224,6 @@ struct ConsumedNutrientDetailsView: View {
 }
 
 #Preview {
-    let _ = swinjectContainer.autoregister(AdProvider.self) {
-        MockAdProvider()
-    }
     let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) {
         UsdaNutrientRdiLibrary.create()
     }

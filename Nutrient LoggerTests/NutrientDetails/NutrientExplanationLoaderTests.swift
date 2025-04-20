@@ -17,7 +17,7 @@ class NutrientExplanationLoaderTests {
     @Test func testExtractHeaderAndText() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2 id='h1'>What is vitamin A and what does it do?</h2>
                 <p>Vitamin A is a fat-soluble vitamin that is naturally present in many foods.</p>
             </div>
@@ -36,7 +36,7 @@ class NutrientExplanationLoaderTests {
     @Test func testExtractHeaderAndTextWithParentheses() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2>Age-Related Macular Degeneration</h2>
                 <p>Age-related macular degeneration (AMD), or the loss of central vision as people age, is one of the most common causes of vision loss in older people. Among people with AMD who are at high risk of developing advanced AMD, a supplement containing antioxidants, zinc, and copper with or without beta-carotene has shown promise for slowing down the rate of vision loss.</p>
             </div>
@@ -55,7 +55,7 @@ class NutrientExplanationLoaderTests {
     @Test func testExtractHeaderAndTextWithComplexHTML() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2>Age-Related Macular Degeneration</h2>
                 <ul>
                     <li>Orlistat (Alli&reg;, Xenical&reg;), a weight-loss drug, can decrease the <a href="#" onClick="showTerm('/factsheets/showterm.aspx?tID=255')" class="fscopy">absorption</a> of vitamin A, causing low blood levels in some people.</li>
@@ -81,7 +81,7 @@ class NutrientExplanationLoaderTests {
     @Test func testIgnoresComments() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2 id='h1'>What is vitamin A and what does it do?</h2>
                 <!-- docid = 5066 -->
                 <p>Vitamin A is a fat-soluble vitamin that is naturally present in many foods.</p>
@@ -101,7 +101,7 @@ class NutrientExplanationLoaderTests {
     @Test func testExtractsHeaderAndMultilineText() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2 id='h1'>What is vitamin A and what does it do?</h2>
                 <p>Vitamin A is a fat-soluble vitamin that is naturally present in many foods.</p>
                 <p>There are two different types of vitamin A.</p>
@@ -121,7 +121,7 @@ class NutrientExplanationLoaderTests {
     @Test func testExtractsMultipleSections() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2 id='h1'>What is vitamin A and what does it do?</h2>
                 <p>Vitamin A is a fat-soluble vitamin that is naturally present in many foods.</p>
                 <p>There are two different types of vitamin A.</p>
@@ -147,7 +147,7 @@ class NutrientExplanationLoaderTests {
     @Test func testExtractsTable() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2 id='h1'>What is vitamin A and what does it do?</h2>
                 <table border='1'>
                     <thead>
@@ -193,7 +193,7 @@ class NutrientExplanationLoaderTests {
     @Test func testExtractsList() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2 id='h1'>What is vitamin A and what does it do?</h2>
                 <ul>
                     <li>Beef liver and other organ meats (but these foods are also high in cholesterol, so limit the amount you eat).</li>
@@ -221,7 +221,7 @@ class NutrientExplanationLoaderTests {
     @Test func testExtractsSublist() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2 id='h1'>What is vitamin A and what does it do?</h2>
                 <ul>
                     <li>
@@ -262,7 +262,7 @@ class NutrientExplanationLoaderTests {
     @Test func testExtractsSubsection() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2 id='h1'>What is vitamin A and what does it do?</h2>
                 <h4>Cancer</h4>
                 <p>People who eat a lot of <em>foods</em> containing beta-carotene might have a lower risk of certain kinds of cancer, such as lung cancer or prostate cancer. But studies to date have not shown that vitamin A or beta-carotene <em>supplements</em> can help prevent cancer or lower the chances of dying from this disease. In fact, studies show that smokers who take high doses of beta-carotene supplements have an <em>increased</em> risk of lung cancer.</p>
@@ -291,7 +291,7 @@ class NutrientExplanationLoaderTests {
     @Test func testDetectsNewSectionAfterSubsection() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2 id='h1'>What is vitamin A and what does it do?</h2>
                 <h4>Cancer</h4>
                 <p>People who eat a lot of <em>foods</em> containing beta-carotene might have a lower risk of certain kinds of cancer, such as lung cancer or prostate cancer. But studies to date have not shown that vitamin A or beta-carotene <em>supplements</em> can help prevent cancer or lower the chances of dying from this disease. In fact, studies show that smokers who take high doses of beta-carotene supplements have an <em>increased</em> risk of lung cancer.</p>
@@ -323,7 +323,7 @@ class NutrientExplanationLoaderTests {
     @Test func testDetectsNewSectionTextAfterTable() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2 id='h1'>What is vitamin A and what does it do?</h2>
                 <table border='1'>
                     <thead>
@@ -360,7 +360,7 @@ class NutrientExplanationLoaderTests {
     @Test func testDetectsNewSectionsAfterList() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2 id='h1'>What is vitamin A and what does it do?</h2>
                 <ul>
                     <li>Beef liver and other organ meats (but these foods are also high in cholesterol, so limit the amount you eat).</li>
@@ -388,7 +388,7 @@ class NutrientExplanationLoaderTests {
     @Test func testExtractsItalicizedTextInLists() async throws {
         let html = """
         <body
-            <div class='center' id='center_content'>
+            <div class='center' id='fact-sheet'>
                 <h2 id='h1'>What is vitamin A and what does it do?</h2>
                 <ul>
                     <li>Chloramphenicol (<em>Chloromycetin</em>®), an antibiotic that is used to treat certain infections.</li>
@@ -407,7 +407,7 @@ class NutrientExplanationLoaderTests {
 //    @Test func testDetectsLinkInSectionText() async throws {
 //        let html = """
 //        <body
-//            <div class='center' id='center_content'>
+//            <div class='center' id='fact-sheet'>
 //                <h2 id='h1'>New section</h2>
 //                <p>New section text <a href='www.food.com'>food</a> or by <a href='www.content.com'>content</a></p>
 //            </div>
@@ -435,7 +435,7 @@ class NutrientExplanationLoaderTests {
 //    @Test func testDetectsLinkInSectionText2() async throws {
 //        let html = """
 //        <body
-//            <div class='center' id='center_content'>
+//            <div class='center' id='fact-sheet'>
 //                <h2 id="h10">Vitamin A and healthful eating</h2>
 //
 //                <p>People should get most of their nutrients from food and beverages, according to the federal government’s <em>Dietary Guidelines for Americans.</em> Foods contain vitamins, minerals, dietary fiber and other components that benefit health. In some cases, fortified foods and dietary supplements are useful when it is not possible to meet needs for one or more nutrients (e.g., during specific life stages such as pregnancy). For more information about building a healthy dietary pattern, see the <a href="https://www.dietaryguidelines.gov" target="external"><em>Dietary Guidelines for Americans</em></a><a href="/About/exit_disclaimer.aspx" title="External Website"><img src="/images/Common/externallink.png" height="12" width="12" alt="external link disclaimer" class="externallink"></a> and the U.S. Department of Agriculture’s <a href="http://www.choosemyplate.gov/" target="external">MyPlate</a><a href="/About/exit_disclaimer.aspx" title="External Website"><img src="/images/Common/externallink.png" height="12" width="12" alt="external link disclaimer" class="externallink"></a>.</p>
@@ -464,7 +464,7 @@ class NutrientExplanationLoaderTests {
 //    @Test func testDetectsLinkInListText() async throws {
 //        let html = """
 //        <body
-//            <div class='center' id='center_content'>
+//            <div class='center' id='fact-sheet'>
 //                <h2 id='h1'>New section</h2>
 //                <ul>
 //                    <li>

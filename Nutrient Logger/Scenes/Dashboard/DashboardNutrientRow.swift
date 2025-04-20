@@ -68,7 +68,6 @@ struct DashboardNutrientRow: View {
 #Preview {
     let _ = swinjectContainer.autoregister(UserService.self) { UserServiceForScreenshots() }
     let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) { UsdaNutrientRdiLibrary.create() }
-    let _ = swinjectContainer.autoregister(AdProvider.self) { MockAdProvider() }
 
     let food = try! RemoteDatabaseForScreenshots().getFood("asdf")!
 

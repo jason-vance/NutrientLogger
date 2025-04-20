@@ -34,7 +34,7 @@ struct FoodItemTests {
             nutrients: proximateNutrients
         ))
 
-        let food = FoodItem(
+        let baseFood = FoodItem(
             nutrientGroups: groups,
             amount: foodAmount,
             gramWeight: foodGramWeight
@@ -45,7 +45,7 @@ struct FoodItemTests {
             gramWeight: portionGramWeight
         )
 
-        try! food.applyPortion(portion)
+        let food = try! baseFood.applyingPortion(portion)
         let proteinAmount = food.nutrientGroups.flatMap { $0.nutrients }[0].amount
 
         #expect(expected == proteinAmount)

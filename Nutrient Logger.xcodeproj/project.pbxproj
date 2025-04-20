@@ -13,6 +13,7 @@
 		567B9AEF2DA49FFE005CC6D3 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 567B9AEE2DA49FFE005CC6D3 /* Swinject */; };
 		567B9AF22DA4A011005CC6D3 /* SwinjectAutoregistration in Frameworks */ = {isa = PBXBuildFile; productRef = 567B9AF12DA4A011005CC6D3 /* SwinjectAutoregistration */; };
 		567B9EF92DB4E6AE005CC6D3 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 567B9EF82DB4E6AE005CC6D3 /* FirebaseAnalytics */; };
+		567BA0F02DB4EBAF005CC6D3 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 567BA0EF2DB4EBAF005CC6D3 /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,7 +107,6 @@
 				FdcDatabase/FdcSearchableFoodDatabase.swift,
 				FdcDatabase/FdcSupportingDataDatabase.swift,
 				Mocks/LocalDatabaseForScreenshots.swift,
-				Mocks/MockAdProvider.swift,
 				Mocks/MockAnalyticsEngine.swift,
 				Mocks/MockConsumedFoodSaverAnalytics.swift,
 				Mocks/MockFoodSaver.swift,
@@ -120,15 +120,14 @@
 				Mocks/RemoteDatabaseForScreenshots.swift,
 				Mocks/UserMealsDatabaseForScreenshots.swift,
 				Mocks/UserServiceForScreenshots.swift,
-				Monetization/AdProvider.swift,
 				Scenes/AppSetup/SwinjectContainer.swift,
 				Scenes/ConsumedNutrientDetails/Domain/NutrientExplanation.swift,
 				Scenes/ConsumedNutrientDetails/Workers/HtmlDocumentLoader.swift,
 				Scenes/ConsumedNutrientDetails/Workers/NutrientExplanationLoader.swift,
 				Scenes/ConsumedNutrientDetails/Workers/NutrientNumberToPropsMap.swift,
-				Scenes/Dashboard/DashboardFoodRow.swift,
 				Scenes/Dashboard/DashboardMealList.swift,
 				Scenes/Dashboard/NutrientDataAggregator.swift,
+				Scenes/FoodDetails/Workers/FoodSaver.swift,
 				Scenes/FoodSearch/Domain/SearchCategory.swift,
 				Scenes/FoodSearch/Domain/SearchResult.swift,
 				Scenes/FoodSearch/Workers/FtsQueryGenerator.swift,
@@ -181,6 +180,7 @@
 				567B9AF22DA4A011005CC6D3 /* SwinjectAutoregistration in Frameworks */,
 				567B9A722DA48A57005CC6D3 /* SwiftSoup in Frameworks */,
 				567B9AEF2DA49FFE005CC6D3 /* Swinject in Frameworks */,
+				567BA0F02DB4EBAF005CC6D3 /* GoogleMobileAds in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,6 +247,7 @@
 				567B9AEE2DA49FFE005CC6D3 /* Swinject */,
 				567B9AF12DA4A011005CC6D3 /* SwinjectAutoregistration */,
 				567B9EF82DB4E6AE005CC6D3 /* FirebaseAnalytics */,
+				567BA0EF2DB4EBAF005CC6D3 /* GoogleMobileAds */,
 			);
 			productName = "Nutrient Logger";
 			productReference = 567B991F2DA3C42B005CC6D3 /* Nutrient Logger.app */;
@@ -338,6 +339,7 @@
 				567B9AED2DA49FFE005CC6D3 /* XCRemoteSwiftPackageReference "Swinject" */,
 				567B9AF02DA4A011005CC6D3 /* XCRemoteSwiftPackageReference "SwinjectAutoregistration" */,
 				567B9EF72DB4E6AE005CC6D3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				567BA0EE2DB4EBAF005CC6D3 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 567B99202DA3C42B005CC6D3 /* Products */;
@@ -544,6 +546,7 @@
 				DEVELOPMENT_TEAM = QTXW6735S3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Nutrient-Logger-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Nutrient Logger";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -578,6 +581,7 @@
 				DEVELOPMENT_TEAM = QTXW6735S3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Nutrient-Logger-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Nutrient Logger";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -767,6 +771,14 @@
 				minimumVersion = 11.11.0;
 			};
 		};
+		567BA0EE2DB4EBAF005CC6D3 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.3.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -799,6 +811,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 567B9EF72DB4E6AE005CC6D3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAnalytics;
+		};
+		567BA0EF2DB4EBAF005CC6D3 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 567BA0EE2DB4EBAF005CC6D3 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

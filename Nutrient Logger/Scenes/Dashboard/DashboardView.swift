@@ -64,6 +64,7 @@ struct DashboardView: View {
     
     var body: some View {
         List {
+            AdRow()
             MyNutrientsSection()
             WhatIAteSection()
         }
@@ -123,6 +124,10 @@ struct DashboardView: View {
         }
     }
 
+    @ViewBuilder private func AdRow() -> some View {
+        SimpleNativeAdView(size: .small)
+            .listRowDefaultModifiers()
+    }
     
     @ViewBuilder private func MyNutrientsSection() -> some View {
         if !foodItems.isEmpty {

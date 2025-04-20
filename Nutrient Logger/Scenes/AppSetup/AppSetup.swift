@@ -16,7 +16,6 @@ class AppSetup {
         FirebaseApp.configure()
         
         setupAnalytics()
-        setupAdProvider()
         
         registerNutrientRdiLibrary()
         await registerUserService()
@@ -28,7 +27,6 @@ class AppSetup {
     fileprivate static func doMocksForScreenshots() {
         swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { MockNutrientLoggerAnalytics() }
         swinjectContainer.autoregister(UserService.self) { UserServiceForScreenshots() }
-        swinjectContainer.autoregister(AdProvider.self) { MockAdProvider() }
         //TODO: Add meals to modelContext for screenshots
 //        swinjectContainer.autoregister(UserMealsDatabase.self) { UserMealsDatabaseForScreenshots() }
         swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
@@ -47,34 +45,6 @@ class AppSetup {
     private static func registerRemoteDatabase() async {
         let db = try! await BundledFdcDatabase()
         swinjectContainer.autoregister(RemoteDatabase.self) { db }
-    }
-    
-    //TODO: MVP: Use real AdMob when it is added
-    fileprivate static func setupAdProvider() {
-        let adProvider = MockAdProvider()
-        swinjectContainer.autoregister(AdProvider.self) { adProvider }
-        return
-//
-//#if DEBUG
-//        let adUnitId = GoogleAdProvider.testAdUnitId
-//#else
-//        let key = Data([
-//            0xAE, 0x84, 0xB9, 0x52, 0x4D, 0x06, 0x86, 0x83, 0x17, 0xED, 0x56, 0x83, 0xB7, 0xDD, 0x2C, 0xA3,
-//            0xE2, 0x0D, 0xD2, 0xCB, 0xF7, 0x0B, 0x59, 0xCC, 0x62, 0x41, 0x36, 0x72, 0xD5, 0x44, 0x85, 0x7C
-//        ])
-//        let iv = Data([
-//            0xE2, 0x0D, 0xD2, 0xCB, 0xF7, 0x0B, 0x59, 0xCC, 0x62, 0x41, 0x36, 0x72, 0xD5, 0x44, 0x85, 0x7C,
-//            0x82, 0xBA, 0x6B, 0x63, 0x53, 0x5F, 0x46, 0xE5, 0x02, 0x7F, 0xAA, 0xB6, 0xFF, 0xE2, 0x4D, 0xE6
-//        ])
-//        let r = Rijndael(key: key, mode: .cbc)!
-//        
-//        // adUnitId: "ca-app-pub-1475400719226569/6734098039"
-//        let adUnitIdBase64 = Data(base64Encoded: "PSocwymmXgZ9+6cX1Y6sH0hU0ackkkavULsan6JbkHK7vk/TQ4RNxJ74pkNHbdc+qpK2Ua4Ia9vUbU04shqd5A==")!
-//        let adUnitIdData = r.decryptString(data: adUnitIdBase64, blockSize: 32, iv: iv)!
-//        let adUnitId = String(decoding: adUnitIdData, as: UTF8.self)
-//#endif
-//
-//        IocContainer.shared.register(type: AdProvider.self, component: GoogleAdProvider(adUnitId: adUnitId))
     }
     
     fileprivate static func setupAnalytics() {
