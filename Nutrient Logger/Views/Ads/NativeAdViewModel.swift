@@ -33,7 +33,6 @@ class NativeAdViewModel: NSObject, ObservableObject, NativeAdLoaderDelegate {
         
         adLoader = AdLoader(
             adUnitID: adUnitId,
-            // The UIViewController parameter is optional.
             rootViewController: nil,
             adTypes: [.native],
             options: nil
@@ -43,7 +42,6 @@ class NativeAdViewModel: NSObject, ObservableObject, NativeAdLoaderDelegate {
     }
     
     func adLoader(_ adLoader: AdLoader, didReceive nativeAd: NativeAd) {
-        // Native ad data changes are published to its subscribers.
         self.nativeAd = nativeAd
         nativeAd.delegate = self
     }
@@ -53,7 +51,6 @@ class NativeAdViewModel: NSObject, ObservableObject, NativeAdLoaderDelegate {
     }
 }
 
-// MARK: - NativeAdDelegate implementation
 extension NativeAdViewModel: NativeAdDelegate {
     func nativeAdDidRecordClick(_ nativeAd: NativeAd) {
         print("\(#function) called")

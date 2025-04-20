@@ -210,11 +210,13 @@ struct FoodDetailsView: View {
             PortionField()
             PortionAmountField()
             
-            NutritionFactsSection(
-                nutrients: displayNutrients,
-                portionGrams: portionGrams,
-                portionValue: portionValue
-            )
+            if !displayNutrients.isEmpty {
+                NutritionFactsSection(
+                    nutrients: displayNutrients,
+                    portionGrams: portionGrams,
+                    portionValue: portionValue
+                )
+            }
             
             if mode.isLoggedFood {
                 DeleteButton()

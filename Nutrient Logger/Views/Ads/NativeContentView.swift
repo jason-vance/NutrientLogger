@@ -29,9 +29,8 @@ struct NativeContentView: View {
                 NativeAdViewContainer(
                     nativeViewModel: nativeViewModel,
                     xibName: "ExampleNativeAdView"
-                )  // Updates when the native ad data changes.
-                    .frame(minHeight: 300)  // minHeight determined from xib.
-                // [END add_view_model_to_view]
+                )
+                .frame(minHeight: 300)  // minHeight determined from xib.
                 
                 Text(
                     nativeViewModel.nativeAd?.mediaContent.hasVideoContent == true
@@ -79,6 +78,7 @@ struct SimpleNativeAdView: View {
     @StateObject private var nativeViewModel = NativeAdViewModel()
     @State var size: Size
     
+    // minHeight determined from xib.
     private var frameMinHeight: CGFloat {
         switch size {
         case .small: return 100
@@ -97,8 +97,10 @@ struct SimpleNativeAdView: View {
         NativeAdViewContainer(
             nativeViewModel: nativeViewModel,
             xibName: xibName
-        )  // Updates when the native ad data changes.
-        .frame(minHeight: frameMinHeight)  // minHeight determined from xib.
+        )
+        .frame(height: nativeViewModel.nativeAd == nil ? 0 : nil)
+        .frame(minHeight: nativeViewModel.nativeAd == nil ? nil : frameMinHeight)
+        .opacity(nativeViewModel.nativeAd == nil ? 0 : 1)
         .onAppear {
             nativeViewModel.refreshAd()
         }

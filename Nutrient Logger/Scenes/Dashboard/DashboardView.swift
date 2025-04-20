@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 import SwinjectAutoregistration
 
+//TODO: MVP: Add instructions for how to search for and add foods
 struct DashboardView: View {
     
     @Environment(\.scenePhase) private var scenePhase
