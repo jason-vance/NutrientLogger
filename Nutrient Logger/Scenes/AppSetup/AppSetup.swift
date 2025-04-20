@@ -8,12 +8,12 @@
 import Foundation
 import RijndaelSwift
 import SwinjectAutoregistration
+import Firebase
 
 class AppSetup {
     
     static func doSetup() async {
-        //TODO: MVP: Uncomment when firebase is added
-//        FirebaseApp.configure()
+        FirebaseApp.configure()
         
         setupAnalytics()
         setupAdProvider()
@@ -49,7 +49,7 @@ class AppSetup {
         swinjectContainer.autoregister(RemoteDatabase.self) { db }
     }
     
-    //TODO: MVP: Uncomment when AdMob is added
+    //TODO: MVP: Use real AdMob when it is added
     fileprivate static func setupAdProvider() {
         let adProvider = MockAdProvider()
         swinjectContainer.autoregister(AdProvider.self) { adProvider }
@@ -78,9 +78,7 @@ class AppSetup {
     }
     
     fileprivate static func setupAnalytics() {
-//        let analyticsEngine = FirebaseAnalytics()
-        //TODO: MVP: Use FirebaseAnalytics engine when it is added
-        let analytics = DefaultAnalytics(analyticsEngine: MockAnalyticsEngine())
+        let analytics = DefaultAnalytics(analyticsEngine: FirebaseAnalytics())
         
         swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { analytics }
         swinjectContainer.autoregister(UserProfileAnalytics.self) { analytics }

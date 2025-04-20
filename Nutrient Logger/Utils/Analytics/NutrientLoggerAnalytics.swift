@@ -13,9 +13,10 @@ protocol AnalyticsEngine {
     var parameterSearchTerm: String { get }
     var parameterValue: String { get }
     
-    func logEvent(_ event: String)
-    func logEvent(_ event: String, withParameters parameters: [String:Any])
+    func log(event: String)
+    func log(event: String, parameters: [String:Any])
 }
+
 
 protocol UserProfileAnalytics {
     func userSetGender(_ gender: Gender)
@@ -141,27 +142,27 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     }
 
     public func foodSearched(_ query: String) {
-        analytics.logEvent(analytics.eventSearch, withParameters: [ analytics.parameterSearchTerm: query ])
+        analytics.log(event: analytics.eventSearch, parameters: [ analytics.parameterSearchTerm: query ])
     }
 
     public func foodLogged(_ food: FoodItem) {
         var dict = [String:Any]()
         addFoodToDictionary(food, &dict)
-        analytics.logEvent(eventFoodLogged, withParameters: dict)
+        analytics.log(event: eventFoodLogged, parameters: dict)
     }
 
     public func foodLogFailed(_ food: FoodItem) {
         var dict = [String:Any]()
         addFoodToDictionary(food, &dict)
-        analytics.logEvent(eventFoodLogFailed, withParameters: dict)
+        analytics.log(event: eventFoodLogFailed, parameters: dict)
     }
 
     public func unableToLeaveFeedback() {
-        analytics.logEvent(eventUnableToLeaveFeedback)
+        analytics.log(event: eventUnableToLeaveFeedback)
     }
 
     public func feedbackLeft() {
-        analytics.logEvent(eventFeedbackLeft)
+        analytics.log(event: eventFeedbackLeft)
     }
 
     public func nutrientNotMapped(_ nutrient: Nutrient) {
@@ -170,146 +171,146 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
         dict[parameterNutrientFdcNumber] = nutrient.fdcNumber
         dict[parameterNutrientName] = nutrient.name
 
-        analytics.logEvent(eventNutrientNotMapped, withParameters: dict)
+        analytics.log(event: eventNutrientNotMapped, parameters: dict)
     }
 
     public func errorLoadingDashboardNutrientData(_ e: Error) {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventErrorLoadingDashboardNutrientData, withParameters: dict)
+        analytics.log(event: eventErrorLoadingDashboardNutrientData, parameters: dict)
     }
 
     public func errorLoadingFoodDetails(_ e: Error)  {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventErrorLoadingFoodDetails, withParameters: dict)
+        analytics.log(event: eventErrorLoadingFoodDetails, parameters: dict)
     }
 
     public func errorDeletingFood(_ e: Error) {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventErrorDeletingFood, withParameters: dict)
+        analytics.log(event: eventErrorDeletingFood, parameters: dict)
     }
 
     public func errorLoadingFoodPortions(_ e: Error) {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventErrorLoadingFoodPortions, withParameters: dict)
+        analytics.log(event: eventErrorLoadingFoodPortions, parameters: dict)
     }
 
     public func couldntAccessNutrientLibrary() {
-        analytics.logEvent(eventCouldntAccessNutrientLibrary)
+        analytics.log(event: eventCouldntAccessNutrientLibrary)
     }
     
     public func loadMenuFailed(_ e: Error) {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventLoadMenuFailed, withParameters: dict)
+        analytics.log(event: eventLoadMenuFailed, parameters: dict)
     }
 
     public func mealCreated() {
-        analytics.logEvent(eventMealCreated)
+        analytics.log(event: eventMealCreated)
     }
     
     public func mealCreationFailed(_ e: Error) {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventMealCreationFailed, withParameters: dict)
+        analytics.log(event: eventMealCreationFailed, parameters: dict)
     }
     
     public func loadMealFailed(_ e: Error) {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventLoadMealFailed, withParameters: dict)
+        analytics.log(event: eventLoadMealFailed, parameters: dict)
     }
 
     public func foodAddedToMeal(_ food: FoodItem) {
         var dict = [String:Any]()
         addFoodToDictionary(food, &dict)
-        analytics.logEvent(eventFoodAddedToMeal, withParameters: dict)
+        analytics.log(event: eventFoodAddedToMeal, parameters: dict)
     }
 
     public func addFoodToMealFailed(_ food: FoodItem) {
         var dict = [String:Any]()
         addFoodToDictionary(food, &dict)
-        analytics.logEvent(eventAddFoodtoMealFailed, withParameters: dict)
+        analytics.log(event: eventAddFoodtoMealFailed, parameters: dict)
     }
 
     public func mealRenamingFailed(_ e: Error) {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventMealRenamingFailed, withParameters: dict)
+        analytics.log(event: eventMealRenamingFailed, parameters: dict)
     }
 
     public func mealRenamed() {
-        analytics.logEvent(eventMealRenamed)
+        analytics.log(event: eventMealRenamed)
     }
 
     public func mealDeleted() {
-        analytics.logEvent(eventMealDeleted)
+        analytics.log(event: eventMealDeleted)
     }
 
     public func mealDeletingFailed(_ e: Error) {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventMealDeletingFailed, withParameters: dict)
+        analytics.log(event: eventMealDeletingFailed, parameters: dict)
     }
 
     public func foodDeletedFromMeal() {
-        analytics.logEvent(eventFoodDeletedFromMeal)
+        analytics.log(event: eventFoodDeletedFromMeal)
     }
 
     public func deletingFoodFromMealFailed(_ e: Error) {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventDeletingFoodFromMealFailed, withParameters: dict)
+        analytics.log(event: eventDeletingFoodFromMealFailed, parameters: dict)
     }
 
     public func userClickedRemoveAds() {
-        analytics.logEvent(eventUserClickedRemoveAds)
+        analytics.log(event: eventUserClickedRemoveAds)
     }
 
     public func genericLoadIapException(_ e: Error) {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventGenericLoadIapException, withParameters: dict)
+        analytics.log(event: eventGenericLoadIapException, parameters: dict)
     }
 
     public func noIapProductsFound(_ e: Error) {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventNoIapProductsFound, withParameters: dict)
+        analytics.log(event: eventNoIapProductsFound, parameters: dict)
     }
 
     public func genericIapPurchaseException(_ e: Error) {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventGenericIapPurchaseException, withParameters: dict)
+        analytics.log(event: eventGenericIapPurchaseException, parameters: dict)
     }
 
     public func genericIapRestoreException(_ e: Error) {
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
-        analytics.logEvent(eventGenericIapRestoreException, withParameters: dict)
+        analytics.log(event: eventGenericIapRestoreException, parameters: dict)
     }
 
     public func removeAdsPurchased() {
-        analytics.logEvent(eventRemoveAdsPurchased)
+        analytics.log(event: eventRemoveAdsPurchased)
     }
 
     public func removeAdsRestored() {
-        analytics.logEvent(eventRemoveAdsRestored)
+        analytics.log(event: eventRemoveAdsRestored)
     }
 
     public func userSetGender(_ gender: Gender) {
-        analytics.logEvent(eventUserSetGender, withParameters: [ analytics.parameterValue: gender.rawValue ])
+        analytics.log(event: eventUserSetGender, parameters: [ analytics.parameterValue: gender.rawValue ])
     }
 
     public func userSetBirthdate(_ birthdate: Date) {
-        analytics.logEvent(eventUserSetBirthdate, withParameters: [ analytics.parameterValue: birthdate ])
+        analytics.log(event: eventUserSetBirthdate, parameters: [ analytics.parameterValue: birthdate ])
     }
 
     public func userSetPreferredColor(_ colorName: ColorName) {
-        analytics.logEvent(eventUserSetPreferredColor, withParameters: [ analytics.parameterValue: colorName.value ])
+        analytics.log(event: eventUserSetPreferredColor, parameters: [ analytics.parameterValue: colorName.value ])
     }
 }

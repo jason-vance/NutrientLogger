@@ -12,6 +12,7 @@
 		567B9A862DA48C05005CC6D3 /* RijndaelSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 567B9A852DA48C05005CC6D3 /* RijndaelSwift */; };
 		567B9AEF2DA49FFE005CC6D3 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 567B9AEE2DA49FFE005CC6D3 /* Swinject */; };
 		567B9AF22DA4A011005CC6D3 /* SwinjectAutoregistration in Frameworks */ = {isa = PBXBuildFile; productRef = 567B9AF12DA4A011005CC6D3 /* SwinjectAutoregistration */; };
+		567B9EF92DB4E6AE005CC6D3 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 567B9EF82DB4E6AE005CC6D3 /* FirebaseAnalytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,10 +137,11 @@
 				Scenes/User/Domain/Gender.swift,
 				Scenes/User/Domain/User.swift,
 				Scenes/User/Workers/UserService.swift,
+				Utils/Analytics/FirebaseAnalytics.swift,
+				Utils/Analytics/NutrientLoggerAnalytics.swift,
 				Utils/AppInfo.swift,
 				Utils/AttributedStringBuilder.swift,
 				Utils/Clock.swift,
-				Utils/NutrientLoggerAnalytics.swift,
 				Utils/Stack.swift,
 				Values/Colors.swift,
 			);
@@ -175,6 +177,7 @@
 			files = (
 				567B99B22DA47843005CC6D3 /* SQLite in Frameworks */,
 				567B9A862DA48C05005CC6D3 /* RijndaelSwift in Frameworks */,
+				567B9EF92DB4E6AE005CC6D3 /* FirebaseAnalytics in Frameworks */,
 				567B9AF22DA4A011005CC6D3 /* SwinjectAutoregistration in Frameworks */,
 				567B9A722DA48A57005CC6D3 /* SwiftSoup in Frameworks */,
 				567B9AEF2DA49FFE005CC6D3 /* Swinject in Frameworks */,
@@ -243,6 +246,7 @@
 				567B9A852DA48C05005CC6D3 /* RijndaelSwift */,
 				567B9AEE2DA49FFE005CC6D3 /* Swinject */,
 				567B9AF12DA4A011005CC6D3 /* SwinjectAutoregistration */,
+				567B9EF82DB4E6AE005CC6D3 /* FirebaseAnalytics */,
 			);
 			productName = "Nutrient Logger";
 			productReference = 567B991F2DA3C42B005CC6D3 /* Nutrient Logger.app */;
@@ -333,6 +337,7 @@
 				567B9A842DA48C05005CC6D3 /* XCRemoteSwiftPackageReference "RijndaelSwift" */,
 				567B9AED2DA49FFE005CC6D3 /* XCRemoteSwiftPackageReference "Swinject" */,
 				567B9AF02DA4A011005CC6D3 /* XCRemoteSwiftPackageReference "SwinjectAutoregistration" */,
+				567B9EF72DB4E6AE005CC6D3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 567B99202DA3C42B005CC6D3 /* Products */;
@@ -754,6 +759,14 @@
 				minimumVersion = 2.9.1;
 			};
 		};
+		567B9EF72DB4E6AE005CC6D3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.11.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -781,6 +794,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 567B9AF02DA4A011005CC6D3 /* XCRemoteSwiftPackageReference "SwinjectAutoregistration" */;
 			productName = SwinjectAutoregistration;
+		};
+		567B9EF82DB4E6AE005CC6D3 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 567B9EF72DB4E6AE005CC6D3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

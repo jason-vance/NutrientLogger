@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyBhv560mB6nr0BhBhu8vH80SlwixxAB8Xk</string>
+	<key>GCM_SENDER_ID</key>
+	<string>920796458240</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.jasonsapps.NutrientLogger</string>
+	<key>PROJECT_ID</key>
+	<string>nutrient-logger</string>
+	<key>STORAGE_BUCKET</key>
+	<string>nutrient-logger.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:920796458240:ios:0117b9328a591258e157e5</string>
+	<key>DATABASE_URL</key>
+	<string>https://nutrient-logger.firebaseio.com</string>
+	<key>ADMOB_APP_ID</key>
+	<string>ca-app-pub-1475400719226569~7180325758</string>
+</dict>
+</plist>

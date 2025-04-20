@@ -17,11 +17,11 @@ class MockAnalyticsEngine: AnalyticsEngine {
     
     var parameterValue: String { "parameterValue" }
     
-    func logEvent(_ event: String) {
+    func log(event: String) {
         loggedEvents.append(("\(event)", [:]))
     }
     
-    func logEvent(_ event: String, withParameters parameters: [String : Any]) {
+    func log(event: String, parameters: [String : Any]) {
         loggedEvents.append(("\(event)", parameters))
     }
 }
