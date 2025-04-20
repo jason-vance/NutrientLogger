@@ -299,10 +299,8 @@ class FdcNutrientGroupMapper {
             amount: amount
         )
         
-        if (isOther) {
-            //TODO: MVP: Add analytics back in
-//            let analyitcs = try? IocContainer.shared.resolve(type: NutrientLoggerAnalytics.self)
-//            analyitcs?.nutrientNotMapped(nutrient)
+        if isOther, let analyitcs = swinjectContainer.resolve(NutrientLoggerAnalytics.self) {
+            analyitcs.nutrientNotMapped(nutrient)
         }
         
         return nutrient
