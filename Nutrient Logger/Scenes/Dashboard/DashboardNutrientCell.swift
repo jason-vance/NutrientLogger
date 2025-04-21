@@ -1,5 +1,5 @@
 //
-//  DashboardNutrientRow.swift
+//  DashboardNutrientCell.swift
 //  Nutrient Logger
 //
 //  Created by Jason Vance on 4/8/25.
@@ -8,10 +8,8 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: MVP: Add chart
-//TODO: MVP: Tweak colors
 //TODO: Add various styles/sizes of row
-struct DashboardNutrientRow: View {
+struct DashboardNutrientCell: View {
     
     @Inject private var userService: UserService
     @Inject private var rdiLibrary: NutrientRdiLibrary
@@ -42,26 +40,41 @@ struct DashboardNutrientRow: View {
                 .background {
                     RoundedRectangle(cornerRadius: .cornerRadiusListRow, style: .continuous)
                         .fill(.shadow(.drop(radius: .shadowRadiusDefault)))
-                        .fill(colorPalette.primary.gradient)
+                        .fill(colorPalette.background.gradient)
                 }
         }
         .listRowDefaultModifiers()
-        .tint(colorPalette.secondary)
+        .foregroundStyle(colorPalette.text)
     }
     
     @ViewBuilder private func RowContent() -> some View {
-        VStack {
-            HStack(spacing: 0) {
-                Text(name)
-                    .font(.callout)
+        ZStack(alignment: .top) {
+            ConsumedNutrientChart(
+                nutrientFoodPairs: nutrients,
+                rdi: nil,
+                style: .cumulative
+            )
+            .frame(height: 80)
+            .foregroundStyle(colorPalette.accent.gradient)
+            .offset(y: 40)
+            VStack {
+                HStack(spacing: 0) {
+                    Text(name)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                    Spacer()
+                }
+                .font(.headline)
+                HStack(spacing: 0) {
+                    Text(currentAmount.formatted(maxDigits: 2))
+                    Text(units)
+                    Spacer()
+                }
+                .font(.callout)
                 Spacer()
-                Text(currentAmount.formatted(maxDigits: 2))
-                    .font(.headline)
-                Text(units)
-                    .font(.headline)
             }
         }
-        .foregroundStyle(colorPalette.text)
+        .frame(height: 120)
     }
 }
 
@@ -72,9 +85,8 @@ struct DashboardNutrientRow: View {
     let food = try! RemoteDatabaseForScreenshots().getFood("asdf")!
 
     NavigationStack {
-        List {
+        ScrollView {
             DashboardNutrientSection(foods: [food])
         }
-        .listDefaultModifiers()
     }
 }

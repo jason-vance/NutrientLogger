@@ -22,6 +22,14 @@ extension View {
             .listRowSeparator(.hidden)
     }
     
+    func listSectionHeader() -> some View {
+        self
+            .font(.footnote)
+            .textCase(.uppercase)
+            .opacity(0.5)
+            .listRowDefaultModifiers()
+    }
+    
     func listSubsectionHeader() -> some View {
         self
             .font(.footnote.bold())

@@ -32,8 +32,7 @@ struct DashboardFoodRow: View {
                 .background {
                     RoundedRectangle(cornerRadius: .cornerRadiusListRow, style: .continuous)
                         .fill(.shadow(.drop(radius: .shadowRadiusDefault)))
-                        .fill(.white)
-                    
+                        .fill(Color.background.gradient)
                 }
         }
         .listRowDefaultModifiers()
@@ -49,6 +48,7 @@ struct DashboardFoodRow: View {
             }
             Spacer()
         }
+        .foregroundStyle(Color.text)
     }
 }
 

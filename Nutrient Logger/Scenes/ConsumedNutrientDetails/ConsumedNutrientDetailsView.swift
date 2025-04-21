@@ -201,7 +201,7 @@ struct ConsumedNutrientDetailsView: View {
             style: .cumulative
         )
         .frame(height: 250)
-        .foregroundStyle(colorPalette.primary.gradient)
+        .foregroundStyle(colorPalette.accent.gradient)
         .listRowDefaultModifiers()
     }
     

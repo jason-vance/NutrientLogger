@@ -63,16 +63,17 @@ struct DashboardView: View {
     }
     
     var body: some View {
-        List {
-            AdRow()
-            if todaysConsumedFoods.isEmpty {
-                LoggingInstructions()
-            } else {
-                MyNutrientsSection()
-                WhatIAteSection()
+        ScrollView {
+            VStack {
+                AdRow()
+                if todaysConsumedFoods.isEmpty {
+                    LoggingInstructions()
+                } else {
+                    MyNutrientsSection()
+                    WhatIAteSection()
+                }
             }
         }
-        .listDefaultModifiers()
         .toolbar { Toolbar() }
         .navigationTitle(Text(navigationTitle))
         .onChange(of: todaysConsumedFoods, initial: true) { fetchFoods() }
@@ -153,17 +154,28 @@ struct DashboardView: View {
             let meals = DashboardMealList.from(todaysConsumedFoods)
                 .sorted { $0.mealTime < $1.mealTime }
             
-            Section {
-                ForEach(meals) { meal in
-                    Text(meal.name)
-                        .listSubsectionHeader()
-                    ForEach(meal.foods) { food in
-                        DashboardFoodRow(food: food)
+            VStack {
+                HStack {
+                    Text("What I Ate Today")
+                        .listSectionHeader()
+                    Spacer()
+                }
+                .padding(.top)
+                LazyVStack {
+                    ForEach(meals) { meal in
+                        HStack {
+                            Text(meal.name)
+                                .listSubsectionHeader()
+                            Spacer()
+                        }
+                        .padding(.top, 4)
+                        ForEach(meal.foods) { food in
+                            DashboardFoodRow(food: food)
+                        }
                     }
                 }
-            } header: {
-                Text("What I Ate Today")
             }
+            .padding(.horizontal)
         }
     }
 }

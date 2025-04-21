@@ -51,18 +51,18 @@ public class ColorPaletteService {
 }
 
 public class ColorPalette {
-    public let primary: Color
-    public let secondary: Color
+    public let accent: Color
+    public let background: Color
     public let text: Color
     
-    init(primary: Color, secondary: Color, text: Color) {
-        self.primary = primary
-        self.secondary = secondary
+    init(accent: Color, background: Color, text: Color) {
+        self.accent = accent
+        self.background = background
         self.text = text
     }
     
-    convenience init(primary: Color) {
-        self.init(primary: primary, secondary: .white, text: .white)
+    convenience init(accent: Color) {
+        self.init(accent: accent, background: Color.background, text: Color.text)
     }
 }
 
@@ -70,33 +70,33 @@ public class AppColorPalette: ColorPalette {
     public var success: Color
     public var error: Color
     
-    init(primary: Color, secondary: Color, text: Color, success: Color, error: Color) {
+    init(accent: Color, background: Color, text: Color, success: Color, error: Color) {
         self.success = success
         self.error = error
-        super.init(primary: primary, secondary: secondary, text: text)
+        super.init(accent: accent, background: background, text: text)
     }
 }
 
 public class ColorPalettes {
     public static let app = AppColorPalette(
-        primary: .primary,
-        secondary: .primary,
-        text: .secondary,
+        accent: .accentColor,
+        background: .background,
+        text: .text,
         success: .green,
         error: .red
     )
-    public static let red = ColorPalette(primary: .red)
-    public static let yellow = ColorPalette(primary: .yellow)
-    public static let blue = ColorPalette(primary: .blue)
-    public static let purple = ColorPalette(primary: .purple)
-    public static let orange = ColorPalette(primary: .orange)
-    public static let green = ColorPalette(primary: .green)
-    public static let indigo = ColorPalette(primary: .indigo)
-    public static let pink = ColorPalette(primary: .pink)
-    public static let teal = ColorPalette(primary: .teal)
-    public static let mint = ColorPalette(primary: .mint)
-    public static let cyan = ColorPalette(primary: .cyan)
-    public static let brown = ColorPalette(primary: .brown)
+    public static let red = ColorPalette(accent: .red)
+    public static let yellow = ColorPalette(accent: .yellow)
+    public static let blue = ColorPalette(accent: .blue)
+    public static let purple = ColorPalette(accent: .purple)
+    public static let orange = ColorPalette(accent: .orange)
+    public static let green = ColorPalette(accent: .green)
+    public static let indigo = ColorPalette(accent: .indigo)
+    public static let pink = ColorPalette(accent: .pink)
+    public static let teal = ColorPalette(accent: .teal)
+    public static let mint = ColorPalette(accent: .mint)
+    public static let cyan = ColorPalette(accent: .cyan)
+    public static let brown = ColorPalette(accent: .brown)
     
     public static let palettes: [ColorPalette] = [red, teal, blue, indigo, green, pink, purple, orange, mint, cyan]
     

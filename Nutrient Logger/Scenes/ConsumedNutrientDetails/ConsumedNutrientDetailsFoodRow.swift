@@ -25,8 +25,7 @@ struct ConsumedNutrientDetailsFoodRow: View {
             .background {
                 RoundedRectangle(cornerRadius: .cornerRadiusListRow, style: .continuous)
                     .fill(.shadow(.drop(radius: .shadowRadiusDefault)))
-                    .fill(.white)
-                
+                    .fill(Color.background.gradient)
             }
         .listRowDefaultModifiers()
     }
@@ -47,6 +46,7 @@ struct ConsumedNutrientDetailsFoodRow: View {
             }
             Spacer()
         }
+        .foregroundStyle(Color.text)
     }
 }
 
