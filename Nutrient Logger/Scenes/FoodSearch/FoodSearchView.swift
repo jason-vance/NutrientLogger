@@ -134,12 +134,12 @@ struct FoodSearchView: View {
         }
     }
     
-    
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var analytics: NutrientLoggerAnalytics
     
     @Environment(\.isSearching) private var isSearching
 
+    @StateObject private var reviewPrompter = ReviewPrompter()
     @State private var searchText: String = ""
     @State private var hasSearched: Bool = false
     @State private var isLoading: Bool = false
@@ -295,11 +295,9 @@ struct FoodSearchView: View {
             .map { SearchResult.userMeal($0) }
     }
     
-    //TODO: MVP: Uncomment this when ready for review prompting
     private func promptForReview() {
         if shouldPromptForReview() {
-//            let prompt = ReviewPrompter(screen: self as! UIViewController)
-//            prompt.promptUserForReview(areYouEnjoyingPrompt: "Are you enjoying Nutrient Logger?")
+            reviewPrompter.promptUserForReview()
         }
     }
 
@@ -325,7 +323,7 @@ struct FoodSearchView: View {
         }
         
         let timeDiff = abs(mostRecentFood.created.distance(to: earliestFood.created))
-        let roughlyOneDay = TimeInterval.fromDays(0.75)
+        let roughlyOneDay = TimeInterval.fromDays(0.5)
         return timeDiff > roughlyOneDay
     }
     
@@ -384,6 +382,7 @@ struct FoodSearchView: View {
                     .progressViewStyle(.circular)
             }
         }
+        .reviewPromptAlert(prompter: reviewPrompter)
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
