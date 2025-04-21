@@ -339,6 +339,7 @@ struct FoodSearchView: View {
     
     var body: some View {
         List {
+            AdRow()
             if searchResults.isEmpty && hasSearched && !isLoading {
                 ContentUnavailableView(
                     "\"\(searchText)\"",
@@ -403,6 +404,11 @@ struct FoodSearchView: View {
                 Image(systemName: "xmark")
             }
         }
+    }
+    
+    @ViewBuilder private func AdRow() -> some View {
+        SimpleNativeAdView(size: .small)
+            .listRowDefaultModifiers()
     }
     
     @ViewBuilder private func SearchResultRow(_ searchResult: SearchResult) -> some View {

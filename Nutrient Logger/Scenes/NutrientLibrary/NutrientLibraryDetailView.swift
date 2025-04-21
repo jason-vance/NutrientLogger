@@ -47,6 +47,7 @@ struct NutrientLibraryDetailView: View {
     
     var body: some View {
         List {
+            AdRow()
             Section(header: Text("Foods containing \(nutrient.name)")) {
                 ForEach(pairs) { pair in
                     FoodRow(pair)
@@ -96,6 +97,11 @@ struct NutrientLibraryDetailView: View {
         .opacity(isExplanationLoaded ? 1 : 0)
         .animation(.snappy, value: isExplanationLoaded)
         .animation(.snappy, value: showExplanation)
+    }
+    
+    @ViewBuilder private func AdRow() -> some View {
+        SimpleNativeAdView(size: .small)
+            .listRowDefaultModifiers()
     }
     
     @ViewBuilder private func FoodRow(_ pair: NutrientFoodPair) -> some View {

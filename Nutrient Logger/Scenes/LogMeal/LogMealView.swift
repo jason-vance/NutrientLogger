@@ -166,6 +166,8 @@ struct LogMealView: View {
             MealTimeField()
             PortionAmountField()
             
+            AdRow()
+            
             FoodsSection()
 
             NutritionFactsSection(
@@ -287,6 +289,11 @@ struct LogMealView: View {
             }
         }
         .listRowDefaultModifiers()
+    }
+    
+    @ViewBuilder private func AdRow() -> some View {
+        SimpleNativeAdView(size: .small)
+            .listRowDefaultModifiers()
     }
     
     @ViewBuilder private func FoodsSection() -> some View {

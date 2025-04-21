@@ -75,6 +75,7 @@ struct EditMealView: View {
     
     var body: some View {
         List {
+            AdRow()
             NameField()
             FoodsSection()
         }
@@ -147,6 +148,11 @@ struct EditMealView: View {
         ButtonFab(systemName: "plus") {
             showFoodSearch = true
         }
+    }
+    
+    @ViewBuilder private func AdRow() -> some View {
+        SimpleNativeAdView(size: .small)
+            .listRowDefaultModifiers()
     }
     
     @ViewBuilder private func NameField() -> some View {

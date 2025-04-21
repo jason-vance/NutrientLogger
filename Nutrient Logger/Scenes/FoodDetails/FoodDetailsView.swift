@@ -210,6 +210,8 @@ struct FoodDetailsView: View {
             PortionField()
             PortionAmountField()
             
+            AdRow()
+            
             if !displayNutrients.isEmpty {
                 NutritionFactsSection(
                     nutrients: displayNutrients,
@@ -377,6 +379,11 @@ struct FoodDetailsView: View {
             }
         }
         .listRowDefaultModifiers()
+    }
+    
+    @ViewBuilder private func AdRow() -> some View {
+        SimpleNativeAdView(size: .small)
+            .listRowDefaultModifiers()
     }
 }
 

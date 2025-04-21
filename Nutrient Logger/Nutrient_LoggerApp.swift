@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 
-//TODO: MVP: Put ads everywhere appropriate
 //TODO: Add colors for background, text, and accent
 @main
 struct Nutrient_LoggerApp: App {

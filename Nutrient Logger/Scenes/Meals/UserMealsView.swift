@@ -28,6 +28,7 @@ struct UserMealsView: View {
     
     var body: some View {
         List {
+            AdRow()
             if meals.isEmpty {
                 ContentUnavailableView(
                     "No Meals... Yet!",
@@ -68,6 +69,11 @@ struct UserMealsView: View {
         }) {
             Image(systemName: "arrow.backward")
         }
+    }
+    
+    @ViewBuilder private func AdRow() -> some View {
+        SimpleNativeAdView(size: .small)
+            .listRowDefaultModifiers()
     }
     
     @ViewBuilder private func MealRow(_ meal: Meal) -> some View {

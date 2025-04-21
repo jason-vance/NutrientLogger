@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 import SwiftUI
 
-//TODO: MVP: table text is always black
 //TODO: Convert to markdown instead of AttributedString
 public class NutrientExplanationMaker {
     

@@ -38,6 +38,7 @@ struct NutrientLibraryView: View {
     
     var body: some View {
         List {
+            AdRow()
             Section(header: Text("Nutrients")) {
                 ForEach(displayNutrients) { nutrient in
                     NutrientRow(nutrient)
@@ -73,6 +74,11 @@ struct NutrientLibraryView: View {
         }) {
             Image(systemName: "arrow.backward")
         }
+    }
+    
+    @ViewBuilder private func AdRow() -> some View {
+        SimpleNativeAdView(size: .small)
+            .listRowDefaultModifiers()
     }
     
     @ViewBuilder private func NutrientRow(_ nutrient: Nutrient) -> some View {

@@ -94,13 +94,22 @@ struct SimpleNativeAdView: View {
     }
     
     var body: some View {
-        NativeAdViewContainer(
-            nativeViewModel: nativeViewModel,
-            xibName: xibName
-        )
-        .frame(height: nativeViewModel.nativeAd == nil ? 0 : nil)
-        .frame(minHeight: nativeViewModel.nativeAd == nil ? nil : frameMinHeight)
-        .opacity(nativeViewModel.nativeAd == nil ? 0 : 1)
+        ZStack {
+            RoundedRectangle(
+                cornerRadius: .cornerRadiusListRow,
+                style: .continuous
+            )
+            .fill(Color.background.gradient)
+            .frame(minHeight: frameMinHeight)
+            
+            NativeAdViewContainer(
+                nativeViewModel: nativeViewModel,
+                xibName: xibName
+            )
+            .frame(minHeight: frameMinHeight)
+            .opacity(nativeViewModel.nativeAd == nil ? 0 : 1)
+        }
+        .animation(.snappy, value: nativeViewModel.nativeAd == nil)
         .onAppear {
             nativeViewModel.refreshAd()
         }

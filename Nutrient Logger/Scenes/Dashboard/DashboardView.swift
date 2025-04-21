@@ -132,6 +132,7 @@ struct DashboardView: View {
     @ViewBuilder private func AdRow() -> some View {
         SimpleNativeAdView(size: .small)
             .listRowDefaultModifiers()
+            .padding(.horizontal)
     }
     
     @ViewBuilder private func LoggingInstructions() -> some View {

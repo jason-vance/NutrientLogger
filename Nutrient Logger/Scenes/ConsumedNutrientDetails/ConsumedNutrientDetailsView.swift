@@ -114,6 +114,7 @@ struct ConsumedNutrientDetailsView: View {
             RecommendedAmountRow()
             UpperLimitRow()
             Chart()
+            AdRow()
             FoodsSection()
         }
         .listDefaultModifiers()
@@ -204,6 +205,11 @@ struct ConsumedNutrientDetailsView: View {
         .frame(height: 250)
         .foregroundStyle(colorPalette.accent.gradient)
         .listRowDefaultModifiers()
+    }
+    
+    @ViewBuilder private func AdRow() -> some View {
+        SimpleNativeAdView(size: .small)
+            .listRowDefaultModifiers()
     }
     
     @ViewBuilder private func FoodsSection() -> some View {

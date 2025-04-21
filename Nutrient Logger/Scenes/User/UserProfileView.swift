@@ -34,6 +34,7 @@ struct UserProfileView: View {
     var body: some View {
         List {
             ProfileSettingsSection()
+            AdRow()
             //TODO: Add custom nutrient goals
             UserMealsSection()
             NutrientLibrarySection()
@@ -209,6 +210,11 @@ struct UserProfileView: View {
             }
             .listRowDefaultModifiers()
         }
+    }
+    
+    @ViewBuilder private func AdRow() -> some View {
+        SimpleNativeAdView(size: .small)
+            .listRowDefaultModifiers()
     }
 }
 
