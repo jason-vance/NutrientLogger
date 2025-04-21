@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 import SwinjectAutoregistration
 
-//TODO: MVP: Add instructions for how to search for and add foods
 struct DashboardView: View {
     
     @Environment(\.scenePhase) private var scenePhase
@@ -66,8 +65,12 @@ struct DashboardView: View {
     var body: some View {
         List {
             AdRow()
-            MyNutrientsSection()
-            WhatIAteSection()
+            if todaysConsumedFoods.isEmpty {
+                LoggingInstructions()
+            } else {
+                MyNutrientsSection()
+                WhatIAteSection()
+            }
         }
         .listDefaultModifiers()
         .toolbar { Toolbar() }
@@ -128,6 +131,15 @@ struct DashboardView: View {
     @ViewBuilder private func AdRow() -> some View {
         SimpleNativeAdView(size: .small)
             .listRowDefaultModifiers()
+    }
+    
+    @ViewBuilder private func LoggingInstructions() -> some View {
+        ContentUnavailableView(
+            "Feeling Hungry?",
+            systemImage: "face.smiling.inverse",
+            description: Text("You haven't logged anything yet today. Go to the search tab to find foods and add them to your log!")
+        )
+        .listRowDefaultModifiers()
     }
     
     @ViewBuilder private func MyNutrientsSection() -> some View {
