@@ -78,6 +78,8 @@ struct SimpleNativeAdView: View {
     @StateObject private var nativeViewModel = NativeAdViewModel()
     @State var size: Size
     
+    @Inject private var adProvider: AdProvider
+    
     // minHeight determined from xib.
     private var frameMinHeight: CGFloat {
         switch size {
@@ -94,24 +96,28 @@ struct SimpleNativeAdView: View {
     }
     
     var body: some View {
-        ZStack {
-            RoundedRectangle(
-                cornerRadius: .cornerRadiusListRow,
-                style: .continuous
-            )
-            .fill(Color.background.gradient)
-            .frame(minHeight: frameMinHeight)
-            
-            NativeAdViewContainer(
-                nativeViewModel: nativeViewModel,
-                xibName: xibName
-            )
-            .frame(minHeight: frameMinHeight)
-            .opacity(nativeViewModel.nativeAd == nil ? 0 : 1)
-        }
-        .animation(.snappy, value: nativeViewModel.nativeAd == nil)
-        .onAppear {
-            nativeViewModel.refreshAd()
+        if adProvider.shouldShowAds {
+            ZStack {
+                RoundedRectangle(
+                    cornerRadius: .cornerRadiusListRow,
+                    style: .continuous
+                )
+                .fill(Color.background.gradient)
+                .frame(minHeight: frameMinHeight)
+                
+                NativeAdViewContainer(
+                    nativeViewModel: nativeViewModel,
+                    xibName: xibName
+                )
+                .frame(minHeight: frameMinHeight)
+                .opacity(nativeViewModel.nativeAd == nil ? 0 : 1)
+            }
+            .animation(.snappy, value: nativeViewModel.nativeAd == nil)
+            .onAppear {
+                nativeViewModel.refreshAd()
+            }
+        } else {
+            EmptyView()
         }
     }
 }

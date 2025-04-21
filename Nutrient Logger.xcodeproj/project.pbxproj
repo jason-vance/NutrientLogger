@@ -145,6 +145,7 @@
 				Utils/ReviewPrompter.swift,
 				Utils/Stack.swift,
 				Values/Colors.swift,
+				Views/Ads/Workers/AdProvider.swift,
 			);
 			target = 567B992D2DA3C42C005CC6D3 /* Nutrient LoggerTests */;
 		};

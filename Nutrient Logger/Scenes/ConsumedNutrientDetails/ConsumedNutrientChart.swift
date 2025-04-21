@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+//TODO: rdi lines are always black (even in dark mode)
 struct ConsumedNutrientChart: View {
     
     let capsuleSpacing: CGFloat = 4
