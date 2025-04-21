@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 
 public class AttributedStringBuilder {
     public enum Style {
@@ -181,9 +182,13 @@ public class AttributedStringBuilder {
         return self
     }
 
-    @discardableResult public func appendTable(_ table: TwoColumnTable, _ fontSize: CGFloat) async -> AttributedStringBuilder {
+    @discardableResult public func appendTable(
+        _ table: TwoColumnTable,
+        _ fontSize: CGFloat,
+        colorScheme: ColorScheme
+    ) async -> AttributedStringBuilder {
         var sb = ""
-        sb.append("<table style=\"font:\(fontSize)px arial;width:100%;border-collapse:collapse;\"><tbody>")
+        sb.append("<table style=\"font:\(fontSize)px arial;color:\(colorScheme == .light ? "#000" : "#fff");width:100%;border-collapse:collapse;\"><tbody>")
         if (table.hasHeader) {
             addTableRow(&sb, table.headerRow!, true)
         }

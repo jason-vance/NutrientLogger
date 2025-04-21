@@ -101,7 +101,6 @@ struct NutritionFactsSection: View {
     
     @ViewBuilder private func NutritionFactsCap(isTop: Bool) -> some View {
         Rectangle()
-            .fill(Color.black)
             .frame(height: 2)
             .padding(.top, (isTop) ? UIConsts.outlineMargin : 0)
             .padding(.bottom, (isTop) ? 0 : UIConsts.outlineMargin)
@@ -531,6 +530,7 @@ fileprivate extension View {
             .padding(.trailing, NutritionFactsSection.UIConsts.outlineMargin)
             .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
             .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
     }
 }
 

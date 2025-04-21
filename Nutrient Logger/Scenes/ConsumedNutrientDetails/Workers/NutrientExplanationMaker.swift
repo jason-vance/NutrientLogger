@@ -7,7 +7,9 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 
+//TODO: MVP: table text is always black
 //TODO: Convert to markdown instead of AttributedString
 public class NutrientExplanationMaker {
     
@@ -15,13 +17,17 @@ public class NutrientExplanationMaker {
         return NutrientExplanationLoader.canLoad(fdcNumber)
     }
 
-    public static func make(_ fdcNumber: String, _ fontSize: CGFloat = 17) async throws -> AttributedString {
+    public static func make(
+        _ fdcNumber: String,
+        _ fontSize: CGFloat = 17,
+        colorScheme: ColorScheme = .light
+    ) async throws -> AttributedString {
         let str = AttributedStringBuilder()
 
         let explanation = try await NutrientExplanationLoader.loadForDisplay(fdcNumber)
         for i in 0..<explanation.sections.count {
             let section = explanation.sections[i]
-            await addSection(fontSize, str, i == 0, section)
+            await addSection(fontSize, str, i == 0, section, colorScheme: colorScheme)
         }
 
         return AttributedString(str.toNative())
@@ -32,7 +38,9 @@ public class NutrientExplanationMaker {
         _ str: AttributedStringBuilder,
         _ isFirstSection: Bool,
         _ section: NutrientExplanation.Section,
-        _ isSubSection: Bool = false)
+        colorScheme: ColorScheme,
+        _ isSubSection: Bool = false
+    )
     async {
         if (!isFirstSection || isSubSection) {
             str.appendText("\n\n", fontSize - 2)
@@ -72,7 +80,7 @@ public class NutrientExplanationMaker {
                     }
                 }
             }
-            await str.appendTable(table, fontSize - 2)
+            await str.appendTable(table, fontSize - 2, colorScheme: colorScheme)
         }
 
 
@@ -87,7 +95,7 @@ public class NutrientExplanationMaker {
         if (section.subsections.isEmpty == false) {
             for i in 0..<section.subsections.count {
                 let subSection = section.subsections[i]
-                await addSection(fontSize, str, i == 0, subSection, true)
+                await addSection(fontSize, str, i == 0, subSection, colorScheme: colorScheme, true)
             }
         }
     }

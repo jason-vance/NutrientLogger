@@ -17,6 +17,7 @@ struct ConsumedNutrientDetailsView: View {
     }
     
     @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.colorScheme) private var colorScheme
     
     @Inject private var nutrientRdiLibrary: NutrientRdiLibrary
     @Inject private var userService: UserService
@@ -90,7 +91,7 @@ struct ConsumedNutrientDetailsView: View {
         }
 
         do {
-            infoString = try await NutrientExplanationMaker.make(nutrient.fdcNumber)
+            infoString = try await NutrientExplanationMaker.make(nutrient.fdcNumber, colorScheme: colorScheme)
             isExplanationLoaded = true
         } catch {
             print("Failed to load explanation for \(nutrient.name): \(error)")
