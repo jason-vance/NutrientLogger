@@ -9,6 +9,7 @@ import SwiftUI
 import SwinjectAutoregistration
 import SwiftData
 
+//TODO: Sort meals for display
 struct UserMealsView: View {
     
     @Environment(\.modelContext) private var modelContext

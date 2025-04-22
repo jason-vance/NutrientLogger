@@ -287,6 +287,7 @@ struct FoodSearchView: View {
         return []
     }
     
+    //TODO: Search for foods inside of meals too
     private func searchUserMeals(_ query: String) async -> [SearchResult] {
         let tokens = query.split(separator: " ")
         return meals
