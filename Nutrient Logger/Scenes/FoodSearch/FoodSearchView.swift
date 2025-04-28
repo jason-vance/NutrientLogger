@@ -214,7 +214,15 @@ struct FoodSearchView: View {
                 sortBy: [ .init(\.created, order: .reverse) ]
             )
             descriptor.fetchLimit = 30
+            
             return try modelContext.fetch(descriptor)
+                .reduce(into: [:]) { dict, food in
+                    if dict[food.fdcId]?.created ?? .distantPast < food.created {
+                        dict[food.fdcId] = food
+                    }
+                }
+                .map { $0.value }
+                .sorted { $0.created > $1.created }
                 .map(SearchResult.recentlyLoggedFood)
         } catch {
             print("Failed to fetch recently logged foods: \(error.localizedDescription)")
