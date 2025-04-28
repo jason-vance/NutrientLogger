@@ -80,6 +80,20 @@ class Meal: Identifiable {
             self.portionName = portion.name
         }
     }
+    
+    func matchesAny(of tokens: [any StringProtocol]) -> Bool {
+        if name.caseInsensitiveContainsAny(of: tokens) {
+            return true
+        }
+        
+        for foodWithPortion in foodsWithPortions {
+            if foodWithPortion.foodName.caseInsensitiveContainsAny(of: tokens) {
+                return true
+            }
+        }
+        
+        return false
+    }
 }
 
 extension Meal: Equatable { }

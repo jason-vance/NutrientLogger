@@ -302,11 +302,10 @@ struct FoodSearchView: View {
         return []
     }
     
-    //TODO: Search for foods inside of meals too
     private func searchUserMeals(_ query: String) async -> [SearchResult] {
         let tokens = query.split(separator: " ")
         return meals
-            .filter { $0.name.caseInsensitiveContainsAny(of: tokens) }
+            .filter { $0.matchesAny(of: tokens) }
             .map { UserMealsSearchableMeal(meal: $0) }
             .map { SearchResult.userMeal($0) }
     }
