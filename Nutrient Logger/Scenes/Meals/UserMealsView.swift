@@ -9,7 +9,6 @@ import SwiftUI
 import SwinjectAutoregistration
 import SwiftData
 
-//TODO: Sort meals for display
 struct UserMealsView: View {
     
     @Environment(\.modelContext) private var modelContext
@@ -20,10 +19,17 @@ struct UserMealsView: View {
     @State private var isLoading: Bool = true
     @Query private var meals: [Meal]
     
+    private var displayMeals: [Meal] {
+        meals.sorted { $0.name < $1.name }
+    }
+    
     private func deleteMeals(at offsets: IndexSet) {
         for offset in offsets {
-            let mealToDelete = meals[offset]
-            modelContext.delete(mealToDelete)
+            let meal = displayMeals[offset]
+            if let index = meals.firstIndex(of: meal) {
+                let mealToDelete = meals[index]
+                modelContext.delete(mealToDelete)
+            }
         }
     }
     
@@ -38,7 +44,7 @@ struct UserMealsView: View {
                 )
                 .listRowDefaultModifiers()
             } else {
-                ForEach(meals) { meal in
+                ForEach(displayMeals) { meal in
                     MealRow(meal)
                 }
                 .onDelete { deleteMeals(at: $0) }

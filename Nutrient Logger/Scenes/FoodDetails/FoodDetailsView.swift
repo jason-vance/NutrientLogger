@@ -9,7 +9,6 @@ import SwiftUI
 import SwinjectAutoregistration
 
 //TODO: Add a toast-like notification for when a food is successfully saved
-//TODO: Add a mealTime parameter (like MyFitnessPal)
 struct FoodDetailsView: View {
     
     enum Mode {
