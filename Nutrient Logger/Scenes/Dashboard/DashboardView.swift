@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 import SwinjectAutoregistration
 
+//TODO: RELEASE: Consolidate views, make this more screenshotable
 struct DashboardView: View {
     
     @Environment(\.scenePhase) private var scenePhase

@@ -190,6 +190,13 @@ struct FoodSearchView: View {
         ]
     }
     
+    private func resetViewState() {
+        searchText = ""
+        hasSearched = false
+        searchResults = []
+        fetchInitialSuggestions()
+    }
+    
     private func fetchInitialSuggestions() {
         if searchResults.isEmpty {
             if searchFunction.shouldIncludeRecentSearches {
@@ -470,7 +477,10 @@ struct FoodSearchView: View {
             FoodDetailsView(
                 mode: .searchResult(fdcId: food.fdcId),
                 askForDateAndMealTime: askForDateAndMealTime,
-                onFoodSaved: onFoodSaved
+                onFoodSaved: { foodItem, portion in
+                    try onFoodSaved(foodItem, portion)
+                    resetViewState()
+                }
             )
         } label: {
             HStack {
