@@ -50,9 +50,6 @@ struct FoodSearchView: View {
             }
         }
     }
-    
-    @Environment(\.presentationMode) private var presentationMode
-    @Environment(\.modelContext) private var modelContext
 
     @Model
     class RecentSearch {
@@ -64,9 +61,6 @@ struct FoodSearchView: View {
             self.date = date
         }
     }
-    
-    @Query private var meals: [Meal]
-    @Query private var recentSearches: [RecentSearch]
 
     enum SearchResult: Identifiable, Equatable {
         case recentSearch(String)
@@ -134,9 +128,14 @@ struct FoodSearchView: View {
         }
     }
     
+    @Query private var meals: [Meal]
+    @Query private var recentSearches: [RecentSearch]
+    
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var analytics: NutrientLoggerAnalytics
     
+    @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.isSearching) private var isSearching
 
     @StateObject private var reviewPrompter = ReviewPrompter()
@@ -387,7 +386,12 @@ struct FoodSearchView: View {
             text: $searchText,
             prompt: Text("Foods, Meals, Nutrients...")
         )
-        .onChange(of: searchText) { hasSearched = false }
+        .onChange(of: searchText) {
+            hasSearched = false
+            if searchText.isEmpty {
+                resetViewState()
+            }
+        }
         .onSubmit(of: .search) { doSearch() }
         .onAppear { fetchInitialSuggestions() }
         .navigationBarTitleDisplayMode(.inline)
