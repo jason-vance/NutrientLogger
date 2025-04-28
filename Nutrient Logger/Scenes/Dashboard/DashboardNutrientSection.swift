@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+//TODO: RELEASE: Consolidate sections, make this more screenshotable
+// Like, a proximates section that has
+//  prominent calories
+//  highlighted carbs, protein, fat
+//  footnote, water, ash, alcohol (if present)
+//  Is a navigationLink to ProximatesView that has all of the data
 struct DashboardNutrientSection: View {
     
     private let foods: [FoodItem]
