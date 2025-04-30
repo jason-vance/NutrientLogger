@@ -11,6 +11,10 @@ struct NutrientLibraryView: View {
     
     @Environment(\.presentationMode) private var presentationMode
     
+    @EnvironmentObject private var adProviderFactory: AdProviderFactory
+    @State private var adProvider: AdProvider?
+    @State private var ad: Ad?
+    
     @Inject private var remoteDatabase: RemoteDatabase
     
     @State private var searchText: String = ""
@@ -38,7 +42,7 @@ struct NutrientLibraryView: View {
     
     var body: some View {
         List {
-            AdRow()
+            NativeAdListRow(ad: $ad, size: .medium)
             Section(header: Text("Nutrients")) {
                 ForEach(displayNutrients) { nutrient in
                     NutrientRow(nutrient)
@@ -46,6 +50,7 @@ struct NutrientLibraryView: View {
             }
         }
         .listDefaultModifiers()
+        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .searchable(
             text: $searchText,
             prompt: Text("Vitamin A, Protein, DHA...")
@@ -76,11 +81,6 @@ struct NutrientLibraryView: View {
         }
     }
     
-    @ViewBuilder private func AdRow() -> some View {
-        SimpleNativeAdView(size: .small)
-            .listRowDefaultModifiers()
-    }
-    
     @ViewBuilder private func NutrientRow(_ nutrient: Nutrient) -> some View {
         NavigationLink {
             NutrientLibraryDetailView(nutrient: nutrient)
@@ -101,4 +101,5 @@ struct NutrientLibraryView: View {
     NavigationStack {
         NutrientLibraryView()
     }
+    .environmentObject(AdProviderFactory.forDev)
 }

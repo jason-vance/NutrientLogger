@@ -13,6 +13,10 @@ struct EditMealView: View {
     
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.modelContext) private var modelContext
+    
+    @EnvironmentObject private var adProviderFactory: AdProviderFactory
+    @State private var adProvider: AdProvider?
+    @State private var ad: Ad?
 
     @Inject var analytics: UserMealsAnalytics
     
@@ -75,7 +79,7 @@ struct EditMealView: View {
     
     var body: some View {
         List {
-            AdRow()
+            NativeAdListRow(ad: $ad, size: .medium)
             NameField()
             FoodsSection()
         }
@@ -100,6 +104,7 @@ struct EditMealView: View {
             }
         }
         .onAppear { prepopulateMeal() }
+        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .confirmationDialog(
             "Discard Changes?\n\nAre you sure you want to leave? Any unsaved changes will be lost.",
             isPresented: $showDiscardDialog,
@@ -148,11 +153,6 @@ struct EditMealView: View {
         ButtonFab(systemName: "plus") {
             showFoodSearch = true
         }
-    }
-    
-    @ViewBuilder private func AdRow() -> some View {
-        SimpleNativeAdView(size: .small)
-            .listRowDefaultModifiers()
     }
     
     @ViewBuilder private func NameField() -> some View {
@@ -214,4 +214,5 @@ struct EditMealView: View {
     NavigationStack {
         EditMealView()
     }
+    .environmentObject(AdProviderFactory.forDev)
 }

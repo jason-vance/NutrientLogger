@@ -137,6 +137,10 @@ struct FoodSearchView: View {
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.modelContext) private var modelContext
     @Environment(\.isSearching) private var isSearching
+    
+    @EnvironmentObject private var adProviderFactory: AdProviderFactory
+    @State private var adProvider: AdProvider?
+    @State private var ad: Ad?
 
     @StateObject private var reviewPrompter = ReviewPrompter()
     @State private var searchText: String = ""
@@ -353,7 +357,7 @@ struct FoodSearchView: View {
     
     var body: some View {
         List {
-            AdRow()
+            NativeAdListRow(ad: $ad, size: .medium)
             if searchResults.isEmpty && hasSearched && !isLoading {
                 ContentUnavailableView(
                     "\"\(searchText)\"",
@@ -380,6 +384,7 @@ struct FoodSearchView: View {
             }
         }
         .listDefaultModifiers()
+        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .animation(.snappy, value: searchText)
         .animation(.snappy, value: searchResults)
         .searchable(
@@ -423,11 +428,6 @@ struct FoodSearchView: View {
                 Image(systemName: "xmark")
             }
         }
-    }
-    
-    @ViewBuilder private func AdRow() -> some View {
-        SimpleNativeAdView(size: .small)
-            .listRowDefaultModifiers()
     }
     
     @ViewBuilder private func SearchResultRow(_ searchResult: SearchResult) -> some View {
@@ -526,4 +526,5 @@ struct FoodSearchView: View {
     NavigationStack {
         FoodSearchView(onFoodSaved: FoodSaver.mock.saveFoodItem)
     }
+    .environmentObject(AdProviderFactory.forDev)
 }

@@ -13,12 +13,29 @@ struct DashboardView: View {
     
     @Environment(\.scenePhase) private var scenePhase
     
+    @EnvironmentObject private var adProviderFactory: AdProviderFactory
+    @State private var adProvider: AdProvider?
+    @State private var ad: Ad?
+    
     @Inject private var remoteDatabase: RemoteDatabase
     
     @State private var date: SimpleDate = .today
     @Query private var consumedFoods: [ConsumedFood]
     
     private var todaysConsumedFoods: [ConsumedFood] {
+//        return FoodItem.sampleFoods
+//            .map {
+//                ConsumedFood(
+//                    fdcId: $0.fdcId,
+//                    name: $0.name,
+//                    portionAmount: $0.amount,
+//                    portionGramWeight: $0.gramWeight,
+//                    portionName: $0.portionName,
+//                    dateLogged: .today,
+//                    mealTime: $0.mealTime!
+//                )
+//            }
+        
         consumedFoods
             .filter { $0.dateLogged == date }
             .sorted { $0.name < $1.name }
@@ -27,6 +44,9 @@ struct DashboardView: View {
     @State private var foodItems: [FoodItem] = []
     
     private func fetchFoods() {
+//        foodItems = FoodItem.sampleFoods
+//        return;
+        
         Task {
             foodItems = todaysConsumedFoods
                 .compactMap { consumedFood in
@@ -65,7 +85,8 @@ struct DashboardView: View {
     var body: some View {
         ScrollView {
             VStack {
-                AdRow()
+                NativeAdListRow(ad: $ad, size: .medium)
+                    .padding(.horizontal)
                 if todaysConsumedFoods.isEmpty {
                     LoggingInstructions()
                 } else {
@@ -80,6 +101,7 @@ struct DashboardView: View {
         .animation(.snappy, value: date)
         .animation(.snappy, value: todaysConsumedFoods)
         .animation(.snappy, value: foodItems)
+        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
@@ -127,12 +149,6 @@ struct DashboardView: View {
         } label: {
             Image(systemName: "chevron.forward")
         }
-    }
-
-    @ViewBuilder private func AdRow() -> some View {
-        SimpleNativeAdView(size: .small)
-            .listRowDefaultModifiers()
-            .padding(.horizontal)
     }
     
     @ViewBuilder private func LoggingInstructions() -> some View {
@@ -189,4 +205,5 @@ struct DashboardView: View {
     NavigationStack {
         DashboardView()
     }
+    .environmentObject(AdProviderFactory.forDev)
 }

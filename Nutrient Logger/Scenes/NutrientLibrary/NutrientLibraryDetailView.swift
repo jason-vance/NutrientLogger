@@ -12,6 +12,10 @@ struct NutrientLibraryDetailView: View {
     
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.modelContext) var modelContext
+    
+    @EnvironmentObject private var adProviderFactory: AdProviderFactory
+    @State private var adProvider: AdProvider?
+    @State private var ad: Ad?
 
     let nutrient: Nutrient
     
@@ -47,7 +51,7 @@ struct NutrientLibraryDetailView: View {
     
     var body: some View {
         List {
-            AdRow()
+            NativeAdListRow(ad: $ad, size: .medium)
             Section(header: Text("Foods containing \(nutrient.name)")) {
                 ForEach(pairs) { pair in
                     FoodRow(pair)
@@ -57,6 +61,7 @@ struct NutrientLibraryDetailView: View {
         .listDefaultModifiers()
         .navigationBarTitleDisplayMode(.inline)
         .animation(.snappy, value: pairs)
+        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
         .task { await fetchFoodItems() }
@@ -99,11 +104,6 @@ struct NutrientLibraryDetailView: View {
         .animation(.snappy, value: showExplanation)
     }
     
-    @ViewBuilder private func AdRow() -> some View {
-        SimpleNativeAdView(size: .small)
-            .listRowDefaultModifiers()
-    }
-    
     @ViewBuilder private func FoodRow(_ pair: NutrientFoodPair) -> some View {
         NavigationLink {
             FoodDetailsView(
@@ -140,4 +140,5 @@ struct NutrientLibraryDetailView: View {
             unitName: "g"
         ))
     }
+    .environmentObject(AdProviderFactory.forDev)
 }

@@ -17,74 +17,35 @@
 import GoogleMobileAds
 import SwiftUI
 
-struct NativeContentView: View {
-
-    @StateObject private var nativeViewModel = NativeAdViewModel()
-
-    let navigationTitle: String
+struct NativeAdListRow: View {
+    
+    @Binding var ad: Ad?
+    let size: AdSize
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                NativeAdViewContainer(
-                    nativeViewModel: nativeViewModel,
-                    xibName: "ExampleNativeAdView"
-                )
-                .frame(minHeight: 300)  // minHeight determined from xib.
-                
-                Text(
-                    nativeViewModel.nativeAd?.mediaContent.hasVideoContent == true
-                    ? "Ad contains a video asset." : "Ad does not contain a video."
-                )
-                .frame(maxWidth: .infinity)
-                .foregroundColor(.gray)
-                .opacity(nativeViewModel.nativeAd == nil ? 0 : 1)
-                
-                Button("Refresh Ad") {
-                    refreshAd()
-                }
-                
-                Text(
-                    "SDK Version:"
-                    + "\(string(for: MobileAds.shared.versionNumber))")
-            }
-            .padding()
+        switch ad {
+        case .native(let nativeAd):
+            SimpleNativeAdView(
+                nativeAd: nativeAd,
+                size: size
+            )
+            .listRowDefaultModifiers()
+        case .none:
+            EmptyView()
         }
-        .onAppear {
-            refreshAd()
-        }
-        .navigationTitle(navigationTitle)
-    }
-    
-    private func refreshAd() {
-        nativeViewModel.refreshAd()
-    }
-}
-
-struct NativeContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        NativeContentView(navigationTitle: "Native")
     }
 }
 
 struct SimpleNativeAdView: View {
-    
-    enum Size {
-        case small
-        case medium
-    }
-    
-    // Single source of truth for the native ad data.
-    @StateObject private var nativeViewModel = NativeAdViewModel()
-    @State var size: Size
-    
-    @Inject private var adProvider: AdProvider
-    
-    // minHeight determined from xib.
-    private var frameMinHeight: CGFloat {
+
+    let nativeAd: NativeAd
+    let size: AdSize
+
+    // frameHeight determined from xib.
+    private var frameHeight: CGFloat {
         switch size {
-        case .small: return 100
-        case .medium: return 380
+        case .small: return 80
+        case .medium: return 290
         }
     }
     
@@ -96,37 +57,19 @@ struct SimpleNativeAdView: View {
     }
     
     var body: some View {
-        if adProvider.shouldShowAds {
-            ZStack {
-                RoundedRectangle(
-                    cornerRadius: .cornerRadiusListRow,
-                    style: .continuous
-                )
-                .fill(Color.background.gradient)
-                .frame(minHeight: frameMinHeight)
-                
-                NativeAdViewContainer(
-                    nativeViewModel: nativeViewModel,
-                    xibName: xibName
-                )
-                .frame(minHeight: frameMinHeight)
-                .opacity(nativeViewModel.nativeAd == nil ? 0 : 1)
-            }
-            .animation(.snappy, value: nativeViewModel.nativeAd == nil)
-            .onAppear {
-                nativeViewModel.refreshAd()
-            }
-        } else {
-            EmptyView()
-        }
+        NativeAdViewContainer(
+            nativeAd: nativeAd,
+            xibName: xibName
+        )
+        .frame(height: frameHeight)
     }
 }
 
 private struct NativeAdViewContainer: UIViewRepresentable {
     typealias UIViewType = NativeAdView
     
-    @ObservedObject var nativeViewModel: NativeAdViewModel
-    @State var xibName: String
+    let nativeAd: NativeAd
+    let xibName: String
     
     func makeUIView(context: Context) -> NativeAdView {
         Bundle.main.loadNibNamed(
@@ -136,29 +79,44 @@ private struct NativeAdViewContainer: UIViewRepresentable {
     }
     
     func updateUIView(_ nativeAdView: NativeAdView, context: Context) {
-        guard let nativeAd = nativeViewModel.nativeAd else { return }
-        
         // Each UI property is configurable using your native ad.
-        (nativeAdView.headlineView as? UILabel)?.text = nativeAd.headline
+        if let headlineView = (nativeAdView.headlineView as? UILabel) {
+            headlineView.text = nativeAd.headline
+        }
 
-        nativeAdView.mediaView?.mediaContent = nativeAd.mediaContent
+        if let mediaView = nativeAdView.mediaView {
+            mediaView.mediaContent = nativeAd.mediaContent
+        }
         
-        (nativeAdView.bodyView as? UILabel)?.text = nativeAd.body
+        if let bodyView = (nativeAdView.bodyView as? UILabel) {
+            bodyView.text = nativeAd.body
+        }
 
-        (nativeAdView.iconView as? UIImageView)?.image = nativeAd.icon?.image
+        if let iconView = (nativeAdView.iconView as? UIImageView) {
+            iconView.image = nativeAd.icon?.image
+        }
         
-        (nativeAdView.starRatingView as? UIImageView)?.image = imageOfStars(from: nativeAd.starRating)
+        if let starRatingView = (nativeAdView.starRatingView as? UIImageView) {
+            starRatingView.image = imageOfStars(from: nativeAd.starRating)
+        }
 
-        (nativeAdView.storeView as? UILabel)?.text = nativeAd.store
+        if let storeView = (nativeAdView.storeView as? UILabel) {
+            storeView.text = nativeAd.store
+        }
 
-        (nativeAdView.priceView as? UILabel)?.text = nativeAd.price
+        if let priceView = (nativeAdView.priceView as? UILabel) {
+            priceView.text = nativeAd.price
+        }
         
-        (nativeAdView.advertiserView as? UILabel)?.text = nativeAd.advertiser
+        if let advertiserView = (nativeAdView.advertiserView as? UILabel) {
+            advertiserView.text = nativeAd.advertiser
+        }
         
-        (nativeAdView.callToActionView as? UIButton)?.setTitle(nativeAd.callToAction, for: .normal)
-        
-        // For the SDK to process touch events properly, user interaction should be disabled.
-        nativeAdView.callToActionView?.isUserInteractionEnabled = false
+        if let callToActionView = (nativeAdView.callToActionView as? UIButton) {
+            callToActionView.setTitle(nativeAd.callToAction, for: .normal)
+            // For the SDK to process touch events properly, user interaction should be disabled.
+            callToActionView.isUserInteractionEnabled = false
+        }        
         
         // Associate the native ad view with the native ad object. This is required to make the ad
         // clickable.

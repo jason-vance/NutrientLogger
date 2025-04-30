@@ -13,6 +13,10 @@ struct UserMealsView: View {
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.presentationMode) private var presentationMode
+    
+    @EnvironmentObject private var adProviderFactory: AdProviderFactory
+    @State private var adProvider: AdProvider?
+    @State private var ad: Ad?
 
     @Inject private var analytics: UserMealsAnalytics
 
@@ -35,7 +39,7 @@ struct UserMealsView: View {
     
     var body: some View {
         List {
-            AdRow()
+            NativeAdListRow(ad: $ad, size: .medium)
             if meals.isEmpty {
                 ContentUnavailableView(
                     "No Meals... Yet!",
@@ -52,6 +56,7 @@ struct UserMealsView: View {
             SpaceForFab()
         }
         .listDefaultModifiers()
+        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .animation(.snappy, value: meals)
         .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
@@ -76,11 +81,6 @@ struct UserMealsView: View {
         }) {
             Image(systemName: "arrow.backward")
         }
-    }
-    
-    @ViewBuilder private func AdRow() -> some View {
-        SimpleNativeAdView(size: .small)
-            .listRowDefaultModifiers()
     }
     
     @ViewBuilder private func MealRow(_ meal: Meal) -> some View {
@@ -110,4 +110,5 @@ struct UserMealsView: View {
     NavigationStack {
         UserMealsView()
     }
+    .environmentObject(AdProviderFactory.forDev)
 }

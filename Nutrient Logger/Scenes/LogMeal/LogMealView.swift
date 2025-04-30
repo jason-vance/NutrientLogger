@@ -12,6 +12,10 @@ struct LogMealView: View {
     
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.modelContext) private var modelContext
+    
+    @EnvironmentObject private var adProviderFactory: AdProviderFactory
+    @State private var adProvider: AdProvider?
+    @State private var ad: Ad?
 
     let meal: Meal
     
@@ -166,8 +170,8 @@ struct LogMealView: View {
             MealTimeField()
             PortionAmountField()
             
-            AdRow()
-            
+            NativeAdListRow(ad: $ad, size: .medium)
+
             FoodsSection()
 
             NutritionFactsSection(
@@ -183,6 +187,7 @@ struct LogMealView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
         .onChange(of: portionAmountValue) { applyPortions() }
+        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .alert(alertMessage, isPresented: $showAlert) { }
         .onAppear { fetchRemoteFoodsAndPortions() }
     }
@@ -291,11 +296,6 @@ struct LogMealView: View {
         .listRowDefaultModifiers()
     }
     
-    @ViewBuilder private func AdRow() -> some View {
-        SimpleNativeAdView(size: .small)
-            .listRowDefaultModifiers()
-    }
-    
     @ViewBuilder private func FoodsSection() -> some View {
         Section(header: Text("Foods")) {
             ForEach(meal.foodsWithPortions) { foodWithPortion in
@@ -327,4 +327,5 @@ struct LogMealView: View {
     NavigationStack {
         LogMealView(meal: .sample)
     }
+    .environmentObject(AdProviderFactory.forDev)
 }

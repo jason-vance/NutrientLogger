@@ -25,6 +25,10 @@ struct FoodDetailsView: View {
     
     @Environment(\.modelContext) var modelContext
     @Environment(\.presentationMode) var presentationMode
+    
+    @EnvironmentObject private var adProviderFactory: AdProviderFactory
+    @State private var adProvider: AdProvider?
+    @State private var ad: Ad?
 
     @State private var prototypeFood: FoodItem?
     @State private var food: FoodItem?
@@ -201,6 +205,7 @@ struct FoodDetailsView: View {
     
     var body: some View {
         List {
+            NativeAdListRow(ad: $ad, size: .medium)
             FoodName()
             if askForDateAndMealTime {
                 DateField()
@@ -208,9 +213,7 @@ struct FoodDetailsView: View {
             }
             PortionField()
             PortionAmountField()
-            
-            AdRow()
-            
+
             if !displayNutrients.isEmpty {
                 NutritionFactsSection(
                     nutrients: displayNutrients,
@@ -225,6 +228,7 @@ struct FoodDetailsView: View {
         }
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
         .listDefaultModifiers()
+        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .environment(\.defaultMinListRowHeight, 1)
         .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
@@ -379,11 +383,6 @@ struct FoodDetailsView: View {
         }
         .listRowDefaultModifiers()
     }
-    
-    @ViewBuilder private func AdRow() -> some View {
-        SimpleNativeAdView(size: .small)
-            .listRowDefaultModifiers()
-    }
 }
 
 #Preview {
@@ -406,4 +405,5 @@ struct FoodDetailsView: View {
             onFoodSaved: { _, _ in }
         )
     }
+    .environmentObject(AdProviderFactory.forDev)
 }

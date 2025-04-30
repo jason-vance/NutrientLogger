@@ -15,14 +15,27 @@
 //
 
 import GoogleMobileAds
+import Combine
 
-class NativeAdViewModel: NSObject, ObservableObject, NativeAdLoaderDelegate {
+class NativeAdViewModel: NSObject, ObservableObject, NativeAdLoaderDelegate, AdProvider {
     
-    private let adUnitId = "ca-app-pub-1475400719226569/6951578231"
+    private let adUnitId = "ca-app-pub-1475400719226569/6347925071"
     private let testAdUnitId = "ca-app-pub-3940256099942544/3986624511"
     
     @Published var nativeAd: NativeAd?
+    @Published var error: Error?
     private var adLoader: AdLoader!
+    
+    var adPublisher: AnyPublisher<Ad?, Never> {
+        $nativeAd.map { nativeAd in
+            guard let nativeAd else { return nil }
+            return Ad.native(nativeAd)
+        }.eraseToAnyPublisher()
+    }
+    
+    var errorPublisher: AnyPublisher<Error?, Never> {
+        $error.eraseToAnyPublisher()
+    }
     
     func refreshAd() {
 #if DEBUG

@@ -19,6 +19,10 @@ struct ConsumedNutrientDetailsView: View {
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.colorScheme) private var colorScheme
     
+    @EnvironmentObject private var adProviderFactory: AdProviderFactory
+    @State private var adProvider: AdProvider?
+    @State private var ad: Ad?
+    
     @Inject private var nutrientRdiLibrary: NutrientRdiLibrary
     @Inject private var userService: UserService
 
@@ -110,14 +114,15 @@ struct ConsumedNutrientDetailsView: View {
     
     var body: some View {
         List {
+            NativeAdListRow(ad: $ad, size: .medium)
             AmountRow()
             RecommendedAmountRow()
             UpperLimitRow()
             Chart()
-            AdRow()
             FoodsSection()
         }
         .listDefaultModifiers()
+        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
@@ -207,11 +212,6 @@ struct ConsumedNutrientDetailsView: View {
         .listRowDefaultModifiers()
     }
     
-    @ViewBuilder private func AdRow() -> some View {
-        SimpleNativeAdView(size: .small)
-            .listRowDefaultModifiers()
-    }
-    
     @ViewBuilder private func FoodsSection() -> some View {
         Section {
             ForEach(mealFoods) { mealFoods in
@@ -279,4 +279,5 @@ struct ConsumedNutrientDetailsView: View {
             nutrientFoodPairs: nutrientFoodPairs
         )
     }
+    .environmentObject(AdProviderFactory.forDev)
 }

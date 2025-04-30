@@ -17,7 +17,6 @@ class AppSetup {
         
         setupAnalytics()
         
-        registerAdProvider()
         registerNutrientRdiLibrary()
         await registerUserService()
         await registerRemoteDatabase()
@@ -26,7 +25,6 @@ class AppSetup {
     }
     
     fileprivate static func doMocksForScreenshots() {
-        swinjectContainer.autoregister(AdProvider.self) { DefaultAdProvider(shouldShowAds: false) }
         swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { MockNutrientLoggerAnalytics() }
         swinjectContainer.autoregister(UserService.self) { UserServiceForScreenshots() }
         //TODO: Add foods to modelContext for screenshots
@@ -34,11 +32,6 @@ class AppSetup {
         //TODO: Add meals to modelContext for screenshots
 //        swinjectContainer.autoregister(UserMealsDatabase.self) { UserMealsDatabaseForScreenshots() }
         swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
-    }
-    
-    private static func registerAdProvider() {
-        let adProvider = DefaultAdProvider(shouldShowAds: true)
-        swinjectContainer.autoregister(AdProvider.self) { adProvider }
     }
     
     private static func registerNutrientRdiLibrary() {

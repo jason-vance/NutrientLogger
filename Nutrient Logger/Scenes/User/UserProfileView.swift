@@ -10,6 +10,10 @@ import SwinjectAutoregistration
 
 struct UserProfileView: View {
     
+    @EnvironmentObject private var adProviderFactory: AdProviderFactory
+    @State private var adProvider: AdProvider?
+    @State private var ad: Ad?
+    
     @Inject private var userService: UserService
     
     @State private var user: User?
@@ -33,8 +37,8 @@ struct UserProfileView: View {
     
     var body: some View {
         List {
+            NativeAdListRow(ad: $ad, size: .medium)
             ProfileSettingsSection()
-            AdRow()
             //TODO: Add custom nutrient goals
             UserMealsSection()
             NutrientLibrarySection()
@@ -43,6 +47,7 @@ struct UserProfileView: View {
         .navigationBarTitle("User Profile")
         .onAppear { fetchUser() }
         .onChange(of: user) { saveUser() }
+        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .sheet(isPresented: $showFavoriteColorPicker) {
             FavoriteColorPicker(.init(
                 get: { user?.preferredColorName ?? .indigo },
@@ -211,11 +216,6 @@ struct UserProfileView: View {
             .listRowDefaultModifiers()
         }
     }
-    
-    @ViewBuilder private func AdRow() -> some View {
-        SimpleNativeAdView(size: .small)
-            .listRowDefaultModifiers()
-    }
 }
 
 #Preview {
@@ -224,4 +224,5 @@ struct UserProfileView: View {
     NavigationStack {
         UserProfileView()
     }
+    .environmentObject(AdProviderFactory.forDev)
 }
