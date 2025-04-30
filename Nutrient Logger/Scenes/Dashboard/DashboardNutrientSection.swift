@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+//TODO: RELEASE: Make specific Vitamins and minerals sections
 //TODO: RELEASE: Consolidate sections, make this more screenshotable
 //  Like, a proximates section that has
 //      prominent calories

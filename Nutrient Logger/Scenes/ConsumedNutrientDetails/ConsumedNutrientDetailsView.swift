@@ -8,6 +8,7 @@
 import SwiftUI
 import SwinjectAutoregistration
 
+//TODO: ConsumedNutrientDetailsView is displaying multiple of the same foods (Identifiable thing, I think)
 struct ConsumedNutrientDetailsView: View {
     
     private struct MealFoods: Identifiable {

@@ -26,19 +26,19 @@ public class ColorPaletteService {
             return ColorPalettes.indigo
         }
         if (FdcNutrientGroupMapper.GroupNumber_Carbohydrates == groupNumber) {
-            return ColorPalettes.orange
+            return ColorPalettes.indigo
         }
         if (FdcNutrientGroupMapper.GroupNumber_Minerals == groupNumber) {
-            return ColorPalettes.green
+            return ColorPalettes.cyan
         }
         if (FdcNutrientGroupMapper.GroupNumber_VitaminsAndOtherComponents == groupNumber) {
-            return ColorPalettes.blue
+            return ColorPalettes.orange
         }
         if (FdcNutrientGroupMapper.GroupNumber_Lipids == groupNumber) {
             return ColorPalettes.red
         }
         if (FdcNutrientGroupMapper.GroupNumber_AminoAcids == groupNumber) {
-            return ColorPalettes.teal
+            return ColorPalettes.green
         }
 
         return nil
@@ -97,7 +97,8 @@ public class ColorPalettes {
     public static let mint = ColorPalette(accent: .mint)
     public static let cyan = ColorPalette(accent: .cyan)
     public static let brown = ColorPalette(accent: .brown)
-    
+    public static let gray = ColorPalette(accent: .gray)
+
     public static let palettes: [ColorPalette] = [red, teal, blue, indigo, green, pink, purple, orange, mint, cyan]
     
     public static let allColors: [(ColorName,Color)] = [

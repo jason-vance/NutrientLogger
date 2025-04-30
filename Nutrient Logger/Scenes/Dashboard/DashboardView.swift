@@ -9,12 +9,13 @@ import SwiftUI
 import SwiftData
 import SwinjectAutoregistration
 
-//TODO: RELEASE: Make specific Vitamins and minerals sections
 //TODO: RELEASE: Navigate to carbs from carbs cell
 //TODO: RELEASE: Navigate to lipids from fat cell
 //TODO: RELEASE: Navigate to amino acids from protein cell
 //TODO: RELEASE: Navigate to WaterDetailView from water cell
 //TODO: RELEASE: Navigate to CaloriesDetailView from calories cell (Maybe this is where consumed foods are found)
+//TODO: Days with foods hang for a second while loading
+//TODO: RELEASE: Foods with long names are not left aligned on dashboard
 struct DashboardView: View {
     
     @Environment(\.scenePhase) private var scenePhase
@@ -103,8 +104,6 @@ struct DashboardView: View {
                 }
             }
         }
-        .scrollContentBackground(.hidden)
-        .background(Color.accentColor.opacity(0.15).gradient)
         .toolbar { Toolbar() }
         .navigationTitle(Text(navigationTitle))
         .onChange(of: todaysConsumedFoods, initial: true) { fetchFoods() }

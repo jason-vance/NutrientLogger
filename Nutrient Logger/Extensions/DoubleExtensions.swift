@@ -9,6 +9,9 @@ import Foundation
 
 public extension Double {
     
+    static let cardShadowColorOpacity: Double = 0.5
+    static let cardBackgroundColorOpacity: Double = 0.1
+
     func toRadians() -> Double {
         return self * .pi / 180
     }

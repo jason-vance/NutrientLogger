@@ -100,16 +100,27 @@ struct DashboardMacrosSection: View {
             .sorted { $0 < $1 }
     }
     
+    private var colorPalette: ColorPalette {
+        ColorPaletteService.getColorPaletteFor(number: FdcNutrientGroupMapper.GroupNumber_Proximates)
+    }
+    
+    private var carbsColorPalette: ColorPalette {
+        ColorPaletteService.getColorPaletteFor(number: FdcNutrientGroupMapper.GroupNumber_Carbohydrates)
+    }
+    
+    private var fatColorPalette: ColorPalette {
+        ColorPaletteService.getColorPaletteFor(number: FdcNutrientGroupMapper.GroupNumber_Lipids)
+    }
+    
+    private var proteinColorPalette: ColorPalette {
+        ColorPaletteService.getColorPaletteFor(number: FdcNutrientGroupMapper.GroupNumber_AminoAcids)
+    }
+    
     var body: some View {
-        VStack {
-            HStack {
-                Text("Macros")
-                    .listSectionHeader()
-                Spacer()
-            }
+        VStack(spacing: .spacingDefault) {
             CaloriesCard()
                 .padding()
-                .inCard()
+                .inCard(backgroundColor: colorPalette.accent)
             CarbsFatProtein()
             Water()
             OtherStuff()
@@ -140,7 +151,7 @@ struct DashboardMacrosSection: View {
                                 lineWidth: lineWidthPts,
                                 lineCap: .round
                             ))
-                            .foregroundStyle(Color.indigo)
+                            .foregroundStyle(carbsColorPalette.accent)
                             .rotationEffect(.degrees(-90))
                         Circle()
                             .trim(from: fatStart, to: fatEnd)
@@ -148,7 +159,7 @@ struct DashboardMacrosSection: View {
                                 lineWidth: lineWidthPts,
                                 lineCap: .round
                             ))
-                            .foregroundStyle(Color.red)
+                            .foregroundStyle(fatColorPalette.accent)
                             .rotationEffect(.degrees(-90))
                         Circle()
                             .trim(from: proteinStart, to: proteinEnd)
@@ -156,7 +167,7 @@ struct DashboardMacrosSection: View {
                                 lineWidth: lineWidthPts,
                                 lineCap: .round
                             ))
-                            .foregroundStyle(Color.green)
+                            .foregroundStyle(proteinColorPalette.accent)
                             .rotationEffect(.degrees(-90))
                     } else {
                         Circle()
@@ -190,25 +201,25 @@ struct DashboardMacrosSection: View {
     }
     
     @ViewBuilder private func CarbsFatProtein() -> some View {
-        HStack {
+        HStack(spacing: .spacingDefault) {
             Macro(
                 name: "Carbs",
                 iconName: "square.fill",
-                iconColor: .indigo,
+                iconColor: carbsColorPalette.accent,
                 amount: carbs,
                 unit: carbsUnit
             )
             Macro(
                 name: "Fat",
                 iconName: "circle.fill",
-                iconColor: .red,
+                iconColor: fatColorPalette.accent,
                 amount: fat,
                 unit: fatUnit
             )
             Macro(
                 name: "Protein",
                 iconName: "triangle.fill",
-                iconColor: .green,
+                iconColor: proteinColorPalette.accent,
                 amount: protein,
                 unit: proteinUnit
             )
@@ -241,7 +252,7 @@ struct DashboardMacrosSection: View {
             .fontDesign(.rounded)
         }
         .padding()
-        .inCard()
+        .inCard(backgroundColor: colorPalette.accent)
     }
     
     @ViewBuilder private func MacroIcon(name: String) -> some View {
@@ -251,9 +262,14 @@ struct DashboardMacrosSection: View {
                 .frame(width: 16, height: 16)
                 .padding(2)
                 .background {
-                    Image(systemName: name)
-                        .resizable()
-                        .foregroundStyle(Color.white)
+                    ZStack {
+                        Image(systemName: name)
+                            .resizable()
+                            .foregroundStyle(Color.background)
+                        Image(systemName: name)
+                            .resizable()
+                            .foregroundStyle(colorPalette.accent.opacity(.cardBackgroundColorOpacity).gradient)
+                    }
                 }
                 .offset(x: -3, y: 6)
             Image(systemName: name)
@@ -261,9 +277,14 @@ struct DashboardMacrosSection: View {
                 .frame(width: 12, height: 12)
                 .padding(2)
                 .background {
-                    Image(systemName: name)
-                        .resizable()
-                        .foregroundStyle(Color.white)
+                    ZStack {
+                        Image(systemName: name)
+                            .resizable()
+                            .foregroundStyle(Color.background)
+                        Image(systemName: name)
+                            .resizable()
+                            .foregroundStyle(colorPalette.accent.opacity(.cardBackgroundColorOpacity).gradient)
+                    }
                 }
                 .offset(x: 5, y: -1)
             Image(systemName: name)
@@ -271,9 +292,14 @@ struct DashboardMacrosSection: View {
                 .frame(width: 9, height: 9)
                 .padding(2)
                 .background {
-                    Image(systemName: name)
-                        .resizable()
-                        .foregroundStyle(Color.white)
+                    ZStack {
+                        Image(systemName: name)
+                            .resizable()
+                            .foregroundStyle(Color.background)
+                        Image(systemName: name)
+                            .resizable()
+                            .foregroundStyle(colorPalette.accent.opacity(.cardBackgroundColorOpacity).gradient)
+                    }
                 }
                 .offset(x: -2, y: -9)
         }
@@ -298,7 +324,7 @@ struct DashboardMacrosSection: View {
                     .contentTransition(.numericText())
             }
             .padding()
-            .inCard()
+            .inCard(backgroundColor: colorPalette.accent)
         }
     }
     
@@ -328,7 +354,7 @@ struct DashboardMacrosSection: View {
                 .contentTransition(.numericText())
         }
         .padding()
-        .inCard()
+        .inCard(backgroundColor: colorPalette.accent)
     }
 }
 
@@ -343,6 +369,4 @@ struct DashboardMacrosSection: View {
         }
         .padding(.horizontal)
     }
-    .scrollContentBackground(.hidden)
-    .background(Color.accentColor.opacity(0.15).gradient)
 }

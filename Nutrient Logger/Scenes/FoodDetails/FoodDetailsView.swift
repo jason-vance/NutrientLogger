@@ -9,6 +9,7 @@ import SwiftUI
 import SwinjectAutoregistration
 
 //TODO: Add a toast-like notification for when a food is successfully saved
+//TODO: Hard to tap portion amount field 
 struct FoodDetailsView: View {
     
     enum Mode {

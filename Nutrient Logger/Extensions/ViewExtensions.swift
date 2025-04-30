@@ -48,8 +48,13 @@ extension View {
     func inCard(backgroundColor: Color = .background, cornerRadius: CGFloat = .cornerRadiusListRow) -> some View {
         self
             .background {
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(backgroundColor)
+                ZStack {
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(.shadow(.drop(color: backgroundColor.opacity(.cardShadowColorOpacity), radius: .shadowRadiusDefault)))
+                        .fill(Color.background)
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(backgroundColor.opacity(.cardBackgroundColorOpacity).gradient)
+                }
             }
     }
 }
