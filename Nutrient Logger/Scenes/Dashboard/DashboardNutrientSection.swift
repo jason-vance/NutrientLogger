@@ -29,6 +29,7 @@ struct DashboardNutrientSection: View {
     
     var body: some View {
         VStack {
+            DashboardMacrosSection(aggregator: aggregator)
             HStack {
                 Text("My Nutrients")
                     .listSectionHeader()

@@ -44,4 +44,12 @@ extension View {
                     .frame(height: lineWidth)
             }
     }
+    
+    func inCard(backgroundColor: Color = .background, cornerRadius: CGFloat = .cornerRadiusListRow) -> some View {
+        self
+            .background {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(backgroundColor)
+            }
+    }
 }
