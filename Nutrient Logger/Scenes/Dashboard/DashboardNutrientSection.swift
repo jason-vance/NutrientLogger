@@ -27,8 +27,6 @@ struct DashboardNutrientSection: View {
         aggregator.nutrientGroups
     }
     
-    let columns: [GridItem] = Array(repeating: GridItem(.adaptive(minimum: 100)), count: 2)
-    
     var body: some View {
         VStack {
             HStack {
@@ -39,21 +37,10 @@ struct DashboardNutrientSection: View {
             .padding(.top)
             VStack {
                 ForEach(nutrientGroups) { nutrientGroup in
-                    let nutrients = Nutrient.sortNutrients(nutrientGroup.nutrients)
-                    let fdcNumbers = Set(nutrients.map(\.fdcNumber))
-                    
-                    HStack {
-                        Text(nutrientGroup.name)
-                            .listSubsectionHeader()
-                        Spacer()
-                    }
-                    .padding(.top, 4)
-                    
-                    LazyVGrid(columns: columns) {
-                        ForEach(fdcNumbers.sorted(), id: \.self) { fdcNumber in
-                            DashboardNutrientCell(nutrients: aggregator.nutrientsByNutrientNumber[fdcNumber] ?? [])
-                        }
-                    }
+                    DashboardNutrientGroupView(
+                        nutrientGroup: nutrientGroup,
+                        aggregator: aggregator
+                    )
                 }
             }
         }
