@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-//TODO: RELEASE: Apply portions to foodItems
 struct DashboardMealRow: View {
     
     static let calsKey = FdcNutrientGroupMapper.NutrientNumber_Energy_KCal

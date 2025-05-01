@@ -223,7 +223,7 @@ struct ConsumedMealFoodRow: View {
                     Spacer()
                 }
                 HStack {
-                    Text("\(amount.formatted(maxDigits:1))g")
+                    Text("\(amount.formatted(maxDigits: 0))g")
                         .contentTransition(.numericText())
                         .font(.callout)
                         .fontWeight(.semibold)
