@@ -346,23 +346,36 @@ struct DashboardMacrosSection: View {
     
     @ViewBuilder private func OtherCell(_ nutrientId: String) -> some View {
         let nutrients = aggregator.nutrientsByNutrientNumber[nutrientId] ?? []
+        let nutrient = nutrients.first?.nutrient
         
-        let name = nutrients.first?.nutrient.name ?? "No Name"
-        let unit = nutrients.first?.nutrient.unitName ?? "?"
+        let name = nutrient?.name ?? "No Name"
+        let unit = nutrient?.unitName ?? "?"
         let amount = nutrients.reduce(0.0) { $0 + $1.nutrient.amount }
         
-        HStack {
-            Text(name)
-                .font(.subheadline)
-                .fontWeight(.light)
-            Spacer()
-            Text("\(amount.formatted(maxDigits: 0))\(unit)")
-                .fontWeight(.semibold)
-                .fontDesign(.rounded)
-                .contentTransition(.numericText())
+        NavigationLink {
+            if let nutrient {
+                ConsumedNutrientDetailsView(
+                    nutrient: nutrient,
+                    nutrientFoodPairs: nutrients
+                )
+            } else {
+                Text("Somehow `nutrient` is nil for \(nutrientId)")
+            }
+        } label: {
+            HStack {
+                Text(name)
+                    .font(.subheadline)
+                    .fontWeight(.light)
+                Spacer()
+                Text("\(amount.formatted(maxDigits: 0))\(unit)")
+                    .fontWeight(.semibold)
+                    .fontDesign(.rounded)
+                    .contentTransition(.numericText())
+            }
+            .foregroundStyle(Color.text)
+            .padding()
+            .inCard(backgroundColor: Color.gray)
         }
-        .padding()
-        .inCard(backgroundColor: Color.gray)
     }
 }
 

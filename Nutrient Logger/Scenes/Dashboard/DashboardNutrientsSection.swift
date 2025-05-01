@@ -56,18 +56,18 @@ struct DashboardNutrientsSection: View {
     }
     
     @ViewBuilder private func NutrientCell(_ nutrientId: String) -> some View {
-        let nutrients = aggregator.nutrientsByNutrientNumber[nutrientId]
-        let nutrient = nutrients?.first?.nutrient
+        let nutrients = aggregator.nutrientsByNutrientNumber[nutrientId] ?? []
+        let nutrient = nutrients.first?.nutrient
         let name = FdcNutrientGroupMapper.nutrientDisplayNames[nutrientId] ?? nutrient?.name ?? nutrientId
-        let amount = nutrients?.reduce(into: 0.0, { $0 += $1.nutrient.amount }) ?? 0
-        let unit = nutrients?.first?.nutrient.unitName ?? ""
+        let amount = nutrients.reduce(into: 0.0, { $0 += $1.nutrient.amount })
+        let unit = nutrient?.unitName ?? ""
         let rdi = rdiLibrary.getRdis(nutrientId)?.getRdi(user)
         
         NavigationLink {
             if let nutrient {
                 ConsumedNutrientDetailsView(
                     nutrient: nutrient,
-                    nutrientFoodPairs: nutrients ?? []
+                    nutrientFoodPairs: nutrients
                 )
             } else {
                 Text("Somehow `nutrient` is nil for \(nutrientId)")
