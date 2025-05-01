@@ -32,20 +32,6 @@ struct DashboardNutrientSection: View {
             DashboardMacrosSection(aggregator: aggregator)
             DashboardVitaminsSection(aggregator: aggregator)
             DashboardMineralsSection(aggregator: aggregator)
-            HStack {
-                Text("My Nutrients")
-                    .listSectionHeader()
-                Spacer()
-            }
-            .padding(.top)
-            VStack {
-                ForEach(nutrientGroups) { nutrientGroup in
-                    DashboardNutrientGroupView(
-                        nutrientGroup: nutrientGroup,
-                        aggregator: aggregator
-                    )
-                }
-            }
         }
         .padding(.horizontal)
     }

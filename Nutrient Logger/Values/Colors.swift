@@ -29,7 +29,7 @@ public class ColorPaletteService {
             return ColorPalettes.indigo
         }
         if (FdcNutrientGroupMapper.GroupNumber_Minerals == groupNumber) {
-            return ColorPalettes.cyan
+            return ColorPalettes.mint
         }
         if (FdcNutrientGroupMapper.GroupNumber_VitaminsAndOtherComponents == groupNumber) {
             return ColorPalettes.cyan
