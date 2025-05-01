@@ -29,8 +29,9 @@ struct DashboardNutrientSection: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(spacing: 2 * .spacingDefault) {
             DashboardMacrosSection(aggregator: aggregator)
+            DashboardVitaminsSection(aggregator: aggregator)
             HStack {
                 Text("My Nutrients")
                     .listSectionHeader()

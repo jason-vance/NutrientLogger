@@ -32,7 +32,7 @@ public class ColorPaletteService {
             return ColorPalettes.cyan
         }
         if (FdcNutrientGroupMapper.GroupNumber_VitaminsAndOtherComponents == groupNumber) {
-            return ColorPalettes.orange
+            return ColorPalettes.cyan
         }
         if (FdcNutrientGroupMapper.GroupNumber_Lipids == groupNumber) {
             return ColorPalettes.red

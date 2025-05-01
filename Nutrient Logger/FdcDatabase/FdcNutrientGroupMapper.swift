@@ -261,6 +261,29 @@ class FdcNutrientGroupMapper {
     public static let NutrientNumber_Nickel_Ni = "371"
     
     
+    public static let nutrientDisplayNames:  [String:String] = [
+        FdcNutrientGroupMapper.NutrientNumber_VitaminA_RAE: "Vitamin A",
+        FdcNutrientGroupMapper.NutrientNumber_Thiamin: "Thiamin",
+        FdcNutrientGroupMapper.NutrientNumber_Riboflavin: "Riboflavin",
+        FdcNutrientGroupMapper.NutrientNumber_Niacin: "Niacin",
+        FdcNutrientGroupMapper.NutrientNumber_PantothenicAcid: "Pantothenic Acid",
+        FdcNutrientGroupMapper.NutrientNumber_VitaminB6: "Vitamin B6",
+        FdcNutrientGroupMapper.NutrientNumber_Folate_DFE: "Folate",
+        FdcNutrientGroupMapper.NutrientNumber_VitaminB12: "Vitamin B12",
+        FdcNutrientGroupMapper.NutrientNumber_VitaminC_TotalAscorbicAcid: "Vitamin C",
+        FdcNutrientGroupMapper.NutrientNumber_VitaminD_D2_Plus_D3: "Vitamin D",
+        FdcNutrientGroupMapper.NutrientNumber_VitaminE_Alpha_Tocopherol: "Vitamin E",
+        FdcNutrientGroupMapper.NutrientNumber_VitaminK_Phylloquinone: "Vitamin K",
+        FdcNutrientGroupMapper.NutrientNumber_Choline_Total: "Choline",
+        FdcNutrientGroupMapper.NutrientNumber_Betaine: "Betaine",
+        FdcNutrientGroupMapper.NutrientNumber_Carotene_Beta: "Beta Carotene",
+        FdcNutrientGroupMapper.NutrientNumber_Carotene_Alpha: "Alpha Carotene",
+        FdcNutrientGroupMapper.NutrientNumber_Lycopene: "Lycopene",
+        FdcNutrientGroupMapper.NutrientNumber_Lutein_Zeaxanthin: "Lutein & Zeaxanthin",
+        FdcNutrientGroupMapper.NutrientNumber_Caffeine: "Caffeine",
+        FdcNutrientGroupMapper.NutrientNumber_Theobromine: "Theobromine",
+    ]
+    
     public static let NutrientNameOverrides:  [String:String] = [
         NutrientNumber_TotalLipid_Fat: "Total Fat",
         NutrientNumber_FattyAcids_TotalSaturated: "Saturated Fat",

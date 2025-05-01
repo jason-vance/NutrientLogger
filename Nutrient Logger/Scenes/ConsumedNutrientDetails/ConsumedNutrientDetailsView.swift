@@ -218,10 +218,10 @@ struct ConsumedNutrientDetailsView: View {
             ForEach(mealFoods) { mealFoods in
                 Text(mealFoods.mealTime.rawValue)
                     .listSubsectionHeader()
-                ForEach(mealFoods.foods) { food in
+                ForEach(mealFoods.foods.indices) { foodIndex in
                     ConsumedNutrientDetailsFoodRow(
                         nutrientNumber: nutrient.fdcNumber,
-                        food: food
+                        food: mealFoods.foods[foodIndex]
                     )
                 }
             }
