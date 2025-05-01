@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+//TODO: RELEASE: Speed up the rendering here
 struct DashboardMealRow: View {
     
     static let calsKey = FdcNutrientGroupMapper.NutrientNumber_Energy_KCal
@@ -15,10 +16,11 @@ struct DashboardMealRow: View {
     static let proteinKey = FdcNutrientGroupMapper.NutrientNumber_Protein
     
     let meal: DashboardMealList.Meal
+    let date: SimpleDate
     
     @Inject private var remoteDatabase: RemoteDatabase
     
-    @State private var foodItems: [FoodItem] = []
+    @State private var foodItems: [(FoodItem, ConsumedFood)] = []
     @State private var aggregator: NutrientDataAggregator?
     
     private var caloriesString: String {
@@ -43,32 +45,37 @@ struct DashboardMealRow: View {
         return "\(weight.formatted(maxDigits: 0))g"
     }
     
-    private func fetchFoods() {
+    private func fetchFoods() async {
+        guard foodItems.isEmpty else { return }
 //        foodItems = FoodItem.sampleFoods
 //        return;
         
         Task {
-            foodItems = meal.foods
+            let foodItems = meal.foods
                 .compactMap { consumedFood in
                     do {
                         var food = try remoteDatabase.getFood(String(consumedFood.fdcId))
                         food = try food?.applyingPortion(consumedFood.portion)
                         food?.dateLogged = consumedFood.dateLogged
                         food?.mealTime = consumedFood.mealTime
-                        return food
+                        if let food {
+                            return (food, consumedFood)
+                        }
                     } catch {
                         print("Failed to fetch food with id \(consumedFood.fdcId): \(error)")
                     }
                     return nil
                 }
-            aggregator = NutrientDataAggregator(foodItems)
+            let aggregator = NutrientDataAggregator(foodItems.map { $0.0 })
+            
+            self.foodItems = foodItems
+            self.aggregator = aggregator
         }
     }
     
     var body: some View {
         NavigationLink {
-            //TODO: RELEASE: Navigate to ConsumedMealView
-            Text("ConsumedMealView")
+            ConsumedMealsView(date: date)
         } label: {
             VStack {
                 HStack {
@@ -84,7 +91,7 @@ struct DashboardMealRow: View {
             .padding()
             .inCard(backgroundColor: .gray)
         }
-        .onAppear { fetchFoods() }
+        .task { await fetchFoods() }
     }
     
     @ViewBuilder private func CaloriesWeightFoods() -> some View {
@@ -151,7 +158,11 @@ struct DashboardMealRow: View {
         color: Color
     ) -> some View {
         HStack {
-            CircleChart(amount: amount * calorieFactor, total: totalMacroCals, color: color)
+            CircleChart(
+                amount: amount * calorieFactor,
+                total: totalMacroCals,
+                config: .init(color: color)
+            )
             VStack {
                 HStack {
                     Text(name)
@@ -171,25 +182,6 @@ struct DashboardMealRow: View {
             }
         }
     }
-    
-    @ViewBuilder private func CircleChart(amount: Double, total: Double, color: Color) -> some View {
-        let size: CGFloat = 36
-        let lineWidth: CGFloat = 6
-        let progress: CGFloat = amount / total
-        
-        ZStack {
-            Circle()
-                .stroke(style: StrokeStyle(lineWidth: lineWidth))
-                .foregroundStyle(Color.gray.opacity(0.2))
-                .frame(width: size, height: size)
-            Circle()
-                .trim(from: 0, to: progress)
-                .stroke(style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
-                .foregroundStyle(color)
-                .frame(width: size, height: size)
-                .rotationEffect(.degrees(-90))
-        }
-    }
 }
 
 #Preview {
@@ -198,7 +190,7 @@ struct DashboardMealRow: View {
     NavigationStack {
         ScrollView {
             VStack {
-                DashboardMealRow(meal: .sample)
+                DashboardMealRow(meal: .sample, date: .today)
             }
             .padding(.horizontal)
         }

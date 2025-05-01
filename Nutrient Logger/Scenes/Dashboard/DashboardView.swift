@@ -183,7 +183,7 @@ struct DashboardView: View {
                 .padding(.top)
                 LazyVStack(spacing: .spacingDefault) {
                     ForEach(meals) { meal in
-                        DashboardMealRow(meal: meal)
+                        DashboardMealRow(meal: meal, date: date)
                     }
                 }
             }

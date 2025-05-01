@@ -38,6 +38,21 @@ class ConsumedFood: Identifiable {
         self.mealTime = mealTime
     }
     
+    init(
+        foodItem: FoodItem,
+        portion: Portion,
+        dateLogged: SimpleDate,
+        mealTime: MealTime
+    ) {
+        self.fdcId = foodItem.fdcId
+        self.name = foodItem.name
+        self.portionAmount = portion.amount
+        self.portionGramWeight = portion.gramWeight
+        self.portionName = portion.name
+        self.dateLogged = dateLogged
+        self.mealTime = mealTime
+    }
+    
     var portion: Portion {
         Portion(
             name: portionName,
