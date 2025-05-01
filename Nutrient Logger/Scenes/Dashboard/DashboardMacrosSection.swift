@@ -79,8 +79,8 @@ struct DashboardMacrosSection: View {
         return "g"
     }
     
-    private var totalMacros: Double {
-        return carbs + fat + protein
+    private var totalMacroCals: Double {
+        return (4 * carbs) + (9 * fat) + (4 * protein)
     }
     
     private var waterGrams: Double? {
@@ -139,14 +139,17 @@ struct DashboardMacrosSection: View {
             Spacer()
             GeometryReader { geometry in
                 ZStack {
-                    if totalMacros > 0 {
+                    if totalMacroCals > 0 {
+                        let carbCals = carbs * 4
+                        let fatCals = fat * 9
+
                         let circumference: CGFloat = geometry.size.width * .pi
                         let lineWidth: CGFloat = lineWidthPts / circumference
                         let margin: CGFloat = 8 / circumference
                         let carbStart: CGFloat = (lineWidth / 2) + (margin / 2)
-                        let carbEnd = CGFloat(carbs / totalMacros) - (lineWidth / 2) - (margin / 2)
+                        let carbEnd = CGFloat(carbCals / totalMacroCals) - (lineWidth / 2) - (margin / 2)
                         let fatStart = carbEnd + lineWidth + margin
-                        let fatEnd = CGFloat(fat / totalMacros) + fatStart - (lineWidth / 2) - (margin / 2)
+                        let fatEnd = CGFloat(fatCals / totalMacroCals) + fatStart - (lineWidth / 2) - (margin / 2)
                         let proteinStart = fatEnd + lineWidth + margin
                         let proteinEnd: CGFloat = 1 - (lineWidth / 2) - (margin / 2)
                         
