@@ -215,23 +215,45 @@ struct DashboardMacrosSection: View {
                 iconName: "square.fill",
                 iconColor: carbsColorPalette.accent,
                 amount: carbs,
-                unit: carbsUnit
+                unit: carbsUnit,
+                key: FdcNutrientGroupMapper.GroupNumber_Carbohydrates,
+                detailHeaderText: "Carbohydrates"
             )
             Macro(
                 name: "Fat",
                 iconName: "circle.fill",
                 iconColor: fatColorPalette.accent,
                 amount: fat,
-                unit: fatUnit
+                unit: fatUnit,
+                key: FdcNutrientGroupMapper.GroupNumber_Lipids,
+                detailHeaderText: "Lipids"
             )
             Macro(
                 name: "Protein",
                 iconName: "triangle.fill",
                 iconColor: proteinColorPalette.accent,
                 amount: protein,
-                unit: proteinUnit
+                unit: proteinUnit,
+                key: FdcNutrientGroupMapper.GroupNumber_AminoAcids,
+                detailHeaderText: "Amino Acids"
             )
         }
+    }
+    
+    @ViewBuilder private func MacroDetail(title: String, headerText: String, key: String) -> some View {
+        ScrollView {
+            VStack {
+                DashboardNutrientsSection(
+                    blacklist: [],
+                    orderedWhitelist: [],
+                    groupKey: key,
+                    headerText: headerText,
+                    aggregator: aggregator
+                )
+            }
+            .padding(.horizontal)
+        }
+        .navigationTitle(title)
     }
     
     @ViewBuilder private func Macro(
@@ -240,27 +262,38 @@ struct DashboardMacrosSection: View {
         iconColor: Color,
         amount: Double,
         unit: String,
+        key: String,
+        detailHeaderText: String
     ) -> some View {
-        VStack(spacing: 4) {
-            HStack {
-                Spacer()
-                Text(name)
-                    .font(.subheadline)
-                    .fontWeight(.light)
-                Spacer()
+        NavigationLink {
+            MacroDetail(
+                title: name,
+                headerText: detailHeaderText,
+                key: key
+            )
+        } label: {
+            VStack(spacing: 4) {
+                HStack {
+                    Spacer()
+                    Text(name)
+                        .font(.subheadline)
+                        .fontWeight(.light)
+                    Spacer()
+                }
+                HStack(spacing: 4) {
+                    MacroIcon(name: iconName)
+                        .foregroundStyle(iconColor)
+                    Text("\(amount.formatted(maxDigits: 0))\(unit)")
+                        .contentTransition(.numericText())
+                }
+                .font(.title2)
+                .fontWeight(.semibold)
+                .fontDesign(.rounded)
             }
-            HStack(spacing: 4) {
-                MacroIcon(name: iconName)
-                    .foregroundStyle(iconColor)
-                Text("\(amount.formatted(maxDigits: 0))\(unit)")
-                    .contentTransition(.numericText())
-            }
-            .font(.title2)
-            .fontWeight(.semibold)
-            .fontDesign(.rounded)
+            .foregroundStyle(Color.text)
+            .padding()
+            .inCard(backgroundColor: Color.gray)
         }
-        .padding()
-        .inCard(backgroundColor: Color.gray)
     }
     
     @ViewBuilder private func MacroIcon(name: String) -> some View {
@@ -319,20 +352,26 @@ struct DashboardMacrosSection: View {
         if let waterGrams {
             let waterCups = Double(waterGrams) / 237
             
-            HStack {
-                Image(systemName: "drop.fill")
-                    .foregroundStyle(Color.blue)
-                Text("Water")
-                    .font(.subheadline)
-                    .fontWeight(.light)
-                Spacer()
-                Text("\(waterCups.formatted(maxDigits: 1))cups")
-                    .fontWeight(.semibold)
-                    .fontDesign(.rounded)
-                    .contentTransition(.numericText())
+            NavigationLink {
+                //TODO: RELEASE: Navigate to WaterDetailView
+                Text("WaterDetailView")
+            } label: {
+                HStack {
+                    Image(systemName: "drop.fill")
+                        .foregroundStyle(Color.blue)
+                    Text("Water")
+                        .font(.subheadline)
+                        .fontWeight(.light)
+                    Spacer()
+                    Text("\(waterCups.formatted(maxDigits: 1))cups")
+                        .fontWeight(.semibold)
+                        .fontDesign(.rounded)
+                        .contentTransition(.numericText())
+                }
+                .foregroundStyle(Color.text)
+                .padding()
+                .inCard(backgroundColor: Color.gray)
             }
-            .padding()
-            .inCard(backgroundColor: Color.gray)
         }
     }
     
