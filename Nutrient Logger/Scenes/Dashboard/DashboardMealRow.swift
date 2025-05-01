@@ -44,8 +44,8 @@ struct DashboardMealRow: View {
     }
     
     private func fetchFoods() {
-        //        foodItems = FoodItem.sampleFoods
-        //        return;
+//        foodItems = FoodItem.sampleFoods
+//        return;
         
         Task {
             foodItems = meal.foods

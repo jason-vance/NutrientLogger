@@ -10,7 +10,6 @@ import SwiftData
 import SwinjectAutoregistration
 
 //TODO: Days with foods hang for a second while loading
-//TODO: RELEASE: Foods with long names are not left aligned on dashboard
 struct DashboardView: View {
     
     @Environment(\.scenePhase) private var scenePhase
