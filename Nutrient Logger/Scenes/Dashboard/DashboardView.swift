@@ -170,6 +170,7 @@ struct DashboardView: View {
         }
     }
     
+    //TODO: RELEASE: Make a cool meal row that navigates to ConsumedMealView (or something like that)
     @ViewBuilder private func WhatIAteSection() -> some View {
         if !todaysConsumedFoods.isEmpty {
             let meals = DashboardMealList.from(todaysConsumedFoods)
