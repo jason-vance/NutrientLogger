@@ -175,14 +175,14 @@ struct DashboardView: View {
             let meals = DashboardMealList.from(todaysConsumedFoods)
                 .sorted { $0.mealTime < $1.mealTime }
             
-            VStack {
+            VStack(spacing: .spacingDefault) {
                 HStack {
                     Text("Meals")
                         .listSectionHeader()
                     Spacer()
                 }
                 .padding(.top)
-                LazyVStack {
+                LazyVStack(spacing: .spacingDefault) {
                     ForEach(meals) { meal in
                         DashboardMealRow(meal: meal)
                     }

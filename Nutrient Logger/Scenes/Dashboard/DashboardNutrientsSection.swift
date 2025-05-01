@@ -71,7 +71,7 @@ struct DashboardNutrientsSection: View {
                 Spacer(minLength: 0)
             }
             HStack {
-                Text("\(amount.formatted(maxDigits: 0))\(unit)")
+                Text("\(amount.formatted(maxDigits: 1))\(unit)")
                     .contentTransition(.numericText())
                     .font(.title3)
                     .fontWeight(.semibold)
