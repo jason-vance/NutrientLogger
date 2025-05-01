@@ -1,5 +1,5 @@
 //
-//  DashboardNutrientSection.swift
+//  DashboardNutrientSections.swift
 //  Nutrient Logger
 //
 //  Created by Jason Vance on 4/8/25.
@@ -13,7 +13,7 @@ import SwiftUI
 //      highlighted carbs, protein, fat
 //      footnote, water, ash, alcohol (if present)
 //      Is a navigationLink to ProximatesView that has all of the data
-struct DashboardNutrientSection: View {
+struct DashboardNutrientSections: View {
     
     private let foods: [FoodItem]
     private let aggregator: NutrientDataAggregator
@@ -44,7 +44,7 @@ struct DashboardNutrientSection: View {
     let food = try! RemoteDatabaseForScreenshots().getFood("asdf")!
     
     List {
-        DashboardNutrientSection(foods: [food])
+        DashboardNutrientSections(foods: [food])
     }
     .listDefaultModifiers()
 }
