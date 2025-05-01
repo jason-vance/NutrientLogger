@@ -57,34 +57,47 @@ struct DashboardNutrientsSection: View {
     
     @ViewBuilder private func NutrientCell(_ nutrientId: String) -> some View {
         let nutrients = aggregator.nutrientsByNutrientNumber[nutrientId]
-        let name = FdcNutrientGroupMapper.nutrientDisplayNames[nutrientId] ?? nutrients?.first?.nutrient.name ?? nutrientId
+        let nutrient = nutrients?.first?.nutrient
+        let name = FdcNutrientGroupMapper.nutrientDisplayNames[nutrientId] ?? nutrient?.name ?? nutrientId
         let amount = nutrients?.reduce(into: 0.0, { $0 += $1.nutrient.amount }) ?? 0
         let unit = nutrients?.first?.nutrient.unitName ?? ""
         let rdi = rdiLibrary.getRdis(nutrientId)?.getRdi(user)
         
-        VStack {
-            HStack {
-                Text(name)
-                    .font(.subheadline)
-                    .fontWeight(.light)
-                    .multilineTextAlignment(.leading)
+        NavigationLink {
+            if let nutrient {
+                ConsumedNutrientDetailsView(
+                    nutrient: nutrient,
+                    nutrientFoodPairs: nutrients ?? []
+                )
+            } else {
+                Text("Somehow `nutrient` is nil for \(nutrientId)")
+            }
+        } label: {
+            VStack {
+                HStack {
+                    Text(name)
+                        .font(.subheadline)
+                        .fontWeight(.light)
+                        .multilineTextAlignment(.leading)
+                    Spacer(minLength: 0)
+                }
+                HStack {
+                    Text("\(amount.formatted(maxDigits: 1))\(unit)")
+                        .contentTransition(.numericText())
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .fontDesign(.rounded)
+                    Spacer(minLength: 0)
+                }
                 Spacer(minLength: 0)
             }
-            HStack {
-                Text("\(amount.formatted(maxDigits: 1))\(unit)")
-                    .contentTransition(.numericText())
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .fontDesign(.rounded)
-                Spacer(minLength: 0)
+            .foregroundStyle(Color.text)
+            .background(alignment: .trailing) {
+                AmountCircle(amount, rdi: rdi)
             }
-            Spacer(minLength: 0)
+            .padding()
+            .inCard(backgroundColor: Color.gray)
         }
-        .background(alignment: .trailing) {
-            AmountCircle(amount, rdi: rdi)
-        }
-        .padding()
-        .inCard(backgroundColor: Color.gray)
     }
     
     @ViewBuilder private func AmountCircle(_ amount: Double, rdi: LifeStageNutrientRdi?) -> some View {
@@ -146,19 +159,21 @@ struct DashboardNutrientsSection: View {
 
     let sampleFoods = FoodItem.sampleFoods
     
-    ScrollView {
-        VStack {
-            DashboardNutrientsSection(
-                blacklist: [],
-                orderedWhitelist: [
-                    FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca,
-                    FdcNutrientGroupMapper.NutrientNumber_Iron_Fe
-                ],
-                groupKey: FdcNutrientGroupMapper.GroupNumber_Minerals,
-                headerText: "Testing",
-                aggregator: NutrientDataAggregator(sampleFoods)
-            )
+    NavigationStack {
+        ScrollView {
+            VStack {
+                DashboardNutrientsSection(
+                    blacklist: [],
+                    orderedWhitelist: [
+                        FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca,
+                        FdcNutrientGroupMapper.NutrientNumber_Iron_Fe
+                    ],
+                    groupKey: FdcNutrientGroupMapper.GroupNumber_Minerals,
+                    headerText: "Testing",
+                    aggregator: NutrientDataAggregator(sampleFoods)
+                )
+            }
+            .padding(.horizontal)
         }
-        .padding(.horizontal)
     }
 }
