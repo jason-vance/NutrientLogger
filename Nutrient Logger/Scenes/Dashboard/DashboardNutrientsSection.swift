@@ -84,7 +84,7 @@ struct DashboardNutrientsSection: View {
             AmountCircle(amount, rdi: rdi)
         }
         .padding()
-        .inCard(backgroundColor: colorPalette.accent)
+        .inCard(backgroundColor: Color.gray)
     }
     
     @ViewBuilder private func AmountCircle(_ amount: Double, rdi: LifeStageNutrientRdi?) -> some View {

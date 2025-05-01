@@ -125,7 +125,7 @@ struct DashboardMacrosSection: View {
         VStack(spacing: .spacingDefault) {
             CaloriesCard()
                 .padding()
-                .inCard(backgroundColor: colorPalette.accent)
+                .inCard(backgroundColor: Color.gray)
             CarbsFatProtein()
             Water()
             OtherStuff()
@@ -260,7 +260,7 @@ struct DashboardMacrosSection: View {
             .fontDesign(.rounded)
         }
         .padding()
-        .inCard(backgroundColor: colorPalette.accent)
+        .inCard(backgroundColor: Color.gray)
     }
     
     @ViewBuilder private func MacroIcon(name: String) -> some View {
@@ -332,7 +332,7 @@ struct DashboardMacrosSection: View {
                     .contentTransition(.numericText())
             }
             .padding()
-            .inCard(backgroundColor: colorPalette.accent)
+            .inCard(backgroundColor: Color.gray)
         }
     }
     
@@ -362,7 +362,7 @@ struct DashboardMacrosSection: View {
                 .contentTransition(.numericText())
         }
         .padding()
-        .inCard(backgroundColor: colorPalette.accent)
+        .inCard(backgroundColor: Color.gray)
     }
 }
 
