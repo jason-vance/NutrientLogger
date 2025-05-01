@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-//TODO: RELEASE: Make specific Vitamins and minerals sections
 //TODO: RELEASE: Consolidate sections, make this more screenshotable
 //  Like, a proximates section that has
 //      prominent calories
@@ -32,6 +31,7 @@ struct DashboardNutrientSection: View {
         VStack(spacing: 2 * .spacingDefault) {
             DashboardMacrosSection(aggregator: aggregator)
             DashboardVitaminsSection(aggregator: aggregator)
+            DashboardMineralsSection(aggregator: aggregator)
             HStack {
                 Text("My Nutrients")
                     .listSectionHeader()

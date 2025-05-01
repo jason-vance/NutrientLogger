@@ -1,5 +1,5 @@
 //
-//  DashboardVitaminsSection.swift
+//  DashboardMineralsSection.swift
 //  Nutrient Logger
 //
 //  Created by Jason Vance on 4/30/25.
@@ -7,100 +7,52 @@
 
 import SwiftUI
 
-//TODO: Navigate to NutrientDetailView with all of the sub-nutrients and foods containing those nutrients
-//  IE. Vitamin A screen has all Vitamin A's, Retinol, beta carotene, etc
-struct DashboardVitaminsSection: View {
-    
-    static let blacklist: Set<String> = [
-        FdcNutrientGroupMapper.NutrientNumber_Choline_Free,
-        FdcNutrientGroupMapper.NutrientNumber_Choline_FromPhosphocholine,
-        FdcNutrientGroupMapper.NutrientNumber_Choline_FromPhosphotidylCholine,
-        FdcNutrientGroupMapper.NutrientNumber_Choline_FromGlycerophosphocholine,
-        FdcNutrientGroupMapper.NutrientNumber_Choline_FromSphingomyelin,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminA_IU,
-        FdcNutrientGroupMapper.NutrientNumber_Retinol,
-        FdcNutrientGroupMapper.NutrientNumber_Cis_Carotene_Beta,
-        FdcNutrientGroupMapper.NutrientNumber_Trans_Carotene_Beta,
-        FdcNutrientGroupMapper.NutrientNumber_Cryptoxanthin_Beta,
-        FdcNutrientGroupMapper.NutrientNumber_Cryptoxanthin_Alpha,
-        FdcNutrientGroupMapper.NutrientNumber_Cis_Lycopene,
-        FdcNutrientGroupMapper.NutrientNumber_Trans_Lycopene,
-        FdcNutrientGroupMapper.NutrientNumber_Lutein,
-        FdcNutrientGroupMapper.NutrientNumber_Zeaxanthin,
-        FdcNutrientGroupMapper.NutrientNumber_Cis_Lutein_Zeaxanthin,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminE_Added,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminE_LabelEntryPrimarily,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminE,
-        FdcNutrientGroupMapper.NutrientNumber_Tocopherol_Beta,
-        FdcNutrientGroupMapper.NutrientNumber_Tocopherol_Gamma,
-        FdcNutrientGroupMapper.NutrientNumber_Tocopherol_Delta,
-        FdcNutrientGroupMapper.NutrientNumber_Tocotrienol_Alpha,
-        FdcNutrientGroupMapper.NutrientNumber_Tocotrienol_Beta,
-        FdcNutrientGroupMapper.NutrientNumber_Tocotrienol_Gamma,
-        FdcNutrientGroupMapper.NutrientNumber_Tocotrienol_Delta,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminK_Menaquinone_4,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminK_Dihydrophylloquinone,
-        FdcNutrientGroupMapper.NutrientNumber_FolicAcid,
-        FdcNutrientGroupMapper.NutrientNumber_FormylFolicAcid,
-        FdcNutrientGroupMapper.NutrientNumber_FormylTetrahyrdofolicAcid,
-        FdcNutrientGroupMapper.NutrientNumber_Folate_Total,
-        FdcNutrientGroupMapper.NutrientNumber_Folate_Food,
-        FdcNutrientGroupMapper.NutrientNumber_MethylTetrahydrofolate,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminD_D2_Plus_D3_IU,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminD_D2,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminD3_Cholecalciferol,
-        FdcNutrientGroupMapper.NutrientNumber_Hydroxycholecalciferol,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminB12_Added
-    ]
+//TODO: Navigate to NutrientDetailView with all of the foods containing this nutrient
+struct DashboardMineralsSection: View {
     
     static let orderedWhitelist: [String] = [
-        FdcNutrientGroupMapper.NutrientNumber_VitaminA_RAE,
-        FdcNutrientGroupMapper.NutrientNumber_Thiamin,
-        FdcNutrientGroupMapper.NutrientNumber_Riboflavin,
-        FdcNutrientGroupMapper.NutrientNumber_Niacin,
-        FdcNutrientGroupMapper.NutrientNumber_PantothenicAcid,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminB6,
-        FdcNutrientGroupMapper.NutrientNumber_Folate_DFE,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminB12,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminC_TotalAscorbicAcid,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminD_D2_Plus_D3,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminE_Alpha_Tocopherol,
-        FdcNutrientGroupMapper.NutrientNumber_VitaminK_Phylloquinone,
-        FdcNutrientGroupMapper.NutrientNumber_Choline_Total,
-        FdcNutrientGroupMapper.NutrientNumber_Betaine,
-        FdcNutrientGroupMapper.NutrientNumber_Carotene_Alpha,
-        FdcNutrientGroupMapper.NutrientNumber_Carotene_Beta,
-        FdcNutrientGroupMapper.NutrientNumber_Caffeine,
-        FdcNutrientGroupMapper.NutrientNumber_Lycopene,
-        FdcNutrientGroupMapper.NutrientNumber_Lutein_Zeaxanthin,
-        FdcNutrientGroupMapper.NutrientNumber_Theobromine,
-//        FdcNutrientGroupMapper.NutrientNumber_Biotin, // Nothing in the database has this in it
-//        FdcNutrientGroupMapper.NutrientNumber_Phytoene, // Nothing in the database has this in it
-//        FdcNutrientGroupMapper.NutrientNumber_Phytofluene, // Nothing in the database has this in it
-//        FdcNutrientGroupMapper.NutrientNumber_Epigallocatechin3Gallate // Nothing in the database has this in it
+        FdcNutrientGroupMapper.NutrientNumber_Boron_B,
+        FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca,
+        FdcNutrientGroupMapper.NutrientNumber_Chromium_Cr,
+        FdcNutrientGroupMapper.NutrientNumber_Copper_Cu,
+        FdcNutrientGroupMapper.NutrientNumber_Fluoride_F,
+        FdcNutrientGroupMapper.NutrientNumber_Iodine_I,
+        FdcNutrientGroupMapper.NutrientNumber_Iron_Fe,
+        FdcNutrientGroupMapper.NutrientNumber_Magnesium_Mg,
+        FdcNutrientGroupMapper.NutrientNumber_Manganese_Mn,
+        FdcNutrientGroupMapper.NutrientNumber_Molybdenum_Mo,
+        FdcNutrientGroupMapper.NutrientNumber_Phosphorus_P,
+        FdcNutrientGroupMapper.NutrientNumber_Potassium_K,
+        FdcNutrientGroupMapper.NutrientNumber_Selenium_Se,
+        FdcNutrientGroupMapper.NutrientNumber_Sodium_Na,
+        FdcNutrientGroupMapper.NutrientNumber_Zinc_Zn,
+        FdcNutrientGroupMapper.NutrientNumber_Chlorine_Cl,
+        FdcNutrientGroupMapper.NutrientNumber_Cobalt_Co,
+        FdcNutrientGroupMapper.NutrientNumber_Nickel_Ni,
+        FdcNutrientGroupMapper.NutrientNumber_Sulfur_S,
     ]
     
     @Inject private var rdiLibrary: NutrientRdiLibrary
     @Inject private var userService: UserService
 
-    let vitaminsKey = FdcNutrientGroupMapper.GroupNumber_VitaminsAndOtherComponents
+    let mineralsKey = FdcNutrientGroupMapper.GroupNumber_Minerals
     
     let aggregator: NutrientDataAggregator
     
     private var otherNutrientIds: [String] {
         guard let group = aggregator.nutrientGroups
-            .first(where: { $0.fdcNumber == vitaminsKey })
+            .first(where: { $0.fdcNumber == mineralsKey })
         else {
             return []
         }
         
         return Set(group.nutrients.map(\.fdcNumber))
-            .filter { !Self.orderedWhitelist.contains($0) && !Self.blacklist.contains($0) }
+            .filter { !Self.orderedWhitelist.contains($0) }
             .sorted()
     }
     
     private var colorPalette: ColorPalette {
-        ColorPaletteService.getColorPaletteFor(number: vitaminsKey)
+        ColorPaletteService.getColorPaletteFor(number: mineralsKey)
     }
     
     private var user: User { userService.currentUser }
@@ -108,7 +60,7 @@ struct DashboardVitaminsSection: View {
     var body: some View {
         VStack(spacing: .spacingDefault) {
             HStack {
-                Text("Vitamins")
+                Text("Minerals")
                     .listSectionHeader()
                 Spacer()
             }
@@ -216,7 +168,7 @@ struct DashboardVitaminsSection: View {
     
     ScrollView {
         VStack {
-            DashboardVitaminsSection(
+            DashboardMineralsSection(
                 aggregator: NutrientDataAggregator(sampleFoods)
             )
         }

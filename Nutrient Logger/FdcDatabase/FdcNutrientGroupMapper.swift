@@ -282,6 +282,26 @@ class FdcNutrientGroupMapper {
         FdcNutrientGroupMapper.NutrientNumber_Lutein_Zeaxanthin: "Lutein & Zeaxanthin",
         FdcNutrientGroupMapper.NutrientNumber_Caffeine: "Caffeine",
         FdcNutrientGroupMapper.NutrientNumber_Theobromine: "Theobromine",
+        
+        FdcNutrientGroupMapper.NutrientNumber_Boron_B: "Boron",
+        FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca: "Calcium",
+        FdcNutrientGroupMapper.NutrientNumber_Chlorine_Cl: "Chlorine",
+        FdcNutrientGroupMapper.NutrientNumber_Chromium_Cr: "Chromium",
+        FdcNutrientGroupMapper.NutrientNumber_Cobalt_Co: "Cobalt",
+        FdcNutrientGroupMapper.NutrientNumber_Copper_Cu: "Copper",
+        FdcNutrientGroupMapper.NutrientNumber_Fluoride_F: "Fluoride",
+        FdcNutrientGroupMapper.NutrientNumber_Iodine_I: "Iodine",
+        FdcNutrientGroupMapper.NutrientNumber_Iron_Fe: "Iron",
+        FdcNutrientGroupMapper.NutrientNumber_Magnesium_Mg: "Magnesium",
+        FdcNutrientGroupMapper.NutrientNumber_Manganese_Mn: "Manganese",
+        FdcNutrientGroupMapper.NutrientNumber_Molybdenum_Mo: "Molybdenum",
+        FdcNutrientGroupMapper.NutrientNumber_Nickel_Ni: "Nickel",
+        FdcNutrientGroupMapper.NutrientNumber_Phosphorus_P: "Phosphorus",
+        FdcNutrientGroupMapper.NutrientNumber_Potassium_K: "Potassium",
+        FdcNutrientGroupMapper.NutrientNumber_Selenium_Se: "Selenium",
+        FdcNutrientGroupMapper.NutrientNumber_Sodium_Na: "Sodium",
+        FdcNutrientGroupMapper.NutrientNumber_Sulfur_S: "Sulfur",
+        FdcNutrientGroupMapper.NutrientNumber_Zinc_Zn: "Zinc",
     ]
     
     public static let NutrientNameOverrides:  [String:String] = [
