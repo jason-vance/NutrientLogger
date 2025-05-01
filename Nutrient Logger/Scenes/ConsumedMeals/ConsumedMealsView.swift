@@ -75,7 +75,7 @@ struct ConsumedMealsView: View {
     }
 }
 
-//TODO: RELEASE: Speed up the rendering here
+//TODO: RELEASE: Apply portion to foodItem
 struct ConsumedMealFoodRow: View {
     
     static let calsKey = FdcNutrientGroupMapper.NutrientNumber_Energy_KCal
@@ -89,20 +89,22 @@ struct ConsumedMealFoodRow: View {
     
     @Inject private var remoteDatabase: RemoteDatabase
     
-    private var caloriesString: String {
-        guard let aggregator else { return "" }
+    private var caloriesString: String? {
+        guard let aggregator else { return nil }
         
         let calsAmount = aggregator.nutrientsByNutrientNumber[Self.calsKey]?
             .reduce(into: 0.0, { $0 += $1.nutrient.amount }) ?? 0
         return "\(calsAmount.formatted(maxDigits: 0)) cals"
     }
     
-    private var portionString: String {
-        "\(consumedFood.portionAmount.formatted(maxDigits: 2)) \(consumedFood.portionName)"
+    private var portionString: String? {
+        guard foodItem != nil else { return nil }
+        return "\(consumedFood.portionAmount.formatted(maxDigits: 2)) \(consumedFood.portionName)"
     }
     
-    private var weightString: String {
-        "\((consumedFood.portionAmount * consumedFood.portionGramWeight).formatted(maxDigits: 0))g"
+    private var weightString: String? {
+        guard foodItem != nil else { return nil }
+        return "\((consumedFood.portionAmount * consumedFood.portionGramWeight).formatted(maxDigits: 0))g"
     }
     
     func fetchFoodItem() async {
@@ -143,15 +145,9 @@ struct ConsumedMealFoodRow: View {
     
     @ViewBuilder private func QuickStats() -> some View {
         HStack(spacing: 4) {
-            if foodItem != nil {
-                QuickStat(icon: "flame.fill", iconColor: .orange, text: caloriesString)
-                QuickStat(icon: "fork.knife", iconColor: .teal, text: portionString)
-                QuickStat(icon: "scalemass.fill", iconColor: .purple, text: weightString)
-            } else {
-                QuickStat(icon: "square.fill", iconColor: .gray, text: nil)
-                QuickStat(icon: "square.fill", iconColor: .gray, text: nil)
-                QuickStat(icon: "square.fill", iconColor: .gray, text: nil)
-            }
+            QuickStat(icon: "flame.fill", iconColor: .orange, text: caloriesString)
+            QuickStat(icon: "fork.knife", iconColor: .teal, text: portionString)
+            QuickStat(icon: "scalemass.fill", iconColor: .purple, text: weightString)
             Spacer()
         }
     }
@@ -160,7 +156,7 @@ struct ConsumedMealFoodRow: View {
         HStack(spacing: 4) {
             Image(systemName: icon)
                 .foregroundStyle(iconColor)
-            Text(text ?? "------")
+            Text(text ?? "xxxxxx")
                 .lineLimit(1)
                 .contentTransition(.numericText())
                 .redacted(reason: text == nil ? [.placeholder] : [])
@@ -186,21 +182,21 @@ struct ConsumedMealFoodRow: View {
                 amount: carbs,
                 calorieFactor: 4,
                 totalMacroCals: totalMacroCals,
-                color: .indigo
+                color: foodItem == nil ? .gray : .indigo
             )
             Macro(
                 name: "Fat",
                 amount: fat,
                 calorieFactor: 9,
                 totalMacroCals: totalMacroCals,
-                color: .red
+                color: foodItem == nil ? .gray : .red
             )
             Macro(
                 name: "Protein",
                 amount: protein,
                 calorieFactor: 4,
                 totalMacroCals: totalMacroCals,
-                color: .green
+                color: foodItem == nil ? .gray : .green
             )
         }
     }
