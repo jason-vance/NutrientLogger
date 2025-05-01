@@ -43,6 +43,14 @@ enum DashboardMealList {
     }
 }
 
+extension DashboardMealList.Meal {
+    static let sample: DashboardMealList.Meal = {
+        let meal = DashboardMealList.Meal()
+        meal.append(.dashboardSample)
+        return meal
+    }()
+}
+
 extension DashboardMealList.Meal: Comparable {
     static func == (lhs: DashboardMealList.Meal, rhs: DashboardMealList.Meal) -> Bool {
         lhs.mealTime == rhs.mealTime

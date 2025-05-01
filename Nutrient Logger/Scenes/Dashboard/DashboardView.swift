@@ -170,7 +170,6 @@ struct DashboardView: View {
         }
     }
     
-    //TODO: RELEASE: Make a cool meal row that navigates to ConsumedMealView (or something like that)
     @ViewBuilder private func WhatIAteSection() -> some View {
         if !todaysConsumedFoods.isEmpty {
             let meals = DashboardMealList.from(todaysConsumedFoods)
@@ -178,22 +177,14 @@ struct DashboardView: View {
             
             VStack {
                 HStack {
-                    Text("What I Ate Today")
+                    Text("Meals")
                         .listSectionHeader()
                     Spacer()
                 }
                 .padding(.top)
                 LazyVStack {
                     ForEach(meals) { meal in
-                        HStack {
-                            Text(meal.name)
-                                .listSubsectionHeader()
-                            Spacer()
-                        }
-                        .padding(.top, 4)
-                        ForEach(meal.foods) { food in
-                            DashboardFoodRow(food: food)
-                        }
+                        DashboardMealRow(meal: meal)
                     }
                 }
             }
