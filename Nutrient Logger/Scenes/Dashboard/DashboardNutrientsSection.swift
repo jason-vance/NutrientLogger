@@ -14,6 +14,7 @@ struct DashboardNutrientsSection: View {
     
     @Inject private var rdiLibrary: NutrientRdiLibrary
     @Inject private var userService: UserService
+    @Inject private var remoteDatabase: RemoteDatabase
 
     let groupKey: String
     let headerText: String
@@ -58,20 +59,18 @@ struct DashboardNutrientsSection: View {
     @ViewBuilder private func NutrientCell(_ nutrientId: String) -> some View {
         let nutrients = aggregator.nutrientsByNutrientNumber[nutrientId] ?? []
         let nutrient = nutrients.first?.nutrient
-        let name = FdcNutrientGroupMapper.nutrientDisplayNames[nutrientId] ?? nutrient?.name ?? nutrientId
+            ?? remoteDatabase.getNutrient(withId: nutrientId)
+            ?? Nutrient(fdcNumber: nutrientId, name: "Unknown Nutrient", unitName: "")
+        let name = FdcNutrientGroupMapper.nutrientDisplayNames[nutrientId] ?? nutrient.name
         let amount = nutrients.reduce(into: 0.0, { $0 += $1.nutrient.amount })
-        let unit = nutrient?.unitName ?? ""
+        let unit = nutrient.unitName
         let rdi = rdiLibrary.getRdis(nutrientId)?.getRdi(user)
         
         NavigationLink {
-            if let nutrient {
-                ConsumedNutrientDetailsView(
-                    nutrient: nutrient,
-                    nutrientFoodPairs: nutrients
-                )
-            } else {
-                Text("Somehow `nutrient` is nil for \(nutrientId)")
-            }
+            ConsumedNutrientDetailsView(
+                nutrient: nutrient,
+                nutrientFoodPairs: nutrients
+            )
         } label: {
             VStack {
                 HStack {
@@ -156,6 +155,7 @@ struct DashboardNutrientsSection: View {
 #Preview {
     let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) {UsdaNutrientRdiLibrary.create()}
     let _ = swinjectContainer.autoregister(UserService.self) {MockUserService(currentUser: .sample)}
+    let _ = swinjectContainer.autoregister(RemoteDatabase.self) {RemoteDatabaseForScreenshots()}
 
     let sampleFoods = FoodItem.sampleFoods
     

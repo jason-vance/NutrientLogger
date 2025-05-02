@@ -38,6 +38,10 @@ class MockRemoteDatabase: RemoteDatabase {
         return portions_for_getPortions
     }
     
+    func getNutrient(withId: String) -> Nutrient? {
+        nil
+    }
+    
     public func getAllNutrients() throws -> [Nutrient] {
         if let error = errorToThrow {
             throw error

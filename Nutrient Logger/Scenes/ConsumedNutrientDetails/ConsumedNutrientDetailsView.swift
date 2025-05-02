@@ -49,7 +49,8 @@ struct ConsumedNutrientDetailsView: View {
     }
     
     private var unitName: String {
-        nutrientFoodPairs[0].nutrient.unitName
+        guard !nutrientFoodPairs.isEmpty else { return nutrient.unitName }
+        return nutrientFoodPairs[0].nutrient.unitName
     }
     
     private var amount: String {
@@ -214,19 +215,21 @@ struct ConsumedNutrientDetailsView: View {
     }
     
     @ViewBuilder private func FoodsSection() -> some View {
-        Section {
-            ForEach(mealFoods) { mealFoods in
-                Text(mealFoods.mealTime.rawValue)
-                    .listSubsectionHeader()
-                ForEach(mealFoods.foods.indices) { foodIndex in
-                    ConsumedNutrientDetailsFoodRow(
-                        nutrientNumber: nutrient.fdcNumber,
-                        food: mealFoods.foods[foodIndex]
-                    )
+        if !mealFoods.isEmpty {
+            Section {
+                ForEach(mealFoods) { mealFoods in
+                    Text(mealFoods.mealTime.rawValue)
+                        .listSubsectionHeader()
+                    ForEach(mealFoods.foods.indices) { foodIndex in
+                        ConsumedNutrientDetailsFoodRow(
+                            nutrientNumber: nutrient.fdcNumber,
+                            food: mealFoods.foods[foodIndex]
+                        )
+                    }
                 }
+            } header: {
+                Text("Contributing Foods")
             }
-        } header: {
-            Text("Contributing Foods")
         }
     }
 }

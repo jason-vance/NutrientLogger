@@ -177,6 +177,11 @@ class BundledFdcDatabase: RemoteDatabase {
 
         return foods
     }
+    
+    func getNutrient(withId nutrientId: String) -> Nutrient? {
+        guard let fdcNutrient = try? supportingData.getNutrient(nutrientId) else { return nil }
+        return FdcNutrientGroupMapper.makeNutrient(fdcNutrient)
+    }
 
     public func getAllNutrientsLinkedToFoods() throws -> [Nutrient] {
         let legacyCounts = try legacyData.countFoodsContainingNutrients()

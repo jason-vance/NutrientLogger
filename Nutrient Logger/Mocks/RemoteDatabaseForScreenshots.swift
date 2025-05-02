@@ -96,6 +96,10 @@ class RemoteDatabaseForScreenshots: RemoteDatabase {
         return portions
     }
     
+    func getNutrient(withId: String) -> Nutrient? {
+        Nutrient(fdcNumber: "1234", name: "Vitamin A", unitName: "mg")
+    }
+    
     public func getAllNutrients() throws -> [Nutrient] {
         return []
     }
