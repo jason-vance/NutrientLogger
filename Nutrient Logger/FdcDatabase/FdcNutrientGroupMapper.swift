@@ -261,7 +261,11 @@ class FdcNutrientGroupMapper {
     public static let NutrientNumber_Nickel_Ni = "371"
     
     
-    public static let nutrientDisplayNames:  [String:String] = [
+    public static let nutrientDisplayNames: [String:String] = [
+        FdcNutrientGroupMapper.NutrientNumber_Carbohydrate_ByDifference: "Carbohydrate",
+        FdcNutrientGroupMapper.NutrientNumber_Fiber_TotalDietary: "Fiber",
+        FdcNutrientGroupMapper.NutrientNumber_Sugars_TotalIncludingNLEA: "Sugars",
+
         FdcNutrientGroupMapper.NutrientNumber_18_3_N_3_C_C_C_ALA: "ALA",
         FdcNutrientGroupMapper.NutrientNumber_20_5_N_3_EPA: "EPA",
         FdcNutrientGroupMapper.NutrientNumber_22_6_N_3_DHA: "DHA",
@@ -309,7 +313,7 @@ class FdcNutrientGroupMapper {
         FdcNutrientGroupMapper.NutrientNumber_Zinc_Zn: "Zinc",
     ]
     
-    public static let NutrientNameOverrides:  [String:String] = [
+    public static let NutrientNameOverrides: [String:String] = [
         NutrientNumber_TotalLipid_Fat: "Total Fat",
         NutrientNumber_FattyAcids_TotalSaturated: "Saturated Fat",
         NutrientNumber_FattyAcids_TotalMonounsaturated: "Monounsaturated Fat",

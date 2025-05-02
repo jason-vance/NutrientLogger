@@ -126,6 +126,7 @@
 				Scenes/ConsumedNutrientDetails/Workers/HtmlDocumentLoader.swift,
 				Scenes/ConsumedNutrientDetails/Workers/NutrientExplanationLoader.swift,
 				Scenes/ConsumedNutrientDetails/Workers/NutrientNumberToPropsMap.swift,
+				Scenes/Dashboard/Domain/DashboardCarbsSection.swift,
 				Scenes/Dashboard/Domain/DashboardMealList.swift,
 				Scenes/Dashboard/Domain/NutrientDataAggregator.swift,
 				Scenes/FoodDetails/Workers/FoodSaver.swift,
