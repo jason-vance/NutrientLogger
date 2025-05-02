@@ -38,19 +38,25 @@ struct DashboardNutrientsSection: View {
     
     private var user: User { userService.currentUser }
     
+    private var hasAny: Bool {
+        !orderedWhitelist.isEmpty || !otherNutrientIds.isEmpty
+    }
+    
     var body: some View {
-        VStack(spacing: .spacingDefault) {
-            HStack {
-                Text(headerText)
-                    .listSectionHeader()
-                Spacer()
-            }
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(minimum: 100)), count: 2), spacing: .spacingDefault) {
-                ForEach(orderedWhitelist, id: \.self) { nutrientId in
-                    NutrientCell(nutrientId)
+        if hasAny {
+            VStack(spacing: .spacingDefault) {
+                HStack {
+                    Text(headerText)
+                        .listSectionHeader()
+                    Spacer()
                 }
-                ForEach(otherNutrientIds, id: \.self) { nutrientId in
-                    NutrientCell(nutrientId)
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(minimum: 100)), count: 2), spacing: .spacingDefault) {
+                    ForEach(orderedWhitelist, id: \.self) { nutrientId in
+                        NutrientCell(nutrientId)
+                    }
+                    ForEach(otherNutrientIds, id: \.self) { nutrientId in
+                        NutrientCell(nutrientId)
+                    }
                 }
             }
         }

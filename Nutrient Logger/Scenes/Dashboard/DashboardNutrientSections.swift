@@ -28,7 +28,7 @@ struct DashboardNutrientSections: View {
             DashboardMineralsSection(aggregator: aggregator)
             //TODO: RELEASE: Add DashboardCarbsSection
             DashboardLipidsSection(aggregator: aggregator)
-            //TODO: RELEASE: Add DashboardAminoAcidsSection
+            DashboardAminoAcidsSection(aggregator: aggregator)
         }
         .padding(.horizontal)
     }
