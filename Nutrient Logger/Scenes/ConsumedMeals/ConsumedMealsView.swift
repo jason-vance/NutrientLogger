@@ -75,7 +75,6 @@ struct ConsumedMealsView: View {
     }
 }
 
-//TODO: RELEASE: Apply portion to foodItem
 struct ConsumedMealFoodRow: View {
     
     static let calsKey = FdcNutrientGroupMapper.NutrientNumber_Energy_KCal

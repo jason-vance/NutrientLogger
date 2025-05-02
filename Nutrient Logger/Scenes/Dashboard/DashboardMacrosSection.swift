@@ -292,7 +292,7 @@ struct DashboardMacrosSection: View {
                 .fontDesign(.rounded)
             }
             .foregroundStyle(Color.text)
-            .padding()
+            .padding(.vertical)
             .inCard(backgroundColor: Color.gray)
         }
     }
