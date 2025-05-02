@@ -25,6 +25,8 @@ class BundledFdcDatabase: RemoteDatabase {
     private let legacyData: FdcSearchableFoodDatabase!
     private let surveyData: FdcSearchableFoodDatabase!
     private let supportingData: FdcSupportingDataDatabase!
+    
+    private var cache: [Int: FoodItem] = [:]
 
     public init() async throws {
         try await BundledFdcDatabase.transferDbFileIfNecessary(BundledFdcDatabase.legacyDbName)
@@ -50,20 +52,23 @@ class BundledFdcDatabase: RemoteDatabase {
     }
 
     public func getFood(_ foodId: String) throws -> FoodItem? {
-        guard let foodIdInt = Int(foodId)
-        else {
+        guard let foodIdInt = Int(foodId) else {
             return nil
         }
         
+        if let cached = cache[foodIdInt] {
+            return cached
+        }
+
         if let legacyFood = try legacyData.getFood(foodIdInt) {
-            return try makeFoodItem(legacyFood)
+            cache[foodIdInt] = try makeFoodItem(legacyFood)
         }
 
         if let surveyFood = try surveyData.getFood(foodIdInt) {
-            return try makeFoodItem(surveyFood)
+            cache[foodIdInt] = try makeFoodItem(surveyFood)
         }
 
-        return nil
+        return cache[foodIdInt]
     }
 
     private func makeFoodItem(_ food: FdcFood) throws -> FoodItem {
