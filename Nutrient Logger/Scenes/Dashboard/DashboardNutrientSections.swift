@@ -26,7 +26,9 @@ struct DashboardNutrientSections: View {
             DashboardMacrosSection(aggregator: aggregator)
             DashboardVitaminsSection(aggregator: aggregator)
             DashboardMineralsSection(aggregator: aggregator)
+            //TODO: RELEASE: Add DashboardCarbsSection
             DashboardLipidsSection(aggregator: aggregator)
+            //TODO: RELEASE: Add DashboardAminoAcidsSection
         }
         .padding(.horizontal)
     }

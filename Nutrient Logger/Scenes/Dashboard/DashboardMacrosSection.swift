@@ -118,7 +118,8 @@ struct DashboardMacrosSection: View {
     
     var body: some View {
         VStack(spacing: .spacingDefault) {
-            //TODO: RELEASE: Navigate to CaloriesDetailView from calories cell (Maybe this is where consumed foods are found)
+            //TODO: RELEASE: Navigate to CaloriesDetailView from calories cell
+            //  Maybe this is where consumed foods are found ConsumedMealsView (and change current ConsumedMealsView to ConsumeFoodsView)
             NavigationLink {
                 Text("CaloriesDetailView")
             } label: {
