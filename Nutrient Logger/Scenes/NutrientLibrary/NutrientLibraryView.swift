@@ -21,15 +21,22 @@ struct NutrientLibraryView: View {
     @State private var nutrients: [Nutrient] = []
     
     private var displayNutrients: [Nutrient] {
-        guard !searchText.isEmpty else {
-            return nutrients
-        }
-        
         let tokens = searchText.split(separator: " ")
         
         return nutrients
-            .filter { $0.name.lowercased().caseInsensitiveContainsAny(of: tokens) }
-            .sorted { $0.name < $1.name }
+            .filter {
+                searchText.isEmpty
+                || $0.name.lowercased().caseInsensitiveContainsAny(of: tokens)
+            }
+            .sorted {
+                if ($0.name.first?.isLetter ?? false) && ($1.name.first?.isNumber ?? false) {
+                    return true
+                } else if ($0.name.first?.isNumber ?? false) && ($1.name.first?.isLetter ?? false) {
+                    return false
+                } else {
+                    return $0.name < $1.name
+                }
+            }
     }
     
     private func fetchNutrients() async {
