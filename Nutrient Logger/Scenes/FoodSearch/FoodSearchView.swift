@@ -206,7 +206,7 @@ struct FoodSearchView: View {
                 searchResults.append(contentsOf: fetchRecentSearches())
             }
             if searchFunction.shouldIncludeRecentlyLoggedFoods {
-                searchResults.append(contentsOf: fetchRecentlyLoggedFoods())
+                searchResults.append(contentsOf: searchRecentlyLoggedFoods())
             }
         }
     }
@@ -218,7 +218,7 @@ struct FoodSearchView: View {
             .map { SearchResult.recentSearch($0.query) }
     }
     
-    private func fetchRecentlyLoggedFoods() -> [SearchResult] {
+    private func fetchRecentlyLoggedFoods() -> [ConsumedFood] {
         do {
             var descriptor = FetchDescriptor<ConsumedFood>(
                 sortBy: [ .init(\.created, order: .reverse) ]
@@ -232,8 +232,6 @@ struct FoodSearchView: View {
                     }
                 }
                 .map { $0.value }
-                .sorted { $0.created > $1.created }
-                .map(SearchResult.recentlyLoggedFood)
         } catch {
             print("Failed to fetch recently logged foods: \(error.localizedDescription)")
         }
@@ -250,6 +248,9 @@ struct FoodSearchView: View {
         isLoading = true
         Task {
             searchResults = await withTaskGroup(of: Array<SearchResult>.self) { group in
+                if searchFunction.shouldIncludeRecentlyLoggedFoods {
+                    group.addTask { await self.searchRecentlyLoggedFoods(searchText) }
+                }
                 if searchFunction.shouldIncludeFdcFoods {
                     group.addTask { await self.searchForRemoteFoods(searchText) }
                 }
@@ -266,7 +267,7 @@ struct FoodSearchView: View {
                 }
                 return results
             }
-            
+
             if !searchResults.isEmpty {
                 if let previous = recentSearches.first(where: { $0.query.lowercased() == searchText.lowercased() }) {
                     previous.query = searchText
@@ -311,6 +312,16 @@ struct FoodSearchView: View {
             .filter { $0.matchesAny(of: tokens) }
             .map { UserMealsSearchableMeal(meal: $0) }
             .map { SearchResult.userMeal($0) }
+    }
+    
+    private func searchRecentlyLoggedFoods(_ query: String? = nil) -> [SearchResult] {
+        let recentlyLogged = fetchRecentlyLoggedFoods()
+        let tokens = query?.split(separator: " ") ?? []
+        
+        return recentlyLogged
+            .filter { tokens.isEmpty || $0.name.caseInsensitiveContainsAny(of: tokens) }
+            .sorted { $0.created > $1.created }
+            .map(SearchResult.recentlyLoggedFood)
     }
     
     private func promptForReview() {
