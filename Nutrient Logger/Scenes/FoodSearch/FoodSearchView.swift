@@ -17,8 +17,8 @@ struct FoodSearchView: View {
         
         var shouldIncludeRecentSearches: Bool {
             switch self {
-            case .defaultSearchFunction: return true
-            case .addFoodToMeal: return true
+            case .defaultSearchFunction: return false
+            case .addFoodToMeal: return false
             }
         }
         
