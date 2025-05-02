@@ -47,8 +47,9 @@ class UsdaNutrientRdiLibrary: NutrientRdiLibrary {
         rdis.append(VitaminE_RDIs())
         rdis.append(VitaminK_RDIs())
         rdis.append(Zinc_RDIs())
+        rdis.append(Water_RDIs())
 
-        if (rdis.count != 30) {
+        if (rdis.count != 31) {
             fatalError("The RDIs are not all here")
         }
         

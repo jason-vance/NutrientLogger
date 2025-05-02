@@ -11,7 +11,7 @@ class NutrientDataAggregator {
     public var nutrientGroups = [NutrientGroup]()
     public var nutrientsByNutrientNumber = [String:[NutrientFoodPair]]()
 
-    private let foods: [FoodItem]
+    let foods: [FoodItem]
 
     public init(_ foods: [FoodItem]) {
         self.foods = foods
@@ -83,5 +83,14 @@ class NutrientDataAggregator {
             toUnit = WeightUnit.unitFrom(nutrient)
         }
         return toUnit
+    }
+    
+    var waterCups: Double {
+        if let waters = nutrientsByNutrientNumber[FdcNutrientGroupMapper.NutrientNumber_Water] {
+            let waterGrams = waters.reduce(0.0) { $0 + $1.nutrient.amount }
+            let gramsPerCup: Double = 237
+            return waterGrams / gramsPerCup
+        }
+        return 0
     }
 }

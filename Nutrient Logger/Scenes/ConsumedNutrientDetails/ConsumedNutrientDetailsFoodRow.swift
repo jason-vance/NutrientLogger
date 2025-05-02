@@ -21,12 +21,8 @@ struct ConsumedNutrientDetailsFoodRow: View {
     var body: some View {
         RowContent()
             .padding(.horizontal)
-            .padding(.vertical, 10)
-            .background {
-                RoundedRectangle(cornerRadius: .cornerRadiusListRow, style: .continuous)
-                    .fill(.shadow(.drop(radius: .shadowRadiusDefault)))
-                    .fill(Color.background.gradient)
-            }
+            .padding(.vertical, 8)
+            .inCard(backgroundColor: Color.gray)
         .listRowDefaultModifiers()
     }
     

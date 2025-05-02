@@ -165,7 +165,7 @@ struct DashboardView: View {
     
     @ViewBuilder private func MyNutrientsSection() -> some View {
         if !foodItems.isEmpty {
-            DashboardNutrientSections(foods: foodItems)
+            DashboardNutrientSections(date: date, foods: foodItems)
         }
     }
     

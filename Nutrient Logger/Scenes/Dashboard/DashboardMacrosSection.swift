@@ -16,6 +16,7 @@ struct DashboardMacrosSection: View {
     let waterKey = FdcNutrientGroupMapper.NutrientNumber_Water
     let kjKey = FdcNutrientGroupMapper.NutrientNumber_Energy_Kj
 
+    let date: SimpleDate
     let aggregator: NutrientDataAggregator
     
     private var calories: Double {
@@ -78,13 +79,6 @@ struct DashboardMacrosSection: View {
         return (4 * carbs) + (9 * fat) + (4 * protein)
     }
     
-    private var waterGrams: Double? {
-        if let waters = aggregator.nutrientsByNutrientNumber[waterKey] {
-            return waters.reduce(0.0) { $0 + $1.nutrient.amount }
-        }
-        return nil
-    }
-    
     private var otherNutrientIds: [String] {
         let proximatesNum = FdcNutrientGroupMapper.GroupNumber_Proximates
         
@@ -118,16 +112,7 @@ struct DashboardMacrosSection: View {
     
     var body: some View {
         VStack(spacing: .spacingDefault) {
-            //TODO: RELEASE: Navigate to CaloriesDetailView from calories cell
-            //  Maybe this is where consumed foods are found ConsumedMealsView (and change current ConsumedMealsView to ConsumeFoodsView)
-            NavigationLink {
-                Text("CaloriesDetailView")
-            } label: {
-                CaloriesCard()
-                    .foregroundStyle(Color.text)
-                    .padding()
-                    .inCard(backgroundColor: Color.gray)
-            }
+            CaloriesCard()
             CarbsFatProtein()
             Water()
             OtherStuff()
@@ -137,77 +122,85 @@ struct DashboardMacrosSection: View {
     @ViewBuilder private func CaloriesCard() -> some View {
         let lineWidthPts: CGFloat = 32
         
-        HStack {
-            Spacer()
-            GeometryReader { geometry in
-                ZStack {
-                    if totalMacroCals > 0 {
-                        let carbCals = carbs * 4
-                        let fatCals = fat * 9
-
-                        let circumference: CGFloat = geometry.size.width * .pi
-                        let lineWidth: CGFloat = lineWidthPts / circumference
-                        let margin: CGFloat = 8 / circumference
-                        let carbStart: CGFloat = (lineWidth / 2) + (margin / 2)
-                        let carbEnd = CGFloat(carbCals / totalMacroCals) - (lineWidth / 2) - (margin / 2)
-                        let fatStart = carbEnd + lineWidth + margin
-                        let fatEnd = CGFloat(fatCals / totalMacroCals) + fatStart - (lineWidth / 2) - (margin / 2)
-                        let proteinStart = fatEnd + lineWidth + margin
-                        let proteinEnd: CGFloat = 1 - (lineWidth / 2) - (margin / 2)
-                        
-                        Circle()
-                            .trim(from: carbStart, to: carbEnd)
-                            .stroke(style: .init(
-                                lineWidth: lineWidthPts,
-                                lineCap: .round
-                            ))
-                            .foregroundStyle(carbsColorPalette.accent)
-                            .rotationEffect(.degrees(-90))
-                        Circle()
-                            .trim(from: fatStart, to: fatEnd)
-                            .stroke(style: .init(
-                                lineWidth: lineWidthPts,
-                                lineCap: .round
-                            ))
-                            .foregroundStyle(fatColorPalette.accent)
-                            .rotationEffect(.degrees(-90))
-                        Circle()
-                            .trim(from: proteinStart, to: proteinEnd)
-                            .stroke(style: .init(
-                                lineWidth: lineWidthPts,
-                                lineCap: .round
-                            ))
-                            .foregroundStyle(proteinColorPalette.accent)
-                            .rotationEffect(.degrees(-90))
-                    } else {
-                        Circle()
-                            .stroke(style: .init(
-                                lineWidth: lineWidthPts,
-                                lineCap: .round
-                            ))
-                            .foregroundStyle(Color.gray)
-                    }
-                    VStack {
-                        Text("Total Calories")
-                            .font(.headline)
-                            .fontWeight(.light)
-                        HStack {
-                            Image(systemName: "flame.fill")
-                                .foregroundStyle(Color.orange)
-                            Text("\(calories.formatted(maxDigits: 0))")
-                                .contentTransition(.numericText())
+        NavigationLink {
+            ConsumedMealsView(date: date)
+        } label: {
+            HStack {
+                Spacer()
+                GeometryReader { geometry in
+                    ZStack {
+                        if totalMacroCals > 0 {
+                            let carbCals = carbs * 4
+                            let fatCals = fat * 9
+                            
+                            //TODO: Make sure each section is rendered if value > 0
+                            let circumference: CGFloat = geometry.size.width * .pi
+                            let lineWidth: CGFloat = lineWidthPts / circumference
+                            let margin: CGFloat = 8 / circumference
+                            let carbStart: CGFloat = (lineWidth / 2) + (margin / 2)
+                            let carbEnd = CGFloat(carbCals / totalMacroCals) - (lineWidth / 2) - (margin / 2)
+                            let fatStart = carbEnd + lineWidth + margin
+                            let fatEnd = CGFloat(fatCals / totalMacroCals) + fatStart - (lineWidth / 2) - (margin / 2)
+                            let proteinStart = fatEnd + lineWidth + margin
+                            let proteinEnd: CGFloat = 1 - (lineWidth / 2) - (margin / 2)
+                            
+                            Circle()
+                                .trim(from: carbStart, to: carbEnd)
+                                .stroke(style: .init(
+                                    lineWidth: lineWidthPts,
+                                    lineCap: .round
+                                ))
+                                .foregroundStyle(carbsColorPalette.accent)
+                                .rotationEffect(.degrees(-90))
+                            Circle()
+                                .trim(from: fatStart, to: fatEnd)
+                                .stroke(style: .init(
+                                    lineWidth: lineWidthPts,
+                                    lineCap: .round
+                                ))
+                                .foregroundStyle(fatColorPalette.accent)
+                                .rotationEffect(.degrees(-90))
+                            Circle()
+                                .trim(from: proteinStart, to: proteinEnd)
+                                .stroke(style: .init(
+                                    lineWidth: lineWidthPts,
+                                    lineCap: .round
+                                ))
+                                .foregroundStyle(proteinColorPalette.accent)
+                                .rotationEffect(.degrees(-90))
+                        } else {
+                            Circle()
+                                .stroke(style: .init(
+                                    lineWidth: lineWidthPts,
+                                    lineCap: .round
+                                ))
+                                .foregroundStyle(Color.gray)
                         }
-                        .font(.title)
-                        .fontWeight(.semibold)
-                        .fontDesign(.rounded)
+                        VStack {
+                            Text("Total Calories")
+                                .font(.headline)
+                                .fontWeight(.light)
+                            HStack {
+                                Image(systemName: "flame.fill")
+                                    .foregroundStyle(Color.orange)
+                                Text("\(calories.formatted(maxDigits: 0))")
+                                    .contentTransition(.numericText())
+                            }
+                            .font(.title)
+                            .fontWeight(.semibold)
+                            .fontDesign(.rounded)
+                        }
+                        .offset(y: -5)
                     }
-                    .offset(y: -5)
                 }
+                .frame(width: 250, height: 250)
+                Spacer()
             }
-            .frame(width: 250, height: 250)
-            Spacer()
+            .padding(lineWidthPts / 2)
+            .foregroundStyle(Color.text)
+            .padding()
+            .inCard(backgroundColor: Color.gray)
         }
-        .padding(lineWidthPts / 2)
     }
     
     @ViewBuilder private func CarbsFatProtein() -> some View {
@@ -351,29 +344,29 @@ struct DashboardMacrosSection: View {
     
     //TODO: Add setting to change water units
     @ViewBuilder private func Water() -> some View {
-        if let waterGrams {
-            let waterCups = Double(waterGrams) / 237
-            
-            NavigationLink {
-                //TODO: RELEASE: Navigate to WaterDetailView
-                Text("WaterDetailView")
-            } label: {
-                HStack {
-                    Image(systemName: "drop.fill")
-                        .foregroundStyle(Color.blue)
-                    Text("Water")
-                        .font(.subheadline)
-                        .fontWeight(.light)
-                    Spacer()
-                    Text("\(waterCups.formatted(maxDigits: 1))cups")
-                        .fontWeight(.semibold)
-                        .fontDesign(.rounded)
-                        .contentTransition(.numericText())
-                }
-                .foregroundStyle(Color.text)
-                .padding()
-                .inCard(backgroundColor: Color.gray)
+        let waterCups = aggregator.waterCups
+        
+        NavigationLink {
+            ConsumedWaterView(
+                date: date,
+                aggregator: aggregator
+            )
+        } label: {
+            HStack {
+                Image(systemName: "drop.fill")
+                    .foregroundStyle(Color.blue)
+                Text("Water")
+                    .font(.subheadline)
+                    .fontWeight(.light)
+                Spacer()
+                Text("\(waterCups.formatted(maxDigits: 1))cups")
+                    .fontWeight(.semibold)
+                    .fontDesign(.rounded)
+                    .contentTransition(.numericText())
             }
+            .foregroundStyle(Color.text)
+            .padding()
+            .inCard(backgroundColor: Color.gray)
         }
     }
     
@@ -426,6 +419,7 @@ struct DashboardMacrosSection: View {
     ScrollView {
         VStack {
             DashboardMacrosSection(
+                date: .today,
                 aggregator: NutrientDataAggregator(sampleFoods)
             )
         }

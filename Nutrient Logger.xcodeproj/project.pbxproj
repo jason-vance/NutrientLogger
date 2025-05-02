@@ -81,6 +81,7 @@
 				Domain/Rdi/SpecificNutrients/VitaminD_RDIs.swift,
 				Domain/Rdi/SpecificNutrients/VitaminE_RDIs.swift,
 				Domain/Rdi/SpecificNutrients/VitaminK_RDIs.swift,
+				Domain/Rdi/SpecificNutrients/Water_RDIs.swift,
 				Domain/Rdi/SpecificNutrients/Zinc_RDIs.swift,
 				Domain/Rdi/UsdaNutrientRdiLibrary.swift,
 				Domain/SimpleDate.swift,

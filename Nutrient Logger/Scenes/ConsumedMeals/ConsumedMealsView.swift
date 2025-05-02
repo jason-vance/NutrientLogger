@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 
+//TODO: Add ads here
 struct ConsumedMealsView: View {
     
     let date: SimpleDate

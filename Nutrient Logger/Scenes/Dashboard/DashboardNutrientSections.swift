@@ -9,10 +9,12 @@ import SwiftUI
 
 struct DashboardNutrientSections: View {
     
+    private let date: SimpleDate
     private let foods: [FoodItem]
     private let aggregator: NutrientDataAggregator
     
-    init(foods: [FoodItem]) {
+    init(date: SimpleDate, foods: [FoodItem]) {
+        self.date = date
         self.foods = foods
         self.aggregator = NutrientDataAggregator(foods)
     }
@@ -23,7 +25,7 @@ struct DashboardNutrientSections: View {
     
     var body: some View {
         VStack(spacing: 2 * .spacingDefault) {
-            DashboardMacrosSection(aggregator: aggregator)
+            DashboardMacrosSection(date: date, aggregator: aggregator)
             DashboardVitaminsSection(aggregator: aggregator)
             DashboardMineralsSection(aggregator: aggregator)
             DashboardCarbsSection(aggregator: aggregator)
@@ -41,7 +43,7 @@ struct DashboardNutrientSections: View {
     let food = try! RemoteDatabaseForScreenshots().getFood("asdf")!
     
     List {
-        DashboardNutrientSections(foods: [food])
+        DashboardNutrientSections(date: .today, foods: [food])
     }
     .listDefaultModifiers()
 }
