@@ -67,13 +67,13 @@ struct DashboardVitaminsSection: View {
         FdcNutrientGroupMapper.NutrientNumber_VitaminE_Alpha_Tocopherol,
         FdcNutrientGroupMapper.NutrientNumber_VitaminK_Phylloquinone,
         FdcNutrientGroupMapper.NutrientNumber_Choline_Total,
-        FdcNutrientGroupMapper.NutrientNumber_Betaine,
-        FdcNutrientGroupMapper.NutrientNumber_Carotene_Alpha,
-        FdcNutrientGroupMapper.NutrientNumber_Carotene_Beta,
-        FdcNutrientGroupMapper.NutrientNumber_Caffeine,
-        FdcNutrientGroupMapper.NutrientNumber_Lycopene,
-        FdcNutrientGroupMapper.NutrientNumber_Lutein_Zeaxanthin,
-        FdcNutrientGroupMapper.NutrientNumber_Theobromine,
+//        FdcNutrientGroupMapper.NutrientNumber_Betaine,
+//        FdcNutrientGroupMapper.NutrientNumber_Carotene_Alpha,
+//        FdcNutrientGroupMapper.NutrientNumber_Carotene_Beta,
+//        FdcNutrientGroupMapper.NutrientNumber_Caffeine,
+//        FdcNutrientGroupMapper.NutrientNumber_Lycopene,
+//        FdcNutrientGroupMapper.NutrientNumber_Lutein_Zeaxanthin,
+//        FdcNutrientGroupMapper.NutrientNumber_Theobromine,
 //        FdcNutrientGroupMapper.NutrientNumber_Biotin, // Nothing in the database has this in it
 //        FdcNutrientGroupMapper.NutrientNumber_Phytoene, // Nothing in the database has this in it
 //        FdcNutrientGroupMapper.NutrientNumber_Phytofluene, // Nothing in the database has this in it
