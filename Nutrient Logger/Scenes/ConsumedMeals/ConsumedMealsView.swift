@@ -112,7 +112,9 @@ struct ConsumedMealFoodRow: View {
         
         Task {
             do {
-                if let foodItem = try remoteDatabase.getFood(String(consumedFood.fdcId)) {
+                if let foodItem = try remoteDatabase.getFood(String(consumedFood.fdcId))?
+                    .applyingPortion(Portion(amount: consumedFood.portionAmount, gramWeight: consumedFood.portionGramWeight))
+                {
                     let aggregator = NutrientDataAggregator([foodItem])
                     
                     self.foodItem = foodItem
