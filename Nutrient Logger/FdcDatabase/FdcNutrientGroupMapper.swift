@@ -262,6 +262,11 @@ class FdcNutrientGroupMapper {
     
     
     public static let nutrientDisplayNames:  [String:String] = [
+        FdcNutrientGroupMapper.NutrientNumber_18_3_N_3_C_C_C_ALA: "ALA",
+        FdcNutrientGroupMapper.NutrientNumber_20_5_N_3_EPA: "EPA",
+        FdcNutrientGroupMapper.NutrientNumber_22_6_N_3_DHA: "DHA",
+        FdcNutrientGroupMapper.NutrientNumber_22_5_N_3_DPA: "DPA",
+
         FdcNutrientGroupMapper.NutrientNumber_VitaminA_RAE: "Vitamin A",
         FdcNutrientGroupMapper.NutrientNumber_Thiamin: "Thiamin",
         FdcNutrientGroupMapper.NutrientNumber_Riboflavin: "Riboflavin",
