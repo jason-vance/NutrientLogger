@@ -223,7 +223,7 @@ struct FoodSearchView: View {
             var descriptor = FetchDescriptor<ConsumedFood>(
                 sortBy: [ .init(\.created, order: .reverse) ]
             )
-            descriptor.fetchLimit = 30
+            descriptor.fetchLimit = 256
             
             return try modelContext.fetch(descriptor)
                 .reduce(into: [:]) { dict, food in
