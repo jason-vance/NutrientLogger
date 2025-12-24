@@ -21,6 +21,7 @@ struct DashboardView: View {
     @Inject private var remoteDatabase: RemoteDatabase
     
     @State private var date: SimpleDate = .today
+    @State private var showDatePicker: Bool = false
     @Query private var consumedFoods: [ConsumedFood]
     
     private var todaysConsumedFoods: [ConsumedFood] {
@@ -105,6 +106,20 @@ struct DashboardView: View {
         .animation(.snappy, value: todaysConsumedFoods)
         .animation(.snappy, value: foodItems)
         .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
+        .sheet(isPresented: $showDatePicker) {
+            DatePicker(
+                "Date",
+                selection: .init(
+                    get: { date.toDate() ?? .now },
+                    set: { date = SimpleDate(date: $0)! }
+                ),
+                displayedComponents: .date
+            )
+            .datePickerStyle(.graphical)
+            .padding(.horizontal)
+            .presentationDetents([.medium])
+            .presentationDragIndicator(.visible)
+        }
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
@@ -117,22 +132,11 @@ struct DashboardView: View {
         HStack {
             DecrementDateButton()
             Button {
-                
+                showDatePicker = true
             } label: {
                 Text(date.formatted())
+                    .frame(minWidth: 120)
             }
-            .overlay{
-                DatePicker(
-                    "",
-                    selection: .init(
-                        get: { date.toDate() ?? .now },
-                        set: { date = SimpleDate(date: $0)! }
-                    ),
-                    displayedComponents: [.date]
-                )
-                .blendMode(.destinationOver) //MARK: use this extension to keep the clickable functionality
-            }
-            .padding(.horizontal)
             IncrementDateButton()
         }
         .bold()
@@ -201,4 +205,5 @@ struct DashboardView: View {
         DashboardView()
     }
     .environmentObject(AdProviderFactory.forDev)
+    .environmentObject(SubscriptionManager(isForScreenshots: true))
 }
