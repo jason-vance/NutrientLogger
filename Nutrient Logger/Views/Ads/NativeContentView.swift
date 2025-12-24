@@ -22,17 +22,57 @@ struct NativeAdListRow: View {
     @Binding var ad: Ad?
     let size: AdSize
     
+    @State private var showMarketingView: Bool = false
+    
+    @EnvironmentObject private var subscriptionManager: SubscriptionManager
+    
     var body: some View {
-        switch ad {
-        case .native(let nativeAd):
-            SimpleNativeAdView(
-                nativeAd: nativeAd,
-                size: size
-            )
-            .listRowDefaultModifiers()
-        case .none:
+        if subscriptionManager.isSubscribed {
             EmptyView()
+        } else {
+            VStack {
+                switch ad {
+                case .native(let nativeAd):
+                    SimpleNativeAdView(
+                        nativeAd: nativeAd,
+                        size: size
+                    )
+                case .none:
+                    Rectangle()
+                        .frame(height: getAdFrameHeight(size))
+                        .opacity(0)
+                }
+                RemoveAdsButton()
+                    .padding(.top, 12)
+            }
+            .fullScreenCover(isPresented: $showMarketingView) {
+                MarketingView()
+            }
+            .listRowDefaultModifiers()
         }
+    }
+    
+    @ViewBuilder private func RemoveAdsButton() -> some View {
+        Button {
+            showMarketingView = true
+        } label: {
+            Text("Remove Ads")
+                .font(.footnote)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 4)
+                .background {
+                    Capsule(style: .continuous)
+                        .stroke(style: .init(lineWidth: 1))
+                        .foregroundStyle(Color.accentColor)
+                }
+        }
+    }
+}
+
+func getAdFrameHeight(_ size: AdSize) -> CGFloat {
+    switch size {
+    case .small: return 80
+    case .medium: return 290
     }
 }
 
@@ -40,14 +80,6 @@ struct SimpleNativeAdView: View {
 
     let nativeAd: NativeAd
     let size: AdSize
-
-    // frameHeight determined from xib.
-    private var frameHeight: CGFloat {
-        switch size {
-        case .small: return 80
-        case .medium: return 290
-        }
-    }
     
     private var xibName: String {
         switch size {
@@ -61,7 +93,7 @@ struct SimpleNativeAdView: View {
             nativeAd: nativeAd,
             xibName: xibName
         )
-        .frame(height: frameHeight)
+        .frame(height: getAdFrameHeight(size))
     }
 }
 
@@ -116,7 +148,7 @@ private struct NativeAdViewContainer: UIViewRepresentable {
             callToActionView.setTitle(nativeAd.callToAction, for: .normal)
             // For the SDK to process touch events properly, user interaction should be disabled.
             callToActionView.isUserInteractionEnabled = false
-        }        
+        }
         
         // Associate the native ad view with the native ad object. This is required to make the ad
         // clickable.

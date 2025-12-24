@@ -33,5 +33,6 @@ struct Nutrient_LoggerApp: App {
         }
         .modelContainer(sharedModelContainer)
         .environmentObject(AdProviderFactory.forProd)
+        .environmentObject(SubscriptionManager())
     }
 }

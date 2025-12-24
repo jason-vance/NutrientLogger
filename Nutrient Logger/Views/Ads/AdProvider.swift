@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 import GoogleMobileAds
-import SwiftUICore
+import SwiftUI
 
 class AdProviderFactory: ObservableObject {
     
@@ -33,6 +33,8 @@ extension AdProviderFactory {
     static let forDev = AdProviderFactory { NativeAdViewModel() }
     
     static let forProd = AdProviderFactory { NativeAdViewModel() }
+    
+    static let forScreenshots = AdProviderFactory { MockAdProvider() }
 }
 
 extension View {
