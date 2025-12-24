@@ -23,12 +23,10 @@ class SubscriptionManager: ObservableObject {
     
     @AppStorage("storedIsSubscribed") private var storedIsSubscribed: Bool = false
     
-    static let weeklyProductId = "nutrient.logger.premium.weekly"
     static let monthlyProductId = "nutrient.logger.premium.monthly"
     static let yearlyProductId = "nutrient.logger.premium.yearly"
 
     static let productIds = [
-        weeklyProductId,
         monthlyProductId,
         yearlyProductId,
     ]
