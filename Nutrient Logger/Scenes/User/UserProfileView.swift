@@ -42,6 +42,7 @@ struct UserProfileView: View {
             //TODO: Add custom nutrient goals
             UserMealsSection()
             NutrientLibrarySection()
+            LegalSection()
         }
         .listDefaultModifiers()
         .navigationBarTitle("User Profile")
@@ -211,6 +212,33 @@ struct UserProfileView: View {
                         Spacer()
                     }
                     .font(.caption)
+                }
+            }
+            .listRowDefaultModifiers()
+        }
+    }
+    
+    @ViewBuilder private func LegalSection() -> some View {
+        Section(header: Text("Legal")) {
+            NavigationLink {
+                PrivacyPolicyView()
+            } label: {
+                VStack {
+                    HStack {
+                        Text("Privacy Policy")
+                        Spacer()
+                    }
+                }
+            }
+            .listRowDefaultModifiers()
+            NavigationLink {
+                TermsOfUseView()
+            } label: {
+                VStack {
+                    HStack {
+                        Text("Terms of Use")
+                        Spacer()
+                    }
                 }
             }
             .listRowDefaultModifiers()
