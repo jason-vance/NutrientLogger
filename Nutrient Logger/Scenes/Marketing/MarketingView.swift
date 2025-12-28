@@ -150,7 +150,7 @@ struct MarketingView: View {
         }
         
         HStack {
-            Text("As a Nutrient Logger Premiun subscriber you will get the following benefits:")
+            Text("As a Nutrient Logger Premium subscriber you will get the following benefits:")
                 .foregroundStyle(.secondary)
             Spacer()
         }
