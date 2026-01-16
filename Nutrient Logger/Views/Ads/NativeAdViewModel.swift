@@ -19,7 +19,7 @@ import Combine
 
 class NativeAdViewModel: NSObject, ObservableObject, NativeAdLoaderDelegate, AdProvider {
     
-    private let adUnitId = "ca-app-pub-1475400719226569/6347925071"
+    private let adUnitId = "ca-app-pub-1475400719226569/6951578231"
     private let testAdUnitId = "ca-app-pub-3940256099942544/3986624511"
     
     @Published var nativeAd: NativeAd?
