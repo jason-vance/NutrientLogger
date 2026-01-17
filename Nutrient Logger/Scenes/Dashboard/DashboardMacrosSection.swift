@@ -8,75 +8,12 @@
 import SwiftUI
 
 struct DashboardMacrosSection: View {
-    
-    let calsKey = FdcNutrientGroupMapper.NutrientNumber_Energy_KCal
-    let carbsKey = FdcNutrientGroupMapper.NutrientNumber_Carbohydrate_ByDifference
-    let proteinKey = FdcNutrientGroupMapper.NutrientNumber_Protein
-    let fatKey = FdcNutrientGroupMapper.NutrientNumber_TotalLipid_Fat
-    let waterKey = FdcNutrientGroupMapper.NutrientNumber_Water
-    let kjKey = FdcNutrientGroupMapper.NutrientNumber_Energy_Kj
 
     let date: SimpleDate
     let aggregator: NutrientDataAggregator
     
-    private var calories: Double {
-        if let cals = aggregator.nutrientsByNutrientNumber[calsKey] {
-            return cals.reduce(0.0) { $0 + $1.nutrient.amount }
-        }
-        return 0
-    }
-    
-    private var caloriesUnit: String {
-        if let cals = aggregator.nutrientsByNutrientNumber[calsKey], let first = cals.first {
-            return first.nutrient.unitName
-        }
-        return "cals"
-    }
-    
-    private var carbs: Double {
-        if let carbs = aggregator.nutrientsByNutrientNumber[carbsKey] {
-            return carbs.reduce(0.0) { $0 + $1.nutrient.amount }
-        }
-        return 0
-    }
-    
-    private var carbsUnit: String {
-        if let carbs = aggregator.nutrientsByNutrientNumber[carbsKey], let first = carbs.first {
-            return first.nutrient.unitName
-        }
-        return "g"
-    }
-    
-    private var fat: Double {
-        if let fats = aggregator.nutrientsByNutrientNumber[fatKey] {
-            return fats.reduce(0.0) { $0 + $1.nutrient.amount }
-        }
-        return 0
-    }
-    
-    private var fatUnit: String {
-        if let fats = aggregator.nutrientsByNutrientNumber[fatKey], let first = fats.first {
-            return first.nutrient.unitName
-        }
-        return "g"
-    }
-    
-    private var protein: Double {
-        if let proteins = aggregator.nutrientsByNutrientNumber[proteinKey] {
-            return proteins.reduce(0.0) { $0 + $1.nutrient.amount }
-        }
-        return 0
-    }
-    
-    private var proteinUnit: String {
-        if let proteins = aggregator.nutrientsByNutrientNumber[proteinKey], let first = proteins.first {
-            return first.nutrient.unitName
-        }
-        return "g"
-    }
-    
     private var totalMacroCals: Double {
-        return (4 * carbs) + (9 * fat) + (4 * protein)
+        return (4 * aggregator.carbs) + (9 * aggregator.fat) + (4 * aggregator.protein)
     }
     
     private var otherNutrientIds: [String] {
@@ -88,7 +25,14 @@ struct DashboardMacrosSection: View {
             return []
         }
         
-        let dontInclude = [calsKey, proteinKey, fatKey, carbsKey, waterKey, kjKey]
+        let dontInclude = [
+            FdcNutrientGroupMapper.NutrientNumber_Energy_KCal,
+            FdcNutrientGroupMapper.NutrientNumber_Protein,
+            FdcNutrientGroupMapper.NutrientNumber_TotalLipid_Fat,
+            FdcNutrientGroupMapper.NutrientNumber_Carbohydrate_ByDifference,
+            FdcNutrientGroupMapper.NutrientNumber_Water,
+            FdcNutrientGroupMapper.NutrientNumber_Energy_Kj
+        ]
         return Set(proximates.nutrients.map(\.fdcNumber))
             .filter({ !dontInclude.contains($0) })
             .sorted { $0 < $1 }
@@ -127,73 +71,13 @@ struct DashboardMacrosSection: View {
         } label: {
             HStack {
                 Spacer()
-                GeometryReader { geometry in
-                    ZStack {
-                        if totalMacroCals > 0 {
-                            let carbCals = carbs * 4
-                            let fatCals = fat * 9
-                            
-                            //TODO: Make sure each section is rendered if value > 0
-                            let circumference: CGFloat = geometry.size.width * .pi
-                            let lineWidth: CGFloat = lineWidthPts / circumference
-                            let margin: CGFloat = 8 / circumference
-                            let carbStart: CGFloat = (lineWidth / 2) + (margin / 2)
-                            let carbEnd = CGFloat(carbCals / totalMacroCals) - (lineWidth / 2) - (margin / 2)
-                            let fatStart = carbEnd + lineWidth + margin
-                            let fatEnd = CGFloat(fatCals / totalMacroCals) + fatStart - (lineWidth / 2) - (margin / 2)
-                            let proteinStart = fatEnd + lineWidth + margin
-                            let proteinEnd: CGFloat = 1 - (lineWidth / 2) - (margin / 2)
-                            
-                            Circle()
-                                .trim(from: carbStart, to: carbEnd)
-                                .stroke(style: .init(
-                                    lineWidth: lineWidthPts,
-                                    lineCap: .round
-                                ))
-                                .foregroundStyle(carbsColorPalette.accent)
-                                .rotationEffect(.degrees(-90))
-                            Circle()
-                                .trim(from: fatStart, to: fatEnd)
-                                .stroke(style: .init(
-                                    lineWidth: lineWidthPts,
-                                    lineCap: .round
-                                ))
-                                .foregroundStyle(fatColorPalette.accent)
-                                .rotationEffect(.degrees(-90))
-                            Circle()
-                                .trim(from: proteinStart, to: proteinEnd)
-                                .stroke(style: .init(
-                                    lineWidth: lineWidthPts,
-                                    lineCap: .round
-                                ))
-                                .foregroundStyle(proteinColorPalette.accent)
-                                .rotationEffect(.degrees(-90))
-                        } else {
-                            Circle()
-                                .stroke(style: .init(
-                                    lineWidth: lineWidthPts,
-                                    lineCap: .round
-                                ))
-                                .foregroundStyle(Color.gray)
-                        }
-                        VStack {
-                            Text("Total Calories")
-                                .font(.headline)
-                                .fontWeight(.light)
-                            HStack {
-                                Image(systemName: "flame.fill")
-                                    .foregroundStyle(Color.orange)
-                                Text("\(calories.formatted(maxDigits: 0))")
-                                    .contentTransition(.numericText())
-                            }
-                            .font(.title)
-                            .fontWeight(.semibold)
-                            .fontDesign(.rounded)
-                        }
-                        .offset(y: -5)
-                    }
-                }
-                .frame(width: 250, height: 250)
+                MacrosPieChart(
+                    calories: aggregator.calories,
+                    carbs: aggregator.carbs,
+                    fat: aggregator.fat,
+                    protein: aggregator.protein
+                )
+                .aspectRatio(1, contentMode: .fit)
                 Spacer()
             }
             .padding(lineWidthPts / 2)
@@ -209,8 +93,8 @@ struct DashboardMacrosSection: View {
                 name: "Carbs",
                 iconName: "square.fill",
                 iconColor: carbsColorPalette.accent,
-                amount: carbs,
-                unit: carbsUnit,
+                amount: aggregator.carbs,
+                unit: aggregator.carbsUnit,
                 key: FdcNutrientGroupMapper.GroupNumber_Carbohydrates,
                 detailHeaderText: "Carbohydrates"
             )
@@ -218,8 +102,8 @@ struct DashboardMacrosSection: View {
                 name: "Fat",
                 iconName: "circle.fill",
                 iconColor: fatColorPalette.accent,
-                amount: fat,
-                unit: fatUnit,
+                amount: aggregator.fat,
+                unit: aggregator.fatUnit,
                 key: FdcNutrientGroupMapper.GroupNumber_Lipids,
                 detailHeaderText: "Lipids"
             )
@@ -227,8 +111,8 @@ struct DashboardMacrosSection: View {
                 name: "Protein",
                 iconName: "triangle.fill",
                 iconColor: proteinColorPalette.accent,
-                amount: protein,
-                unit: proteinUnit,
+                amount: aggregator.protein,
+                unit: aggregator.proteinUnit,
                 key: FdcNutrientGroupMapper.GroupNumber_AminoAcids,
                 detailHeaderText: "Amino Acids"
             )

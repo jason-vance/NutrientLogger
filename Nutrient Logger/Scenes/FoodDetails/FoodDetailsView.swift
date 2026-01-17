@@ -206,7 +206,7 @@ struct FoodDetailsView: View {
     
     var body: some View {
         List {
-            NativeAdListRow(ad: $ad, size: .medium)
+            NativeAdListRow(ad: $ad, size: .small)
             FoodName()
             if askForDateAndMealTime {
                 DateField()

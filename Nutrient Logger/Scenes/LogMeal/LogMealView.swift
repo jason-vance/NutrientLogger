@@ -155,6 +155,10 @@ struct LogMealView: View {
             }
             
             presentationMode.wrappedValue.dismiss()
+            
+            DispatchQueue.main.async {
+                DataController.shared.updateDailySummary()
+            }
         }
     }
     
@@ -165,15 +169,12 @@ struct LogMealView: View {
     
     var body: some View {
         List {
+            NativeAdListRow(ad: $ad, size: .small)
             MealName()
             DateField()
             MealTimeField()
             PortionAmountField()
-            
-            NativeAdListRow(ad: $ad, size: .medium)
-
             FoodsSection()
-
             NutritionFactsSection(
                 nutrients: displayNutrients,
                 portionGrams: portionGrams,

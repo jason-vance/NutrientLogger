@@ -38,7 +38,13 @@ struct ContentView: View {
             }
             Tab("Search", systemImage: "magnifyingglass") {
                 NavigationStack {
-                    FoodSearchView(onFoodSaved: FoodSaver.forConsumedFoods(modelContext: modelContext).saveFoodItem)
+                    FoodSearchView(onFoodSaved: { foodItem, portion in
+                        try FoodSaver.forConsumedFoods(modelContext: modelContext).saveFoodItem(foodItem, portion)
+                        
+                        DispatchQueue.main.async {
+                            DataController.shared.updateDailySummary()
+                        }
+                    })
                 }
             }
             Tab("Profile", systemImage: "person.crop.circle") {

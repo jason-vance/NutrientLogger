@@ -37,7 +37,7 @@ struct UserProfileView: View {
     
     var body: some View {
         List {
-            NativeAdListRow(ad: $ad, size: .medium)
+            NativeAdListRow(ad: $ad, size: .small)
             ProfileSettingsSection()
             //TODO: Add custom nutrient goals
             UserMealsSection()

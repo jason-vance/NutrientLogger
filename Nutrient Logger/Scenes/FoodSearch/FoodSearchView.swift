@@ -51,17 +51,6 @@ struct FoodSearchView: View {
         }
     }
 
-    @Model
-    class RecentSearch {
-        var query: String
-        var date: Date
-        
-        init(query: String, date: Date) {
-            self.query = query
-            self.date = date
-        }
-    }
-
     enum SearchResult: Identifiable, Equatable {
         case recentSearch(String)
         case recentlyLoggedFood(ConsumedFood)

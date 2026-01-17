@@ -89,14 +89,10 @@ struct DashboardView: View {
     var body: some View {
         ScrollView {
             VStack {
-                NativeAdListRow(ad: $ad, size: .medium)
+                NativeAdListRow(ad: $ad, size: .small)
                     .padding(.horizontal)
-                if todaysConsumedFoods.isEmpty {
-                    LoggingInstructions()
-                } else {
-                    MyNutrientsSection()
-                    WhatIAteSection()
-                }
+                DashboardNutrientSections(date: date, foods: foodItems)
+                WhatIAteSection()
             }
         }
         .toolbar { Toolbar() }
@@ -167,17 +163,11 @@ struct DashboardView: View {
         .listRowDefaultModifiers()
     }
     
-    @ViewBuilder private func MyNutrientsSection() -> some View {
-        if !foodItems.isEmpty {
-            DashboardNutrientSections(date: date, foods: foodItems)
-        }
-    }
-    
     @ViewBuilder private func WhatIAteSection() -> some View {
-        if !todaysConsumedFoods.isEmpty {
-            let meals = DashboardMealList.from(todaysConsumedFoods)
-                .sorted { $0.mealTime < $1.mealTime }
-            
+        let meals = DashboardMealList.from(todaysConsumedFoods)
+            .sorted { $0.mealTime < $1.mealTime }
+        
+        if !meals.isEmpty {
             VStack(spacing: .spacingDefault) {
                 HStack {
                     Text("Meals")

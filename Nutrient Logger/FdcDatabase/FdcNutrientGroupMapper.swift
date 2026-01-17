@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Swinject
 
 class FdcNutrientGroupMapper {
     public static let GroupNumber_Other = "-1"

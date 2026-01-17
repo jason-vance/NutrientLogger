@@ -94,3 +94,70 @@ class NutrientDataAggregator {
         return 0
     }
 }
+
+extension NutrientDataAggregator {
+    
+    var calories: Double {
+        let calsKey = FdcNutrientGroupMapper.NutrientNumber_Energy_KCal
+        if let cals = nutrientsByNutrientNumber[calsKey] {
+            return cals.reduce(0.0) { $0 + $1.nutrient.amount }
+        }
+        return 0
+    }
+    
+    var caloriesUnit: String {
+        let calsKey = FdcNutrientGroupMapper.NutrientNumber_Energy_KCal
+        if let cals = nutrientsByNutrientNumber[calsKey], let first = cals.first {
+            return first.nutrient.unitName
+        }
+        return "cals"
+    }
+    
+    var carbs: Double {
+        let carbsKey = FdcNutrientGroupMapper.NutrientNumber_Carbohydrate_ByDifference
+        if let carbs = nutrientsByNutrientNumber[carbsKey] {
+            return carbs.reduce(0.0) { $0 + $1.nutrient.amount }
+        }
+        return 0
+    }
+    
+    var carbsUnit: String {
+        let carbsKey = FdcNutrientGroupMapper.NutrientNumber_Carbohydrate_ByDifference
+        if let carbs = nutrientsByNutrientNumber[carbsKey], let first = carbs.first {
+            return first.nutrient.unitName
+        }
+        return "g"
+    }
+    
+    var fat: Double {
+        let fatKey = FdcNutrientGroupMapper.NutrientNumber_TotalLipid_Fat
+        if let fats = nutrientsByNutrientNumber[fatKey] {
+            return fats.reduce(0.0) { $0 + $1.nutrient.amount }
+        }
+        return 0
+    }
+    
+    var fatUnit: String {
+        let fatKey = FdcNutrientGroupMapper.NutrientNumber_TotalLipid_Fat
+        if let fats = nutrientsByNutrientNumber[fatKey], let first = fats.first {
+            return first.nutrient.unitName
+        }
+        return "g"
+    }
+    
+    var protein: Double {
+        let proteinKey = FdcNutrientGroupMapper.NutrientNumber_Protein
+        if let proteins = nutrientsByNutrientNumber[proteinKey] {
+            return proteins.reduce(0.0) { $0 + $1.nutrient.amount }
+        }
+        return 0
+    }
+    
+    var proteinUnit: String {
+        let proteinKey = FdcNutrientGroupMapper.NutrientNumber_Protein
+        if let proteins = nutrientsByNutrientNumber[proteinKey], let first = proteins.first {
+            return first.nutrient.unitName
+        }
+        return "g"
+    }
+}

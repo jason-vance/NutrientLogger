@@ -48,10 +48,18 @@ struct UserMealsView: View {
                 )
                 .listRowDefaultModifiers()
             } else {
-                ForEach(displayMeals) { meal in
-                    MealRow(meal)
+                Section {
+                    ForEach(displayMeals) { meal in
+                        MealRow(meal)
+                    }
+                    .onDelete { deleteMeals(at: $0) }
+                } header: {
+                    HStack {
+                        Image(systemName: "frying.pan")
+                        Text("My Meals")
+                        Spacer()
+                    }
                 }
-                .onDelete { deleteMeals(at: $0) }
             }
             SpaceForFab()
         }

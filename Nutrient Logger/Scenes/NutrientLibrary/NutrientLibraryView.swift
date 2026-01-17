@@ -50,9 +50,15 @@ struct NutrientLibraryView: View {
     var body: some View {
         List {
             NativeAdListRow(ad: $ad, size: .medium)
-            Section(header: Text("Nutrients")) {
+            Section {
                 ForEach(displayNutrients) { nutrient in
                     NutrientRow(nutrient)
+                }
+            } header: {
+                HStack {
+                    Image(systemName: "atom")
+                    Text("Nutrients")
+                    Spacer()
                 }
             }
         }
