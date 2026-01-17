@@ -7,16 +7,32 @@
 
 import SwiftUI
 import SwiftData
+import WidgetKit
 
 struct ContentView: View {
     
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(\.modelContext) private var modelContext
     
     @State private var isSetup: Bool = false
     
+    private static func onScenePhaseChange(old: ScenePhase, new: ScenePhase) {
+        switch new {
+        case .background, .inactive:
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                WidgetCenter.shared.reloadAllTimelines()
+            }
+            break
+        default:
+            break
+        }
+        
+    }
+    
     var body: some View {
         AppSetupRouter()
             .animation(.snappy, value: isSetup)
+            .onChange(of: scenePhase, Self.onScenePhaseChange)
     }
     
     @ViewBuilder private func AppSetupRouter() -> some View {

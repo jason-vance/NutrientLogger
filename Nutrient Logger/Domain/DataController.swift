@@ -9,7 +9,6 @@ import SwiftData
 import Foundation
 import CoreData
 import Combine
-import WidgetKit
 
 // Ensure this file is added to BOTH the App and Widget Extension targets
 @MainActor
@@ -95,8 +94,7 @@ class DataController {
             fat: aggregator.fat
         )
         container.mainContext.insert(summary)
-        
-        WidgetCenter.shared.reloadAllTimelines()
+        try? container.mainContext.save()
     }
         
     
