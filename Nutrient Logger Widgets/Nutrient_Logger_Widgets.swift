@@ -54,7 +54,9 @@ struct Provider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         Task { @MainActor in
             let entries = fetchLatestData()
-            let timeline = Timeline(entries: entries, policy: .never)
+            let today = Calendar.current.date(byAdding: .hour, value: 24, to: .now)!
+            let midnight = Calendar.current.startOfDay(for: today)
+            let timeline = Timeline(entries: entries, policy: .after(midnight))
             completion(timeline)
         }
     }
