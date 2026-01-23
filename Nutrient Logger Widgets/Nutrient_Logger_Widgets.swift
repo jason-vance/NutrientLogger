@@ -13,21 +13,19 @@ struct Provider: TimelineProvider {
     
     @MainActor
     func fetchLatestData() -> [SimpleEntry] {
-        let today = SimpleDate.today
-        
         let context = DataController.shared.container.mainContext
-        var descriptor = FetchDescriptor<DailySummary>(
-            predicate: #Predicate { $0.date == today }
-        )
-        descriptor.fetchLimit = 1
+        let descriptor = FetchDescriptor<DailySummary>()
+        let dailySummary = (try? context.fetch(descriptor))?
+            .sorted { $0.date > $1.date }
+            .first
         
-        guard let dailySummary = (try? context.fetch(descriptor))?.first else {
+        guard let dailySummary else {
             return [.init(date: .now, calories: 0, carbs: 0, fat: 0, protein: 0)]
         }
         
         return [
             .init(
-                date: dailySummary.date.toDate() ?? .now,
+                date: dailySummary.date,
                 calories: dailySummary.calories,
                 carbs: dailySummary.carbs,
                 fat: dailySummary.fat,
@@ -54,8 +52,8 @@ struct Provider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         Task { @MainActor in
             let entries = fetchLatestData()
-            let today = Calendar.current.date(byAdding: .hour, value: 24, to: .now)!
-            let midnight = Calendar.current.startOfDay(for: today)
+            let tomorrow = Calendar.current.date(byAdding: .hour, value: 24, to: .now)!
+            let midnight = Calendar.current.startOfDay(for: tomorrow)
             let timeline = Timeline(entries: entries, policy: .after(midnight))
             completion(timeline)
         }
@@ -87,6 +85,14 @@ struct Nutrient_Logger_WidgetsEntryView : View {
     @Environment(\.widgetRenderingMode) private var renderingMode
 
     var entry: Provider.Entry
+    
+    @Query private var summaries: [DailySummary]
+    
+    private var displaySummary: DailySummary? {
+        summaries
+            .sorted { $0.date > $1.date }
+            .first
+    }
     
     var lineWidth: CGFloat {
         switch widgetFamily {
@@ -121,13 +127,19 @@ struct Nutrient_Logger_WidgetsEntryView : View {
     }
 
     var body: some View {
+        let displaySummary = displaySummary
+        let calories = displaySummary?.calories ?? entry.calories
+        let carbs = displaySummary?.carbs ?? entry.carbs
+        let fat = displaySummary?.fat ?? entry.fat
+        let protein = displaySummary?.protein ?? entry.protein
+
         HStack(spacing: 16) {
             VStack {
                 MacrosPieChart(
-                    calories: entry.calories,
-                    carbs: entry.carbs,
-                    fat: entry.fat,
-                    protein: entry.protein,
+                    calories: calories,
+                    carbs: carbs,
+                    fat: fat,
+                    protein: protein,
                     config: MacrosPieChart.Config(
                         lineWidth: lineWidth,
                         margin: margin,

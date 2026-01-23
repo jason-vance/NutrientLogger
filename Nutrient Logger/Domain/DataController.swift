@@ -87,7 +87,7 @@ class DataController {
         
         let aggregator = NutrientDataAggregator(foodItems)
         let summary = DailySummary(
-            date: .today,
+            date: .now,
             calories: aggregator.calories,
             protein: aggregator.protein,
             carbs: aggregator.carbs,

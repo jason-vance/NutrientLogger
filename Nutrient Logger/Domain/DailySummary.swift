@@ -11,13 +11,13 @@ import SwiftData
 @Model
 class DailySummary: Identifiable {
     
-    @Attribute(.unique) var date: SimpleDate
+    @Attribute(.unique) var date: Date
     var calories: Double
     var protein: Double
     var carbs: Double
     var fat: Double
     
-    init(date: SimpleDate, calories: Double, protein: Double, carbs: Double, fat: Double) {
+    init(date: Date, calories: Double, protein: Double, carbs: Double, fat: Double) {
         self.date = date
         self.calories = calories
         self.protein = protein
