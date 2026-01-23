@@ -20,7 +20,8 @@ struct ContentView: View {
         switch new {
         case .background, .inactive:
             try? modelContext.save()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            Task {
+                try? await Task.sleep(for: .seconds(1))
                 WidgetCenter.shared.reloadAllTimelines()
             }
             break
