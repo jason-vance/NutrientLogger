@@ -83,17 +83,25 @@ struct MacrosPieChart: View {
                 if totalMacroCals > 0 {
                     let carbCals = carbs * 4
                     let fatCals = fat * 9
-                    
-                    //TODO: Make sure each section is rendered if value > 0
+                    let proteinCals = protein * 4
+
                     let circumference: CGFloat = geometry.size.width * .pi
+                    let sectors: CGFloat = (carbs > 0 ? 1 : 0) + (fat > 0 ? 1 : 0) + (protein > 0 ? 1 : 0)
                     let lineWidth: CGFloat = config.lineWidth / circumference
                     let margin: CGFloat = config.margin / circumference
-                    let carbStart: CGFloat = (lineWidth / 2) + (margin / 2)
-                    let carbEnd = CGFloat(carbCals / totalMacroCals) - (lineWidth / 2) - (margin / 2)
-                    let fatStart = carbEnd + lineWidth + margin
-                    let fatEnd = CGFloat(fatCals / totalMacroCals) + fatStart - lineWidth - margin
-                    let proteinStart = fatEnd + lineWidth + margin
-                    let proteinEnd: CGFloat = 1 - (lineWidth / 2) - (margin / 2)
+                    let emptyCircumference = (sectors * lineWidth) + (sectors * margin)
+                    let circumRatio = 1 - emptyCircumference
+                    
+                    let carbStart: CGFloat = (carbs > 0) ? (lineWidth / 2) + (margin / 2) : 0
+                    let carbEnd = carbStart + CGFloat(carbCals / totalMacroCals) * circumRatio
+                    let carbEndWithSpace = (carbs > 0) ? carbEnd + (lineWidth / 2) + (margin / 2) : 0
+                    
+                    let fatStart = carbEndWithSpace + ((fat > 0) ? (lineWidth / 2) + (margin / 2) : 0)
+                    let fatEnd = fatStart + CGFloat(fatCals / totalMacroCals) * circumRatio
+                    let fatEndWithSpace = (fat > 0) ? fatEnd + (lineWidth / 2) + (margin / 2) : carbEndWithSpace
+                    
+                    let proteinStart = fatEndWithSpace + ((protein > 0) ? (lineWidth / 2) + (margin / 2) : 0)
+                    let proteinEnd = proteinStart + CGFloat(proteinCals / totalMacroCals) * circumRatio
                     
                     Circle()
                         .trim(from: carbStart, to: carbEnd)
