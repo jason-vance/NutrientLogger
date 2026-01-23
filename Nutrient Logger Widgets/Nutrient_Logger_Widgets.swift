@@ -128,13 +128,14 @@ struct Nutrient_Logger_WidgetsEntryView : View {
 
     var body: some View {
         let displaySummary = displaySummary
+        let date = displaySummary?.date ?? entry.date
         let calories = displaySummary?.calories ?? entry.calories
         let carbs = displaySummary?.carbs ?? entry.carbs
         let fat = displaySummary?.fat ?? entry.fat
         let protein = displaySummary?.protein ?? entry.protein
 
         HStack(spacing: 16) {
-            VStack {
+            VStack(spacing: 0) {
                 MacrosPieChart(
                     calories: calories,
                     carbs: carbs,
@@ -148,11 +149,17 @@ struct Nutrient_Logger_WidgetsEntryView : View {
                         caloriesFont: .title
                     )
                 )
+                .overlay {
+                    Text(SimpleDate(date: date)?.formatted() ?? "")
+                        .font(.caption2.bold())
+                        .opacity(0.5)
+                        .offset(y: 25)
+                }
                 .aspectRatio(1, contentMode: .fit)
             }
             if widgetFamily == .systemMedium {
                 Spacer()
-                VStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
                     MacroStat(symbol: "square.fill", color: .indigo, label: "Carbs", amount: entry.carbs, unit: "g")
                     MacroStat(symbol: "circle.fill", color: .red, label: "Fat", amount: entry.fat, unit: "g")
                     MacroStat(symbol: "triangle.fill", color: .green, label: "Protein", amount: entry.protein, unit: "g")
@@ -252,15 +259,15 @@ struct Nutrient_Logger_Widgets: Widget {
 #Preview("Small", as: .systemSmall) {
     Nutrient_Logger_Widgets()
 } timeline: {
-    SimpleEntry(date: .now, calories: 0, carbs: 0, fat: 0, protein: 0)
+    SimpleEntry(date: .distantPast, calories: 0, carbs: 0, fat: 0, protein: 0)
     SimpleEntry(date: .now, calories: 1250, carbs: 100, fat: 50, protein: 100)
-    SimpleEntry(date: .now, calories: 1700, carbs: 100, fat: 100, protein: 100)
+    SimpleEntry(date: .distantFuture, calories: 1700, carbs: 100, fat: 100, protein: 100)
 }
 
 #Preview("Medium", as: .systemMedium) {
     Nutrient_Logger_Widgets()
 } timeline: {
-    SimpleEntry(date: .now, calories: 0, carbs: 0, fat: 0, protein: 0)
+    SimpleEntry(date: .distantPast, calories: 0, carbs: 0, fat: 0, protein: 0)
     SimpleEntry(date: .now, calories: 1250, carbs: 100, fat: 50, protein: 100)
-    SimpleEntry(date: .now, calories: 1700, carbs: 100, fat: 100, protein: 100)
+    SimpleEntry(date: .distantFuture, calories: 1700, carbs: 100, fat: 100, protein: 100)
 }
