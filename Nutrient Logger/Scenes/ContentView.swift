@@ -16,9 +16,10 @@ struct ContentView: View {
     
     @State private var isSetup: Bool = false
     
-    private static func onScenePhaseChange(old: ScenePhase, new: ScenePhase) {
+    private func onScenePhaseChange(old: ScenePhase, new: ScenePhase) {
         switch new {
         case .background, .inactive:
+            try? modelContext.save()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 WidgetCenter.shared.reloadAllTimelines()
             }
@@ -32,7 +33,7 @@ struct ContentView: View {
     var body: some View {
         AppSetupRouter()
             .animation(.snappy, value: isSetup)
-            .onChange(of: scenePhase, Self.onScenePhaseChange)
+            .onChange(of: scenePhase, onScenePhaseChange)
     }
     
     @ViewBuilder private func AppSetupRouter() -> some View {
