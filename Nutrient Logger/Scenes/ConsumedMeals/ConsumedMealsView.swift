@@ -11,6 +11,8 @@ import SwiftData
 //TODO: Add ads here
 struct ConsumedMealsView: View {
     
+    @EnvironmentObject private var dataController: DataController
+    
     let date: SimpleDate
     
     @Query private var consumedFoods: [ConsumedFood]
@@ -67,6 +69,8 @@ struct ConsumedMealsView: View {
                     consumedFood.portionName = portion.name
                     consumedFood.dateLogged = foodItem.dateLogged ?? consumedFood.dateLogged
                     consumedFood.mealTime = foodItem.mealTime ?? consumedFood.mealTime
+                    
+                    dataController.updateDailySummary()
                 }
             )
         } label: {

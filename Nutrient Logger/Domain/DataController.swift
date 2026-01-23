@@ -10,9 +10,8 @@ import Foundation
 import CoreData
 import Combine
 
-// Ensure this file is added to BOTH the App and Widget Extension targets
 @MainActor
-class DataController {
+class DataController: ObservableObject {
     
     static let shared = DataController()
     

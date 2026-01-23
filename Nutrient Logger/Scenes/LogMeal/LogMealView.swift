@@ -13,6 +13,8 @@ struct LogMealView: View {
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.modelContext) private var modelContext
     
+    @EnvironmentObject private var dataController: DataController
+    
     @EnvironmentObject private var adProviderFactory: AdProviderFactory
     @State private var adProvider: AdProvider?
     @State private var ad: Ad?
@@ -157,7 +159,7 @@ struct LogMealView: View {
             presentationMode.wrappedValue.dismiss()
             
             DispatchQueue.main.async {
-                DataController.shared.updateDailySummary()
+                dataController.updateDailySummary()
             }
         }
     }

@@ -27,6 +27,8 @@ struct FoodDetailsView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.presentationMode) var presentationMode
     
+    @EnvironmentObject private var dataController: DataController
+    
     @EnvironmentObject private var adProviderFactory: AdProviderFactory
     @State private var adProvider: AdProvider?
     @State private var ad: Ad?
@@ -107,6 +109,7 @@ struct FoodDetailsView: View {
         }
         
         modelContext.delete(consumedFood)
+        dataController.updateDailySummary()
         presentationMode.wrappedValue.dismiss()
     }
     

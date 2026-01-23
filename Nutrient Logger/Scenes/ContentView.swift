@@ -14,14 +14,16 @@ struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.modelContext) private var modelContext
     
+    @EnvironmentObject private var dataController: DataController
+    
     @State private var isSetup: Bool = false
     
     private func onScenePhaseChange(old: ScenePhase, new: ScenePhase) {
         switch new {
         case .background, .inactive:
             try? modelContext.save()
-            Task {
-                try? await Task.sleep(for: .seconds(1))
+            Task(priority: .background) {
+                try? await Task.sleep(for: .seconds(0.75))
                 WidgetCenter.shared.reloadAllTimelines()
             }
             break
@@ -60,7 +62,7 @@ struct ContentView: View {
                         try FoodSaver.forConsumedFoods(modelContext: modelContext).saveFoodItem(foodItem, portion)
                         
                         DispatchQueue.main.async {
-                            DataController.shared.updateDailySummary()
+                            dataController.updateDailySummary()
                         }
                     })
                 }
