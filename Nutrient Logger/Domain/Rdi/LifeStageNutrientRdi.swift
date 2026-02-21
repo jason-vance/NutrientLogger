@@ -52,4 +52,16 @@ class LifeStageNutrientRdi {
         let ageYears = ageSeconds / secondsInYear
         return (ageYears >= minAgeYears && ageYears < maxAgeYears && ageYears < 1000)
     }
+    
+    func convertedTo(_ newUnit: WeightUnit) -> LifeStageNutrientRdi {
+        let rdi = LifeStageNutrientRdi()
+        rdi.nutrientFdcNumber = nutrientFdcNumber
+        rdi.gender = gender
+        rdi.minAgeYears = minAgeYears
+        rdi.maxAgeYears = maxAgeYears
+        rdi.recommendedAmount = self.unit.convertTo(newUnit, recommendedAmount)
+        rdi.upperLimit = self.unit.convertTo(newUnit, upperLimit)
+        rdi.unit = newUnit
+        return rdi
+    }
 }

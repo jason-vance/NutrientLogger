@@ -70,8 +70,14 @@ struct DashboardNutrientsSection: View {
         let name = FdcNutrientGroupMapper.nutrientDisplayNames[nutrientId] ?? nutrient.name
         let amount = nutrients.reduce(into: 0.0, { $0 += $1.nutrient.amount })
         let unit = nutrient.unitName
-        let rdi = rdiLibrary.getRdis(nutrientId)?.getRdi(user)
-        
+        let rdi = {
+            let rdi = rdiLibrary.getRdis(nutrientId)?.getRdi(user)
+            let foodsUnit: WeightUnit = .unitFrom(nutrient)
+            if foodsUnit == rdi?.unit { return rdi }
+            guard let rdi else { return nil }
+            return rdi.convertedTo(foodsUnit)
+        }()
+
         NavigationLink {
             ConsumedNutrientDetailsView(
                 nutrient: nutrient,
