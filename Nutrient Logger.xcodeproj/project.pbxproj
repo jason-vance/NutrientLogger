@@ -73,9 +73,9 @@
 		567B995D2DA3C990005CC6D3 /* Exceptions for "Nutrient Logger" folder in "Nutrient LoggerTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Assets.xcassets,
 				Domain/ConsumedFood.swift,
 				Domain/DailySummary.swift,
-				Domain/DataController.swift,
 				Domain/FoodItem.swift,
 				Domain/MealTime.swift,
 				Domain/Nutrient.swift,
@@ -159,7 +159,6 @@
 				Scenes/ConsumedNutrientDetails/Workers/HtmlDocumentLoader.swift,
 				Scenes/ConsumedNutrientDetails/Workers/NutrientExplanationLoader.swift,
 				Scenes/ConsumedNutrientDetails/Workers/NutrientNumberToPropsMap.swift,
-				Scenes/Dashboard/Domain/DashboardCarbsSection.swift,
 				Scenes/Dashboard/Domain/DashboardMealList.swift,
 				Scenes/Dashboard/Domain/NutrientDataAggregator.swift,
 				Scenes/FoodDetails/Workers/FoodSaver.swift,

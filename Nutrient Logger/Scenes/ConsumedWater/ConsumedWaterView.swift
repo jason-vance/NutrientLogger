@@ -117,10 +117,10 @@ struct ConsumedWaterView: View {
                 ForEach(waterMealFoods) { waterMealFood in
                     Text(waterMealFood.mealTime.rawValue)
                         .listSubsectionHeader()
-                    ForEach(waterMealFood.foods.indices) { foodIndex in
+                    ForEach(Array(waterMealFood.foods.enumerated()), id: \.offset) { _, food in
                         ConsumedNutrientDetailsFoodRow(
                             nutrientNumber: FdcNutrientGroupMapper.NutrientNumber_Water,
-                            food: waterMealFood.foods[foodIndex]
+                            food: food
                         )
                     }
                 }

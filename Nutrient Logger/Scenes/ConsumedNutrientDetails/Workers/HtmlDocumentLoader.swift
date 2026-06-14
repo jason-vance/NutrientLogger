@@ -8,6 +8,10 @@
 import Foundation
 import SwiftSoup
 
+// SwiftSoup's Document is not marked Sendable, but it is safe to pass across
+// the Task boundary here since each call produces its own isolated instance.
+extension Document: @retroactive @unchecked Sendable { }
+
 public protocol HTMLDocumentLoader {
     func load(_ url: String) async -> Document
 }
