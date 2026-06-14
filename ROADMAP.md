@@ -1,0 +1,155 @@
+# Nutrient Logger — Release Roadmap
+*Starting point: v3.5 (current) | Generated June 2026*
+
+The goal of this roadmap is to convert a high-download, low-revenue app into a sustainable subscription business. Each release is scoped to be shippable in roughly 1–3 weeks of part-time work. Non-code tasks are included because they're often where releases fail commercially even when the code is solid.
+
+---
+
+## v3.6 — "Foundation" *(~1 week)*
+**Theme:** Zero-risk revenue improvements. No new code features, just fixing what's already broken about the business model.
+
+### Code
+- [ ] Reorder subscription products on the paywall — **show yearly plan first** (highest LTV, should be the default)
+- [ ] Rewrite `MarketingView` copy (see `STRATEGY.md` for suggested text — lead with offline/privacy, name specific features, remove "Helping me feed my family")
+- [ ] Add yearly plan savings callout (e.g. "Save 60% vs monthly")
+- [ ] Add simple **logging streak counter** to the Dashboard header (day count + flame icon). No notifications yet — just the visual. Store streak in UserDefaults; reset if no foods logged by midnight.
+
+### App Store Connect
+- [ ] **Raise subscription prices:**
+  - Monthly: $0.99 → $1.99
+  - Yearly: $1.99 → $9.99
+  - *(Existing subscribers are grandfathered automatically)*
+- [ ] Update subscription display names and descriptions in ASC to match new paywall copy
+- [ ] Verify free trial is active and set to 7 days on both products
+
+### Store Listing
+- [ ] Update **app subtitle** — current is likely generic; test "Offline Micronutrient & Vitamin Tracker"
+- [ ] Update **keyword field** — add: `micronutrient`, `vitamin tracker`, `mineral log`, `offline food log`, `nutrient deficiency`; drop low-volume generic terms like `food` or `health`
+- [ ] Update **description** to open with the offline/privacy angle and name the micronutrient depth as the key differentiator vs. MyFitnessPal/Cronometer
+- [ ] Update **What's New** text to mention price includes 7-day free trial
+
+---
+
+## v3.7 — "Habit Loop" *(~2 weeks)*
+**Theme:** Push notifications and streak protection. The single highest-ROI retention investment.
+
+### Code
+- [ ] Request notification permission during onboarding (post-setup, not on first launch)
+- [ ] **Daily logging reminder** — user sets a preferred time (e.g. "Remind me at 7pm if I haven't logged dinner"). Default: 8pm. Fire only if no food logged since noon.
+- [ ] **Streak-at-risk notification** — fire at 9pm if streak > 3 days and nothing logged today ("Don't break your 5-day streak! Log something before midnight.")
+- [ ] Persist streak to iCloud (via `NSUbiquitousKeyValueStore`) so it survives app reinstalls
+- [ ] **Smarter paywall trigger** — show `MarketingView` after the user completes their first full logging day (all 3 meal times have at least 1 food), not just from settings. Only show once per 30 days if dismissed.
+
+### App Store Connect
+- [ ] No product changes needed
+
+### Store Listing
+- [ ] Add new screenshot showing streak counter on dashboard
+- [ ] Add notification permission prompt to onboarding screenshots if applicable
+- [ ] Update **What's New**: "Daily reminders and streak tracking to build a lasting nutrition habit"
+
+---
+
+## v3.8 — "Log Anything" *(~2–3 weeks)*
+**Theme:** Barcode scanner. Removes the biggest logging friction for packaged foods. This is a marquee feature that will show up in reviews and word-of-mouth.
+
+### Code
+- [ ] Implement **barcode scanner** using `AVFoundation` (no third-party SDK needed)
+- [ ] Look up scanned UPC/EAN against a barcode-to-FDC mapping. Options:
+  - Open Food Facts API (free, large, open source) — best starting point
+  - USDA FDC branded foods database (already partially in `fdc_legacy.db` — check coverage)
+- [ ] Add camera permission usage description to `Info.plist`
+- [ ] Add barcode scan button to `FoodSearchView` toolbar (next to the search field)
+- [ ] Handle "not found" gracefully — suggest manual search fallback
+- [ ] **Calorie/macro goal setting** — audit `UserProfileView` and `UserService` to confirm custom calorie targets exist. If not, add a simple goal field (daily calories, protein target). This is prerequisite groundwork for v3.9 trend charts.
+
+### App Store Connect
+- [ ] Add camera permission justification (required for App Review)
+
+### Store Listing
+- [ ] New **feature screenshot**: barcode scanner in action
+- [ ] Add "Scan barcodes" to feature list in description
+- [ ] Update **What's New**: "New: Scan any barcode to instantly log packaged foods"
+- [ ] Consider **A/B test** on first screenshot (current vs. barcode scan as hero image) — this is now a visual hook that competing apps lead with
+
+---
+
+## v3.9 — "Premium Depth" *(~3 weeks)*
+**Theme:** Give subscribers concrete reasons they can't get elsewhere. Creates tangible value separation between free and premium tiers.
+
+### Code
+- [ ] **7-day and 30-day nutrient trend charts** (premium only)
+  - Aggregate `ConsumedFood` history by day for any selected nutrient
+  - Reuse/extend `ConsumedNutrientChart.swift` which already exists
+  - Show vs. RDI target line
+  - Gate behind `subscriptionManager.isSubscribed`
+- [ ] **Apple Health integration**
+  - Write consumed calories, protein, fat, carbs, water to `HKHealthStore`
+  - Request read permission for weight (to populate user profile automatically)
+  - Add toggle in `UserProfileView` to enable/disable sync
+- [ ] **Weight tracking**
+  - `WeightUnit.swift` already exists in Domain — build the UI on top of it
+  - Simple log view: date + weight entry, chart over time
+  - Sync weight entries to Apple Health if integration is enabled
+- [ ] Update paywall copy to list the three new premium features specifically
+
+### App Store Connect
+- [ ] No subscription product changes needed
+- [ ] Ensure HealthKit capability is added in the App ID (entitlements)
+
+### Store Listing
+- [ ] New screenshots showing trend charts and weight tracking
+- [ ] Update description premium features section
+- [ ] **What's New**: "Premium: nutrient trend charts, weight tracking, and Apple Health sync"
+- [ ] Submit for **App Store feature consideration** (apple.com/search) — HealthKit integration makes this more likely to be featured in Health & Fitness
+
+---
+
+## v4.0 — "New Chapter" *(~4–6 weeks)*
+**Theme:** Major milestone release. Justifies a full store listing refresh, potential press mention, and a reason for lapsed users to return. Version 4.0 signals maturity and intentional investment.
+
+### Code
+- [ ] **Onboarding flow redesign** — current `AppSetupView` gets users into the app but likely doesn't sell the value. New flow:
+  1. Hero screen: "Track every vitamin, mineral, and amino acid. Offline."
+  2. Goal setting: what are you tracking for? (general health / specific deficiency / diet protocol)
+  3. Profile setup (age, gender → RDI calculation)
+  4. Notification permission
+  5. Paywall (contextual, after they understand the value)
+- [ ] **iPad layout optimization** — implement proper split-view or sidebar navigation for iPad. You have iPad users from the Advanced 1st Aid HD days; this recovers them.
+- [ ] **Export (CSV)** as a premium feature — export all logged foods with nutrient data for a date range. Useful for users tracking for medical or clinical reasons (a natural Nutrient Logger audience).
+- [ ] **Nutrient deficiency insights** — a simple weekly digest view: "You've been consistently low in Vitamin D and Magnesium this week. Here are foods that would help." This is premium-only and differentiates from every macro-focused competitor.
+- [ ] Address the `//TODO: Days with foods hang for a second while loading` in `DashboardView.swift`
+
+### App Store Connect
+- [ ] Consider adding a **third subscription tier**: an annual "Family" or one-time lifetime purchase if StoreKit 2 supports it — v4.0 is a natural moment to introduce this
+- [ ] Prepare **promotional pricing** for launch week (introductory offer on yearly plan)
+
+### Store Listing
+- [ ] **Full screenshot refresh** — all new screens reflecting the redesigned onboarding and v4.0 UI
+- [ ] **App Preview video** (30-second screen recording) — barcode scan → dashboard with nutrient breakdown is a compelling 30 seconds
+- [ ] Update **app description** completely — the v4.0 feature set is now materially different from what shipped in v3.x
+- [ ] **Localization** — your EU install data (Germany #1, Netherlands, Sweden, Ireland) suggests German and Swedish localizations could meaningfully increase conversion in those markets. v4.0 is the right moment to invest.
+- [ ] Write a **launch blog post or Reddit post** in r/nutrition, r/carnivore, r/keto explaining the v4.0 story — what changed and why. Indie dev narrative resonates in those communities.
+
+---
+
+## Backlog (v4.x and beyond)
+
+These are worth tracking but don't have a clear version slot yet:
+
+- **AI photo logging** — the market is moving here fast (PlateLens, Nutrola). Expensive to build well; consider a third-party API (LogMeal, Calorie Mama) rather than training your own model.
+- **Carnivore/keto mode** — preset nutrient goals for specific diet protocols. Natural cross-sell with Carnivore Diet Guide & Recipes.
+- **Meal planning** — suggest meals based on nutrient gaps. High development cost but high premium value.
+- **Android** — only relevant if subscriber base grows to justify the port.
+
+---
+
+## ROI Summary
+
+| Version | Est. Effort | Primary Revenue Impact |
+|---------|-------------|------------------------|
+| v3.6 | ~1 week | Immediate — price increase 5x on yearly plan |
+| v3.7 | ~2 weeks | DAU increase → more trial starts |
+| v3.8 | ~2–3 weeks | Install increase (new keyword surface) + logging retention |
+| v3.9 | ~3 weeks | Subscription conversion (concrete premium features) |
+| v4.0 | ~4–6 weeks | Lapsed user reactivation + press/feature opportunity |
