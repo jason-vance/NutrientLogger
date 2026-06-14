@@ -42,7 +42,7 @@ struct MarketingView: View {
         guard yearly.price < annualCostIfMonthly else { return nil }
 
         let savings = (annualCostIfMonthly - yearly.price) / annualCostIfMonthly
-        return NSDecimalNumber(decimal: savings * 100).intValue
+        return Int(NSDecimalNumber(decimal: savings * 100).doubleValue)
     }
     
     private func doPurchase(productId: String) {

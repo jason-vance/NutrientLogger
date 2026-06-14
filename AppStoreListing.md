@@ -3,25 +3,23 @@
 ## Title (?/30 chars)
 Nutrient Logger Food Tracker
 
-## Subtitle (?/30 chars)
-Track Vitamins Minerals Macros
+## Subtitle (29/30 chars)
+Micronutrients, Fully Offline
 
 ## Categories
 - Primary: Lifestyle
 - Secondary: Health & Fitness
 
-## Keywords (?/100 chars)
-diet,nutrition,micro,usda,meal,carnivore,vegan,keto,cronometer,kito,vitacost,nutritionix,daily,carb
+## Keywords (100/100 chars)
+vitamin,mineral,deficiency,cronometer,myfitnesspal,vitacost,carnivore,keto,vegan,macro,usda,diet,log
 
 ## Promotional Text (0/170 chars)
-
+Try Premium free for 7 days — unlock full nutrient breakdowns and personalized targets. Plus, build your habit with the new daily streak counter!
 
 ## Description
-Nutrient Logger – Track What Truly Matters
+Nutrient Logger is the offline-first nutrition tracker for people who want to know what's actually in their food — not just calories and macros, but the full spectrum of vitamins, minerals, and amino acids your body needs.
 
-Take your food logging to the next level with Nutrient Logger, the app that puts the spotlight on not just macros—but the full spectrum of nutrients your body needs to thrive.
-
-Whether you’re tracking vitamins, minerals, or the usual carbs and protein, Nutrient Logger gives you a clear, day-by-day view of what you’re actually putting into your body.
+Unlike cloud-based trackers, your food log never leaves your device. And unlike macro-focused apps, every entry breaks down 80+ nutrients so you can spot gaps before they become deficiencies.
 
 Key Features:
 
@@ -45,5 +43,5 @@ Nutrient Logger is perfect for anyone serious about nutrition—whether you’re
 
 * Apple Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v3.5)
-Fixed an issue where certain nutrient amounts would not be converted to the correct unit
+## What's New (v3.6)
+New: A daily logging streak counter on the Dashboard to help you build the habit. Premium now includes a 7-day free trial — try it risk-free.
