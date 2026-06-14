@@ -25,9 +25,24 @@ struct MarketingView: View {
     @State private var isCheckingDiscountCode = false
     
     private var displayProducts: [Product] {
+        // Highest price first so the yearly plan (best value/LTV) is shown before monthly.
         subscriptionManager.products
             .map { $0.value }
-            .sorted { $0.price < $1.price }
+            .sorted { $0.price > $1.price }
+    }
+
+    private var yearlySavingsPercent: Int? {
+        guard let monthly = subscriptionManager.products[SubscriptionManager.monthlyProductId],
+              let yearly = subscriptionManager.products[SubscriptionManager.yearlyProductId],
+              monthly.price > 0 else {
+            return nil
+        }
+
+        let annualCostIfMonthly = monthly.price * 12
+        guard yearly.price < annualCostIfMonthly else { return nil }
+
+        let savings = (annualCostIfMonthly - yearly.price) / annualCostIfMonthly
+        return NSDecimalNumber(decimal: savings * 100).intValue
     }
     
     private func doPurchase(productId: String) {
@@ -142,29 +157,29 @@ struct MarketingView: View {
             .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
             .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 0)
             .padding(.bottom, 16)
-        
+
         HStack {
-            Text("Unlock More Features!")
+            Text("Unlock Nutrient Logger Premium")
                 .font(.system(size: 28, weight: .bold))
             Spacer()
         }
-        
+
         HStack {
-            Text("As a Nutrient Logger Premium subscriber you will get the following benefits:")
+            Text("Track every vitamin, mineral, and amino acid — completely offline. Your data never leaves your device.")
                 .foregroundStyle(.secondary)
             Spacer()
         }
-        
+
         VStack {
-            MarketingPoint("Full access to all premium features")
-            MarketingPoint("Helping me feed my family")
-            MarketingPoint("Completely ad free experience")
+            MarketingPoint("Completely ad-free experience")
+            MarketingPoint("Support an independent developer")
+            MarketingPoint("Priority email support")
         }
         .padding(.top, 8)
-        
+
         HStack {
             Spacer()
-            Text("And the first week is absolutely free!")
+            Text("Your first 7 days are free. Cancel anytime.")
                 .foregroundStyle(.secondary)
             Spacer()
         }
@@ -189,33 +204,48 @@ struct MarketingView: View {
     }
     
     @ViewBuilder private func SubscribeButton(product: Product) -> some View {
-        Button {
-            doPurchase(productId: product.id)
-        } label: {
-            HStack(spacing: 0) {
-                Text(product.displayName)
-                    .font(.body.bold())
-                    .multilineTextAlignment(.leading)
-                Spacer()
-                VStack(alignment: .trailing) {
-                    Text(product.displayPrice)
+        VStack(alignment: .trailing, spacing: 4) {
+            if product.id == SubscriptionManager.yearlyProductId, let percent = yearlySavingsPercent {
+                SavingsBadge(percent: percent)
+            }
+
+            Button {
+                doPurchase(productId: product.id)
+            } label: {
+                HStack(spacing: 0) {
+                    Text(product.displayName)
                         .font(.body.bold())
-                    if let period = product.subscription?.subscriptionPeriod.unit.localizedDescription {
-                        Text("/\(period.lowercased())")
-                            .font(.footnote)
+                        .multilineTextAlignment(.leading)
+                    Spacer()
+                    VStack(alignment: .trailing) {
+                        Text(product.displayPrice)
+                            .font(.body.bold())
+                        if let period = product.subscription?.subscriptionPeriod.unit.localizedDescription {
+                            Text("/\(period.lowercased())")
+                                .font(.footnote)
+                        }
                     }
                 }
+                .foregroundStyle(Color.white)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 24)
+                .background {
+                    RoundedRectangle(cornerRadius: .infinity, style: .continuous)
+                        .foregroundStyle(Color.accentColor.gradient)
+                }
             }
-            .foregroundStyle(Color.white)
-            .padding(.vertical, 8)
-            .padding(.horizontal, 24)
-            .background {
-                RoundedRectangle(cornerRadius: .infinity, style: .continuous)
-                    .foregroundStyle(Color.accentColor.gradient)
-            }
+            .disabled(isPurchasing)
         }
-        .disabled(isPurchasing)
         .padding(.top, 8)
+    }
+
+    @ViewBuilder private func SavingsBadge(percent: Int) -> some View {
+        Text("Save \(percent)% vs. Monthly")
+            .font(.caption.bold())
+            .foregroundStyle(Color.white)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 2)
+            .background(Capsule().foregroundStyle(Color.green.gradient))
     }
     
     @ViewBuilder private func DiscountCodeButton() -> some View {

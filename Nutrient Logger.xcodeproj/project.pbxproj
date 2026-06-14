@@ -77,6 +77,7 @@
 				Domain/ConsumedFood.swift,
 				Domain/DailySummary.swift,
 				Domain/FoodItem.swift,
+				Domain/LoggingStreak.swift,
 				Domain/MealTime.swift,
 				Domain/Nutrient.swift,
 				Domain/NutrientFoodPair.swift,

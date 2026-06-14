@@ -23,7 +23,23 @@ struct DashboardView: View {
     @State private var date: SimpleDate = .today
     @State private var showDatePicker: Bool = false
     @Query private var consumedFoods: [ConsumedFood]
-    
+
+    @AppStorage("loggingStreakCount") private var loggingStreakCount: Int = 0
+    @AppStorage("loggingStreakLastLoggedDate") private var loggingStreakLastLoggedDateRaw: Int = 0
+
+    private var loggedFoodToday: Bool {
+        consumedFoods.contains { $0.dateLogged == .today }
+    }
+
+    private func updateLoggingStreak() {
+        let lastLoggedDate = SimpleDate(rawValue: UInt32(loggingStreakLastLoggedDateRaw))
+        let streak = LoggingStreak(count: loggingStreakCount, lastLoggedDate: lastLoggedDate)
+            .updated(loggedToday: loggedFoodToday)
+
+        loggingStreakCount = streak.count
+        loggingStreakLastLoggedDateRaw = streak.lastLoggedDate.map { Int($0) } ?? 0
+    }
+
     private var todaysConsumedFoods: [ConsumedFood] {
 //        return FoodItem.sampleFoods
 //            .map {
@@ -98,6 +114,7 @@ struct DashboardView: View {
         .toolbar { Toolbar() }
         .navigationTitle(Text(navigationTitle))
         .onChange(of: todaysConsumedFoods, initial: true) { fetchFoods() }
+        .onChange(of: loggedFoodToday, initial: true) { _, _ in updateLoggingStreak() }
         .animation(.snappy, value: date)
         .animation(.snappy, value: todaysConsumedFoods)
         .animation(.snappy, value: foodItems)
@@ -121,6 +138,21 @@ struct DashboardView: View {
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
             DateButton()
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            StreakBadge()
+        }
+    }
+
+    @ViewBuilder private func StreakBadge() -> some View {
+        if loggingStreakCount > 0 {
+            HStack(spacing: 4) {
+                Image(systemName: "flame.fill")
+                    .foregroundStyle(.orange)
+                Text("\(loggingStreakCount)")
+                    .font(.subheadline.bold())
+                    .contentTransition(.numericText())
+            }
         }
     }
     
