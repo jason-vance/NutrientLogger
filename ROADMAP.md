@@ -3,6 +3,8 @@
 
 The goal of this roadmap is to convert a high-download, low-revenue app into a sustainable subscription business. Each release is scoped to be shippable in roughly 1–3 weeks of part-time work. Non-code tasks are included because they're often where releases fail commercially even when the code is solid.
 
+**Testing convention:** Test coverage is currently thin (~9 test files, mostly Domain/FoodModels). Starting with v3.6, each new feature that includes non-trivial logic (streaks, goals, chart aggregation, etc.) should ship with unit tests covering that logic — especially date-boundary, precedence/fallback, and aggregation edge cases. Don't retrofit later.
+
 ---
 
 ## v3.6 — "Foundation" *(~1 week)*
@@ -61,7 +63,12 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [ ] Add camera permission usage description to `Info.plist`
 - [ ] Add barcode scan button to `FoodSearchView` toolbar (next to the search field)
 - [ ] Handle "not found" gracefully — suggest manual search fallback
-- [ ] **Calorie/macro goal setting** — audit `UserProfileView` and `UserService` to confirm custom calorie targets exist. If not, add a simple goal field (daily calories, protein target). This is prerequisite groundwork for v3.9 trend charts.
+- [ ] **Calorie/macro goal setting** — confirmed missing (see `UserProfileView.swift` TODO at line 42; `User` model has no goal fields). Scope as its own feature, not a quick audit:
+  - Add persisted goal fields to the `User` model (daily calorie target, optional macro targets)
+  - Add UI in `UserProfileView` to set/edit goals, with sensible RDI-derived defaults
+  - Update dashboard comparisons to use custom goals when set, falling back to RDI/USDA values otherwise
+  - This is prerequisite groundwork for v3.9 trend charts (need a target line to plot against)
+  - Add unit tests for goal precedence logic (custom goal vs. RDI fallback) and any date-boundary handling
 
 ### App Store Connect
 - [ ] Add camera permission justification (required for App Review)
@@ -115,7 +122,11 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   3. Profile setup (age, gender → RDI calculation)
   4. Notification permission
   5. Paywall (contextual, after they understand the value)
-- [ ] **iPad layout optimization** — implement proper split-view or sidebar navigation for iPad. You have iPad users from the Advanced 1st Aid HD days; this recovers them.
+- [ ] **iPad app — new platform target, not an optimization.** The main app is currently `TARGETED_DEVICE_FAMILY = 1` (iPhone-only); it doesn't run on iPad at all today. v4.0 is the right time to introduce it properly:
+  - Enable iPad in the device family / App ID capabilities
+  - Build a proper iPad layout (e.g. `NavigationSplitView` / sidebar) rather than scaling the iPhone UI
+  - Test all major flows (dashboard, search, logging, charts, settings) at iPad sizes
+  - You have iPad users from the Advanced 1st Aid HD days; this is a genuine new-platform launch that can recapture them
 - [ ] **Export (CSV)** as a premium feature — export all logged foods with nutrient data for a date range. Useful for users tracking for medical or clinical reasons (a natural Nutrient Logger audience).
 - [ ] **Nutrient deficiency insights** — a simple weekly digest view: "You've been consistently low in Vitamin D and Magnesium this week. Here are foods that would help." This is premium-only and differentiates from every macro-focused competitor.
 - [ ] Address the `//TODO: Days with foods hang for a second while loading` in `DashboardView.swift`
