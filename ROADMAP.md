@@ -36,14 +36,14 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 **Theme:** Push notifications and streak protection. The single highest-ROI retention investment.
 
 ### Code
-- [ ] Request notification permission during onboarding (post-setup, not on first launch)
-- [ ] **Daily logging reminder** — user sets a preferred time (e.g. "Remind me at 7pm if I haven't logged dinner"). Default: 8pm. Fire only if no food logged since noon.
-- [ ] **Streak-at-risk notification** — fire at 9pm if streak > 3 days and nothing logged today ("Don't break your 5-day streak! Log something before midnight.")
-- [ ] Persist streak to iCloud (via `NSUbiquitousKeyValueStore`) so it survives app reinstalls
-- [ ] **Smarter paywall trigger** — show `MarketingView` after the user completes their first full logging day (all 3 meal times have at least 1 food), not just from settings. Only show once per 30 days if dismissed.
+- [x] Request notification permission during onboarding (post-setup, not on first launch)
+- [x] **Daily logging reminder** — user sets a preferred time (e.g. "Remind me at 7pm if I haven't logged dinner"). Default: 8pm. Fire only if no food logged since noon.
+- [x] **Streak-at-risk notification** — fire at 9pm if streak > 3 days and nothing logged today ("Don't break your 5-day streak! Log something before midnight.")
+- [x] Persist streak to iCloud (via `NSUbiquitousKeyValueStore`) so it survives app reinstalls
+- [x] **Smarter paywall trigger** — show `MarketingView` after the user completes their first full logging day (all 3 meal times have at least 1 food), not just from settings. Only show once per 30 days if dismissed.
 
 ### App Store Connect
-- [ ] No product changes needed
+- [x] No product changes needed
 
 ### Store Listing
 - [ ] Add new screenshot showing streak counter on dashboard

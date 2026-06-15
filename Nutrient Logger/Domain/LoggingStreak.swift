@@ -35,4 +35,20 @@ struct LoggingStreak: Equatable {
             return self
         }
     }
+
+    /// Reconciles a locally-stored streak with the copy persisted in iCloud.
+    ///
+    /// This handles the case where the app was reinstalled and local storage was wiped, but
+    /// iCloud retains the previous streak. The streak with the more recently logged date wins,
+    /// since it reflects the most up-to-date activity; ties prefer the higher count.
+    static func reconciled(local: LoggingStreak, remote: LoggingStreak) -> LoggingStreak {
+        guard let localDate = local.lastLoggedDate else { return remote }
+        guard let remoteDate = remote.lastLoggedDate else { return local }
+
+        if localDate == remoteDate {
+            return local.count >= remote.count ? local : remote
+        }
+
+        return localDate > remoteDate ? local : remote
+    }
 }

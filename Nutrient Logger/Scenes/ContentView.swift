@@ -15,9 +15,13 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     
     @EnvironmentObject private var dataController: DataController
-    
+
     @State private var isSetup: Bool = false
-    
+    @State private var showNotificationPrompt: Bool = false
+
+    @AppStorage("hasLaunchedAppBefore") private var hasLaunchedAppBefore: Bool = false
+    @AppStorage("hasPromptedForNotifications") private var hasPromptedForNotifications: Bool = false
+
     private func onScenePhaseChange(old: ScenePhase, new: ScenePhase) {
         switch new {
         case .background, .inactive:
@@ -26,23 +30,49 @@ struct ContentView: View {
                 try? await Task.sleep(for: .seconds(0.75))
                 WidgetCenter.shared.reloadAllTimelines()
             }
+            NotificationCoordinator.reschedule(modelContext: modelContext)
             break
         default:
             break
         }
-        
+
     }
-    
+
+    private func onSetupComplete() {
+        if !hasLaunchedAppBefore {
+            // Don't interrupt the very first launch with a permission prompt.
+            hasLaunchedAppBefore = true
+        } else if !hasPromptedForNotifications {
+            showNotificationPrompt = true
+        }
+    }
+
+    private func onNotificationPromptComplete() {
+        hasPromptedForNotifications = true
+        showNotificationPrompt = false
+        NotificationCoordinator.reschedule(modelContext: modelContext)
+    }
+
     var body: some View {
         AppSetupRouter()
             .animation(.snappy, value: isSetup)
+            .animation(.snappy, value: showNotificationPrompt)
             .onChange(of: scenePhase, onScenePhaseChange)
+            .onChange(of: isSetup) { _, newIsSetup in
+                if newIsSetup {
+                    onSetupComplete()
+                }
+            }
     }
-    
+
     @ViewBuilder private func AppSetupRouter() -> some View {
         ZStack {
             if isSetup {
-                MainContent()
+                if showNotificationPrompt {
+                    NotificationPermissionPromptView(onComplete: onNotificationPromptComplete)
+                } else {
+                    MainContent()
+                }
             } else {
                 AppSetupView(isSetup: $isSetup)
             }

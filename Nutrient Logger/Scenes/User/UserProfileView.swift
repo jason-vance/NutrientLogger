@@ -9,21 +9,49 @@ import SwiftUI
 import SwinjectAutoregistration
 
 struct UserProfileView: View {
-    
+
+    @Environment(\.modelContext) private var modelContext
+
     @EnvironmentObject private var adProviderFactory: AdProviderFactory
     @State private var adProvider: AdProvider?
     @State private var ad: Ad?
-    
+
     @Inject private var userService: UserService
-    
+
     @State private var user: User?
-    
+
     @State private var showFavoriteColorPicker: Bool = false
-    
+
+    @AppStorage(NotificationSettings.dailyReminderEnabledKey)
+    private var dailyReminderEnabled = NotificationSettings.defaultDailyReminderEnabled
+    @AppStorage(NotificationSettings.dailyReminderHourKey)
+    private var dailyReminderHour = NotificationSettings.defaultDailyReminderHour
+    @AppStorage(NotificationSettings.dailyReminderMinuteKey)
+    private var dailyReminderMinute = NotificationSettings.defaultDailyReminderMinute
+
+    private var dailyReminderTime: Binding<Date> {
+        Binding(
+            get: {
+                Calendar.current.date(
+                    bySettingHour: dailyReminderHour,
+                    minute: dailyReminderMinute,
+                    second: 0,
+                    of: .now
+                ) ?? .now
+            },
+            set: { newDate in
+                let components = Calendar.current.dateComponents([.hour, .minute], from: newDate)
+                dailyReminderHour = components.hour ?? NotificationSettings.defaultDailyReminderHour
+                dailyReminderMinute = components.minute ?? NotificationSettings.defaultDailyReminderMinute
+                rescheduleNotifications()
+            }
+        )
+    }
+
     private func fetchUser() {
         self.user = userService.currentUser
     }
-    
+
     private func saveUser() {
         guard let user else { return }
         Task {
@@ -34,12 +62,17 @@ struct UserProfileView: View {
             }
         }
     }
-    
+
+    private func rescheduleNotifications() {
+        NotificationCoordinator.reschedule(modelContext: modelContext)
+    }
+
     var body: some View {
         List {
             NativeAdListRow(ad: $ad, size: .small)
             ProfileSettingsSection()
             //TODO: Add custom nutrient goals
+            NotificationSettingsSection()
             UserMealsSection()
             NutrientLibrarySection()
             LegalSection()
@@ -56,12 +89,24 @@ struct UserProfileView: View {
             ))
         }
     }
-    
+
     @ViewBuilder private func ProfileSettingsSection() -> some View {
         Section(header: Text("Profile Settings")) {
             BirthdateField()
             GenderField()
             FavoriteColorField()
+        }
+    }
+
+    @ViewBuilder private func NotificationSettingsSection() -> some View {
+        Section(header: Text("Notifications")) {
+            Toggle("Daily Logging Reminder", isOn: $dailyReminderEnabled)
+                .onChange(of: dailyReminderEnabled) { rescheduleNotifications() }
+                .listRowDefaultModifiers()
+            if dailyReminderEnabled {
+                DatePicker("Reminder Time", selection: dailyReminderTime, displayedComponents: .hourAndMinute)
+                    .listRowDefaultModifiers()
+            }
         }
     }
     

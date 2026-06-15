@@ -74,11 +74,16 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets.xcassets,
+				Domain/AutoMarketingPromptTrigger.swift,
 				Domain/ConsumedFood.swift,
 				Domain/DailySummary.swift,
 				Domain/FoodItem.swift,
+				Domain/FullLoggingDay.swift,
 				Domain/LoggingStreak.swift,
+				Domain/LoggingStreakStore.swift,
 				Domain/MealTime.swift,
+				Domain/Notifications/NotificationPlanner.swift,
+				Domain/Notifications/NotificationSettings.swift,
 				Domain/Nutrient.swift,
 				Domain/NutrientFoodPair.swift,
 				Domain/NutrientGroup.swift,

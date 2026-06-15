@@ -13,31 +13,61 @@ import SwinjectAutoregistration
 struct DashboardView: View {
     
     @Environment(\.scenePhase) private var scenePhase
-    
+    @Environment(\.modelContext) private var modelContext
+
     @EnvironmentObject private var adProviderFactory: AdProviderFactory
+    @EnvironmentObject private var subscriptionManager: SubscriptionManager
     @State private var adProvider: AdProvider?
     @State private var ad: Ad?
-    
+
     @Inject private var remoteDatabase: RemoteDatabase
-    
+
     @State private var date: SimpleDate = .today
     @State private var showDatePicker: Bool = false
     @Query private var consumedFoods: [ConsumedFood]
 
     @AppStorage("loggingStreakCount") private var loggingStreakCount: Int = 0
     @AppStorage("loggingStreakLastLoggedDate") private var loggingStreakLastLoggedDateRaw: Int = 0
+    @AppStorage("lastAutoMarketingPromptDate") private var lastAutoMarketingPromptDateRaw: Int = 0
+
+    @State private var showAutoMarketingView: Bool = false
+
+    private var todaysFoods: [ConsumedFood] {
+        consumedFoods.filter { $0.dateLogged == .today }
+    }
 
     private var loggedFoodToday: Bool {
-        consumedFoods.contains { $0.dateLogged == .today }
+        !todaysFoods.isEmpty
     }
 
     private func updateLoggingStreak() {
-        let lastLoggedDate = SimpleDate(rawValue: UInt32(loggingStreakLastLoggedDateRaw))
-        let streak = LoggingStreak(count: loggingStreakCount, lastLoggedDate: lastLoggedDate)
-            .updated(loggedToday: loggedFoodToday)
+        let store = LoggingStreakStore()
+        let streak = store.load().updated(loggedToday: loggedFoodToday)
 
         loggingStreakCount = streak.count
         loggingStreakLastLoggedDateRaw = streak.lastLoggedDate.map { Int($0) } ?? 0
+
+        store.save(streak)
+    }
+
+    private func checkAutoMarketingPrompt() {
+        let isFullDay = FullLoggingDay.isComplete(todaysFoods, on: .today)
+        let lastShown = SimpleDate(rawValue: UInt32(lastAutoMarketingPromptDateRaw))
+
+        if AutoMarketingPromptTrigger.shouldShow(
+            isFullLoggingDay: isFullDay,
+            isSubscribed: subscriptionManager.isSubscribed,
+            lastShownDate: lastShown
+        ) {
+            lastAutoMarketingPromptDateRaw = Int(SimpleDate.today)
+            showAutoMarketingView = true
+        }
+    }
+
+    private func onTodaysFoodsChanged() {
+        updateLoggingStreak()
+        checkAutoMarketingPrompt()
+        NotificationCoordinator.reschedule(modelContext: modelContext)
     }
 
     private var todaysConsumedFoods: [ConsumedFood] {
@@ -114,11 +144,14 @@ struct DashboardView: View {
         .toolbar { Toolbar() }
         .navigationTitle(Text(navigationTitle))
         .onChange(of: todaysConsumedFoods, initial: true) { fetchFoods() }
-        .onChange(of: loggedFoodToday, initial: true) { _, _ in updateLoggingStreak() }
+        .onChange(of: todaysFoods, initial: true) { _, _ in onTodaysFoodsChanged() }
         .animation(.snappy, value: date)
         .animation(.snappy, value: todaysConsumedFoods)
         .animation(.snappy, value: foodItems)
         .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
+        .fullScreenCover(isPresented: $showAutoMarketingView) {
+            MarketingView()
+        }
         .sheet(isPresented: $showDatePicker) {
             DatePicker(
                 "Date",

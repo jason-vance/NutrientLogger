@@ -66,4 +66,42 @@ struct LoggingStreakTests {
         #expect(streak.count == 0)
         #expect(streak.lastLoggedDate == nil)
     }
+
+    @Test func testReconciledPrefersRemoteWhenLocalIsEmpty() throws {
+        let remote = LoggingStreak(count: 5, lastLoggedDate: yesterday)
+
+        let reconciled = LoggingStreak.reconciled(local: .empty, remote: remote)
+
+        #expect(reconciled == remote)
+    }
+
+    @Test func testReconciledPrefersLocalWhenRemoteIsEmpty() throws {
+        let local = LoggingStreak(count: 5, lastLoggedDate: yesterday)
+
+        let reconciled = LoggingStreak.reconciled(local: local, remote: .empty)
+
+        #expect(reconciled == local)
+    }
+
+    @Test func testReconciledStaysEmptyWhenBothAreEmpty() throws {
+        let reconciled = LoggingStreak.reconciled(local: .empty, remote: .empty)
+
+        #expect(reconciled == .empty)
+    }
+
+    @Test func testReconciledPrefersTheMoreRecentlyLoggedStreak() throws {
+        let local = LoggingStreak(count: 2, lastLoggedDate: twoDaysAgo)
+        let remote = LoggingStreak(count: 9, lastLoggedDate: yesterday)
+
+        #expect(LoggingStreak.reconciled(local: local, remote: remote) == remote)
+        #expect(LoggingStreak.reconciled(local: remote, remote: local) == remote)
+    }
+
+    @Test func testReconciledPrefersTheHigherCountWhenLastLoggedDatesMatch() throws {
+        let lowerCount = LoggingStreak(count: 3, lastLoggedDate: today)
+        let higherCount = LoggingStreak(count: 7, lastLoggedDate: today)
+
+        #expect(LoggingStreak.reconciled(local: lowerCount, remote: higherCount) == higherCount)
+        #expect(LoggingStreak.reconciled(local: higherCount, remote: lowerCount) == higherCount)
+    }
 }
