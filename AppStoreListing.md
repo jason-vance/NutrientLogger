@@ -1,7 +1,7 @@
 # App Store Listing — Nutrient Logger
 
 ## Title (?/30 chars)
-Nutrient Logger Food Tracker
+Nutrient Logger - Food Tracker
 
 ## Subtitle (29/30 chars)
 Micronutrients, Fully Offline
@@ -43,5 +43,5 @@ Nutrient Logger is perfect for anyone serious about nutrition—whether you’re
 
 * Apple Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v3.6)
-New: A daily logging streak counter on the Dashboard to help you build the habit. Premium now includes a 7-day free trial — try it risk-free.
+## What's New (v3.7)
+New: Daily reminders and streak tracking to build a lasting nutrition habit. Premium now includes a 7-day free trial — try it risk-free.

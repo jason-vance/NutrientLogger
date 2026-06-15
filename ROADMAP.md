@@ -32,7 +32,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ---
 
-## v3.7 — "Habit Loop" *(~2 weeks)*
+## v3.7 — "Habit Loop" *(~2 weeks)* ✅ Done
 **Theme:** Push notifications and streak protection. The single highest-ROI retention investment.
 
 ### Code
@@ -46,9 +46,9 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [x] No product changes needed
 
 ### Store Listing
-- [ ] Add new screenshot showing streak counter on dashboard
-- [ ] Add notification permission prompt to onboarding screenshots if applicable
-- [ ] Update **What's New**: "Daily reminders and streak tracking to build a lasting nutrition habit"
+- [x] Add new screenshot showing streak counter on dashboard
+- [x] Add notification permission prompt to onboarding screenshots if applicable
+- [x] Update **What's New**: "Daily reminders and streak tracking to build a lasting nutrition habit"
 
 ---
 
