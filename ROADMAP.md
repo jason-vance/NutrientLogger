@@ -1,5 +1,5 @@
 # Nutrient Logger — Release Roadmap
-*Starting point: v3.6 (current) | Generated June 2026*
+*Starting point: v3.6 (current) | Generated June 2026 | Revised June 2026 after App Store review analysis*
 
 The goal of this roadmap is to convert a high-download, low-revenue app into a sustainable subscription business. Each release is scoped to be shippable in roughly 1–3 weeks of part-time work. Non-code tasks are included because they're often where releases fail commercially even when the code is solid.
 
@@ -53,7 +53,51 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 ---
 
 ## v3.8 — "Log Anything" *(~2–3 weeks)*
-**Theme:** Barcode scanner. Removes the biggest logging friction for packaged foods. This is a marquee feature that will show up in reviews and word-of-mouth.
+**Theme:** Custom food entry. App Store review analysis (20 reviews, Nov 2020–Aug 2024) showed the app's negative reviews aren't about value — they're almost all "the data is great but I can't log what I'm actually eating." Manual food entry is the single most-requested feature and the biggest driver of 1-star reviews, so it leads the roadmap now.
+
+### Code
+- [ ] **Manual/custom food entry** — when search comes up empty, let the user create a food from scratch: name, serving unit/size, and nutrient values (calories, macros, and as many tracked micronutrients as they want to fill in; unfilled nutrients default to 0/unknown rather than blocking save)
+  - New `CustomFood`-style model + local persistence
+  - Surface custom foods as a result type in `FoodSearchView` alongside Recently Logged / FDC / User Meals
+  - Allow editing and deleting custom foods later
+- [ ] **Saveable custom foods** — once created, a custom food is reusable (covers the "save my daily smoothie and reuse it" request), which falls naturally out of the model above
+- [ ] **Delete whole meal** — add a delete action on the meal header in `ConsumedMealsView` to remove every food logged under one meal time in a single action
+- [ ] Audit `NutrientInfoView` content coverage — make sure every tracked nutrient (including edge cases like Ash) has a plain-language explanation of what it is and what too-high/too-low means; fill any gaps
+- [ ] Add unit tests for custom food persistence and nutrient calculation with partially-filled nutrient data
+
+### App Store Connect
+- [ ] No product changes needed
+
+### Store Listing
+- [ ] New screenshot: custom food entry screen
+- [ ] Update **What's New**: "Can't find a food? Add it yourself — and save it for next time."
+- [ ] Update description: "log anything — search our database or add your own"
+
+---
+
+## v3.9 — "Set Your Targets" *(~2 weeks)*
+**Theme:** Calorie/macro goal setting, plus a food-search quality pass. Goal-setting is prerequisite groundwork for v3.11's trend charts; search-matching fixes were called out repeatedly in review feedback and are a quick, contained win while `FoodSearchView` is already in scope.
+
+### Code
+- [ ] **Improve food search matching** — reduce false-positive matches surfaced in reviews (e.g. searching "peas" returning peaches/pears) and improve discoverability for items that currently require unintuitive search terms (e.g. cinnamon only found via "spice, cinnamon")
+- [ ] **Calorie/macro goal setting** — confirmed missing (see `UserProfileView.swift` TODO at line 42; `User` model has no goal fields). Scope as its own feature, not a quick audit:
+  - Add persisted goal fields to the `User` model (daily calorie target, optional macro targets)
+  - Add UI in `UserProfileView` to set/edit goals, with sensible RDI-derived defaults
+  - Update dashboard comparisons to use custom goals when set, falling back to RDI/USDA values otherwise
+  - This is prerequisite groundwork for v3.11 trend charts (need a target line to plot against)
+  - Add unit tests for goal precedence logic (custom goal vs. RDI fallback) and any date-boundary handling
+
+### App Store Connect
+- [ ] No product changes needed
+
+### Store Listing
+- [ ] Update **What's New**: "Set your own calorie and macro goals — see how today compares"
+- [ ] Update description to mention custom goal setting
+
+---
+
+## v3.10 — "Scan" *(~2 weeks)*
+**Theme:** Barcode scanner, on its own. Removes the biggest remaining logging friction for packaged foods, and pairs naturally with v3.8's custom-food entry as the fallback for anything a scan doesn't find. This is a marquee feature that will show up in reviews and word-of-mouth.
 
 ### Code
 - [ ] Implement **barcode scanner** using `AVFoundation` (no third-party SDK needed)
@@ -62,13 +106,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   - USDA FDC branded foods database (already partially in `fdc_legacy.db` — check coverage)
 - [ ] Add camera permission usage description to `Info.plist`
 - [ ] Add barcode scan button to `FoodSearchView` toolbar (next to the search field)
-- [ ] Handle "not found" gracefully — suggest manual search fallback
-- [ ] **Calorie/macro goal setting** — confirmed missing (see `UserProfileView.swift` TODO at line 42; `User` model has no goal fields). Scope as its own feature, not a quick audit:
-  - Add persisted goal fields to the `User` model (daily calorie target, optional macro targets)
-  - Add UI in `UserProfileView` to set/edit goals, with sensible RDI-derived defaults
-  - Update dashboard comparisons to use custom goals when set, falling back to RDI/USDA values otherwise
-  - This is prerequisite groundwork for v3.9 trend charts (need a target line to plot against)
-  - Add unit tests for goal precedence logic (custom goal vs. RDI fallback) and any date-boundary handling
+- [ ] Handle "not found" gracefully — fall back to manual search, and from there to the v3.8 custom-food-entry flow as the ultimate fallback
 
 ### App Store Connect
 - [ ] Add camera permission justification (required for App Review)
@@ -81,7 +119,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ---
 
-## v3.9 — "Premium Depth" *(~3 weeks)*
+## v3.11 — "Premium Depth" *(~3 weeks)*
 **Theme:** Give subscribers concrete reasons they can't get elsewhere. Creates tangible value separation between free and premium tiers.
 
 ### Code
@@ -148,6 +186,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 These are worth tracking but don't have a clear version slot yet:
 
+- **Food database coverage** — evaluate supplementing or replacing the underlying food database to close common-food gaps surfaced in reviews (beyond the search-ranking fix in v3.9). Separate problem from matching/ranking: this is about what's *in* the database, not how it's found.
 - **AI photo logging** — the market is moving here fast (PlateLens, Nutrola). Expensive to build well; consider a third-party API (LogMeal, Calorie Mama) rather than training your own model.
 - **Carnivore/keto mode** — preset nutrient goals for specific diet protocols. Natural cross-sell with Carnivore Diet Guide & Recipes.
 - **Meal planning** — suggest meals based on nutrient gaps. High development cost but high premium value.
@@ -161,6 +200,8 @@ These are worth tracking but don't have a clear version slot yet:
 |---------|-------------|------------------------|
 | v3.6 | ~1 week | Immediate — price increase 5x on yearly plan |
 | v3.7 | ~2 weeks | DAU increase → more trial starts |
-| v3.8 | ~2–3 weeks | Install increase (new keyword surface) + logging retention |
-| v3.9 | ~3 weeks | Subscription conversion (concrete premium features) |
+| v3.8 | ~2–3 weeks | Defuses majority of 1-star reviews (custom food entry) → rating recovery + conversion |
+| v3.9 | ~2 weeks | Logging retention (goal-setting) + search quality; groundwork for v3.11 |
+| v3.10 | ~2 weeks | Install increase (new keyword surface) + logging retention |
+| v3.11 | ~3 weeks | Subscription conversion (concrete premium features) |
 | v4.0 | ~4–6 weeks | Lapsed user reactivation + press/feature opportunity |
