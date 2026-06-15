@@ -1,5 +1,5 @@
 # Nutrient Logger — Release Roadmap
-*Starting point: v3.5 (current) | Generated June 2026*
+*Starting point: v3.6 (current) | Generated June 2026*
 
 The goal of this roadmap is to convert a high-download, low-revenue app into a sustainable subscription business. Each release is scoped to be shippable in roughly 1–3 weeks of part-time work. Non-code tasks are included because they're often where releases fail commercially even when the code is solid.
 
@@ -7,28 +7,28 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ---
 
-## v3.6 — "Foundation" *(~1 week)*
+## v3.6 — "Foundation" *(~1 week)* ✅ Done
 **Theme:** Zero-risk revenue improvements. No new code features, just fixing what's already broken about the business model.
 
 ### Code
-- [ ] Reorder subscription products on the paywall — **show yearly plan first** (highest LTV, should be the default)
-- [ ] Rewrite `MarketingView` copy (see `STRATEGY.md` for suggested text — lead with offline/privacy, name specific features, remove "Helping me feed my family")
-- [ ] Add yearly plan savings callout (e.g. "Save 60% vs monthly")
-- [ ] Add simple **logging streak counter** to the Dashboard header (day count + flame icon). No notifications yet — just the visual. Store streak in UserDefaults; reset if no foods logged by midnight.
+- [x] Reorder subscription products on the paywall — **show yearly plan first** (highest LTV, should be the default)
+- [x] Rewrite `MarketingView` copy (see `STRATEGY.md` for suggested text — lead with offline/privacy, name specific features, remove "Helping me feed my family")
+- [x] Add yearly plan savings callout (e.g. "Save 60% vs monthly")
+- [x] Add simple **logging streak counter** to the Dashboard header (day count + flame icon). No notifications yet — just the visual. Store streak in UserDefaults; reset if no foods logged by midnight.
 
 ### App Store Connect
-- [ ] **Raise subscription prices:**
+- [x] **Raise subscription prices:**
   - Monthly: $0.99 → $1.99
   - Yearly: $1.99 → $9.99
   - *(Existing subscribers are grandfathered automatically)*
-- [ ] Update subscription display names and descriptions in ASC to match new paywall copy
-- [ ] Verify free trial is active and set to 7 days on both products
+- [x] Update subscription display names and descriptions in ASC to match new paywall copy
+- [x] Verify free trial is active and set to 7 days on both products
 
 ### Store Listing
-- [ ] Update **app subtitle** — current is likely generic; test "Offline Micronutrient & Vitamin Tracker"
-- [ ] Update **keyword field** — add: `micronutrient`, `vitamin tracker`, `mineral log`, `offline food log`, `nutrient deficiency`; drop low-volume generic terms like `food` or `health`
-- [ ] Update **description** to open with the offline/privacy angle and name the micronutrient depth as the key differentiator vs. MyFitnessPal/Cronometer
-- [ ] Update **What's New** text to mention price includes 7-day free trial
+- [x] Update **app subtitle** — current is likely generic; test "Offline Micronutrient & Vitamin Tracker"
+- [x] Update **keyword field** — add: `micronutrient`, `vitamin tracker`, `mineral log`, `offline food log`, `nutrient deficiency`; drop low-volume generic terms like `food` or `health`
+- [x] Update **description** to open with the offline/privacy angle and name the micronutrient depth as the key differentiator vs. MyFitnessPal/Cronometer
+- [x] Update **What's New** text to mention price includes 7-day free trial
 
 ---
 
