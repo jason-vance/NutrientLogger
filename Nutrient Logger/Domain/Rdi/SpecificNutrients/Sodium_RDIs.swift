@@ -27,34 +27,25 @@ class Sodium_RDIs : AbstractNutrientRdis {
             minAgeYears: 4,
             maxAgeYears: 9,
             recommendedAmount: -Double.greatestFiniteMagnitude,
-            upperLimit: 1200,
-            unit: WeightUnit.milligram
-        ))
-        addLifeStageRdi(LifeStageNutrientRdi.create(
-            nutrientFdcNumber: nutrientFdcNumber,
-            gender: Gender.unknown,
-            minAgeYears: 9,
-            maxAgeYears: 51,
-            recommendedAmount: -Double.greatestFiniteMagnitude,
             upperLimit: 1500,
             unit: WeightUnit.milligram
         ))
         addLifeStageRdi(LifeStageNutrientRdi.create(
             nutrientFdcNumber: nutrientFdcNumber,
             gender: Gender.unknown,
-            minAgeYears: 51,
-            maxAgeYears: 71,
+            minAgeYears: 9,
+            maxAgeYears: 14,
             recommendedAmount: -Double.greatestFiniteMagnitude,
-            upperLimit: 1300,
+            upperLimit: 1800,
             unit: WeightUnit.milligram
         ))
         addLifeStageRdi(LifeStageNutrientRdi.create(
             nutrientFdcNumber: nutrientFdcNumber,
             gender: Gender.unknown,
-            minAgeYears: 71,
+            minAgeYears: 14,
             maxAgeYears: Double.greatestFiniteMagnitude,
             recommendedAmount: -Double.greatestFiniteMagnitude,
-            upperLimit: 1200,
+            upperLimit: 2300,
             unit: WeightUnit.milligram
         ))
     }

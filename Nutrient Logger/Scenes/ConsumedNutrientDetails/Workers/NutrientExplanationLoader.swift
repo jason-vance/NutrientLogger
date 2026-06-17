@@ -16,9 +16,14 @@ public class NutrientExplanationLoader {
     
     public static func canLoad(_ fdcNumber: String) -> Bool {
         return NutrientNumberToPropsMap.containsKey(fdcNumber)
+            || StaticNutrientExplanations.explanation(for: fdcNumber) != nil
     }
 
     public static func loadForDisplay(_ nutrientNumber: String, with loader: HTMLDocumentLoader? = nil) async throws -> NutrientExplanation {
+        if let staticExplanation = StaticNutrientExplanations.explanation(for: nutrientNumber) {
+            return staticExplanation
+        }
+
         let explanation = try await load(nutrientNumber, with: loader)
 
         let props = NutrientNumberToPropsMap[nutrientNumber]!
