@@ -52,7 +52,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ---
 
-## v3.8 — "Log Anything" *(~2–3 weeks)*
+## v3.8 — "Log Anything" *(~2–3 weeks)* ✅ Done
 **Theme:** Custom food entry. App Store review analysis (20 reviews, Nov 2020–Aug 2024) showed the app's negative reviews aren't about value — they're almost all "the data is great but I can't log what I'm actually eating." Manual food entry is the single most-requested feature and the biggest driver of 1-star reviews, so it leads the roadmap now.
 
 ### Code
@@ -62,16 +62,16 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   - Allow editing and deleting custom foods later
 - [x] **Saveable custom foods** — once created, a custom food is reusable (covers the "save my daily smoothie and reuse it" request), which falls naturally out of the model above
 - [x] **Delete whole meal** — add a delete action on the meal header in `ConsumedMealsView` to remove every food logged under one meal time in a single action
-- [ ] Audit `NutrientInfoView` content coverage — make sure every tracked nutrient (including edge cases like Ash) has a plain-language explanation of what it is and what too-high/too-low means; fill any gaps
+- [x] Audit `NutrientInfoView` content coverage — make sure every tracked nutrient (including edge cases like Ash) has a plain-language explanation of what it is and what too-high/too-low means; fill any gaps
 - [x] Add unit tests for custom food persistence and nutrient calculation with partially-filled nutrient data
 
 ### App Store Connect
-- [ ] No product changes needed
+- [x] No product changes needed
 
 ### Store Listing
-- [ ] New screenshot: custom food entry screen
-- [ ] Update **What's New**: "Can't find a food? Add it yourself — and save it for next time."
-- [ ] Update description: "log anything — search our database or add your own"
+- [x] New screenshot: custom food entry screen
+- [x] Update **What's New**: "Can't find a food? Add it yourself — and save it for next time."
+- [x] Update description: "log anything — search our database or add your own"
 
 ---
 

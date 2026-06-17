@@ -29,6 +29,9 @@ See your daily intake of both macro and micronutrients, from protein and fiber t
 * Extensive Food Database
 Search from tens of thousands of foods, including whole ingredients and packaged items, to log meals with precision.
 
+* Log Anything
+Search our database or add your own
+
 * Reusable Meals
 Group foods you eat together often and save them as custom meals for faster, smarter logging.
 
@@ -44,4 +47,4 @@ Nutrient Logger is perfect for anyone serious about nutrition—whether you’re
 * Apple Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
 ## What's New (v3.7)
-New: Daily reminders and streak tracking to build a lasting nutrition habit. Premium now includes a 7-day free trial — try it risk-free.
+Can't find a food? Add it yourself — and save it for next time. Premium now includes a 7-day free trial — try it risk-free.
