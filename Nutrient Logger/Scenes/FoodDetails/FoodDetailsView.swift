@@ -15,19 +15,24 @@ struct FoodDetailsView: View {
     enum Mode {
         case searchResult(fdcId: Int)
         case loggedFood(food: ConsumedFood)
-        
+        case customFood(food: CustomFood)
+
         var isLoggedFood: Bool {
-            switch self {
-            case .loggedFood: return true
-            default: return false
-            }
+            if case .loggedFood = self { return true }
+            return false
+        }
+
+        var isCustomFood: Bool {
+            if case .customFood = self { return true }
+            return false
         }
     }
     
     @Environment(\.modelContext) var modelContext
     @Environment(\.presentationMode) var presentationMode
-    
+
     @EnvironmentObject private var dataController: DataController
+    @EnvironmentObject private var customFoodDatabase: CustomFoodDatabase
     
     @EnvironmentObject private var adProviderFactory: AdProviderFactory
     @State private var adProvider: AdProvider?
@@ -51,7 +56,9 @@ struct FoodDetailsView: View {
     @State private var logDate: SimpleDate = .today
 
     @State private var showDeleteConfirmation: Bool = false
-    
+    @State private var showDeleteCustomFoodConfirmation: Bool = false
+    @State private var showEditCustomFood: Bool = false
+
     @State private var showAlert: Bool = false
     @State private var alertTitle: String = ""
     
@@ -69,9 +76,16 @@ struct FoodDetailsView: View {
             return fdcId
         case .loggedFood(let food):
             return food.fdcId
+        case .customFood(let food):
+            return food.customFoodId
         }
     }
     
+    private var customFoodToEdit: CustomFood? {
+        guard case .customFood(let food) = mode else { return nil }
+        return customFoodDatabase.getFood(withId: food.customFoodId) ?? food
+    }
+
     private var user: User { userService.currentUser }
     
     private func show(alert: String) {
@@ -80,12 +94,24 @@ struct FoodDetailsView: View {
     }
     
     private func fetchFoodAndPortions() {
+        if case .customFood(let customFood) = mode {
+            // Always look up fresh from database so edits are reflected immediately.
+            let fresh = customFoodDatabase.getFood(withId: customFood.customFoodId) ?? customFood
+            prototypeFood = fresh.toFoodItem()
+            portions = [fresh.toPortion(), .defaultPortion]
+            selectedPortion = portions.first
+            if let portion = selectedPortion {
+                food = try? prototypeFood?.applyingPortion(portion)
+            }
+            return
+        }
+
         do {
             prototypeFood = try remoteDatabase.getFood(String(fdcId))
             if let food = prototypeFood {
                 portions = try remoteDatabase.getPortions(food)
                 selectedPortion = portions.first
-                
+
                 if let portion = selectedPortion {
                     self.food = try food.applyingPortion(portion)
                 }
@@ -107,9 +133,15 @@ struct FoodDetailsView: View {
             show(alert: "Failed to delete. Food doesn't appear to be a logged food")
             return
         }
-        
+
         modelContext.delete(consumedFood)
         dataController.updateDailySummary()
+        presentationMode.wrappedValue.dismiss()
+    }
+
+    private func deleteCustomFood() {
+        guard case .customFood(let customFood) = mode else { return }
+        customFoodDatabase.delete(customFood)
         presentationMode.wrappedValue.dismiss()
     }
     
@@ -195,6 +227,7 @@ struct FoodDetailsView: View {
             self.portionAmountValue = food.portion.amount
             self.selectedPortion = food.portion
         }
+        // .customFood uses defaults (today / .none meal time / amount = 1)
     }
     
     init(
@@ -229,6 +262,9 @@ struct FoodDetailsView: View {
             if mode.isLoggedFood {
                 DeleteButton()
             }
+            if mode.isCustomFood {
+                DeleteCustomFoodButton()
+            }
         }
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
         .listDefaultModifiers()
@@ -248,9 +284,28 @@ struct FoodDetailsView: View {
             Button("Delete", role: .destructive) { deleteFood() }
             Button("Cancel", role: .cancel) { }
         }
+        .confirmationDialog(
+            "Delete Custom Food?\n\nThis will remove \"\(food?.name ?? "this food")\" from your saved foods. Logged entries won't be affected.",
+            isPresented: $showDeleteCustomFoodConfirmation,
+            titleVisibility: .visible,
+        ) {
+            Button("Delete", role: .destructive) { deleteCustomFood() }
+            Button("Cancel", role: .cancel) { }
+        }
         .alert(alertTitle, isPresented: $showAlert) { }
+        .onChange(of: customFoodDatabase.foods) {
+            if mode.isCustomFood { fetchFoodAndPortions() }
+        }
+        .sheet(isPresented: $showEditCustomFood) {
+            if let food = customFoodToEdit {
+                NavigationStack {
+                    CreateCustomFoodView(existingFood: food)
+                }
+                .environmentObject(customFoodDatabase)
+            }
+        }
     }
-    
+
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
             Text("Food Details")
@@ -259,7 +314,14 @@ struct FoodDetailsView: View {
         ToolbarItem(placement: .topBarLeading) {
             BackButton()
         }
-        ToolbarItem(placement: .topBarTrailing) {
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            if mode.isCustomFood {
+                Button {
+                    showEditCustomFood = true
+                } label: {
+                    Image(systemName: "pencil")
+                }
+            }
             SaveButton()
         }
     }
@@ -276,9 +338,23 @@ struct FoodDetailsView: View {
         Button {
             showDeleteConfirmation = true
         } label: {
-            HStack{
+            HStack {
                 Spacer()
                 Text("Delete")
+                    .foregroundStyle(.red)
+                Spacer()
+            }
+        }
+        .listRowDefaultModifiers()
+    }
+
+    @ViewBuilder private func DeleteCustomFoodButton() -> some View {
+        Button {
+            showDeleteCustomFoodConfirmation = true
+        } label: {
+            HStack {
+                Spacer()
+                Text("Delete Custom Food")
                     .foregroundStyle(.red)
                 Spacer()
             }
@@ -410,4 +486,5 @@ struct FoodDetailsView: View {
         )
     }
     .environmentObject(AdProviderFactory.forDev)
+    .environmentObject(CustomFoodDatabase())
 }

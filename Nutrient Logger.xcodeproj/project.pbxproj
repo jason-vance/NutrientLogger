@@ -75,7 +75,10 @@
 			membershipExceptions = (
 				Assets.xcassets,
 				Domain/AutoMarketingPromptTrigger.swift,
+				Domain/CompositeRemoteDatabase.swift,
 				Domain/ConsumedFood.swift,
+				Domain/CustomFood.swift,
+				Domain/CustomFoodDatabase.swift,
 				Domain/DailySummary.swift,
 				Domain/FoodItem.swift,
 				Domain/FullLoggingDay.swift,

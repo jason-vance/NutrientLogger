@@ -28,7 +28,7 @@ public extension TimeInterval {
 
 public extension Date {
     
-    func relativeDateString(usingClock clock: Clock = SystemClock()) -> String {
+    func relativeDisplayString(usingClock clock: AppClock = SystemClock()) -> String {
         let today = clock.today
         let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today)!
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!

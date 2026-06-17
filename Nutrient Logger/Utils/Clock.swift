@@ -7,12 +7,12 @@
 
 import Foundation
 
-public protocol Clock {
+public protocol AppClock {
     var today: Date { get }
     var now: Date { get }
 }
 
-public class SystemClock : Clock {
+public class SystemClock : AppClock {
     public init() {}
     
     public var today: Date {
@@ -24,7 +24,7 @@ public class SystemClock : Clock {
     }
 }
 
-public class MutableClock : Clock {
+public class MutableClock : AppClock {
     public init() {}
     
     public var today: Date {

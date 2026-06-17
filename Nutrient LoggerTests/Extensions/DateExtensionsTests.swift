@@ -26,17 +26,17 @@ struct DateExtensionsTests {
         let aMonthAgo = Date.from(year: 2021, month: 9, day: 5)
         let aYearAgo = Date.from(year: 2020, month: 10, day: 5)
 
-        #expect("Tomorrow" == tomorrowWednesday.relativeDateString(usingClock: clock))
-        #expect("Today" == todayTuesday.relativeDateString(usingClock: clock))
-        #expect("Yesterday" == yesterdayMonday.relativeDateString(usingClock: clock))
-        #expect("Sunday" == sunday.relativeDateString(usingClock: clock))
-        #expect("Saturday" == saturday.relativeDateString(usingClock: clock))
-        #expect("Friday" == friday.relativeDateString(usingClock: clock))
-        #expect("Thursday" == thursday.relativeDateString(usingClock: clock))
-        #expect("Wednesday" == wednesday.relativeDateString(usingClock: clock))
-        #expect("Sep 28, 2021" == aWeekAgoTuesday.relativeDateString(usingClock: clock))
-        #expect("Sep 5, 2021" == aMonthAgo.relativeDateString(usingClock: clock))
-        #expect("Oct 5, 2020" == aYearAgo.relativeDateString(usingClock: clock))
+        #expect("Tomorrow" == tomorrowWednesday.relativeDisplayString(usingClock: clock))
+        #expect("Today" == todayTuesday.relativeDisplayString(usingClock: clock))
+        #expect("Yesterday" == yesterdayMonday.relativeDisplayString(usingClock: clock))
+        #expect("Sunday" == sunday.relativeDisplayString(usingClock: clock))
+        #expect("Saturday" == saturday.relativeDisplayString(usingClock: clock))
+        #expect("Friday" == friday.relativeDisplayString(usingClock: clock))
+        #expect("Thursday" == thursday.relativeDisplayString(usingClock: clock))
+        #expect("Wednesday" == wednesday.relativeDisplayString(usingClock: clock))
+        #expect("Sep 28, 2021" == aWeekAgoTuesday.relativeDisplayString(usingClock: clock))
+        #expect("Sep 5, 2021" == aMonthAgo.relativeDisplayString(usingClock: clock))
+        #expect("Oct 5, 2020" == aYearAgo.relativeDisplayString(usingClock: clock))
     }
 
 }

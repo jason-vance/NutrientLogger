@@ -14,41 +14,43 @@ struct FoodSearchView: View {
     enum SearchFunction {
         case defaultSearchFunction
         case addFoodToMeal
-        
+
         var shouldIncludeRecentSearches: Bool {
             switch self {
             case .defaultSearchFunction: return false
             case .addFoodToMeal: return false
             }
         }
-        
+
         var shouldIncludeRecentlyLoggedFoods: Bool {
             switch self {
             case .defaultSearchFunction: return true
             case .addFoodToMeal: return true
             }
         }
-        
+
         var shouldIncludeFdcFoods: Bool {
             switch self {
             case .defaultSearchFunction: return true
             case .addFoodToMeal: return true
             }
         }
-        
+
         var shouldIncludeFdcNutrients: Bool {
             switch self {
             case .defaultSearchFunction: return true
             case .addFoodToMeal: return false
             }
         }
-        
+
         var shouldIncludeUserMeals: Bool {
             switch self {
             case .defaultSearchFunction: return true
             case .addFoodToMeal: return false
             }
         }
+
+        var shouldIncludeCustomFoods: Bool { true }
     }
 
     enum SearchResult: Identifiable, Equatable {
@@ -57,7 +59,8 @@ struct FoodSearchView: View {
         case fdcFood(FdcSearchableFood)
         case fdcNutrient(Nutrient)
         case userMeal(UserMealsSearchableMeal)
-        
+        case customFood(CustomFood)
+
         var id: String {
             switch self {
             case .recentSearch(let query): return query
@@ -65,42 +68,38 @@ struct FoodSearchView: View {
             case .fdcFood(let food): return "fdcFood-\(food.fdcId)"
             case .fdcNutrient(let nutrient): return "fdcNutrient-\(nutrient.fdcId)"
             case .userMeal(let meal): return "userMeal-\(meal.meal.id)"
+            case .customFood(let food): return "customFood-\(food.customFoodId)"
             }
         }
-        
+
         var isRecentSearch: Bool {
-            switch self {
-            case .recentSearch: return true
-            default: return false
-            }
+            if case .recentSearch = self { return true }
+            return false
         }
-        
+
         var isRecentlyLoggedFood: Bool {
-            switch self {
-            case .recentlyLoggedFood: return true
-            default: return false
-            }
+            if case .recentlyLoggedFood = self { return true }
+            return false
         }
-        
+
         var isFdcFood: Bool {
-            switch self {
-            case .fdcFood: return true
-            default: return false
-            }
+            if case .fdcFood = self { return true }
+            return false
         }
-        
+
         var isFdcNutrient: Bool {
-            switch self {
-            case .fdcNutrient: return true
-            default: return false
-            }
+            if case .fdcNutrient = self { return true }
+            return false
         }
-        
+
         var isUserMeal: Bool {
-            switch self {
-            case .userMeal: return true
-            default: return false
-            }
+            if case .userMeal = self { return true }
+            return false
+        }
+
+        var isCustomFood: Bool {
+            if case .customFood = self { return true }
+            return false
         }
     }
     
@@ -119,9 +118,11 @@ struct FoodSearchView: View {
     
     @Query private var meals: [Meal]
     @Query private var recentSearches: [RecentSearch]
-    
+
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var analytics: NutrientLoggerAnalytics
+
+    @EnvironmentObject private var customFoodDatabase: CustomFoodDatabase
     
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.modelContext) private var modelContext
@@ -137,7 +138,9 @@ struct FoodSearchView: View {
     @State private var isLoading: Bool = false
     
     @State private var searchResults: [SearchResult] = []
-    
+    @State private var showCreateCustomFood: Bool = false
+    @State private var foodBeingEdited: CustomFood? = nil
+
     let searchFunction: SearchFunction
     let askForDateAndMealTime: Bool
     let onFoodSaved: (FoodItem, Portion) throws -> Void
@@ -159,6 +162,13 @@ struct FoodSearchView: View {
                 }
             ),
             .init(
+                name: "My Custom Foods",
+                symbol: "pencil.and.list.clipboard",
+                results: searchResults.filter {
+                    $0.isCustomFood && searchFunction.shouldIncludeCustomFoods
+                }
+            ),
+            .init(
                 name: "Nutrients",
                 symbol: "atom",
                 results: searchResults.filter {
@@ -166,7 +176,7 @@ struct FoodSearchView: View {
                 }
             ),
             .init(
-                name: "Your Resuable Meals",
+                name: "Your Reusable Meals",
                 symbol: "frying.pan",
                 results: searchResults.filter {
                     $0.isUserMeal && searchFunction.shouldIncludeUserMeals
@@ -196,6 +206,9 @@ struct FoodSearchView: View {
             }
             if searchFunction.shouldIncludeRecentlyLoggedFoods {
                 searchResults.append(contentsOf: searchRecentlyLoggedFoods())
+            }
+            if searchFunction.shouldIncludeCustomFoods {
+                searchResults.append(contentsOf: allCustomFoods())
             }
         }
     }
@@ -249,7 +262,10 @@ struct FoodSearchView: View {
                 if searchFunction.shouldIncludeFdcNutrients {
                     group.addTask { await self.searchRemoteNutrients(searchText) }
                 }
-                
+                if searchFunction.shouldIncludeCustomFoods {
+                    group.addTask { await self.searchCustomFoods(searchText) }
+                }
+
                 var results: [SearchResult] = []
                 for await result in group {
                     results.append(contentsOf: result)
@@ -306,11 +322,27 @@ struct FoodSearchView: View {
     private func searchRecentlyLoggedFoods(_ query: String? = nil) -> [SearchResult] {
         let recentlyLogged = fetchRecentlyLoggedFoods()
         let tokens = query?.split(separator: " ") ?? []
-        
+
         return recentlyLogged
             .filter { tokens.isEmpty || $0.name.caseInsensitiveContainsAny(of: tokens) }
             .sorted { $0.created > $1.created }
             .map(SearchResult.recentlyLoggedFood)
+    }
+
+    private func allCustomFoods() -> [SearchResult] {
+        customFoodDatabase.foods
+            .sorted { $0.created > $1.created }
+            .map { SearchResult.customFood($0) }
+    }
+
+    private func searchCustomFoods(_ query: String) async -> [SearchResult] {
+        let tokens = query.split(separator: " ")
+        return await MainActor.run {
+            customFoodDatabase.foods
+                .filter { $0.name.caseInsensitiveContainsAny(of: tokens) }
+                .sorted { $0.created > $1.created }
+                .map { SearchResult.customFood($0) }
+        }
     }
     
     private func promptForReview() {
@@ -362,8 +394,14 @@ struct FoodSearchView: View {
                 ContentUnavailableView(
                     "\"\(searchText)\"",
                     systemImage: "square.dashed",
-                    description: Text("Nothing was found. Try searching for a different term.")
+                    description: Text("Nothing was found. Try a different term, or add it as a custom food.")
                 )
+                .listRowDefaultModifiers()
+                Button {
+                    showCreateCustomFood = true
+                } label: {
+                    Label("Create Custom Food", systemImage: "plus.circle")
+                }
                 .listRowDefaultModifiers()
             } else {
                 ForEach(groupedSearchResults) { searchResultGroup in
@@ -397,6 +435,19 @@ struct FoodSearchView: View {
                 resetViewState()
             }
         }
+        .onChange(of: customFoodDatabase.foods) {
+            searchResults.removeAll { $0.isCustomFood }
+            if searchText.isEmpty {
+                searchResults.append(contentsOf: allCustomFoods())
+            } else if hasSearched {
+                let tokens = searchText.split(separator: " ")
+                let fresh = customFoodDatabase.foods
+                    .filter { $0.name.caseInsensitiveContainsAny(of: tokens) }
+                    .sorted { $0.created > $1.created }
+                    .map { SearchResult.customFood($0) }
+                searchResults.append(contentsOf: fresh)
+            }
+        }
         .onSubmit(of: .search) { doSearch() }
         .onAppear { fetchInitialSuggestions() }
         .navigationBarTitleDisplayMode(.inline)
@@ -408,6 +459,18 @@ struct FoodSearchView: View {
             }
         }
         .reviewPromptAlert(prompter: reviewPrompter)
+        .sheet(isPresented: $showCreateCustomFood) {
+            NavigationStack {
+                CreateCustomFoodView()
+            }
+            .environmentObject(customFoodDatabase)
+        }
+        .sheet(item: $foodBeingEdited) { food in
+            NavigationStack {
+                CreateCustomFoodView(existingFood: food)
+            }
+            .environmentObject(customFoodDatabase)
+        }
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
@@ -417,6 +480,13 @@ struct FoodSearchView: View {
         }
         ToolbarItem(placement: .topBarLeading) {
             BackButton()
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                showCreateCustomFood = true
+            } label: {
+                Image(systemName: "plus")
+            }
         }
     }
     
@@ -442,6 +512,8 @@ struct FoodSearchView: View {
             FdcNutrientRow(nutrient)
         case .userMeal(let meal):
             UserMealRow(meal)
+        case .customFood(let food):
+            CustomFoodRow(food)
         }
     }
     
@@ -517,6 +589,44 @@ struct FoodSearchView: View {
         }
         .listRowDefaultModifiers()
     }
+
+    @ViewBuilder private func CustomFoodRow(_ food: CustomFood) -> some View {
+        NavigationLink {
+            FoodDetailsView(
+                mode: .customFood(food: food),
+                askForDateAndMealTime: askForDateAndMealTime,
+                onFoodSaved: { foodItem, portion in
+                    try onFoodSaved(foodItem, portion)
+                    resetViewState()
+                }
+            )
+        } label: {
+            HStack {
+                Text(food.name)
+                Spacer()
+                Image(systemName: "pencil.and.list.clipboard")
+                    .foregroundStyle(.secondary)
+                    .font(.footnote)
+            }
+        }
+        .listRowDefaultModifiers()
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button(role: .destructive) {
+                customFoodDatabase.delete(food)
+                searchResults.removeAll { $0.id == SearchResult.customFood(food).id }
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
+        .swipeActions(edge: .leading) {
+            Button {
+                foodBeingEdited = food
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+            .tint(.blue)
+        }
+    }
 }
 
 #Preview {
@@ -527,4 +637,5 @@ struct FoodSearchView: View {
         FoodSearchView(onFoodSaved: FoodSaver.mock.saveFoodItem)
     }
     .environmentObject(AdProviderFactory.forDev)
+    .environmentObject(CustomFoodDatabase())
 }

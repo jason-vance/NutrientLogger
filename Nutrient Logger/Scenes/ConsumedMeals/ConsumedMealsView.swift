@@ -10,40 +10,37 @@ import SwiftData
 
 //TODO: Add ads here
 struct ConsumedMealsView: View {
-    
+
+    @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var dataController: DataController
-    
+
     let date: SimpleDate
-    
+
     @Query private var consumedFoods: [ConsumedFood]
-    
+
+    @State private var mealPendingDelete: DashboardMealList.Meal? = nil
+
     private var todaysConsumedFoods: [ConsumedFood] {
-//        return FoodItem.sampleFoods
-//            .map {
-//                ConsumedFood(
-//                    fdcId: $0.fdcId,
-//                    name: $0.name,
-//                    portionAmount: $0.amount,
-//                    portionGramWeight: $0.gramWeight,
-//                    portionName: $0.portionName,
-//                    dateLogged: .today,
-//                    mealTime: $0.mealTime!
-//                )
-//            }
-        
         consumedFoods
             .filter { $0.dateLogged == date }
             .sorted { $0.name < $1.name }
     }
-    
+
+    private func deleteMeal(_ meal: DashboardMealList.Meal) {
+        for food in meal.foods {
+            modelContext.delete(food)
+        }
+        dataController.updateDailySummary()
+    }
+
     var body: some View {
         List {
             if !todaysConsumedFoods.isEmpty {
                 let meals = DashboardMealList.from(todaysConsumedFoods)
                     .sorted { $0.mealTime < $1.mealTime }
-                
+
                 ForEach(meals) { meal in
-                    MealHeader(meal.name)
+                    MealHeader(meal)
                     ForEach(meal.foods) { food in
                         FoodRow(food)
                     }
@@ -52,11 +49,40 @@ struct ConsumedMealsView: View {
         }
         .listDefaultModifiers()
         .navigationTitle("\(date.formatted())'s Meals")
+        .confirmationDialog(
+            "Delete \(mealPendingDelete?.name ?? "Meal")?\n\nThis will remove all \(mealPendingDelete?.foods.count ?? 0) food(s) logged for this meal.",
+            isPresented: Binding(
+                get: { mealPendingDelete != nil },
+                set: { if !$0 { mealPendingDelete = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Delete All", role: .destructive) {
+                if let meal = mealPendingDelete {
+                    deleteMeal(meal)
+                    mealPendingDelete = nil
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                mealPendingDelete = nil
+            }
+        }
     }
-    
-    @ViewBuilder private func MealHeader(_ text: String) -> some View {
-        Text(text)
-            .listSubsectionHeader()
+
+    @ViewBuilder private func MealHeader(_ meal: DashboardMealList.Meal) -> some View {
+        HStack {
+            Text(meal.name)
+                .listSubsectionHeader()
+            Spacer()
+            Button {
+                mealPendingDelete = meal
+            } label: {
+                Image(systemName: "trash")
+                    .foregroundStyle(.red)
+                    .font(.footnote)
+            }
+            .buttonStyle(.plain)
+        }
     }
     
     @ViewBuilder private func FoodRow(_ consumedFood: ConsumedFood) -> some View {
@@ -69,7 +95,7 @@ struct ConsumedMealsView: View {
                     consumedFood.portionName = portion.name
                     consumedFood.dateLogged = foodItem.dateLogged ?? consumedFood.dateLogged
                     consumedFood.mealTime = foodItem.mealTime ?? consumedFood.mealTime
-                    
+
                     dataController.updateDailySummary()
                 }
             )
@@ -267,4 +293,5 @@ struct ConsumedMealFoodRow: View {
     }
     .modelContainer(modelContainer)
     .environmentObject(AdProviderFactory.forDev)
+    .environmentObject(CustomFoodDatabase())
 }

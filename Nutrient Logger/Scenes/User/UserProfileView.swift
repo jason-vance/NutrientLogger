@@ -117,7 +117,7 @@ struct UserProfileView: View {
             Button {
                 
             } label: {
-                Text(user?.birthdate?.toDate()?.relativeDateString() ?? "Not Set")
+                Text(user?.birthdate?.toDate()?.relativeDisplayString() ?? "Not Set")
                     .bold()
             }
             .overlay{

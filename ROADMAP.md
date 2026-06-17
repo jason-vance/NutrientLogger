@@ -56,14 +56,14 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 **Theme:** Custom food entry. App Store review analysis (20 reviews, Nov 2020–Aug 2024) showed the app's negative reviews aren't about value — they're almost all "the data is great but I can't log what I'm actually eating." Manual food entry is the single most-requested feature and the biggest driver of 1-star reviews, so it leads the roadmap now.
 
 ### Code
-- [ ] **Manual/custom food entry** — when search comes up empty, let the user create a food from scratch: name, serving unit/size, and nutrient values (calories, macros, and as many tracked micronutrients as they want to fill in; unfilled nutrients default to 0/unknown rather than blocking save)
+- [x] **Manual/custom food entry** — when search comes up empty, let the user create a food from scratch: name, serving unit/size, and nutrient values (calories, macros, and as many tracked micronutrients as they want to fill in; unfilled nutrients default to 0/unknown rather than blocking save)
   - New `CustomFood`-style model + local persistence
   - Surface custom foods as a result type in `FoodSearchView` alongside Recently Logged / FDC / User Meals
   - Allow editing and deleting custom foods later
-- [ ] **Saveable custom foods** — once created, a custom food is reusable (covers the "save my daily smoothie and reuse it" request), which falls naturally out of the model above
-- [ ] **Delete whole meal** — add a delete action on the meal header in `ConsumedMealsView` to remove every food logged under one meal time in a single action
+- [x] **Saveable custom foods** — once created, a custom food is reusable (covers the "save my daily smoothie and reuse it" request), which falls naturally out of the model above
+- [x] **Delete whole meal** — add a delete action on the meal header in `ConsumedMealsView` to remove every food logged under one meal time in a single action
 - [ ] Audit `NutrientInfoView` content coverage — make sure every tracked nutrient (including edge cases like Ash) has a plain-language explanation of what it is and what too-high/too-low means; fill any gaps
-- [ ] Add unit tests for custom food persistence and nutrient calculation with partially-filled nutrient data
+- [x] Add unit tests for custom food persistence and nutrient calculation with partially-filled nutrient data
 
 ### App Store Connect
 - [ ] No product changes needed

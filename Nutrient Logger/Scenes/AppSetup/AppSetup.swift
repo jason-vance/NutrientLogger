@@ -45,8 +45,9 @@ class AppSetup {
     }
     
     private static func registerRemoteDatabase() async {
-        let db = try! await BundledFdcDatabase()
-        swinjectContainer.autoregister(RemoteDatabase.self) { db }
+        let fdc = try! await BundledFdcDatabase()
+        let composite = await CompositeRemoteDatabase(fdc: fdc, custom: .shared)
+        swinjectContainer.autoregister(RemoteDatabase.self) { composite }
     }
     
     fileprivate static func setupAnalytics() {

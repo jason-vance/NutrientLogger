@@ -21,5 +21,6 @@ struct Nutrient_LoggerApp: App {
         .environmentObject(AdProviderFactory.forProd)
         .environmentObject(SubscriptionManager())
         .environmentObject(DataController.shared)
+        .environmentObject(CustomFoodDatabase.shared)
     }
 }
