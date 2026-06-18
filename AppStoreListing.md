@@ -36,7 +36,7 @@ Search our database or add your own
 Group foods you eat together often and save them as custom meals for faster, smarter logging.
 
 * Personalized Nutrient Targets
-View recommended daily values and upper intake limits based on your age and sex, helping you stay balanced and avoid deficiencies or excesses.
+Set your own calorie, macro, and micronutrient goals — or use recommended daily values based on your age and sex. Track your progress on the dashboard and stay balanced.
 
 * Learn as You Log
 Discover what each nutrient does for your body and why it matters to your overall health.
@@ -46,5 +46,5 @@ Nutrient Logger is perfect for anyone serious about nutrition—whether you’re
 
 * Apple Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v3.7)
-Set your own calorie and macro goals — see how today compares. Premium now includes a 7-day free trial — try it risk-free.
+## What's New (v3.9)
+Set your own calorie, macro, and micronutrient goals — see how today compares at a glance on your dashboard.

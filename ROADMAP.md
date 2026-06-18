@@ -80,20 +80,21 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ### Code
 - [ ] **Improve food search matching** — reduce false-positive matches surfaced in reviews (e.g. searching "peas" returning peaches/pears) and improve discoverability for items that currently require unintuitive search terms (e.g. cinnamon only found via "spice, cinnamon")
-- [ ] **Calorie/macro goal setting** — confirmed missing (see `UserProfileView.swift` TODO at line 42; `User` model has no goal fields). Scope as its own feature, not a quick audit:
+- [x] **Calorie/macro goal setting** — confirmed missing (see `UserProfileView.swift` TODO at line 42; `User` model has no goal fields). Scope as its own feature, not a quick audit:
   - Add persisted goal fields to the `User` model (daily calorie target, optional macro targets)
   - Add UI in `UserProfileView` to set/edit goals, with sensible RDI-derived defaults
   - Update dashboard comparisons to use custom goals when set, falling back to RDI/USDA values otherwise
   - This is prerequisite groundwork for v3.11 trend charts (need a target line to plot against)
   - Add unit tests for goal precedence logic (custom goal vs. RDI fallback) and any date-boundary handling
-- [ ] Fix `ConsumedNutrientChart` crash, ln 114 when `nutrientFoodPairs` is empty
+- [x] **Extend goal setting to all micronutrients** — collapsible sections with full nutrient coverage, RDI override per nutrient
+- [x] Fix `ConsumedNutrientChart` crash, ln 114 when `nutrientFoodPairs` is empty
 
 ### App Store Connect
 - [x] No product changes needed
 
 ### Store Listing
-- [ ] Update **What's New**: "Set your own calorie and macro goals — see how today compares"
-- [ ] Update description to mention custom goal setting
+- [x] Update **What's New**: "Set your own calorie and macro goals — see how today compares"
+- [x] Update description to mention custom goal setting
 
 ---
 
