@@ -69,6 +69,7 @@ struct FoodDetailsView: View {
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var userService: UserService
     @Inject private var rdiLibrary: NutrientRdiLibrary
+    @Inject private var engagementAnalytics: EngagementAnalytics
 
     private var fdcId: Int {
         switch mode {
@@ -142,6 +143,7 @@ struct FoodDetailsView: View {
     private func deleteCustomFood() {
         guard case .customFood(let customFood) = mode else { return }
         customFoodDatabase.delete(customFood)
+        engagementAnalytics.customFoodDeleted()
         presentationMode.wrappedValue.dismiss()
     }
     
@@ -468,6 +470,9 @@ struct FoodDetailsView: View {
 #Preview {
     let _ = swinjectContainer.autoregister(NutrientLoggerAnalytics.self) {
         MockNutrientLoggerAnalytics()
+    }
+    let _ = swinjectContainer.autoregister(EngagementAnalytics.self) {
+        MockEngagementAnalytics()
     }
     let _ = swinjectContainer.autoregister(UserService.self) {
         UserServiceForScreenshots()

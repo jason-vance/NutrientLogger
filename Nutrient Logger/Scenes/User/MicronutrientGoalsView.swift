@@ -12,6 +12,7 @@ struct MicronutrientGoalsView: View {
 
     @Inject private var userService: UserService
     @Inject private var rdiLibrary: NutrientRdiLibrary
+    @Inject private var engagementAnalytics: EngagementAnalytics
 
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
 
@@ -83,7 +84,7 @@ struct MicronutrientGoalsView: View {
         .onAppear { fetchUser() }
         .onChange(of: user) { saveUser() }
         .fullScreenCover(isPresented: $showMarketingView) {
-            MarketingView()
+            MarketingView(trigger: .micronutrientGoals)
         }
     }
 
@@ -117,10 +118,14 @@ struct MicronutrientGoalsView: View {
                 return ""
             },
             set: { newValue in
+                let hadGoal = user?.micronutrientGoals[nutrientId] != nil
                 if newValue.isEmpty {
                     user?.micronutrientGoals.removeValue(forKey: nutrientId)
                 } else if let d = Double(newValue) {
                     user?.micronutrientGoals[nutrientId] = d
+                    if !hadGoal {
+                        engagementAnalytics.goalSet(goalName: "micronutrient")
+                    }
                 }
             }
         )
@@ -186,6 +191,8 @@ struct MicronutrientGoalsView: View {
 #Preview {
     let _ = swinjectContainer.autoregister(UserService.self) { MockUserService(currentUser: .sample) }
     let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) { UsdaNutrientRdiLibrary.create() }
+    let _ = swinjectContainer.autoregister(EngagementAnalytics.self) { MockEngagementAnalytics() }
+    let _ = swinjectContainer.autoregister(SubscriptionAnalytics.self) { MockSubscriptionAnalytics() }
 
     NavigationStack {
         MicronutrientGoalsView()

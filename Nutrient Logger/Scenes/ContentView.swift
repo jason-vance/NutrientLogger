@@ -120,7 +120,7 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $showMarketingFromDeepLink) {
-            MarketingView()
+            MarketingView(trigger: .deepLink)
         }
     }
 

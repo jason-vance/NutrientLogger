@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwinjectAutoregistration
 
 /// Shown once, after the user's first launch, to explain and request notification permission
 /// for the daily logging reminder and streak-at-risk alert.
@@ -13,12 +14,15 @@ struct NotificationPermissionPromptView: View {
 
     let onComplete: () -> Void
 
+    @Inject private var engagementAnalytics: EngagementAnalytics
+
     @State private var isRequesting = false
 
     private func requestPermission() {
         isRequesting = true
         Task {
-            await NotificationManager().requestAuthorization()
+            let granted = await NotificationManager().requestAuthorization()
+            engagementAnalytics.notificationPermissionResult(granted ? .granted : .denied)
             isRequesting = false
             onComplete()
         }
@@ -68,6 +72,7 @@ struct NotificationPermissionPromptView: View {
 
     @ViewBuilder private func NotNowButton() -> some View {
         Button("Not Now") {
+            engagementAnalytics.notificationPermissionResult(.dismissed)
             onComplete()
         }
         .foregroundStyle(.secondary)
@@ -77,5 +82,7 @@ struct NotificationPermissionPromptView: View {
 }
 
 #Preview {
+    let _ = swinjectContainer.autoregister(EngagementAnalytics.self) { MockEngagementAnalytics() }
+
     NotificationPermissionPromptView(onComplete: {})
 }

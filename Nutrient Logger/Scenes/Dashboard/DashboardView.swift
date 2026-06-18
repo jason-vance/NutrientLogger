@@ -11,7 +11,9 @@ import SwinjectAutoregistration
 
 //TODO: Days with foods hang for a second while loading
 struct DashboardView: View {
-    
+
+    private static let streakMilestones: Set<Int> = [3, 7, 14, 30, 60, 90, 180, 365]
+
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.modelContext) private var modelContext
 
@@ -21,6 +23,7 @@ struct DashboardView: View {
     @State private var ad: Ad?
 
     @Inject private var remoteDatabase: RemoteDatabase
+    @Inject private var engagementAnalytics: EngagementAnalytics
 
     @State private var date: SimpleDate = .today
     @State private var showDatePicker: Bool = false
@@ -42,12 +45,17 @@ struct DashboardView: View {
 
     private func updateLoggingStreak() {
         let store = LoggingStreakStore()
+        let previousCount = loggingStreakCount
         let streak = store.load().updated(loggedToday: loggedFoodToday)
 
         loggingStreakCount = streak.count
         loggingStreakLastLoggedDateRaw = streak.lastLoggedDate.map { Int($0) } ?? 0
 
         store.save(streak)
+
+        if streak.count > previousCount && Self.streakMilestones.contains(streak.count) {
+            engagementAnalytics.streakMilestoneReached(days: streak.count)
+        }
     }
 
     private func checkAutoMarketingPrompt() {
@@ -150,7 +158,7 @@ struct DashboardView: View {
         .animation(.snappy, value: foodItems)
         .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .fullScreenCover(isPresented: $showAutoMarketingView) {
-            MarketingView()
+            MarketingView(trigger: .smartPaywall)
         }
         .sheet(isPresented: $showDatePicker) {
             DatePicker(
@@ -255,6 +263,7 @@ struct DashboardView: View {
     let _ = swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
     let _ = swinjectContainer.autoregister(UserService.self) { UserServiceForScreenshots() }
     let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) { UsdaNutrientRdiLibrary.create() }
+    let _ = swinjectContainer.autoregister(EngagementAnalytics.self) { MockEngagementAnalytics() }
 
     NavigationStack {
         DashboardView()

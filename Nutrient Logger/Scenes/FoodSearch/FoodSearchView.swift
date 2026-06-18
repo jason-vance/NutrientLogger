@@ -121,6 +121,7 @@ struct FoodSearchView: View {
 
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var analytics: NutrientLoggerAnalytics
+    @Inject private var engagementAnalytics: EngagementAnalytics
 
     @EnvironmentObject private var customFoodDatabase: CustomFoodDatabase
     
@@ -279,7 +280,9 @@ struct FoodSearchView: View {
                 return results
             }
 
-            if !searchResults.isEmpty {
+            if searchResults.isEmpty {
+                engagementAnalytics.searchReturnedNoResults(query: searchText)
+            } else {
                 if let previous = recentSearches.first(where: { $0.query.lowercased() == searchText.lowercased() }) {
                     previous.query = searchText
                     previous.date = .now
@@ -287,7 +290,7 @@ struct FoodSearchView: View {
                     modelContext.insert(RecentSearch(query: searchText, date: .now))
                 }
             }
-            
+
             isLoading = false
         }
         
@@ -619,6 +622,7 @@ struct FoodSearchView: View {
             Button(role: .destructive) {
                 customFoodDatabase.delete(food)
                 searchResults.removeAll { $0.id == SearchResult.customFood(food).id }
+                engagementAnalytics.customFoodDeleted()
             } label: {
                 Label("Delete", systemImage: "trash")
             }
@@ -637,6 +641,7 @@ struct FoodSearchView: View {
 #Preview {
     let _ = swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
     let _ = swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { MockNutrientLoggerAnalytics() }
+    let _ = swinjectContainer.autoregister(EngagementAnalytics.self) { MockEngagementAnalytics() }
 
     NavigationStack {
         FoodSearchView(onFoodSaved: FoodSaver.mock.saveFoodItem)

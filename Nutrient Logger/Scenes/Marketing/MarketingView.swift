@@ -7,17 +7,22 @@
 
 import SwiftUI
 import StoreKit
+import SwinjectAutoregistration
 
 struct MarketingView: View {
-    
+
+    let trigger: PaywallTrigger
+
     @Environment(\.dismiss) private var dismiss
-    
+
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
-    
+
+    @Inject private var subscriptionAnalytics: SubscriptionAnalytics
+
     @State private var isPurchasing = false
     @State private var errorMessage: String?
     @State private var showError = false
-    
+
     @State private var showDiscountCodeDialog = false
     @State private var discountCode: String = ""
     @State private var discountProductId: String?
@@ -48,9 +53,16 @@ struct MarketingView: View {
     private func doPurchase(productId: String) {
         Task {
             isPurchasing = true
+            subscriptionAnalytics.subscriptionPurchaseStarted(productId: productId)
             do {
-                let _ = try await subscriptionManager.purchase(productId: productId)
+                let purchased = try await subscriptionManager.purchase(productId: productId)
+                if purchased {
+                    subscriptionAnalytics.subscriptionPurchaseCompleted(productId: productId)
+                } else {
+                    subscriptionAnalytics.subscriptionPurchaseCancelled(productId: productId)
+                }
             } catch {
+                subscriptionAnalytics.subscriptionPurchaseFailed(productId: productId, error: error)
                 if let subError = error as? SubscriptionError {
                     errorMessage = subError.message
                 } else {
@@ -75,6 +87,7 @@ struct MarketingView: View {
             do {
                 try await subscriptionManager.restorePurchases()
                 let _ = await subscriptionManager.isSubscribed()
+                subscriptionAnalytics.subscriptionRestored()
             } catch {
                 errorMessage = error.localizedDescription
                 showError = true
@@ -114,6 +127,7 @@ struct MarketingView: View {
             }
             .onAppear {
                 subscriptionManager.refreshProducts()
+                subscriptionAnalytics.paywallShown(trigger: trigger)
             }
         }
     }
@@ -121,6 +135,7 @@ struct MarketingView: View {
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
             Button {
+                subscriptionAnalytics.paywallDismissed(trigger: trigger)
                 dismiss()
             } label: {
                 Image(systemName: "xmark")
@@ -271,6 +286,8 @@ struct MarketingView: View {
 }
 
 #Preview {
-    MarketingView()
+    let _ = swinjectContainer.autoregister(SubscriptionAnalytics.self) { MockSubscriptionAnalytics() }
+
+    MarketingView(trigger: .smartPaywall)
         .environmentObject(SubscriptionManager())
 }

@@ -7,6 +7,26 @@
 
 import Foundation
 
+class MockSubscriptionAnalytics: SubscriptionAnalytics {
+    func paywallShown(trigger: PaywallTrigger) {}
+    func paywallDismissed(trigger: PaywallTrigger) {}
+    func subscriptionPurchaseStarted(productId: String) {}
+    func subscriptionPurchaseCompleted(productId: String) {}
+    func subscriptionPurchaseCancelled(productId: String) {}
+    func subscriptionPurchaseFailed(productId: String, error: Error) {}
+    func subscriptionRestored() {}
+}
+
+class MockEngagementAnalytics: EngagementAnalytics {
+    func customFoodCreated() {}
+    func customFoodEdited() {}
+    func customFoodDeleted() {}
+    func goalSet(goalName: String) {}
+    func streakMilestoneReached(days: Int) {}
+    func notificationPermissionResult(_ result: NotificationPermissionResult) {}
+    func searchReturnedNoResults(query: String) {}
+}
+
 class MockNutrientLoggerAnalytics: NutrientLoggerAnalytics {
     func foodSearched(_ query: String) {
     }

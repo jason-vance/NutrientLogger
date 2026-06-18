@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import SwinjectAutoregistration
 
 struct CreateCustomFoodView: View {
 
     @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject private var customFoodDatabase: CustomFoodDatabase
+    @Inject private var engagementAnalytics: EngagementAnalytics
 
     let existingFood: CustomFood?
 
@@ -105,6 +107,11 @@ struct CreateCustomFoodView: View {
             nutrientAmounts: amounts
         )
         customFoodDatabase.save(food)
+        if isEditing {
+            engagementAnalytics.customFoodEdited()
+        } else {
+            engagementAnalytics.customFoodCreated()
+        }
         presentationMode.wrappedValue.dismiss()
     }
 
@@ -344,6 +351,8 @@ private struct NutrientPickerSheet: View {
 }
 
 #Preview {
+    let _ = swinjectContainer.autoregister(EngagementAnalytics.self) { MockEngagementAnalytics() }
+
     NavigationStack {
         CreateCustomFoodView()
     }

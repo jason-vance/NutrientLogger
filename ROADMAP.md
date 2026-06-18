@@ -109,6 +109,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [ ] Add camera permission usage description to `Info.plist`
 - [ ] Add barcode scan button to `FoodSearchView` toolbar (next to the search field)
 - [ ] Handle "not found" gracefully — fall back to manual search, and from there to the v3.8 custom-food-entry flow as the ultimate fallback
+- [ ] **Analytics:** Track barcode scan success/failure rate, scan-to-log conversion, and "not found" fallback path taken (manual search vs. custom food entry)
 
 ### App Store Connect
 - [ ] Add camera permission justification (required for App Review)
@@ -139,6 +140,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   - Simple log view: date + weight entry, chart over time
   - Sync weight entries to Apple Health if integration is enabled
 - [ ] Update paywall copy to list the three new premium features specifically
+- [ ] **Analytics:** Track premium feature tap when not subscribed (trend charts, Health sync, weight tracking), chart nutrient selection frequency, and Health sync enable/disable rate
 
 ### App Store Connect
 - [ ] No subscription product changes needed
@@ -162,6 +164,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   3. Profile setup (age, gender → RDI calculation)
   4. Notification permission
   5. Paywall (contextual, after they understand the value)
+- [ ] **Analytics:** Track onboarding funnel (step completion rate, drop-off point), time-to-first-log, and day-1/day-7/day-30 retention cohorts
 - [ ] **iPad app — new platform target, not an optimization.** The main app is currently `TARGETED_DEVICE_FAMILY = 1` (iPhone-only); it doesn't run on iPad at all today. v4.0 is the right time to introduce it properly:
   - Enable iPad in the device family / App ID capabilities
   - Build a proper iPad layout (e.g. `NavigationSplitView` / sidebar) rather than scaling the iPhone UI

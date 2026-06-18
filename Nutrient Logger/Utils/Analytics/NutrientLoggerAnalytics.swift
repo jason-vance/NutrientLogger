@@ -12,9 +12,48 @@ protocol AnalyticsEngine {
     var eventSearch: String { get }
     var parameterSearchTerm: String { get }
     var parameterValue: String { get }
-    
+
     func log(event: String)
     func log(event: String, parameters: [String:Any])
+}
+
+
+// MARK: - Subscription Funnel
+
+enum PaywallTrigger: String {
+    case smartPaywall = "smart_paywall"
+    case deepLink = "deep_link"
+    case micronutrientGoals = "micronutrient_goals"
+    case removeAds = "remove_ads"
+}
+
+protocol SubscriptionAnalytics {
+    func paywallShown(trigger: PaywallTrigger)
+    func paywallDismissed(trigger: PaywallTrigger)
+    func subscriptionPurchaseStarted(productId: String)
+    func subscriptionPurchaseCompleted(productId: String)
+    func subscriptionPurchaseCancelled(productId: String)
+    func subscriptionPurchaseFailed(productId: String, error: Error)
+    func subscriptionRestored()
+}
+
+
+// MARK: - Feature Engagement & Retention
+
+enum NotificationPermissionResult: String {
+    case granted
+    case denied
+    case dismissed
+}
+
+protocol EngagementAnalytics {
+    func customFoodCreated()
+    func customFoodEdited()
+    func customFoodDeleted()
+    func goalSet(goalName: String)
+    func streakMilestoneReached(days: Int)
+    func notificationPermissionResult(_ result: NotificationPermissionResult)
+    func searchReturnedNoResults(query: String)
 }
 
 
@@ -67,7 +106,7 @@ protocol NutrientLoggerAnalytics {
     func removeAdsRestored()
 }
 
-class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMealsAnalytics, UserMealAnalytics, ConsumedFoodSaverAnalytics {
+class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMealsAnalytics, UserMealAnalytics, ConsumedFoodSaverAnalytics, SubscriptionAnalytics, EngagementAnalytics {
     private let maxLength = 100
 
     private let eventFoodLogFailed = "food_log_failed"
@@ -312,5 +351,88 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     public func userSetPreferredColor(_ colorName: ColorName) {
         analytics.log(event: eventUserSetPreferredColor, parameters: [ analytics.parameterValue: colorName.value ])
+    }
+
+    // MARK: - Subscription Funnel
+
+    private let eventPaywallShown = "paywall_shown"
+    private let eventPaywallDismissed = "paywall_dismissed"
+    private let eventSubscriptionPurchaseStarted = "subscription_purchase_started"
+    private let eventSubscriptionPurchaseCompleted = "subscription_purchase_completed"
+    private let eventSubscriptionPurchaseCancelled = "subscription_purchase_cancelled"
+    private let eventSubscriptionPurchaseFailed = "subscription_purchase_failed"
+    private let eventSubscriptionRestored = "subscription_restored"
+    private let parameterTrigger = "trigger"
+    private let parameterProductId = "product_id"
+
+    public func paywallShown(trigger: PaywallTrigger) {
+        analytics.log(event: eventPaywallShown, parameters: [parameterTrigger: trigger.rawValue])
+    }
+
+    public func paywallDismissed(trigger: PaywallTrigger) {
+        analytics.log(event: eventPaywallDismissed, parameters: [parameterTrigger: trigger.rawValue])
+    }
+
+    public func subscriptionPurchaseStarted(productId: String) {
+        analytics.log(event: eventSubscriptionPurchaseStarted, parameters: [parameterProductId: productId])
+    }
+
+    public func subscriptionPurchaseCompleted(productId: String) {
+        analytics.log(event: eventSubscriptionPurchaseCompleted, parameters: [parameterProductId: productId])
+    }
+
+    public func subscriptionPurchaseCancelled(productId: String) {
+        analytics.log(event: eventSubscriptionPurchaseCancelled, parameters: [parameterProductId: productId])
+    }
+
+    public func subscriptionPurchaseFailed(productId: String, error: Error) {
+        var dict: [String: Any] = [parameterProductId: productId]
+        addExceptionToDictionary(error, &dict)
+        analytics.log(event: eventSubscriptionPurchaseFailed, parameters: dict)
+    }
+
+    public func subscriptionRestored() {
+        analytics.log(event: eventSubscriptionRestored)
+    }
+
+    // MARK: - Feature Engagement & Retention
+
+    private let eventCustomFoodCreated = "custom_food_created"
+    private let eventCustomFoodEdited = "custom_food_edited"
+    private let eventCustomFoodDeleted = "custom_food_deleted"
+    private let eventGoalSet = "goal_set"
+    private let eventStreakMilestoneReached = "streak_milestone_reached"
+    private let eventNotificationPermissionResult = "notification_permission_result"
+    private let eventSearchNoResults = "search_no_results"
+    private let parameterGoalName = "goal_name"
+    private let parameterStreakDays = "streak_days"
+    private let parameterResult = "result"
+
+    public func customFoodCreated() {
+        analytics.log(event: eventCustomFoodCreated)
+    }
+
+    public func customFoodEdited() {
+        analytics.log(event: eventCustomFoodEdited)
+    }
+
+    public func customFoodDeleted() {
+        analytics.log(event: eventCustomFoodDeleted)
+    }
+
+    public func goalSet(goalName: String) {
+        analytics.log(event: eventGoalSet, parameters: [parameterGoalName: goalName])
+    }
+
+    public func streakMilestoneReached(days: Int) {
+        analytics.log(event: eventStreakMilestoneReached, parameters: [parameterStreakDays: days])
+    }
+
+    public func notificationPermissionResult(_ result: NotificationPermissionResult) {
+        analytics.log(event: eventNotificationPermissionResult, parameters: [parameterResult: result.rawValue])
+    }
+
+    public func searchReturnedNoResults(query: String) {
+        analytics.log(event: eventSearchNoResults, parameters: [analytics.parameterSearchTerm: query])
     }
 }

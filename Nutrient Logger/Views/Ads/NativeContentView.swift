@@ -46,7 +46,7 @@ struct NativeAdListRow: View {
                     .padding(.top, 12)
             }
             .fullScreenCover(isPresented: $showMarketingView) {
-                MarketingView()
+                MarketingView(trigger: .removeAds)
             }
             .listRowDefaultModifiers()
         }

@@ -18,6 +18,7 @@ struct UserProfileView: View {
     @State private var ad: Ad?
 
     @Inject private var userService: UserService
+    @Inject private var engagementAnalytics: EngagementAnalytics
 
     @State private var user: User?
 
@@ -99,40 +100,61 @@ struct UserProfileView: View {
         }
     }
 
+    private func goalBinding(
+        get: @escaping () -> Double?,
+        set: @escaping (Double?) -> Void,
+        goalName: String
+    ) -> Binding<Double?> {
+        Binding(
+            get: get,
+            set: { newValue in
+                let hadGoal = get() != nil
+                set(newValue)
+                if !hadGoal && newValue != nil {
+                    engagementAnalytics.goalSet(goalName: goalName)
+                }
+            }
+        )
+    }
+
     @ViewBuilder private func NutritionGoalsSection() -> some View {
         Section(header: Text("Nutrition Goals")) {
             GoalField(
                 "Calories",
-                value: Binding(
+                value: goalBinding(
                     get: { user?.calorieGoal },
-                    set: { user?.calorieGoal = $0 }
+                    set: { user?.calorieGoal = $0 },
+                    goalName: "calorie"
                 ),
                 unit: "kcal",
                 defaultValue: NutrientGoalDefaults.defaultCalorieGoal(for: user ?? User())
             )
             GoalField(
                 "Carbs",
-                value: Binding(
+                value: goalBinding(
                     get: { user?.carbsGoalGrams },
-                    set: { user?.carbsGoalGrams = $0 }
+                    set: { user?.carbsGoalGrams = $0 },
+                    goalName: "carbs"
                 ),
                 unit: "g",
                 defaultValue: NutrientGoalDefaults.defaultCarbsGoal(for: user ?? User())
             )
             GoalField(
                 "Fat",
-                value: Binding(
+                value: goalBinding(
                     get: { user?.fatGoalGrams },
-                    set: { user?.fatGoalGrams = $0 }
+                    set: { user?.fatGoalGrams = $0 },
+                    goalName: "fat"
                 ),
                 unit: "g",
                 defaultValue: NutrientGoalDefaults.defaultFatGoal(for: user ?? User())
             )
             GoalField(
                 "Protein",
-                value: Binding(
+                value: goalBinding(
                     get: { user?.proteinGoalGrams },
-                    set: { user?.proteinGoalGrams = $0 }
+                    set: { user?.proteinGoalGrams = $0 },
+                    goalName: "protein"
                 ),
                 unit: "g",
                 defaultValue: NutrientGoalDefaults.defaultProteinGoal(for: user ?? User())
@@ -399,7 +421,9 @@ struct UserProfileView: View {
 
 #Preview {
     let _ = swinjectContainer.autoregister(UserService.self){MockUserService(currentUser: .sample)}
-    
+    let _ = swinjectContainer.autoregister(EngagementAnalytics.self) { MockEngagementAnalytics() }
+    let _ = swinjectContainer.autoregister(SubscriptionAnalytics.self) { MockSubscriptionAnalytics() }
+
     NavigationStack {
         UserProfileView()
     }

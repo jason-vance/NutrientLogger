@@ -58,5 +58,7 @@ class AppSetup {
         swinjectContainer.autoregister(UserMealsAnalytics.self) { analytics }
         swinjectContainer.autoregister(UserMealAnalytics.self) { analytics }
         swinjectContainer.autoregister(ConsumedFoodSaverAnalytics.self) { analytics }
+        swinjectContainer.autoregister(SubscriptionAnalytics.self) { analytics }
+        swinjectContainer.autoregister(EngagementAnalytics.self) { analytics }
     }
 }
