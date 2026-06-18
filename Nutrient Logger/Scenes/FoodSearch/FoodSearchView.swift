@@ -225,15 +225,21 @@ struct FoodSearchView: View {
             var descriptor = FetchDescriptor<ConsumedFood>(
                 sortBy: [ .init(\.created, order: .reverse) ]
             )
-            descriptor.fetchLimit = 256
-            
-            return try modelContext.fetch(descriptor)
-                .reduce(into: [:]) { dict, food in
-                    if dict[food.fdcId]?.created ?? .distantPast < food.created {
-                        dict[food.fdcId] = food
-                    }
-                }
-                .map { $0.value }
+            descriptor.fetchLimit = 512
+
+            let allRecent = try modelContext.fetch(descriptor)
+            let now = Date()
+            let grouped = Dictionary(grouping: allRecent, by: \.fdcId)
+
+            return grouped.values.compactMap { foods -> (food: ConsumedFood, score: Double)? in
+                guard let mostRecent = foods.max(by: { $0.created < $1.created }) else { return nil }
+                let frequency = Double(foods.count)
+                let daysSinceLast = now.timeIntervalSince(mostRecent.created) / 86400.0
+                let recencyWeight = exp(-0.693 * daysSinceLast / 7.0)
+                return (mostRecent, frequency * recencyWeight)
+            }
+            .sorted { $0.score > $1.score }
+            .map(\.food)
         } catch {
             print("Failed to fetch recently logged foods: \(error.localizedDescription)")
         }
@@ -314,7 +320,7 @@ struct FoodSearchView: View {
     private func searchUserMeals(_ query: String) async -> [SearchResult] {
         let tokens = query.split(separator: " ")
         return meals
-            .filter { $0.matchesAny(of: tokens) }
+            .filter { $0.matchesAll(of: tokens) }
             .map { UserMealsSearchableMeal(meal: $0) }
             .map { SearchResult.userMeal($0) }
     }
@@ -324,8 +330,7 @@ struct FoodSearchView: View {
         let tokens = query?.split(separator: " ") ?? []
 
         return recentlyLogged
-            .filter { tokens.isEmpty || $0.name.caseInsensitiveContainsAny(of: tokens) }
-            .sorted { $0.created > $1.created }
+            .filter { tokens.isEmpty || $0.name.caseInsensitiveContainsAll(of: tokens) }
             .map(SearchResult.recentlyLoggedFood)
     }
 
@@ -339,7 +344,7 @@ struct FoodSearchView: View {
         let tokens = query.split(separator: " ")
         return await MainActor.run {
             customFoodDatabase.foods
-                .filter { $0.name.caseInsensitiveContainsAny(of: tokens) }
+                .filter { $0.name.caseInsensitiveContainsAll(of: tokens) }
                 .sorted { $0.created > $1.created }
                 .map { SearchResult.customFood($0) }
         }
@@ -442,7 +447,7 @@ struct FoodSearchView: View {
             } else if hasSearched {
                 let tokens = searchText.split(separator: " ")
                 let fresh = customFoodDatabase.foods
-                    .filter { $0.name.caseInsensitiveContainsAny(of: tokens) }
+                    .filter { $0.name.caseInsensitiveContainsAll(of: tokens) }
                     .sorted { $0.created > $1.created }
                     .map { SearchResult.customFood($0) }
                 searchResults.append(contentsOf: fresh)

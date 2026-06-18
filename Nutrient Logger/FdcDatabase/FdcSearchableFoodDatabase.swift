@@ -59,20 +59,38 @@ class FdcSearchableFoodDatabase {
         }
     }
 
-    public func search(_ query: String) throws -> [FdcSearchableFood] {
-        if query.isEmpty {
-            return []
-        }
-        
-        let search = Tables.searchableFood
-            .select(Columns.fdcId, Columns.description, Columns.rank)
-            .filter(Tables.searchableFood.match(query))
-            .order(Columns.rank)
+    public func search(
+        prefixQuery: String,
+        exactQuery: String? = nil,
+        phraseQuery: String? = nil
+    ) throws -> [FdcSearchableFood] {
+        if prefixQuery.isEmpty { return [] }
 
+        let db = try Connection(dbPath)
+        var seenIds = Set<Int>()
         var results = [FdcSearchableFood]()
-        for row in try Connection(dbPath).prepare(search) {
-            results.append(SearchableFoodWrapper(row).searchableFood)
+
+        func runQuery(_ q: String) throws {
+            let search = Tables.searchableFood
+                .select(Columns.fdcId, Columns.description, Columns.rank)
+                .filter(Tables.searchableFood.match(q))
+                .order(Columns.rank)
+            for row in try db.prepare(search) {
+                let food = SearchableFoodWrapper(row).searchableFood
+                if seenIds.insert(food.fdcId).inserted {
+                    results.append(food)
+                }
+            }
         }
+
+        if let phraseQuery = phraseQuery {
+            try runQuery(phraseQuery)
+        }
+        if let exactQuery = exactQuery, !exactQuery.isEmpty {
+            try runQuery(exactQuery)
+        }
+        try runQuery(prefixQuery)
+
         return results
     }
 

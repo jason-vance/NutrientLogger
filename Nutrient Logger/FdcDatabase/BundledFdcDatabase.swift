@@ -168,14 +168,62 @@ class BundledFdcDatabase: RemoteDatabase {
     }
 
     public func search(_ query: String) throws -> [FdcSearchableFood] {
-        let ftsQuery = FtsQueryGenerator.generateFrom(query)
+        let prefixQuery = FtsQueryGenerator.generateFrom(query)
+        let exactQuery = FtsQueryGenerator.generateExactFrom(query)
+        let phraseQuery = FtsQueryGenerator.generatePhraseFrom(query)
 
         var foods = [FdcSearchableFood]()
-        foods.append(contentsOf: try legacyData.search(ftsQuery))
-        foods.append(contentsOf: try surveyData.search(ftsQuery))
-        foods = foods.sorted { $0.rank < $1.rank }
+        foods.append(contentsOf: try legacyData.search(
+            prefixQuery: prefixQuery,
+            exactQuery: exactQuery,
+            phraseQuery: phraseQuery
+        ))
+        foods.append(contentsOf: try surveyData.search(
+            prefixQuery: prefixQuery,
+            exactQuery: exactQuery,
+            phraseQuery: phraseQuery
+        ))
+
+        var seen = Set<Int>()
+        foods = foods.filter { seen.insert($0.fdcId).inserted }
+
+        let tokens = FtsQueryGenerator.tokenize(query)
+        return BundledFdcDatabase.rankByTokenPosition(foods, tokens: tokens)
+    }
+
+    static func rankByTokenPosition(
+        _ foods: [FdcSearchableFood],
+        tokens: [String]
+    ) -> [FdcSearchableFood] {
+        let lowerTokens = tokens.map { $0.lowercased() }
 
         return foods
+            .map { food in (food, positionScore(food.description, tokens: lowerTokens)) }
+            .sorted { $0.1 < $1.1 }
+            .map(\.0)
+    }
+
+    // Lower score = better match. Each token contributes the index of the
+    // comma-separated part where it first appears as a word prefix.
+    // Unmatched tokens get a penalty of (partCount).
+    private static func positionScore(_ description: String, tokens: [String]) -> Int {
+        let parts = description.split(separator: ",").map {
+            $0.trimmingCharacters(in: .whitespaces).lowercased()
+        }
+
+        var score = 0
+        for token in tokens {
+            var bestIndex = parts.count
+            for (i, part) in parts.enumerated() {
+                let words = part.split(separator: " ")
+                if words.contains(where: { $0.hasPrefix(token) }) {
+                    bestIndex = i
+                    break
+                }
+            }
+            score += bestIndex
+        }
+        return score
     }
     
     func getNutrient(withId nutrientId: String) -> Nutrient? {

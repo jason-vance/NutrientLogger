@@ -81,18 +81,10 @@ class Meal: Identifiable {
         }
     }
     
-    func matchesAny(of tokens: [any StringProtocol]) -> Bool {
-        if name.caseInsensitiveContainsAny(of: tokens) {
-            return true
-        }
-        
-        for foodWithPortion in foodsWithPortions {
-            if foodWithPortion.foodName.caseInsensitiveContainsAny(of: tokens) {
-                return true
-            }
-        }
-        
-        return false
+    func matchesAll(of tokens: [any StringProtocol]) -> Bool {
+        let searchableText = ([name] + foodsWithPortions.map(\.foodName))
+            .joined(separator: " ")
+        return searchableText.caseInsensitiveContainsAll(of: tokens)
     }
 }
 

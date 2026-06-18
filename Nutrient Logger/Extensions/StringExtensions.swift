@@ -12,4 +12,8 @@ extension String {
     func caseInsensitiveContainsAny(of strs: [any StringProtocol]) -> Bool {
         strs.first { self.localizedCaseInsensitiveContains($0) } != nil
     }
+
+    func caseInsensitiveContainsAll(of strs: [any StringProtocol]) -> Bool {
+        strs.allSatisfy { self.localizedCaseInsensitiveContains($0) }
+    }
 }
