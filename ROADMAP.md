@@ -86,6 +86,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   - Update dashboard comparisons to use custom goals when set, falling back to RDI/USDA values otherwise
   - This is prerequisite groundwork for v3.11 trend charts (need a target line to plot against)
   - Add unit tests for goal precedence logic (custom goal vs. RDI fallback) and any date-boundary handling
+- [ ] Fix `ConsumedNutrientChart` crash, ln 114 when `nutrientFoodPairs` is empty
 
 ### App Store Connect
 - [x] No product changes needed

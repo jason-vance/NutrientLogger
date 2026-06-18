@@ -111,7 +111,8 @@ struct ConsumedNutrientChart: View {
             }
         
         self.rdi = {
-            let foodsUnit: WeightUnit = .unitFrom(nutrientFoodPairs.first!.nutrient)
+            guard let first = nutrientFoodPairs.first else { return rdi }
+            let foodsUnit: WeightUnit = .unitFrom(first.nutrient)
             if foodsUnit == rdi?.unit { return rdi }
             guard let rdi else { return nil }
             return rdi.convertedTo(foodsUnit)
