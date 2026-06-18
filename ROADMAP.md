@@ -75,11 +75,11 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ---
 
-## v3.9 — "Set Your Targets" *(~2 weeks)*
+## v3.9 — "Set Your Targets" *(~2 weeks)* ✅ Done
 **Theme:** Calorie/macro goal setting, plus a food-search quality pass. Goal-setting is prerequisite groundwork for v3.11's trend charts; search-matching fixes were called out repeatedly in review feedback and are a quick, contained win while `FoodSearchView` is already in scope.
 
 ### Code
-- [ ] **Improve food search matching** — reduce false-positive matches surfaced in reviews (e.g. searching "peas" returning peaches/pears) and improve discoverability for items that currently require unintuitive search terms (e.g. cinnamon only found via "spice, cinnamon")
+- [x] **Improve food search matching** — reduce false-positive matches surfaced in reviews (e.g. searching "peas" returning peaches/pears) and improve discoverability for items that currently require unintuitive search terms (e.g. cinnamon only found via "spice, cinnamon")
 - [x] **Calorie/macro goal setting** — confirmed missing (see `UserProfileView.swift` TODO at line 42; `User` model has no goal fields). Scope as its own feature, not a quick audit:
   - Add persisted goal fields to the `User` model (daily calorie target, optional macro targets)
   - Add UI in `UserProfileView` to set/edit goals, with sensible RDI-derived defaults

@@ -27,7 +27,7 @@ Key Features:
 See your daily intake of both macro and micronutrients, from protein and fiber to magnesium and vitamin B12.
 
 * Extensive Food Database
-Search from tens of thousands of foods, including whole ingredients and packaged items, to log meals with precision.
+Search from tens of thousands of foods, including whole ingredients and packaged items, to log meals with precision. Smart search understands what you mean — type "whole milk" and find it instantly, even expand common shortcuts like "OJ" or "PB".
 
 * Log Anything
 Search our database or add your own
@@ -47,4 +47,4 @@ Nutrient Logger is perfect for anyone serious about nutrition—whether you’re
 * Apple Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
 ## What's New (v3.9)
-Set your own calorie, macro, and micronutrient goals — see how today compares at a glance on your dashboard.
+Set your own calorie, macro, and micronutrient goals — see how today compares at a glance on your dashboard. Plus, smarter food search that finds what you're actually looking for.
