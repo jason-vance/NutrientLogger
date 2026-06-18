@@ -55,10 +55,11 @@ struct MarketingView: View {
             isPurchasing = true
             subscriptionAnalytics.subscriptionPurchaseStarted(productId: productId)
             do {
-                let purchased = try await subscriptionManager.purchase(productId: productId)
-                if purchased {
-                    subscriptionAnalytics.subscriptionPurchaseCompleted(productId: productId)
-                } else {
+                let result = try await subscriptionManager.purchase(productId: productId)
+                switch result {
+                case .completed(let isTrial):
+                    subscriptionAnalytics.subscriptionPurchaseCompleted(productId: productId, isTrial: isTrial)
+                case .cancelled:
                     subscriptionAnalytics.subscriptionPurchaseCancelled(productId: productId)
                 }
             } catch {

@@ -31,10 +31,12 @@ protocol SubscriptionAnalytics {
     func paywallShown(trigger: PaywallTrigger)
     func paywallDismissed(trigger: PaywallTrigger)
     func subscriptionPurchaseStarted(productId: String)
-    func subscriptionPurchaseCompleted(productId: String)
+    func subscriptionPurchaseCompleted(productId: String, isTrial: Bool)
     func subscriptionPurchaseCancelled(productId: String)
     func subscriptionPurchaseFailed(productId: String, error: Error)
     func subscriptionRestored()
+    func subscriptionTrialConverted()
+    func subscriptionLapsed()
 }
 
 
@@ -47,6 +49,7 @@ enum NotificationPermissionResult: String {
 }
 
 protocol EngagementAnalytics {
+    func screenViewed(screenName: String)
     func customFoodCreated()
     func customFoodEdited()
     func customFoodDeleted()
@@ -362,8 +365,11 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     private let eventSubscriptionPurchaseCancelled = "subscription_purchase_cancelled"
     private let eventSubscriptionPurchaseFailed = "subscription_purchase_failed"
     private let eventSubscriptionRestored = "subscription_restored"
+    private let eventSubscriptionTrialConverted = "subscription_trial_converted"
+    private let eventSubscriptionLapsed = "subscription_lapsed"
     private let parameterTrigger = "trigger"
     private let parameterProductId = "product_id"
+    private let parameterIsTrial = "is_trial"
 
     public func paywallShown(trigger: PaywallTrigger) {
         analytics.log(event: eventPaywallShown, parameters: [parameterTrigger: trigger.rawValue])
@@ -377,8 +383,11 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
         analytics.log(event: eventSubscriptionPurchaseStarted, parameters: [parameterProductId: productId])
     }
 
-    public func subscriptionPurchaseCompleted(productId: String) {
-        analytics.log(event: eventSubscriptionPurchaseCompleted, parameters: [parameterProductId: productId])
+    public func subscriptionPurchaseCompleted(productId: String, isTrial: Bool) {
+        analytics.log(event: eventSubscriptionPurchaseCompleted, parameters: [
+            parameterProductId: productId,
+            parameterIsTrial: isTrial,
+        ])
     }
 
     public func subscriptionPurchaseCancelled(productId: String) {
@@ -395,7 +404,18 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
         analytics.log(event: eventSubscriptionRestored)
     }
 
+    public func subscriptionTrialConverted() {
+        analytics.log(event: eventSubscriptionTrialConverted)
+    }
+
+    public func subscriptionLapsed() {
+        analytics.log(event: eventSubscriptionLapsed)
+    }
+
     // MARK: - Feature Engagement & Retention
+
+    private let eventScreenViewed = "screen_viewed"
+    private let parameterScreenName = "screen_name"
 
     private let eventCustomFoodCreated = "custom_food_created"
     private let eventCustomFoodEdited = "custom_food_edited"
@@ -407,6 +427,10 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     private let parameterGoalName = "goal_name"
     private let parameterStreakDays = "streak_days"
     private let parameterResult = "result"
+
+    public func screenViewed(screenName: String) {
+        analytics.log(event: eventScreenViewed, parameters: [parameterScreenName: screenName])
+    }
 
     public func customFoodCreated() {
         analytics.log(event: eventCustomFoodCreated)

@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import WidgetKit
+import SwinjectAutoregistration
 
 struct ContentView: View {
 
@@ -15,6 +16,8 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
 
     @EnvironmentObject private var dataController: DataController
+
+    @Inject private var engagementAnalytics: EngagementAnalytics
 
     @Binding var pendingDeepLink: DeepLink?
     @State private var selectedTab: AppTab = .dashboard
@@ -118,6 +121,14 @@ struct ContentView: View {
                     UserProfileView()
                 }
             }
+        }
+        .onChange(of: selectedTab, initial: true) { _, tab in
+            let name: String = switch tab {
+            case .dashboard: "Dashboard"
+            case .search: "Search"
+            case .profile: "Profile"
+            }
+            engagementAnalytics.screenViewed(screenName: name)
         }
         .sheet(isPresented: $showMarketingFromDeepLink) {
             MarketingView(trigger: .deepLink)

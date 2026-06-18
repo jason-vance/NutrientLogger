@@ -9,19 +9,33 @@ import Foundation
 import StoreKit
 import SwiftUI
 
+enum PurchaseResult {
+    case completed(isTrial: Bool)
+    case cancelled
+}
+
+enum SubscriptionState: String {
+    case none
+    case trial
+    case paid
+}
+
 @MainActor
 class SubscriptionManager: ObservableObject {
-    
+
     @Published var products: [String: Product] = [:]
-    
+
     @Published var isLoading: Bool = false
     @Published var isSubscribed: Bool = false {
         didSet {
             storedIsSubscribed = isSubscribed
         }
     }
-    
+
     @AppStorage("storedIsSubscribed") private var storedIsSubscribed: Bool = false
+    @AppStorage("storedSubscriptionState") private var storedSubscriptionStateRaw: String = SubscriptionState.none.rawValue
+
+    private static var hasCheckedTransitions = false
     
     static let monthlyProductId = "nutrient.logger.premium.monthly"
     static let yearlyProductId = "nutrient.logger.premium.yearly"
@@ -102,29 +116,28 @@ class SubscriptionManager: ObservableObject {
         }
     }
     
-    func purchase(productId: String? = nil) async throws -> Bool {
+    func purchase(productId: String? = nil) async throws -> PurchaseResult {
         let productId = productId ?? Self.productIds.first!
         guard let product = products[productId] else {
             throw SubscriptionError.productNotFound
         }
-        
+
         let result = try await product.purchase()
-        
+
         switch result {
         case .success(let verification):
-            // Check if the transaction is verified
             switch verification {
             case .verified(let transaction):
-                // Update the user's subscription status
+                let isTrial = transaction.offerType == .introductory
                 self.isSubscribed = true
+                storedSubscriptionStateRaw = (isTrial ? SubscriptionState.trial : .paid).rawValue
                 await transaction.finish()
-                return true
+                return .completed(isTrial: isTrial)
             case .unverified:
                 throw SubscriptionError.verificationFailed
             }
         case .userCancelled:
-            self.isSubscribed = false
-            return false
+            return .cancelled
         case .pending:
             throw SubscriptionError.pending
         @unknown default:
@@ -144,6 +157,32 @@ class SubscriptionManager: ObservableObject {
     func restorePurchases() async throws {
         try? await AppStore.sync()
         self.isSubscribed = await isSubscribed()
+    }
+
+    func currentSubscriptionState() async -> SubscriptionState {
+        for await result in Transaction.currentEntitlements {
+            if case .verified(let transaction) = result,
+               Self.productIds.contains(transaction.productID) {
+                return transaction.offerType == .introductory ? .trial : .paid
+            }
+        }
+        return .none
+    }
+
+    func checkSubscriptionTransitions(analytics: SubscriptionAnalytics) async {
+        guard !Self.hasCheckedTransitions else { return }
+        Self.hasCheckedTransitions = true
+
+        let current = await currentSubscriptionState()
+        let previous = SubscriptionState(rawValue: storedSubscriptionStateRaw) ?? .none
+
+        if previous == .trial && current == .paid {
+            analytics.subscriptionTrialConverted()
+        } else if previous != .none && current == .none {
+            analytics.subscriptionLapsed()
+        }
+
+        storedSubscriptionStateRaw = current.rawValue
     }
 }
 

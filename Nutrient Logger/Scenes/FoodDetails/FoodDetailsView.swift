@@ -277,6 +277,7 @@ struct FoodDetailsView: View {
         .toolbar { Toolbar() }
         .onAppear { fetchFoodAndPortions() }
         .onAppear { populateFieldsIfNeeded() }
+        .onAppear { engagementAnalytics.screenViewed(screenName: "FoodDetails") }
         .onChange(of: portionAmountValue) { applyPortion() }
         .confirmationDialog(
             "Delete Food?\n\nAre you sure you want to delete \"\(food?.name ?? "this food")\"?",

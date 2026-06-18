@@ -24,6 +24,7 @@ struct DashboardView: View {
 
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var engagementAnalytics: EngagementAnalytics
+    @Inject private var subscriptionAnalytics: SubscriptionAnalytics
 
     @State private var date: SimpleDate = .today
     @State private var showDatePicker: Bool = false
@@ -151,6 +152,7 @@ struct DashboardView: View {
         }
         .toolbar { Toolbar() }
         .navigationTitle(Text(navigationTitle))
+        .task { await subscriptionManager.checkSubscriptionTransitions(analytics: subscriptionAnalytics) }
         .onChange(of: todaysConsumedFoods, initial: true) { fetchFoods() }
         .onChange(of: todaysFoods, initial: true) { _, _ in onTodaysFoodsChanged() }
         .animation(.snappy, value: date)
@@ -264,6 +266,7 @@ struct DashboardView: View {
     let _ = swinjectContainer.autoregister(UserService.self) { UserServiceForScreenshots() }
     let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) { UsdaNutrientRdiLibrary.create() }
     let _ = swinjectContainer.autoregister(EngagementAnalytics.self) { MockEngagementAnalytics() }
+    let _ = swinjectContainer.autoregister(SubscriptionAnalytics.self) { MockSubscriptionAnalytics() }
 
     NavigationStack {
         DashboardView()

@@ -11,13 +11,16 @@ class MockSubscriptionAnalytics: SubscriptionAnalytics {
     func paywallShown(trigger: PaywallTrigger) {}
     func paywallDismissed(trigger: PaywallTrigger) {}
     func subscriptionPurchaseStarted(productId: String) {}
-    func subscriptionPurchaseCompleted(productId: String) {}
+    func subscriptionPurchaseCompleted(productId: String, isTrial: Bool) {}
     func subscriptionPurchaseCancelled(productId: String) {}
     func subscriptionPurchaseFailed(productId: String, error: Error) {}
     func subscriptionRestored() {}
+    func subscriptionTrialConverted() {}
+    func subscriptionLapsed() {}
 }
 
 class MockEngagementAnalytics: EngagementAnalytics {
+    func screenViewed(screenName: String) {}
     func customFoodCreated() {}
     func customFoodEdited() {}
     func customFoodDeleted() {}

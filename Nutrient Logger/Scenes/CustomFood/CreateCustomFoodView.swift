@@ -144,6 +144,7 @@ struct CreateCustomFoodView: View {
         .toolbar { Toolbar() }
         .onAppear {
             if let food = existingFood { populate(from: food) }
+            engagementAnalytics.screenViewed(screenName: isEditing ? "EditCustomFood" : "CreateCustomFood")
         }
         .alert(alertMessage, isPresented: $showAlert) { }
         .sheet(isPresented: $showOtherPicker) {
