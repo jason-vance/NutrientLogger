@@ -47,4 +47,4 @@ Nutrient Logger is perfect for anyone serious about nutrition—whether you’re
 * Apple Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
 ## What's New (v3.7)
-Can't find a food? Add it yourself — and save it for next time. Premium now includes a 7-day free trial — try it risk-free.
+Set your own calorie and macro goals — see how today compares. Premium now includes a 7-day free trial — try it risk-free.

@@ -88,7 +88,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   - Add unit tests for goal precedence logic (custom goal vs. RDI fallback) and any date-boundary handling
 
 ### App Store Connect
-- [ ] No product changes needed
+- [x] No product changes needed
 
 ### Store Listing
 - [ ] Update **What's New**: "Set your own calorie and macro goals — see how today compares"
