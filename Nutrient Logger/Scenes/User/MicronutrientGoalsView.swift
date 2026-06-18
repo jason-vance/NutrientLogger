@@ -15,8 +15,31 @@ struct MicronutrientGoalsView: View {
 
     @State private var user: User?
 
+    @State private var showVitamins: Bool = true
+    @State private var showMinerals: Bool = true
+    @State private var showFattyAcids: Bool = false
+    @State private var showAminoAcids: Bool = false
+    @State private var showOther: Bool = false
+
+    private var fieldsForGroup: (String) -> [CustomFood.FormField] {
+        { group in CustomFood.formFields.filter { $0.group == group } }
+    }
+
     private func fetchUser() {
         self.user = userService.currentUser
+        expandSectionsWithGoals()
+    }
+
+    private func expandSectionsWithGoals() {
+        guard let goals = user?.micronutrientGoals, !goals.isEmpty else { return }
+        let hasGoal: (String) -> Bool = { group in
+            fieldsForGroup(group).contains { goals[$0.fdcNumber] != nil }
+        }
+        if hasGoal("Fatty Acids") { showFattyAcids = true }
+        if hasGoal("Amino Acids") { showAminoAcids = true }
+        if CustomFood.otherFields.contains(where: { goals[$0.fdcNumber] != nil }) {
+            showOther = true
+        }
     }
 
     private func saveUser() {
@@ -32,43 +55,45 @@ struct MicronutrientGoalsView: View {
 
     var body: some View {
         List {
-            Section(header: Text("Vitamins")) {
-                ForEach(Self.vitaminNutrients, id: \.id) { nutrient in
-                    GoalRow(nutrientId: nutrient.id, name: nutrient.name)
-                }
+            CollapsibleSection(title: "Vitamins", isExpanded: $showVitamins) {
+                ForEach(fieldsForGroup("Vitamins")) { GoalRow(field: $0) }
             }
-            Section(header: Text("Minerals")) {
-                ForEach(Self.mineralNutrients, id: \.id) { nutrient in
-                    GoalRow(nutrientId: nutrient.id, name: nutrient.name)
-                }
+            CollapsibleSection(title: "Minerals", isExpanded: $showMinerals) {
+                ForEach(fieldsForGroup("Minerals")) { GoalRow(field: $0) }
+            }
+            CollapsibleSection(title: "Fatty Acids", isExpanded: $showFattyAcids) {
+                ForEach(fieldsForGroup("Fatty Acids")) { GoalRow(field: $0) }
+            }
+            CollapsibleSection(title: "Amino Acids", isExpanded: $showAminoAcids) {
+                ForEach(fieldsForGroup("Amino Acids")) { GoalRow(field: $0) }
+            }
+            CollapsibleSection(title: "Other", isExpanded: $showOther) {
+                ForEach(CustomFood.otherFields) { GoalRow(field: $0) }
             }
         }
+        .scrollDismissesKeyboard(.interactively)
         .listDefaultModifiers()
         .navigationTitle("Micronutrient Goals")
         .onAppear { fetchUser() }
         .onChange(of: user) { saveUser() }
     }
 
-    @ViewBuilder private func GoalRow(nutrientId: String, name: String) -> some View {
-        let rdi = rdiLibrary.getRdis(nutrientId)?.getRdi(user ?? User())
-        let unitName = rdi?.unit.name ?? ""
-        let defaultAmount = rdi?.recommendedAmount
+    @ViewBuilder private func GoalRow(field: CustomFood.FormField) -> some View {
+        let rdi = rdiLibrary.getRdis(field.fdcNumber)?.getRdi(user ?? User())
+        let placeholder = rdi.map { "\($0.recommendedAmount.formatted(maxDigits: 0))" } ?? "0"
 
         HStack {
-            Text(name)
+            Text(field.name)
             Spacer()
-            TextField(
-                defaultAmount.map { "\($0.formatted(maxDigits: 0))\(unitName)" } ?? "—",
-                text: goalBinding(for: nutrientId)
-            )
-            .keyboardType(.numberPad)
-            .multilineTextAlignment(.trailing)
-            .bold()
-            .frame(maxWidth: 80)
-            Text(unitName)
-                .fontWeight(.light)
+            TextField(placeholder, text: goalBinding(for: field.fdcNumber))
+                .keyboardType(.numberPad)
+                .multilineTextAlignment(.trailing)
+                .bold()
+                .foregroundStyle(Color.accentColor)
+                .frame(maxWidth: 80)
+            Text(field.unit)
                 .foregroundStyle(.secondary)
-                .frame(minWidth: 30, alignment: .leading)
+                .font(.footnote)
         }
         .listRowDefaultModifiers()
     }
@@ -91,39 +116,30 @@ struct MicronutrientGoalsView: View {
         )
     }
 
-    private struct NutrientEntry: Identifiable {
-        let id: String
-        let name: String
+    @ViewBuilder private func CollapsibleSection(
+        title: String,
+        isExpanded: Binding<Bool>,
+        @ViewBuilder content: () -> some View
+    ) -> some View {
+        Section {
+            if isExpanded.wrappedValue {
+                content()
+            }
+        } header: {
+            Button {
+                withAnimation(.snappy) { isExpanded.wrappedValue.toggle() }
+            } label: {
+                HStack {
+                    Text(title).listSectionHeader()
+                    Spacer()
+                    Image(systemName: isExpanded.wrappedValue ? "chevron.up" : "chevron.down")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .buttonStyle(.plain)
+        }
     }
-
-    private static let vitaminNutrients: [NutrientEntry] = [
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_VitaminA_RAE, name: "Vitamin A"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Thiamin, name: "Thiamin"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Riboflavin, name: "Riboflavin"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Niacin, name: "Niacin"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_PantothenicAcid, name: "Pantothenic Acid"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_VitaminB6, name: "Vitamin B6"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Folate_DFE, name: "Folate"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_VitaminB12, name: "Vitamin B12"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_VitaminC_TotalAscorbicAcid, name: "Vitamin C"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_VitaminD_D2_Plus_D3, name: "Vitamin D"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_VitaminE_Alpha_Tocopherol, name: "Vitamin E"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_VitaminK_Phylloquinone, name: "Vitamin K"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Choline_Total, name: "Choline"),
-    ]
-
-    private static let mineralNutrients: [NutrientEntry] = [
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca, name: "Calcium"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Copper_Cu, name: "Copper"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Iron_Fe, name: "Iron"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Magnesium_Mg, name: "Magnesium"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Manganese_Mn, name: "Manganese"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Phosphorus_P, name: "Phosphorus"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Potassium_K, name: "Potassium"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Selenium_Se, name: "Selenium"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Sodium_Na, name: "Sodium"),
-        .init(id: FdcNutrientGroupMapper.NutrientNumber_Zinc_Zn, name: "Zinc"),
-    ]
 }
 
 #Preview {
