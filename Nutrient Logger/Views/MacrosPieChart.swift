@@ -51,14 +51,16 @@ struct MacrosPieChart: View {
     }
     
     let calories: Double
+    let calorieGoal: Double?
     let carbs: Double
     let fat: Double
     let protein: Double
     let colors: ColorPalette
     let config: Config
-    
+
     init(
         calories: Double,
+        calorieGoal: Double? = nil,
         carbs: Double,
         fat: Double,
         protein: Double,
@@ -66,6 +68,7 @@ struct MacrosPieChart: View {
         config: Config = Config()
     ) {
         self.calories = calories
+        self.calorieGoal = calorieGoal
         self.carbs = carbs
         self.fat = fat
         self.protein = protein
@@ -152,6 +155,12 @@ struct MacrosPieChart: View {
                     .font(config.caloriesFont)
                     .fontWeight(.semibold)
                     .fontDesign(.rounded)
+                    if let calorieGoal, config.totalLabelDisplay != .none {
+                        Text("of \(calorieGoal.formatted(maxDigits: 0))")
+                            .font(.subheadline)
+                            .fontWeight(.light)
+                            .contentTransition(.numericText())
+                    }
                 }
                 .offset(y: config.totalLabelDisplay != .none ? -5 : 0)
             }

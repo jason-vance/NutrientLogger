@@ -179,6 +179,7 @@
 				Scenes/FoodSearch/Workers/RemoteDatabase.swift,
 				Scenes/Meals/Domain/Meal.swift,
 				Scenes/User/Domain/Gender.swift,
+				Scenes/User/Domain/NutrientGoalDefaults.swift,
 				Scenes/User/Domain/User.swift,
 				Scenes/User/Workers/UserService.swift,
 				Utils/Analytics/FirebaseAnalytics.swift,

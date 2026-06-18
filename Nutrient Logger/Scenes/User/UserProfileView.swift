@@ -71,7 +71,7 @@ struct UserProfileView: View {
         List {
             NativeAdListRow(ad: $ad, size: .small)
             ProfileSettingsSection()
-            //TODO: Add custom nutrient goals
+            NutritionGoalsSection()
             NotificationSettingsSection()
             UserMealsSection()
             NutrientLibrarySection()
@@ -96,6 +96,85 @@ struct UserProfileView: View {
             GenderField()
             FavoriteColorField()
         }
+    }
+
+    @ViewBuilder private func NutritionGoalsSection() -> some View {
+        Section(header: Text("Nutrition Goals")) {
+            GoalField(
+                "Calories",
+                value: Binding(
+                    get: { user?.calorieGoal },
+                    set: { user?.calorieGoal = $0 }
+                ),
+                unit: "kcal",
+                defaultValue: NutrientGoalDefaults.defaultCalorieGoal(for: user ?? User())
+            )
+            GoalField(
+                "Carbs",
+                value: Binding(
+                    get: { user?.carbsGoalGrams },
+                    set: { user?.carbsGoalGrams = $0 }
+                ),
+                unit: "g",
+                defaultValue: NutrientGoalDefaults.defaultCarbsGoal(for: user ?? User())
+            )
+            GoalField(
+                "Fat",
+                value: Binding(
+                    get: { user?.fatGoalGrams },
+                    set: { user?.fatGoalGrams = $0 }
+                ),
+                unit: "g",
+                defaultValue: NutrientGoalDefaults.defaultFatGoal(for: user ?? User())
+            )
+            GoalField(
+                "Protein",
+                value: Binding(
+                    get: { user?.proteinGoalGrams },
+                    set: { user?.proteinGoalGrams = $0 }
+                ),
+                unit: "g",
+                defaultValue: NutrientGoalDefaults.defaultProteinGoal(for: user ?? User())
+            )
+        }
+    }
+
+    @ViewBuilder private func GoalField(
+        _ title: String,
+        value: Binding<Double?>,
+        unit: String,
+        defaultValue: Double
+    ) -> some View {
+        HStack {
+            Text(title)
+            Spacer()
+            TextField(
+                "\(defaultValue.formatted(maxDigits: 0))\(unit)",
+                text: Binding(
+                    get: {
+                        if let v = value.wrappedValue {
+                            return "\(v.formatted(maxDigits: 0))"
+                        }
+                        return ""
+                    },
+                    set: { newValue in
+                        if newValue.isEmpty {
+                            value.wrappedValue = nil
+                        } else if let d = Double(newValue) {
+                            value.wrappedValue = d
+                        }
+                    }
+                )
+            )
+            .keyboardType(.numberPad)
+            .multilineTextAlignment(.trailing)
+            .bold()
+            .frame(maxWidth: 100)
+            Text(unit)
+                .fontWeight(.light)
+                .foregroundStyle(.secondary)
+        }
+        .listRowDefaultModifiers()
     }
 
     @ViewBuilder private func NotificationSettingsSection() -> some View {

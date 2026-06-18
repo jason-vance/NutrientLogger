@@ -9,8 +9,12 @@ import SwiftUI
 
 struct DashboardMacrosSection: View {
 
+    @Inject private var userService: UserService
+
     let date: SimpleDate
     let aggregator: NutrientDataAggregator
+
+    private var user: User { userService.currentUser }
     
     private var totalMacroCals: Double {
         return (4 * aggregator.carbs) + (9 * aggregator.fat) + (4 * aggregator.protein)
@@ -65,7 +69,7 @@ struct DashboardMacrosSection: View {
     
     @ViewBuilder private func CaloriesCard() -> some View {
         let lineWidthPts: CGFloat = 32
-        
+
         NavigationLink {
             ConsumedMealsView(date: date)
         } label: {
@@ -73,6 +77,7 @@ struct DashboardMacrosSection: View {
                 Spacer()
                 MacrosPieChart(
                     calories: aggregator.calories,
+                    calorieGoal: user.calorieGoal,
                     carbs: aggregator.carbs,
                     fat: aggregator.fat,
                     protein: aggregator.protein
@@ -95,6 +100,7 @@ struct DashboardMacrosSection: View {
                 iconColor: carbsColorPalette.accent,
                 amount: aggregator.carbs,
                 unit: aggregator.carbsUnit,
+                goal: user.carbsGoalGrams,
                 key: FdcNutrientGroupMapper.GroupNumber_Carbohydrates,
                 detailHeaderText: "Carbohydrates"
             )
@@ -104,6 +110,7 @@ struct DashboardMacrosSection: View {
                 iconColor: fatColorPalette.accent,
                 amount: aggregator.fat,
                 unit: aggregator.fatUnit,
+                goal: user.fatGoalGrams,
                 key: FdcNutrientGroupMapper.GroupNumber_Lipids,
                 detailHeaderText: "Lipids"
             )
@@ -113,6 +120,7 @@ struct DashboardMacrosSection: View {
                 iconColor: proteinColorPalette.accent,
                 amount: aggregator.protein,
                 unit: aggregator.proteinUnit,
+                goal: user.proteinGoalGrams,
                 key: FdcNutrientGroupMapper.GroupNumber_AminoAcids,
                 detailHeaderText: "Amino Acids"
             )
@@ -141,6 +149,7 @@ struct DashboardMacrosSection: View {
         iconColor: Color,
         amount: Double,
         unit: String,
+        goal: Double?,
         key: String,
         detailHeaderText: String
     ) -> some View {
@@ -168,6 +177,15 @@ struct DashboardMacrosSection: View {
                 .font(.title2)
                 .fontWeight(.semibold)
                 .fontDesign(.rounded)
+                if let goal {
+                    ProgressView(value: min(amount / goal, 1.0))
+                        .tint(iconColor)
+                        .padding(.horizontal, 8)
+                    Text("of \(goal.formatted(maxDigits: 0))\(unit)")
+                        .font(.caption2)
+                        .fontWeight(.light)
+                        .contentTransition(.numericText())
+                }
             }
             .foregroundStyle(Color.text)
             .padding(.vertical)
@@ -298,8 +316,10 @@ struct DashboardMacrosSection: View {
 }
 
 #Preview {
+    let _ = swinjectContainer.autoregister(UserService.self) { MockUserService(currentUser: .sample) }
+
     let sampleFoods = FoodItem.sampleFoods
-    
+
     ScrollView {
         VStack {
             DashboardMacrosSection(
