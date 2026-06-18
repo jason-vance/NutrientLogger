@@ -13,9 +13,14 @@ import SwiftData
 @main
 struct Nutrient_LoggerApp: App {
 
+    @State private var pendingDeepLink: DeepLink?
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(pendingDeepLink: $pendingDeepLink)
+                .onOpenURL { url in
+                    pendingDeepLink = DeepLink(url: url)
+                }
         }
         .modelContainer(DataController.shared.container)
         .environmentObject(AdProviderFactory.forProd)

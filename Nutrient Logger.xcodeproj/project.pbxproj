@@ -80,6 +80,7 @@
 				Domain/CustomFood.swift,
 				Domain/CustomFoodDatabase.swift,
 				Domain/DailySummary.swift,
+				Domain/DeepLink.swift,
 				Domain/FoodItem.swift,
 				Domain/FullLoggingDay.swift,
 				Domain/LoggingStreak.swift,
