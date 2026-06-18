@@ -136,6 +136,22 @@ struct UserProfileView: View {
                 unit: "g",
                 defaultValue: NutrientGoalDefaults.defaultProteinGoal(for: user ?? User())
             )
+            NavigationLink {
+                MicronutrientGoalsView()
+            } label: {
+                VStack {
+                    HStack {
+                        Text("Micronutrient Goals")
+                        Spacer()
+                    }
+                    HStack {
+                        Text("Set custom targets for vitamins and minerals")
+                        Spacer()
+                    }
+                    .font(.caption)
+                }
+            }
+            .listRowDefaultModifiers()
         }
     }
 

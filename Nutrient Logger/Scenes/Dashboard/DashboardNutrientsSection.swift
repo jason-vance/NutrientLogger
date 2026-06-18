@@ -71,7 +71,11 @@ struct DashboardNutrientsSection: View {
         let amount = nutrients.reduce(into: 0.0, { $0 += $1.nutrient.amount })
         let unit = nutrient.unitName
         let rdi = {
-            let rdi = rdiLibrary.getRdis(nutrientId)?.getRdi(user)
+            let rdi = NutrientGoalDefaults.effectiveRdi(
+                for: nutrientId,
+                user: user,
+                rdiLibrary: rdiLibrary
+            )
             let foodsUnit: WeightUnit = .unitFrom(nutrient)
             if foodsUnit == rdi?.unit { return rdi }
             guard let rdi else { return nil }

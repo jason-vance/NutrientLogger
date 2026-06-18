@@ -19,6 +19,7 @@ struct User: Codable {
     public var carbsGoalGrams: Double? = nil
     public var fatGoalGrams: Double? = nil
     public var proteinGoalGrams: Double? = nil
+    public var micronutrientGoals: [String: Double] = [:]
 
     public func getUserAge() -> TimeInterval? {
         guard let birthdate = birthdate?.toDate() else { return nil }

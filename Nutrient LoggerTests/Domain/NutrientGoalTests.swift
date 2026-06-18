@@ -129,7 +129,7 @@ struct NutrientGoalTests {
     }
 
     @Test func decodingOldUserWithoutGoalsSucceeds() throws {
-        var user = User(gender: .female)
+        let user = User(gender: .female)
         let data = try JSONEncoder().encode(user)
 
         // Re-decode the data produced by a pre-goals User — the new optional
@@ -141,5 +141,102 @@ struct NutrientGoalTests {
         #expect(decoded.carbsGoalGrams == nil)
         #expect(decoded.fatGoalGrams == nil)
         #expect(decoded.proteinGoalGrams == nil)
+        #expect(decoded.micronutrientGoals.isEmpty)
+    }
+
+    // MARK: - Micronutrient goal overrides RDI
+
+    @Test func effectiveRdiReturnsLibraryRdiWhenNoCustomGoal() {
+        let user = User.sample
+        let rdiLibrary = UsdaNutrientRdiLibrary.create()
+        let calciumId = FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca
+
+        let effective = NutrientGoalDefaults.effectiveRdi(
+            for: calciumId,
+            user: user,
+            rdiLibrary: rdiLibrary
+        )
+        let library = rdiLibrary.getRdis(calciumId)?.getRdi(user)
+
+        #expect(effective != nil)
+        #expect(library != nil)
+        #expect(effective!.recommendedAmount == library!.recommendedAmount)
+        #expect(effective!.upperLimit == library!.upperLimit)
+    }
+
+    @Test func effectiveRdiReturnsCustomGoalWhenSet() {
+        var user = User.sample
+        let rdiLibrary = UsdaNutrientRdiLibrary.create()
+        let calciumId = FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca
+
+        user.micronutrientGoals[calciumId] = 1500
+
+        let effective = NutrientGoalDefaults.effectiveRdi(
+            for: calciumId,
+            user: user,
+            rdiLibrary: rdiLibrary
+        )
+
+        #expect(effective != nil)
+        #expect(effective!.recommendedAmount == 1500)
+    }
+
+    @Test func effectiveRdiPreservesUpperLimitFromLibrary() {
+        var user = User.sample
+        let rdiLibrary = UsdaNutrientRdiLibrary.create()
+        let calciumId = FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca
+
+        let libraryRdi = rdiLibrary.getRdis(calciumId)?.getRdi(user)
+        user.micronutrientGoals[calciumId] = 1500
+
+        let effective = NutrientGoalDefaults.effectiveRdi(
+            for: calciumId,
+            user: user,
+            rdiLibrary: rdiLibrary
+        )
+
+        #expect(effective!.upperLimit == libraryRdi!.upperLimit)
+    }
+
+    @Test func effectiveRdiPreservesUnitFromLibrary() {
+        var user = User.sample
+        let rdiLibrary = UsdaNutrientRdiLibrary.create()
+        let calciumId = FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca
+
+        let libraryRdi = rdiLibrary.getRdis(calciumId)?.getRdi(user)
+        user.micronutrientGoals[calciumId] = 1500
+
+        let effective = NutrientGoalDefaults.effectiveRdi(
+            for: calciumId,
+            user: user,
+            rdiLibrary: rdiLibrary
+        )
+
+        #expect(effective!.unit == libraryRdi!.unit)
+    }
+
+    @Test func effectiveRdiReturnsNilForUnknownNutrientWithNoGoal() {
+        let user = User.sample
+        let rdiLibrary = UsdaNutrientRdiLibrary.create()
+
+        let effective = NutrientGoalDefaults.effectiveRdi(
+            for: "99999",
+            user: user,
+            rdiLibrary: rdiLibrary
+        )
+
+        #expect(effective == nil)
+    }
+
+    @Test func micronutrientGoalsSurviveJsonRoundTrip() throws {
+        var user = User(gender: .male)
+        user.micronutrientGoals["301"] = 1500
+        user.micronutrientGoals["303"] = 20
+
+        let data = try JSONEncoder().encode(user)
+        let decoded = try JSONDecoder().decode(User.self, from: data)
+
+        #expect(decoded.micronutrientGoals["301"] == 1500)
+        #expect(decoded.micronutrientGoals["303"] == 20)
     }
 }

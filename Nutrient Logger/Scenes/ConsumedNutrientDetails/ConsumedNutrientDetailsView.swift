@@ -111,7 +111,11 @@ struct ConsumedNutrientDetailsView: View {
         self.nutrient = nutrient
         self.nutrientFoodPairs = nutrientFoodPairs
         
-        self.rdi = nutrientRdiLibrary.getRdis(nutrient.fdcNumber)?.getRdi(userService.currentUser)
+        self.rdi = NutrientGoalDefaults.effectiveRdi(
+            for: nutrient.fdcNumber,
+            user: userService.currentUser,
+            rdiLibrary: nutrientRdiLibrary
+        )
     }
     
     var body: some View {
@@ -202,8 +206,12 @@ struct ConsumedNutrientDetailsView: View {
     }
     
     @ViewBuilder private func Chart() -> some View {
-        let rdi = nutrientRdiLibrary.getRdis(nutrient.fdcNumber)?.getRdi(user)
-        
+        let rdi = NutrientGoalDefaults.effectiveRdi(
+            for: nutrient.fdcNumber,
+            user: user,
+            rdiLibrary: nutrientRdiLibrary
+        )
+
         ConsumedNutrientChart(
             nutrientFoodPairs: nutrientFoodPairs,
             rdi: rdi,

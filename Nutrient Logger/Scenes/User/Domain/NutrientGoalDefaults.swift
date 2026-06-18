@@ -30,4 +30,30 @@ struct NutrientGoalDefaults {
         let calories = user.calorieGoal ?? defaultCalorieGoal(for: user)
         return (calories * 0.20 / 4).rounded()
     }
+
+    static func effectiveRdi(
+        for nutrientId: String,
+        user: User,
+        rdiLibrary: NutrientRdiLibrary
+    ) -> LifeStageNutrientRdi? {
+        let baseRdi = rdiLibrary.getRdis(nutrientId)?.getRdi(user)
+
+        guard let customGoal = user.micronutrientGoals[nutrientId] else {
+            return baseRdi
+        }
+
+        let unit: WeightUnit = baseRdi?.unit
+            ?? rdiLibrary.getRdis(nutrientId)?.getRdi(.unknown, 30 * 365 * 86400)?.unit
+            ?? .unknown
+
+        return LifeStageNutrientRdi.create(
+            nutrientFdcNumber: nutrientId,
+            gender: .unknown,
+            minAgeYears: 0,
+            maxAgeYears: .greatestFiniteMagnitude,
+            recommendedAmount: customGoal,
+            upperLimit: baseRdi?.upperLimit ?? .greatestFiniteMagnitude,
+            unit: unit
+        )
+    }
 }
