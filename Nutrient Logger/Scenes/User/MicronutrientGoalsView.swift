@@ -13,7 +13,10 @@ struct MicronutrientGoalsView: View {
     @Inject private var userService: UserService
     @Inject private var rdiLibrary: NutrientRdiLibrary
 
+    @EnvironmentObject private var subscriptionManager: SubscriptionManager
+
     @State private var user: User?
+    @State private var showMarketingView: Bool = false
 
     @State private var showVitamins: Bool = true
     @State private var showMinerals: Bool = true
@@ -55,6 +58,9 @@ struct MicronutrientGoalsView: View {
 
     var body: some View {
         List {
+            if !subscriptionManager.isSubscribed {
+                PremiumBanner()
+            }
             CollapsibleSection(title: "Vitamins", isExpanded: $showVitamins) {
                 ForEach(fieldsForGroup("Vitamins")) { GoalRow(field: $0) }
             }
@@ -76,6 +82,9 @@ struct MicronutrientGoalsView: View {
         .navigationTitle("Micronutrient Goals")
         .onAppear { fetchUser() }
         .onChange(of: user) { saveUser() }
+        .fullScreenCover(isPresented: $showMarketingView) {
+            MarketingView()
+        }
     }
 
     @ViewBuilder private func GoalRow(field: CustomFood.FormField) -> some View {
@@ -91,6 +100,7 @@ struct MicronutrientGoalsView: View {
                 .bold()
                 .foregroundStyle(Color.accentColor)
                 .frame(maxWidth: 80)
+                .disabled(!subscriptionManager.isSubscribed)
             Text(field.unit)
                 .foregroundStyle(.secondary)
                 .font(.footnote)
@@ -114,6 +124,37 @@ struct MicronutrientGoalsView: View {
                 }
             }
         )
+    }
+
+    @ViewBuilder private func PremiumBanner() -> some View {
+        Section {
+            VStack(spacing: 8) {
+                HStack {
+                    Image(systemName: "lock.fill")
+                        .foregroundStyle(Color.accentColor)
+                    Text("Premium Feature")
+                        .font(.headline)
+                    Spacer()
+                }
+                Text("Subscribe to set custom micronutrient targets for vitamins, minerals, and more.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Button {
+                    showMarketingView = true
+                } label: {
+                    Text("Unlock Premium")
+                        .font(.callout.bold())
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background {
+                            RoundedRectangle(cornerRadius: .infinity, style: .continuous)
+                                .foregroundStyle(Color.accentColor.gradient)
+                        }
+                }
+            }
+            .listRowDefaultModifiers()
+        }
     }
 
     @ViewBuilder private func CollapsibleSection(
@@ -149,4 +190,5 @@ struct MicronutrientGoalsView: View {
     NavigationStack {
         MicronutrientGoalsView()
     }
+    .environmentObject(SubscriptionManager())
 }

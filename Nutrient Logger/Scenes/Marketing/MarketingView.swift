@@ -172,6 +172,7 @@ struct MarketingView: View {
 
         VStack {
             MarketingPoint("Completely ad-free experience")
+            MarketingPoint("Custom micronutrient goals")
             MarketingPoint("Support an independent developer")
             MarketingPoint("Priority email support")
         }

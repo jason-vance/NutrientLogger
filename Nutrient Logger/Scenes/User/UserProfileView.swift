@@ -13,6 +13,7 @@ struct UserProfileView: View {
     @Environment(\.modelContext) private var modelContext
 
     @EnvironmentObject private var adProviderFactory: AdProviderFactory
+    @EnvironmentObject private var subscriptionManager: SubscriptionManager
     @State private var adProvider: AdProvider?
     @State private var ad: Ad?
 
@@ -142,6 +143,16 @@ struct UserProfileView: View {
                 VStack {
                     HStack {
                         Text("Micronutrient Goals")
+                        if !subscriptionManager.isSubscribed {
+                            Text("PREMIUM")
+                                .font(.caption2.bold())
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background {
+                                    Capsule().foregroundStyle(Color.accentColor.gradient)
+                                }
+                        }
                         Spacer()
                     }
                     HStack {
