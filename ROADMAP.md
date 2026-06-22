@@ -102,14 +102,14 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 **Theme:** Barcode scanner, on its own. Removes the biggest remaining logging friction for packaged foods, and pairs naturally with v3.8's custom-food entry as the fallback for anything a scan doesn't find. This is a marquee feature that will show up in reviews and word-of-mouth.
 
 ### Code
-- [ ] Implement **barcode scanner** using `AVFoundation` (no third-party SDK needed)
-- [ ] Look up scanned UPC/EAN against a barcode-to-FDC mapping. Options:
+- [x] Implement **barcode scanner** using `AVFoundation` (no third-party SDK needed)
+- [x] Look up scanned UPC/EAN against a barcode-to-FDC mapping. Options:
   - Open Food Facts API (free, large, open source) — best starting point
   - USDA FDC branded foods database (already partially in `fdc_legacy.db` — check coverage)
-- [ ] Add camera permission usage description to `Info.plist`
-- [ ] Add barcode scan button to `FoodSearchView` toolbar (next to the search field)
-- [ ] Handle "not found" gracefully — fall back to manual search, and from there to the v3.8 custom-food-entry flow as the ultimate fallback
-- [ ] **Analytics:** Track barcode scan success/failure rate, scan-to-log conversion, and "not found" fallback path taken (manual search vs. custom food entry)
+- [x] Add camera permission usage description to `Info.plist`
+- [x] Add barcode scan button to `FoodSearchView` toolbar (next to the search field)
+- [x] Handle "not found" gracefully — fall back to manual search, and from there to the v3.8 custom-food-entry flow as the ultimate fallback
+- [x] **Analytics:** Track barcode scan success/failure rate, scan-to-log conversion, and "not found" fallback path taken (manual search vs. custom food entry)
 
 ### App Store Connect
 - [ ] Add camera permission justification (required for App Review)

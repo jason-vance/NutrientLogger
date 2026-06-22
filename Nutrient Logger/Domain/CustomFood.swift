@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CustomFood: Identifiable, Codable, Equatable {
+struct CustomFood: Identifiable, Codable, Equatable, Hashable {
 
     var customFoodId: Int       // Negative unique int (e.g. -1, -2, …)
     var created: Date
@@ -16,13 +16,14 @@ struct CustomFood: Identifiable, Codable, Equatable {
     var servingGramWeight: Double   // grams per 1 serving
     var nutrientAmounts: [String: Double]   // fdcNumber → amount (only non-zero stored)
     var isArchived: Bool = false    // soft-delete; archived foods stay in cache for ConsumedFood lookups
+    var barcode: String? = nil
 
     var id: Int { customFoodId }
 
     // MARK: - Codable (custom init so isArchived defaults to false on old JSON)
 
     enum CodingKeys: String, CodingKey {
-        case customFoodId, created, name, servingUnit, servingGramWeight, nutrientAmounts, isArchived
+        case customFoodId, created, name, servingUnit, servingGramWeight, nutrientAmounts, isArchived, barcode
     }
 
     init(
@@ -32,7 +33,8 @@ struct CustomFood: Identifiable, Codable, Equatable {
         servingUnit: String,
         servingGramWeight: Double,
         nutrientAmounts: [String: Double],
-        isArchived: Bool = false
+        isArchived: Bool = false,
+        barcode: String? = nil
     ) {
         self.customFoodId = customFoodId
         self.created = created
@@ -41,6 +43,7 @@ struct CustomFood: Identifiable, Codable, Equatable {
         self.servingGramWeight = servingGramWeight
         self.nutrientAmounts = nutrientAmounts
         self.isArchived = isArchived
+        self.barcode = barcode
     }
 
     init(from decoder: Decoder) throws {
@@ -52,6 +55,7 @@ struct CustomFood: Identifiable, Codable, Equatable {
         servingGramWeight = try c.decode(Double.self, forKey: .servingGramWeight)
         nutrientAmounts = try c.decode([String: Double].self, forKey: .nutrientAmounts)
         isArchived = try c.decodeIfPresent(Bool.self, forKey: .isArchived) ?? false
+        barcode = try c.decodeIfPresent(String.self, forKey: .barcode)
     }
 
     // MARK: - Conversions

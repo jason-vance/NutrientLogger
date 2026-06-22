@@ -142,6 +142,12 @@ struct FoodSearchView: View {
     @State private var showCreateCustomFood: Bool = false
     @State private var foodBeingEdited: CustomFood? = nil
 
+    @State private var showBarcodeScanner: Bool = false
+    @State private var scannedCustomFood: CustomFood? = nil
+    @State private var barcodeProduct: OpenFoodFactsProduct? = nil
+    @State private var showBarcodeNotFound: Bool = false
+    @State private var isScanningBarcode: Bool = false
+
     let searchFunction: SearchFunction
     let askForDateAndMealTime: Bool
     let onFoodSaved: (FoodItem, Portion) throws -> Void
@@ -353,6 +359,42 @@ struct FoodSearchView: View {
         }
     }
     
+    private func handleBarcodeDetected(_ barcode: String) {
+        if let existing = customFoodDatabase.foods.first(where: { $0.barcode == barcode }) {
+            engagementAnalytics.barcodeScanCompleted(found: true)
+            showBarcodeScanner = false
+            scannedCustomFood = existing
+            return
+        }
+
+        isScanningBarcode = true
+        Task {
+            do {
+                if let product = try await OpenFoodFactsService.shared.lookupBarcode(barcode) {
+                    engagementAnalytics.barcodeScanCompleted(found: true)
+                    barcodeProduct = product
+                } else {
+                    engagementAnalytics.barcodeScanCompleted(found: false)
+                    showBarcodeScanner = false
+                    showBarcodeNotFound = true
+                }
+            } catch {
+                engagementAnalytics.barcodeScanCompleted(found: false)
+                showBarcodeScanner = false
+                showBarcodeNotFound = true
+            }
+            isScanningBarcode = false
+        }
+    }
+
+    private func saveBarcodeProduct(_ product: OpenFoodFactsProduct) {
+        let food = OpenFoodFactsService.shared.toCustomFood(product, database: customFoodDatabase)
+        customFoodDatabase.save(food)
+        barcodeProduct = nil
+        showBarcodeScanner = false
+        scannedCustomFood = food
+    }
+
     private func promptForReview() {
         if shouldPromptForReview() {
             reviewPrompter.promptUserForReview()
@@ -479,6 +521,39 @@ struct FoodSearchView: View {
             }
             .environmentObject(customFoodDatabase)
         }
+        .sheet(isPresented: $showBarcodeScanner) {
+            BarcodeScannerSheet(
+                barcodeProduct: $barcodeProduct,
+                isScanningBarcode: $isScanningBarcode,
+                onBarcodeDetected: handleBarcodeDetected,
+                onSaveProduct: saveBarcodeProduct,
+                onCancelReview: {
+                    barcodeProduct = nil
+                }
+            )
+        }
+        .alert("Product Not Found", isPresented: $showBarcodeNotFound) {
+            Button("Search Manually") {
+                engagementAnalytics.barcodeFallbackTaken(path: "manual_search")
+            }
+            Button("Create Custom Food") {
+                engagementAnalytics.barcodeFallbackTaken(path: "custom_food")
+                showCreateCustomFood = true
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This barcode wasn't found in the database. You can search for the food manually or create a custom food entry.")
+        }
+        .navigationDestination(item: $scannedCustomFood) { food in
+            FoodDetailsView(
+                mode: .customFood(food: food),
+                askForDateAndMealTime: askForDateAndMealTime,
+                onFoodSaved: { foodItem, portion in
+                    try onFoodSaved(foodItem, portion)
+                    resetViewState()
+                }
+            )
+        }
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
@@ -490,10 +565,18 @@ struct FoodSearchView: View {
             BackButton()
         }
         ToolbarItem(placement: .topBarTrailing) {
-            Button {
-                showCreateCustomFood = true
-            } label: {
-                Image(systemName: "plus")
+            HStack(spacing: 16) {
+                Button {
+                    engagementAnalytics.barcodeScanInitiated()
+                    showBarcodeScanner = true
+                } label: {
+                    Image(systemName: "barcode.viewfinder")
+                }
+                Button {
+                    showCreateCustomFood = true
+                } label: {
+                    Image(systemName: "plus")
+                }
             }
         }
     }
@@ -648,4 +731,72 @@ struct FoodSearchView: View {
     }
     .environmentObject(AdProviderFactory.forDev)
     .environmentObject(CustomFoodDatabase())
+}
+
+// MARK: - Barcode Scanner Sheet
+
+private struct BarcodeScannerSheet: View {
+
+    @Binding var barcodeProduct: OpenFoodFactsProduct?
+    @Binding var isScanningBarcode: Bool
+
+    let onBarcodeDetected: (String) -> Void
+    let onSaveProduct: (OpenFoodFactsProduct) -> Void
+    let onCancelReview: () -> Void
+
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ZStack {
+            if let product = barcodeProduct {
+                BarcodeProductReviewView(
+                    product: product,
+                    onSave: { onSaveProduct(product) },
+                    onCancel: onCancelReview
+                )
+            } else {
+                BarcodeScannerView(onBarcodeDetected: onBarcodeDetected)
+                    .ignoresSafeArea()
+
+                VStack {
+                    HStack {
+                        Spacer()
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.title)
+                                .foregroundStyle(.white.opacity(0.8))
+                        }
+                        .padding()
+                    }
+
+                    Spacer()
+
+                    Text("Point your camera at a barcode")
+                        .font(.subheadline)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(.ultraThinMaterial, in: Capsule())
+                        .padding(.bottom, 60)
+                }
+            }
+
+            if isScanningBarcode {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .tint(.white)
+                        .scaleEffect(1.5)
+                    Text("Looking up product...")
+                        .foregroundStyle(.white)
+                        .font(.headline)
+                }
+            }
+        }
+        .animation(.easeInOut, value: barcodeProduct != nil)
+    }
 }

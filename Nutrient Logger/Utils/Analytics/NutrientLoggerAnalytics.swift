@@ -57,6 +57,9 @@ protocol EngagementAnalytics {
     func streakMilestoneReached(days: Int)
     func notificationPermissionResult(_ result: NotificationPermissionResult)
     func searchReturnedNoResults(query: String)
+    func barcodeScanInitiated()
+    func barcodeScanCompleted(found: Bool)
+    func barcodeFallbackTaken(path: String)
 }
 
 
@@ -458,5 +461,23 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     public func searchReturnedNoResults(query: String) {
         analytics.log(event: eventSearchNoResults, parameters: [analytics.parameterSearchTerm: query])
+    }
+
+    private let eventBarcodeScanInitiated = "barcode_scan_initiated"
+    private let eventBarcodeScanCompleted = "barcode_scan_completed"
+    private let eventBarcodeFallbackTaken = "barcode_fallback_taken"
+    private let parameterFound = "found"
+    private let parameterPath = "path"
+
+    public func barcodeScanInitiated() {
+        analytics.log(event: eventBarcodeScanInitiated)
+    }
+
+    public func barcodeScanCompleted(found: Bool) {
+        analytics.log(event: eventBarcodeScanCompleted, parameters: [parameterFound: found])
+    }
+
+    public func barcodeFallbackTaken(path: String) {
+        analytics.log(event: eventBarcodeFallbackTaken, parameters: [parameterPath: path])
     }
 }
