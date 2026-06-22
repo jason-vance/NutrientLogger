@@ -112,13 +112,13 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [x] **Analytics:** Track barcode scan success/failure rate, scan-to-log conversion, and "not found" fallback path taken (manual search vs. custom food entry)
 
 ### App Store Connect
-- [ ] Add camera permission justification (required for App Review)
+- [x] Add camera permission justification (required for App Review)
 
 ### Store Listing
-- [ ] New **feature screenshot**: barcode scanner in action
-- [ ] Add "Scan barcodes" to feature list in description
-- [ ] Update **What's New**: "New: Scan any barcode to instantly log packaged foods"
-- [ ] Consider **A/B test** on first screenshot (current vs. barcode scan as hero image) — this is now a visual hook that competing apps lead with
+- [x] New **feature screenshot**: barcode scanner in action
+- [x] Add "Scan barcodes" to feature list in description
+- [x] Update **What's New**: "New: Scan any barcode to instantly log packaged foods"
+- [x] Consider **A/B test** on first screenshot (current vs. barcode scan as hero image) — this is now a visual hook that competing apps lead with
 
 ---
 
