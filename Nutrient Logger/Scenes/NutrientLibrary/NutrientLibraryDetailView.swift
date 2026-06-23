@@ -119,7 +119,11 @@ struct NutrientLibraryDetailView: View {
                         Spacer()
                     }
                     HStack {
-                        Text("\(pair.food.amount.formatted(maxDigits: 2)) \(pair.food.portionName)")
+                        Text({
+                            let n = pair.food.amount.formatted(maxDigits: 2)
+                            let sep = pair.food.portionName.first?.isNumber == true ? "x " : " "
+                            return "\(n)\(sep)\(pair.food.portionName)"
+                        }())
                         Spacer()
                     }
                 }

@@ -315,7 +315,11 @@ struct LogMealView: View {
             }
             .bold()
             HStack {
-                Text("\(foodWithPortion.portionAmount.formatted(maxDigits: 2)) \(foodWithPortion.portionName)")
+                Text({
+                    let n = foodWithPortion.portionAmount.formatted(maxDigits: 2)
+                    let sep = foodWithPortion.portionName.first?.isNumber == true ? "x " : " "
+                    return "\(n)\(sep)\(foodWithPortion.portionName)"
+                }())
                 Spacer()
             }
             .font(.footnote)

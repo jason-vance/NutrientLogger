@@ -87,20 +87,52 @@ class OpenFoodFactsService {
         }
 
         let servingUnit: String
+        var normalizedGrams = servingGrams
         if let ss = product.servingSize, !ss.isEmpty {
-            servingUnit = ss
+            let (name, grams) = Self.normalizeServingSize(name: ss, gramWeight: servingGrams)
+            servingUnit = name
+            normalizedGrams = grams
         } else {
             servingUnit = "serving (\(Int(servingGrams))g)"
+        }
+
+        let portionMultiplier = servingGrams / normalizedGrams
+        if portionMultiplier != 1 {
+            for (key, value) in nutrientAmounts {
+                nutrientAmounts[key] = value / portionMultiplier
+            }
         }
 
         return CustomFood(
             customFoodId: database.nextId(),
             name: displayName,
             servingUnit: servingUnit,
-            servingGramWeight: servingGrams,
+            servingGramWeight: normalizedGrams,
             nutrientAmounts: nutrientAmounts,
             barcode: product.barcode
         )
+    }
+
+    static func normalizeServingSize(name: String, gramWeight: Double) -> (name: String, gramWeight: Double) {
+        var cleaned = name.trimmingCharacters(in: .whitespaces)
+
+        if let range = cleaned.range(of: #"\s*\([\d.,]+\s*g\)\s*$"#, options: .regularExpression) {
+            let stripped = String(cleaned[cleaned.startIndex..<range.lowerBound])
+                .trimmingCharacters(in: .whitespaces)
+            if !stripped.isEmpty {
+                cleaned = stripped
+            }
+        }
+
+        let tokens = cleaned.split(separator: " ", maxSplits: 1)
+        if tokens.count == 2, let leadingNumber = Double(tokens[0]), leadingNumber > 0 {
+            let unitName = String(tokens[1]).trimmingCharacters(in: .whitespaces)
+            if !unitName.isEmpty {
+                return (unitName, gramWeight / leadingNumber)
+            }
+        }
+
+        return (cleaned, gramWeight)
     }
 
     // Maps Open Food Facts nutriment keys (per 100g) to FDC nutrient numbers,

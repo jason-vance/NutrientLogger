@@ -180,7 +180,8 @@ struct FoodDetailsView: View {
         }
         
         let number = food.amount.formatted(maxDigits: 2)
-        return "\(number) \(food.portionName)"
+        let separator = food.portionName.first?.isNumber == true ? "x " : " "
+        return "\(number)\(separator)\(food.portionName)"
     }
     
     private var displayNutrients: [Nutrient] {

@@ -24,13 +24,17 @@ struct BarcodeProductReviewView: View {
         return product.name
     }
 
-    private var servingScale: Double {
-        (product.servingQuantityGrams ?? 100.0) / 100.0
+    private var normalizedServing: (name: String, gramWeight: Double) {
+        let grams = product.servingQuantityGrams ?? 100.0
+        if let ss = product.servingSize, !ss.isEmpty {
+            return OpenFoodFactsService.normalizeServingSize(name: ss, gramWeight: grams)
+        }
+        return ("serving (\(Int(grams))g)", grams)
     }
 
     private func scaledValue(for fdcNumber: String) -> Double? {
         guard let per100g = product.nutriments[fdcNumber], per100g > 0 else { return nil }
-        return per100g * servingScale
+        return per100g * normalizedServing.gramWeight / 100.0
     }
 
     private var nutrientGroups: [(name: String, fields: [CustomFood.FormField])] {
@@ -86,11 +90,9 @@ struct BarcodeProductReviewView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
 
-            if let servingSize = product.servingSize, !servingSize.isEmpty {
-                Text("Serving: \(servingSize)")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
+            Text("Serving: \(normalizedServing.name)")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
         }
     }
 
