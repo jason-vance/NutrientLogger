@@ -103,16 +103,30 @@ class OpenFoodFactsService {
         )
     }
 
-    // Maps Open Food Facts nutriment keys (per 100g) to FDC nutrient numbers
+    // Maps Open Food Facts nutriment keys (per 100g) to FDC nutrient numbers,
+    // converting from grams (OFF's standard) to each nutrient's expected unit.
     private static func parseNutriments(_ raw: [String: Any]) -> [String: Double] {
         var result: [String: Double] = [:]
 
         for (offKey, fdcNumber) in nutrimentMapping {
-            if let value = raw[offKey] as? Double, value > 0 {
-                result[fdcNumber] = value
-            } else if let value = raw[offKey] as? String, let dbl = Double(value), dbl > 0 {
-                result[fdcNumber] = dbl
+            var value: Double?
+            if let v = raw[offKey] as? Double, v > 0 {
+                value = v
+            } else if let v = raw[offKey] as? String, let dbl = Double(v), dbl > 0 {
+                value = dbl
             }
+            guard let grams = value else { continue }
+
+            let converted: Double
+            switch CustomFood.nutrientUnit(for: fdcNumber) {
+            case "mg":
+                converted = grams * 1_000
+            case "mcg":
+                converted = grams * 1_000_000
+            default: // "g", "kcal" — already in the correct unit
+                converted = grams
+            }
+            result[fdcNumber] = converted
         }
 
         return result
