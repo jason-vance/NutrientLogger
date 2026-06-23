@@ -503,11 +503,14 @@ struct NutritionFactsSection: View {
                 if let rdi = rdi, rdi.recommendedAmount > 0 {
                     let nutrientUnit = WeightUnit.unitFrom(nutrient)
                     let recommendedAmount = rdi.unit.convertTo(nutrientUnit, rdi.recommendedAmount)
-                    let percent = (nutrient.amount / recommendedAmount) * 100.0
-                    
-                    Text("\(Int(percent))%")
-                        .font(.system(size: UIConsts.nutrientFontSize))
-                        .bold()
+
+                    if recommendedAmount > 0 {
+                        let percent = (nutrient.amount / recommendedAmount) * 100.0
+
+                        Text("\(Int(percent))%")
+                            .font(.system(size: UIConsts.nutrientFontSize))
+                            .bold()
+                    }
                 }
            }
             .padding(.horizontal, 0.1)
