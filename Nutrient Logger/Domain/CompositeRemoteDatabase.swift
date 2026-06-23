@@ -38,6 +38,10 @@ class CompositeRemoteDatabase: RemoteDatabase {
         try fdc.search(query)
     }
 
+    func searchSimilar(productName: String, brand: String?, limit: Int) throws -> [FdcSearchableFood] {
+        try fdc.searchSimilar(productName: productName, brand: brand, limit: limit)
+    }
+
     func getNutrient(withId id: String) -> Nutrient? {
         fdc.getNutrient(withId: id)
     }

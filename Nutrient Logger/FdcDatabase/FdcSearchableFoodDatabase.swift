@@ -94,6 +94,24 @@ class FdcSearchableFoodDatabase {
         return results
     }
 
+    public func searchOr(query: String, limit: Int) throws -> [FdcSearchableFood] {
+        guard !query.isEmpty else { return [] }
+
+        let db = try Connection(dbPath)
+        var results = [FdcSearchableFood]()
+
+        let search = Tables.searchableFood
+            .select(Columns.fdcId, Columns.description, Columns.rank)
+            .filter(Tables.searchableFood.match(query))
+            .order(Columns.rank)
+            .limit(limit * 3)
+        for row in try db.prepare(search) {
+            results.append(SearchableFoodWrapper(row).searchableFood)
+        }
+
+        return results
+    }
+
     public func getFood(_ fdcId: Int) throws -> FdcFood? {
         if let foodRow = try Connection(dbPath).pluck(Tables.food.filter(Columns.fdcId == fdcId)) {
             return FoodWrapper(foodRow).food

@@ -10,8 +10,10 @@ import SwiftUI
 struct BarcodeProductReviewView: View {
 
     let product: OpenFoodFactsProduct
+    let similarFoods: [FdcSearchableFood]
     let onSave: () -> Void
     let onCancel: () -> Void
+    let onSelectSimilarFood: (FdcSearchableFood) -> Void
 
     private var displayName: String {
         if let brand = product.brand, !brand.isEmpty {
@@ -45,47 +47,54 @@ struct BarcodeProductReviewView: View {
     }
 
     var body: some View {
-        VStack(spacing: 20) {
-            Spacer()
-
-            Image(systemName: "barcode.viewfinder")
-                .font(.system(size: 48))
-                .foregroundStyle(.secondary)
-
-            Text(displayName)
-                .font(.title2.bold())
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-
-            if let servingSize = product.servingSize, !servingSize.isEmpty {
-                Text("Serving: \(servingSize)")
-                    .font(.subheadline)
+        ScrollView {
+            VStack(spacing: 20) {
+                Image(systemName: "barcode.viewfinder")
+                    .font(.system(size: 48))
                     .foregroundStyle(.secondary)
-            }
+                    .padding(.top, 40)
 
-            MacroSummary(nutriments: product.nutriments, servingGrams: product.servingQuantityGrams ?? 100.0)
+                Text(displayName)
+                    .font(.title2.bold())
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+
+                if let servingSize = product.servingSize, !servingSize.isEmpty {
+                    Text("Serving: \(servingSize)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                MacroSummary(nutriments: product.nutriments, servingGrams: product.servingQuantityGrams ?? 100.0)
+                    .padding(.horizontal)
+
+                if !similarFoods.isEmpty {
+                    SimilarFoodsSection(
+                        foods: similarFoods,
+                        onSelect: onSelectSimilarFood
+                    )
+                    .padding(.horizontal)
+                }
+
+                VStack(spacing: 12) {
+                    Button(action: onSave) {
+                        Label("Save & View Details", systemImage: "checkmark.circle.fill")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(.tint)
+                            .foregroundStyle(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+
+                    Button(action: onCancel) {
+                        Text("Cancel")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    }
+                }
                 .padding(.horizontal)
-
-            Spacer()
-
-            VStack(spacing: 12) {
-                Button(action: onSave) {
-                    Label("Save & View Details", systemImage: "checkmark.circle.fill")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(.tint)
-                        .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
-
-                Button(action: onCancel) {
-                    Text("Cancel")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                }
+                .padding(.bottom)
             }
-            .padding(.horizontal)
-            .padding(.bottom)
         }
     }
 }
@@ -138,5 +147,69 @@ private struct MacroItem: View {
             }
         }
         .frame(maxWidth: .infinity)
+    }
+}
+
+private struct SimilarFoodsSection: View {
+
+    let foods: [FdcSearchableFood]
+    let onSelect: (FdcSearchableFood) -> Void
+
+    @State private var showInfo = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "carrot")
+                    .foregroundStyle(.secondary)
+                Text("Similar Foods")
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button {
+                    showInfo = true
+                } label: {
+                    Image(systemName: "info.circle")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            VStack(spacing: 0) {
+                ForEach(foods, id: \.fdcId) { food in
+                    Button {
+                        onSelect(food)
+                    } label: {
+                        HStack {
+                            Text(food.description)
+                                .font(.subheadline)
+                                .foregroundStyle(.primary)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.leading)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 12)
+                    }
+
+                    if food.fdcId != foods.last?.fdcId {
+                        Divider()
+                            .padding(.leading, 12)
+                    }
+                }
+            }
+            .background {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color(.secondarySystemBackground))
+            }
+        }
+        .alert("About Scanned Foods", isPresented: $showInfo) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Scanned products may be missing some nutrient details. For the most complete nutrition data, try logging a similar food from our built-in database instead.")
+        }
     }
 }

@@ -147,6 +147,8 @@ struct FoodSearchView: View {
     @State private var barcodeProduct: OpenFoodFactsProduct? = nil
     @State private var showBarcodeNotFound: Bool = false
     @State private var isScanningBarcode: Bool = false
+    @State private var similarFoods: [FdcSearchableFood] = []
+    @State private var selectedSimilarFoodId: Int? = nil
 
     let searchFunction: SearchFunction
     let askForDateAndMealTime: Bool
@@ -203,6 +205,8 @@ struct FoodSearchView: View {
         searchText = ""
         hasSearched = false
         searchResults = []
+        similarFoods = []
+        selectedSimilarFoodId = nil
         fetchInitialSuggestions()
     }
     
@@ -391,6 +395,7 @@ struct FoodSearchView: View {
         let food = OpenFoodFactsService.shared.toCustomFood(product, database: customFoodDatabase)
         customFoodDatabase.save(food)
         barcodeProduct = nil
+        similarFoods = []
         showBarcodeScanner = false
         scannedCustomFood = food
     }
@@ -525,12 +530,35 @@ struct FoodSearchView: View {
             BarcodeScannerSheet(
                 barcodeProduct: $barcodeProduct,
                 isScanningBarcode: $isScanningBarcode,
+                similarFoods: similarFoods,
                 onBarcodeDetected: handleBarcodeDetected,
                 onSaveProduct: saveBarcodeProduct,
                 onCancelReview: {
                     barcodeProduct = nil
+                    similarFoods = []
+                },
+                onSelectSimilarFood: { food in
+                    showBarcodeScanner = false
+                    barcodeProduct = nil
+                    similarFoods = []
+                    selectedSimilarFoodId = food.fdcId
                 }
             )
+        }
+        .onChange(of: barcodeProduct) { _, newProduct in
+            similarFoods = []
+            guard let product = newProduct else { return }
+            Task {
+                do {
+                    similarFoods = try remoteDatabase.searchSimilar(
+                        productName: product.name,
+                        brand: product.brand,
+                        limit: 7
+                    )
+                } catch {
+                    print("Similar food search failed: \(error.localizedDescription)")
+                }
+            }
         }
         .alert("Product Not Found", isPresented: $showBarcodeNotFound) {
             Button("Search Manually") {
@@ -547,6 +575,16 @@ struct FoodSearchView: View {
         .navigationDestination(item: $scannedCustomFood) { food in
             FoodDetailsView(
                 mode: .customFood(food: food),
+                askForDateAndMealTime: askForDateAndMealTime,
+                onFoodSaved: { foodItem, portion in
+                    try onFoodSaved(foodItem, portion)
+                    resetViewState()
+                }
+            )
+        }
+        .navigationDestination(item: $selectedSimilarFoodId) { fdcId in
+            FoodDetailsView(
+                mode: .searchResult(fdcId: fdcId),
                 askForDateAndMealTime: askForDateAndMealTime,
                 onFoodSaved: { foodItem, portion in
                     try onFoodSaved(foodItem, portion)
@@ -740,9 +778,11 @@ private struct BarcodeScannerSheet: View {
     @Binding var barcodeProduct: OpenFoodFactsProduct?
     @Binding var isScanningBarcode: Bool
 
+    let similarFoods: [FdcSearchableFood]
     let onBarcodeDetected: (String) -> Void
     let onSaveProduct: (OpenFoodFactsProduct) -> Void
     let onCancelReview: () -> Void
+    let onSelectSimilarFood: (FdcSearchableFood) -> Void
 
     @Environment(\.dismiss) private var dismiss
 
@@ -751,8 +791,10 @@ private struct BarcodeScannerSheet: View {
             if let product = barcodeProduct {
                 BarcodeProductReviewView(
                     product: product,
+                    similarFoods: similarFoods,
                     onSave: { onSaveProduct(product) },
-                    onCancel: onCancelReview
+                    onCancel: onCancelReview,
+                    onSelectSimilarFood: onSelectSimilarFood
                 )
             } else {
                 BarcodeScannerView(onBarcodeDetected: onBarcodeDetected)

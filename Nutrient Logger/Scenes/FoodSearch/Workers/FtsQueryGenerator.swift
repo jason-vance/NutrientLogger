@@ -109,6 +109,54 @@ public class FtsQueryGenerator {
         return (token, stemmed)
     }
 
+    public static func cleanProductName(_ name: String, brand: String? = nil) -> String {
+        var cleaned = name
+
+        if let brand = brand, !brand.isEmpty {
+            for part in brand.split(separator: ",") {
+                let trimmed = part.trimmingCharacters(in: .whitespaces)
+                if let range = cleaned.range(of: trimmed, options: .caseInsensitive) {
+                    cleaned.replaceSubrange(range, with: "")
+                }
+            }
+        }
+
+        let sizePattern = #"\d+\.?\d*\s*(?:oz|fl\s*oz|g|kg|ml|l|lb|lbs|ct|count|pk|pack)\b"#
+        if let regex = try? NSRegularExpression(pattern: sizePattern, options: .caseInsensitive) {
+            cleaned = regex.stringByReplacingMatches(
+                in: cleaned,
+                range: NSRange(cleaned.startIndex..., in: cleaned),
+                withTemplate: ""
+            )
+        }
+
+        let packagingWords: Set<String> = [
+            "organic", "natural", "original", "classic", "traditional",
+            "family", "size", "pack", "value", "box", "bag", "can",
+            "bottle", "jar", "container", "pouch", "frozen", "fresh",
+            "canned", "dried", "instant", "ready", "made", "homestyle",
+            "premium", "select", "choice", "fancy", "deluxe", "lite",
+            "light", "reduced", "free", "sugar", "unsweetened",
+        ]
+
+        let words = cleaned
+            .split(separator: " ")
+            .map { String($0) }
+            .filter { !packagingWords.contains($0.lowercased()) }
+
+        return words.joined(separator: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    public static func generateOrFrom(_ query: String) -> String {
+        let tokens = tokenize(query)
+        guard !tokens.isEmpty else { return "" }
+
+        return tokens
+            .map { stemmedWithWildcards($0) }
+            .joined(separator: " OR ")
+    }
+
     public static func withWildcards<T: StringProtocol>(_ query: T) -> String {
         return query + "*"
     }

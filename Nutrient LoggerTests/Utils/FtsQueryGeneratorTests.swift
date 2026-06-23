@@ -144,6 +144,79 @@ struct FtsQueryGeneratorTests {
         #expect(result == "\"chicken breast\"")
     }
 
+    // MARK: - cleanProductName
+
+    @Test func cleanProductName_removesBrand() {
+        let result = FtsQueryGenerator.cleanProductName(
+            "Kroger Whole Wheat Spaghetti",
+            brand: "Kroger"
+        )
+        #expect(result == "Whole Wheat Spaghetti")
+    }
+
+    @Test func cleanProductName_removesBrandCaseInsensitive() {
+        let result = FtsQueryGenerator.cleanProductName(
+            "kroger Whole Wheat Spaghetti",
+            brand: "Kroger"
+        )
+        #expect(result == "Whole Wheat Spaghetti")
+    }
+
+    @Test func cleanProductName_removesCommaSeparatedBrand() {
+        let result = FtsQueryGenerator.cleanProductName(
+            "Kroger Valley Spaghetti",
+            brand: "Kroger,Valley"
+        )
+        #expect(result == "Spaghetti")
+    }
+
+    @Test func cleanProductName_removesSizePatterns() {
+        #expect(FtsQueryGenerator.cleanProductName("Spaghetti 16oz") == "Spaghetti")
+        #expect(FtsQueryGenerator.cleanProductName("Milk 500ml") == "Milk")
+        #expect(FtsQueryGenerator.cleanProductName("Bread 1.5lb") == "Bread")
+        #expect(FtsQueryGenerator.cleanProductName("Yogurt 12 fl oz") == "Yogurt")
+    }
+
+    @Test func cleanProductName_removesPackagingWords() {
+        let result = FtsQueryGenerator.cleanProductName("Organic Frozen Spaghetti")
+        #expect(result == "Spaghetti")
+    }
+
+    @Test func cleanProductName_fullCleanup() {
+        let result = FtsQueryGenerator.cleanProductName(
+            "Kroger Organic Whole Wheat Spaghetti 16oz",
+            brand: "Kroger"
+        )
+        #expect(result == "Whole Wheat Spaghetti")
+    }
+
+    @Test func cleanProductName_noBrand() {
+        let result = FtsQueryGenerator.cleanProductName("Whole Wheat Spaghetti")
+        #expect(result == "Whole Wheat Spaghetti")
+    }
+
+    // MARK: - generateOrFrom
+
+    @Test func orQuerySingleToken() {
+        let result = FtsQueryGenerator.generateOrFrom("spaghetti")
+        #expect(result == "spaghetti*")
+    }
+
+    @Test func orQueryMultipleTokens() {
+        let result = FtsQueryGenerator.generateOrFrom("whole wheat spaghetti")
+        #expect(result == "whole* OR wheat* OR spaghetti*")
+    }
+
+    @Test func orQueryWithStemming() {
+        let result = FtsQueryGenerator.generateOrFrom("carrots")
+        #expect(result == "(carrots* OR carrot*)")
+    }
+
+    @Test func orQueryEmpty() {
+        let result = FtsQueryGenerator.generateOrFrom("")
+        #expect(result == "")
+    }
+
     // MARK: - Helpers
 
     private func expectGenerated(_ input: String, _ expectedOutput: String) {

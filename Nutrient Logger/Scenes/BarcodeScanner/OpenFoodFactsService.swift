@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct OpenFoodFactsProduct {
+struct OpenFoodFactsProduct: Equatable {
     let name: String
     let brand: String?
     let servingSize: String?

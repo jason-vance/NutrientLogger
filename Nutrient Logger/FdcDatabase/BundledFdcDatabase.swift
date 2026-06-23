@@ -226,6 +226,23 @@ class BundledFdcDatabase: RemoteDatabase {
         return score
     }
     
+    public func searchSimilar(productName: String, brand: String?, limit: Int) throws -> [FdcSearchableFood] {
+        let cleaned = FtsQueryGenerator.cleanProductName(productName, brand: brand)
+        let orQuery = FtsQueryGenerator.generateOrFrom(cleaned)
+        guard !orQuery.isEmpty else { return [] }
+
+        var foods = [FdcSearchableFood]()
+        foods.append(contentsOf: try legacyData.searchOr(query: orQuery, limit: limit))
+        foods.append(contentsOf: try surveyData.searchOr(query: orQuery, limit: limit))
+
+        var seen = Set<Int>()
+        foods = foods.filter { seen.insert($0.fdcId).inserted }
+
+        let tokens = FtsQueryGenerator.tokenize(cleaned)
+        let ranked = BundledFdcDatabase.rankByTokenPosition(foods, tokens: tokens)
+        return Array(ranked.prefix(limit))
+    }
+
     func getNutrient(withId nutrientId: String) -> Nutrient? {
         guard let fdcNutrient = try? supportingData.getNutrient(nutrientId) else { return nil }
         return FdcNutrientGroupMapper.makeNutrient(fdcNutrient)
