@@ -126,6 +126,31 @@ Not present. Syncing consumed nutrients / calories to Apple Health is expected b
 
 ---
 
+## Brand voice & opinion in the app
+
+The blog (see WEBSITE_STRATEGY.md) is where opinions live loudly. The app is more subtle — it has personality and a point of view, but never prescribes or judges. The goal: users who share the perspective feel seen; users who don't never feel alienated.
+
+### Where opinion works well
+
+- **Defaults and visual hierarchy.** Make the preferred metric prominent and the less-useful one secondary. Example: if body metrics are added, show body fat % large and BMI small — the hierarchy communicates the opinion without words.
+- **Educational framing.** The nutrient info views (`NutrientInfoView`) are a natural place for opinionated-but-grounded takes. "Conventional guidance suggests limiting saturated fat, but recent research is less conclusive" is a point of view without being combative.
+- **Diet presets.** Offering an "Animal-Based" preset alongside Keto, Standard, etc. signals a perspective. Users who want it feel seen. Others just pick a different preset. No one feels excluded.
+- **Contextualizing metrics.** "Your BMI is 26. Body fat % is generally a better indicator of health — BMI can't distinguish muscle from fat." This says the same thing as "BMI is useless" but educates instead of dismisses.
+- **Subtle copy.** Small touches in empty states, tooltips, or onboarding can have personality without being heavy-handed.
+
+### Where opinion hurts
+
+- **Judging what users log.** Never make someone feel bad about logging a food. The moment the app feels like a disapproving nutritionist, people stop logging — and stop paying.
+- **Dismissing features in their own UI.** If a metric exists in the app, some users want it. Show it, contextualize it, but don't mock it.
+- **Assuming the user's diet.** The app tracks carnivore and vegan users equally well. That neutrality is a strength — don't narrow the audience in the tool itself.
+- **Being preachy.** One contextual sentence is personality. A paragraph explaining why someone's food choice is suboptimal is a lecture.
+
+### The principle
+
+The app should feel like it was built by someone with a point of view — not by a committee. But the point of view shows in what's emphasized, what's default, and what's explained — not in what's dismissed or judged. The blog persuades. The app serves.
+
+---
+
 ## ASO / Discovery notes
 
 Your App Store title is "Nutrient Logger Food Tracker." Consider whether "micronutrient" in the subtitle or keyword field would capture searchers who are specifically dissatisfied with macro-only apps. Searches like "vitamin tracker app," "mineral tracking," and "micronutrient log" likely have far less competition than "food tracker" or "calorie counter."
