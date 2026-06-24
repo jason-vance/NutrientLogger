@@ -17,6 +17,7 @@ struct MicronutrientGoalsView: View {
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
 
     @State private var user: User?
+    @State private var loadedUser: User?
     @State private var showMarketingView: Bool = false
 
     @State private var showVitamins: Bool = true
@@ -30,7 +31,9 @@ struct MicronutrientGoalsView: View {
     }
 
     private func fetchUser() {
-        self.user = userService.currentUser
+        let loaded = userService.currentUser
+        self.loadedUser = loaded
+        self.user = loaded
         expandSectionsWithGoals()
     }
 
@@ -48,6 +51,8 @@ struct MicronutrientGoalsView: View {
 
     private func saveUser() {
         guard let user else { return }
+        guard user != loadedUser else { return }
+        loadedUser = user
         Task {
             do {
                 try await userService.save(user: user)
@@ -78,7 +83,7 @@ struct MicronutrientGoalsView: View {
                 ForEach(CustomFood.otherFields) { GoalRow(field: $0) }
             }
         }
-        .scrollDismissesKeyboard(.interactively)
+        .scrollDismissesKeyboard(.immediately)
         .listDefaultModifiers()
         .navigationTitle("Micronutrient Goals")
         .onAppear { fetchUser() }

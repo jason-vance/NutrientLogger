@@ -21,6 +21,44 @@ struct User: Codable {
     public var proteinGoalGrams: Double? = nil
     public var micronutrientGoals: [String: Double] = [:]
 
+    enum CodingKeys: String, CodingKey {
+        case gender, birthdate, preferredColorName
+        case calorieGoal, carbsGoalGrams, fatGoalGrams, proteinGoalGrams
+        case micronutrientGoals
+    }
+
+    init(
+        gender: Gender = .unknown,
+        birthdate: SimpleDate? = nil,
+        preferredColorName: ColorName = .indigo,
+        calorieGoal: Double? = nil,
+        carbsGoalGrams: Double? = nil,
+        fatGoalGrams: Double? = nil,
+        proteinGoalGrams: Double? = nil,
+        micronutrientGoals: [String: Double] = [:]
+    ) {
+        self.gender = gender
+        self.birthdate = birthdate
+        self.preferredColorName = preferredColorName
+        self.calorieGoal = calorieGoal
+        self.carbsGoalGrams = carbsGoalGrams
+        self.fatGoalGrams = fatGoalGrams
+        self.proteinGoalGrams = proteinGoalGrams
+        self.micronutrientGoals = micronutrientGoals
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        gender = try container.decodeIfPresent(Gender.self, forKey: .gender) ?? .unknown
+        birthdate = try container.decodeIfPresent(SimpleDate.self, forKey: .birthdate)
+        preferredColorName = try container.decodeIfPresent(ColorName.self, forKey: .preferredColorName) ?? .indigo
+        calorieGoal = try container.decodeIfPresent(Double.self, forKey: .calorieGoal)
+        carbsGoalGrams = try container.decodeIfPresent(Double.self, forKey: .carbsGoalGrams)
+        fatGoalGrams = try container.decodeIfPresent(Double.self, forKey: .fatGoalGrams)
+        proteinGoalGrams = try container.decodeIfPresent(Double.self, forKey: .proteinGoalGrams)
+        micronutrientGoals = try container.decodeIfPresent([String: Double].self, forKey: .micronutrientGoals) ?? [:]
+    }
+
     public func getUserAge() -> TimeInterval? {
         guard let birthdate = birthdate?.toDate() else { return nil }
         return Date.now.timeIntervalSince(birthdate)

@@ -21,6 +21,7 @@ struct UserProfileView: View {
     @Inject private var engagementAnalytics: EngagementAnalytics
 
     @State private var user: User?
+    @State private var loadedUser: User?
 
     @State private var showFavoriteColorPicker: Bool = false
 
@@ -51,11 +52,15 @@ struct UserProfileView: View {
     }
 
     private func fetchUser() {
-        self.user = userService.currentUser
+        let loaded = userService.currentUser
+        self.loadedUser = loaded
+        self.user = loaded
     }
 
     private func saveUser() {
         guard let user else { return }
+        guard user != loadedUser else { return }
+        loadedUser = user
         Task {
             do {
                 try await userService.save(user: user)
@@ -79,6 +84,7 @@ struct UserProfileView: View {
             NutrientLibrarySection()
             LegalSection()
         }
+        .scrollDismissesKeyboard(.immediately)
         .listDefaultModifiers()
         .navigationBarTitle("User Profile")
         .onAppear { fetchUser() }

@@ -46,7 +46,7 @@ class DefaultUserService: UserService {
         _ = try await Task.init(priority: .userInitiated) {
             let encoder = JSONEncoder()
             let jsonData = try encoder.encode(user)
-            try jsonData.write(to: self.userFileUrl)
+            try jsonData.write(to: self.userFileUrl, options: .atomic)
         }.value
     }
 
