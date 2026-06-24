@@ -131,7 +131,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   - Reuse/extend `ConsumedNutrientChart.swift` which already exists
   - Show vs. RDI target line
   - Gate behind `subscriptionManager.isSubscribed`
-- [ ] **Apple Health integration**
+- [x] **Apple Health integration**
   - Write consumed calories, protein, fat, carbs, water to `HKHealthStore`
   - Request read permission for weight (to populate user profile automatically)
   - Add toggle in `UserProfileView` to enable/disable sync

@@ -26,6 +26,7 @@ enum PaywallTrigger: String {
     case micronutrientGoals = "micronutrient_goals"
     case removeAds = "remove_ads"
     case trendCharts = "trend_charts"
+    case healthSync = "health_sync"
 }
 
 protocol SubscriptionAnalytics {
@@ -61,6 +62,8 @@ protocol EngagementAnalytics {
     func barcodeScanInitiated()
     func barcodeScanCompleted(found: Bool)
     func barcodeFallbackTaken(path: String)
+    func healthSyncEnabled()
+    func healthSyncDisabled()
 }
 
 
@@ -484,6 +487,17 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     public func barcodeFallbackTaken(path: String) {
         analytics.log(event: eventBarcodeFallbackTaken, parameters: [parameterPath: path])
+    }
+
+    private let eventHealthSyncEnabled = "health_sync_enabled"
+    private let eventHealthSyncDisabled = "health_sync_disabled"
+
+    public func healthSyncEnabled() {
+        analytics.log(event: eventHealthSyncEnabled)
+    }
+
+    public func healthSyncDisabled() {
+        analytics.log(event: eventHealthSyncDisabled)
     }
 
     // MARK: - Premium Feature Engagement

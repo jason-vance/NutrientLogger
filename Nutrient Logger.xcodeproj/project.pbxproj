@@ -67,6 +67,7 @@
 		56EDD0C92F19E665006CEE7D /* Nutrient Logger WidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Nutrient Logger WidgetsExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56EDD0CB2F19E665006CEE7D /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		56EDD0CD2F19E666006CEE7D /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		56F3F7B42FEC914100C19A2B /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -174,13 +175,13 @@
 				Scenes/Dashboard/Domain/DashboardMealList.swift,
 				Scenes/Dashboard/Domain/NutrientDataAggregator.swift,
 				Scenes/FoodDetails/Workers/FoodSaver.swift,
-				Scenes/NutrientTrends/NutrientTrendDataProvider.swift,
 				Scenes/FoodSearch/Domain/RecentSearch.swift,
 				Scenes/FoodSearch/Domain/SearchCategory.swift,
 				Scenes/FoodSearch/Domain/SearchResult.swift,
 				Scenes/FoodSearch/Workers/FtsQueryGenerator.swift,
 				Scenes/FoodSearch/Workers/RemoteDatabase.swift,
 				Scenes/Meals/Domain/Meal.swift,
+				Scenes/NutrientTrends/NutrientTrendDataProvider.swift,
 				Scenes/User/Domain/Gender.swift,
 				Scenes/User/Domain/NutrientGoalDefaults.swift,
 				Scenes/User/Domain/User.swift,
@@ -190,6 +191,7 @@
 				Utils/AppInfo.swift,
 				Utils/AttributedStringBuilder.swift,
 				Utils/Clock.swift,
+				Utils/HealthKitManager.swift,
 				Utils/ReviewPrompter.swift,
 				Utils/Stack.swift,
 				Values/Colors.swift,
@@ -342,6 +344,7 @@
 		56EDD0CA2F19E665006CEE7D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				56F3F7B42FEC914100C19A2B /* HealthKit.framework */,
 				56EDD0CB2F19E665006CEE7D /* WidgetKit.framework */,
 				56EDD0CD2F19E666006CEE7D /* SwiftUI.framework */,
 			);

@@ -24,6 +24,11 @@ struct UserProfileView: View {
     @State private var loadedUser: User?
 
     @State private var showFavoriteColorPicker: Bool = false
+    @State private var showMarketingView: Bool = false
+
+    @AppStorage(HealthKitManager.healthSyncEnabledKey)
+    private var healthSyncEnabled = false
+    @State private var latestWeight: Double?
 
     @AppStorage(NotificationSettings.dailyReminderEnabledKey)
     private var dailyReminderEnabled = NotificationSettings.defaultDailyReminderEnabled
@@ -80,6 +85,7 @@ struct UserProfileView: View {
             ProfileSettingsSection()
             NutritionGoalsSection()
             NotificationSettingsSection()
+            AppleHealthSection()
             UserMealsSection()
             NutrientLibrarySection()
             LegalSection()
@@ -95,6 +101,9 @@ struct UserProfileView: View {
                 get: { user?.preferredColorName ?? .indigo },
                 set: { user?.preferredColorName = $0 }
             ))
+        }
+        .fullScreenCover(isPresented: $showMarketingView) {
+            MarketingView(trigger: .healthSync)
         }
     }
 
@@ -244,6 +253,77 @@ struct UserProfileView: View {
         }
     }
     
+    @ViewBuilder private func AppleHealthSection() -> some View {
+        if HealthKitManager.shared.isAvailable {
+        Section(header: Text("Apple Health")) {
+            HStack {
+                Text("Sync with Health")
+                if !subscriptionManager.isSubscribed {
+                    Text("PREMIUM")
+                        .font(.caption2.bold())
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background {
+                            Capsule().foregroundStyle(Color.accentColor.gradient)
+                        }
+                }
+                Spacer()
+                if subscriptionManager.isSubscribed {
+                    Toggle("", isOn: Binding(
+                        get: { healthSyncEnabled },
+                        set: { newValue in
+                            if newValue {
+                                Task {
+                                    let authorized = await HealthKitManager.shared.requestAuthorization()
+                                    if authorized {
+                                        healthSyncEnabled = true
+                                        engagementAnalytics.healthSyncEnabled()
+                                        fetchWeight()
+                                    }
+                                }
+                            } else {
+                                healthSyncEnabled = false
+                                engagementAnalytics.healthSyncDisabled()
+                                latestWeight = nil
+                            }
+                        }
+                    ))
+                    .labelsHidden()
+                }
+            }
+            .listRowDefaultModifiers()
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if !subscriptionManager.isSubscribed {
+                    showMarketingView = true
+                }
+            }
+            if healthSyncEnabled {
+                HStack {
+                    Text("Weight")
+                    Spacer()
+                    if let weight = latestWeight {
+                        Text("\(weight.formatted(maxDigits: 1)) lbs")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("No data")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .listRowDefaultModifiers()
+                .onAppear { fetchWeight() }
+            }
+        }
+        }
+    }
+
+    private func fetchWeight() {
+        Task {
+            latestWeight = await HealthKitManager.shared.fetchLatestWeight()
+        }
+    }
+
     @ViewBuilder private func BirthdateField() -> some View {
         HStack {
             Text("Birthdate")

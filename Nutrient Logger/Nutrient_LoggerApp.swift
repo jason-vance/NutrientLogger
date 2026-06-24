@@ -15,6 +15,14 @@ struct Nutrient_LoggerApp: App {
 
     @State private var pendingDeepLink: DeepLink?
 
+    init() {
+        DataController.shared.onNutrientsUpdated = { nutrientTotals, date in
+            Task {
+                await HealthKitManager.shared.syncNutrients(nutrientTotals, date: date)
+            }
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView(pendingDeepLink: $pendingDeepLink)

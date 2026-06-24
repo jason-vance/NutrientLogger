@@ -16,12 +16,14 @@ class DailySummary: Identifiable {
     var protein: Double
     var carbs: Double
     var fat: Double
-    
-    init(date: Date, calories: Double, protein: Double, carbs: Double, fat: Double) {
+    var waterGrams: Double = 0
+
+    init(date: Date, calories: Double, protein: Double, carbs: Double, fat: Double, waterGrams: Double = 0) {
         self.date = date
         self.calories = calories
         self.protein = protein
         self.carbs = carbs
         self.fat = fat
+        self.waterGrams = waterGrams
     }
 }

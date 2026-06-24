@@ -4,6 +4,10 @@
 <dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Nutrient Logger uses your camera to scan barcodes on packaged foods for quick logging.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Nutrient Logger reads your weight from Health to help personalize your nutrition recommendations.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Nutrient Logger writes your daily calories, protein, fat, carbs, and water intake to Health so you can see your nutrition data alongside your other health metrics.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

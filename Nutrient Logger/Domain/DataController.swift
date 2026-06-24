@@ -19,6 +19,7 @@ class DataController: ObservableObject {
     
     @Inject private var remoteDatabase: RemoteDatabase
     private var cancellables = Set<AnyCancellable>()
+    var onNutrientsUpdated: (([String: Double], Date) -> Void)?
     
     init() {
         do {
@@ -85,15 +86,25 @@ class DataController: ObservableObject {
             }
         
         let aggregator = NutrientDataAggregator(foodItems)
+        let waterGrams = aggregator.waterCups * 237
         let summary = DailySummary(
             date: .now,
             calories: aggregator.calories,
             protein: aggregator.protein,
             carbs: aggregator.carbs,
-            fat: aggregator.fat
+            fat: aggregator.fat,
+            waterGrams: waterGrams
         )
         container.mainContext.insert(summary)
         try? container.mainContext.save()
+
+        var nutrientTotals: [String: Double] = [:]
+        for (fdcNumber, pairs) in aggregator.nutrientsByNutrientNumber {
+            if let combined = NutrientDataAggregator.combineNutrients(pairs.map(\.nutrient)) {
+                nutrientTotals[fdcNumber] = combined.amount
+            }
+        }
+        onNutrientsUpdated?(nutrientTotals, .now)
     }
         
     
