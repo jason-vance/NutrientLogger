@@ -19,6 +19,10 @@ class MockSubscriptionAnalytics: SubscriptionAnalytics {
     func subscriptionLapsed() {}
 }
 
+class MockPremiumAnalytics: PremiumAnalytics {
+    func premiumFeatureTapped(feature: String) {}
+}
+
 class MockEngagementAnalytics: EngagementAnalytics {
     func screenViewed(screenName: String) {}
     func customFoodCreated() {}

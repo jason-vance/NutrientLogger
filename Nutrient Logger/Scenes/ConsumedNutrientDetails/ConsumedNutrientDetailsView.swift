@@ -24,9 +24,13 @@ struct ConsumedNutrientDetailsView: View {
     @State private var adProvider: AdProvider?
     @State private var ad: Ad?
     
+    @EnvironmentObject private var subscriptionManager: SubscriptionManager
+
     @Inject private var nutrientRdiLibrary: NutrientRdiLibrary
     @Inject private var userService: UserService
+    @Inject private var premiumAnalytics: PremiumAnalytics
 
+    @State private var showMarketingView: Bool = false
     @State private var isExplanationLoaded: Bool = false
     @State private var showExplanation: Bool = false
     @State private var infoString: AttributedString = ""
@@ -125,6 +129,7 @@ struct ConsumedNutrientDetailsView: View {
             RecommendedAmountRow()
             UpperLimitRow()
             Chart()
+            TrendsSection()
             FoodsSection()
         }
         .listDefaultModifiers()
@@ -133,6 +138,9 @@ struct ConsumedNutrientDetailsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
         .task { await loadExplanation() }
+        .fullScreenCover(isPresented: $showMarketingView) {
+            MarketingView(trigger: .trendCharts)
+        }
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
@@ -222,6 +230,49 @@ struct ConsumedNutrientDetailsView: View {
         .listRowDefaultModifiers()
     }
     
+    @ViewBuilder private func TrendsSection() -> some View {
+        Section {
+            if subscriptionManager.isSubscribed {
+                NavigationLink {
+                    NutrientTrendView(
+                        nutrient: nutrient,
+                        colorPalette: colorPalette
+                    )
+                } label: {
+                    HStack {
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .foregroundStyle(colorPalette.accent)
+                        Text("View Trends")
+                        Spacer()
+                        Text("7 & 30 Day")
+                            .font(.caption)
+                            .foregroundStyle(Color.text.opacity(0.5))
+                    }
+                }
+                .listRowDefaultModifiers()
+            } else {
+                Button {
+                    premiumAnalytics.premiumFeatureTapped(feature: "trend_charts")
+                    showMarketingView = true
+                } label: {
+                    HStack {
+                        Image(systemName: "lock.fill")
+                            .foregroundStyle(Color.text.opacity(0.4))
+                        Text("View Trends")
+                        Spacer()
+                        Text("Premium")
+                            .font(.caption)
+                            .foregroundStyle(colorPalette.accent)
+                    }
+                    .foregroundStyle(Color.text)
+                }
+                .listRowDefaultModifiers()
+            }
+        } header: {
+            Text("Nutrient Trends")
+        }
+    }
+
     @ViewBuilder private func FoodsSection() -> some View {
         if !mealFoods.isEmpty {
             Section {
@@ -248,6 +299,9 @@ struct ConsumedNutrientDetailsView: View {
     }
     let _ = swinjectContainer.autoregister(UserService.self) {
         MockUserService(currentUser: .sample)
+    }
+    let _ = swinjectContainer.autoregister(PremiumAnalytics.self) {
+        MockPremiumAnalytics()
     }
     
     let nutrient: Nutrient = .init(
@@ -292,4 +346,5 @@ struct ConsumedNutrientDetailsView: View {
         )
     }
     .environmentObject(AdProviderFactory.forDev)
+    .environmentObject(SubscriptionManager(isForScreenshots: true))
 }

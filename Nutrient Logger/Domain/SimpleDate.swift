@@ -124,7 +124,7 @@ extension SimpleDate {
             return "<???>"
         }
         
-        return date.relativeDisplayString()
+        return date.relativeDisplayString(usingClock: SystemClock())
     }
     
     func daysTo(_ other: SimpleDate) -> Int {

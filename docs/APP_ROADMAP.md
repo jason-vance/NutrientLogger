@@ -126,7 +126,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 **Theme:** Give subscribers concrete reasons they can't get elsewhere. Creates tangible value separation between free and premium tiers.
 
 ### Code
-- [ ] **7-day and 30-day nutrient trend charts** (premium only)
+- [x] **7-day and 30-day nutrient trend charts** (premium only)
   - Aggregate `ConsumedFood` history by day for any selected nutrient
   - Reuse/extend `ConsumedNutrientChart.swift` which already exists
   - Show vs. RDI target line

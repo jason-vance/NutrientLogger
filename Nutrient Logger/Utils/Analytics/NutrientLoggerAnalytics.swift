@@ -25,6 +25,7 @@ enum PaywallTrigger: String {
     case deepLink = "deep_link"
     case micronutrientGoals = "micronutrient_goals"
     case removeAds = "remove_ads"
+    case trendCharts = "trend_charts"
 }
 
 protocol SubscriptionAnalytics {
@@ -88,6 +89,10 @@ protocol UserMealAnalytics {
     func deletingFoodFromMealFailed(_ error: Error)
 }
 
+protocol PremiumAnalytics {
+    func premiumFeatureTapped(feature: String)
+}
+
 protocol ConsumedFoodSaverAnalytics {
     func foodLogged(_ food: FoodItem)
     func foodLogFailed(_ food: FoodItem)
@@ -112,7 +117,7 @@ protocol NutrientLoggerAnalytics {
     func removeAdsRestored()
 }
 
-class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMealsAnalytics, UserMealAnalytics, ConsumedFoodSaverAnalytics, SubscriptionAnalytics, EngagementAnalytics {
+class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMealsAnalytics, UserMealAnalytics, ConsumedFoodSaverAnalytics, SubscriptionAnalytics, EngagementAnalytics, PremiumAnalytics {
     private let maxLength = 100
 
     private let eventFoodLogFailed = "food_log_failed"
@@ -479,5 +484,14 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     public func barcodeFallbackTaken(path: String) {
         analytics.log(event: eventBarcodeFallbackTaken, parameters: [parameterPath: path])
+    }
+
+    // MARK: - Premium Feature Engagement
+
+    private let eventPremiumFeatureTapped = "premium_feature_tapped"
+    private let parameterFeature = "feature"
+
+    public func premiumFeatureTapped(feature: String) {
+        analytics.log(event: eventPremiumFeatureTapped, parameters: [parameterFeature: feature])
     }
 }
