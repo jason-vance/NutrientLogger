@@ -13,8 +13,10 @@ import Firebase
 class AppSetup {
     
     static func doSetup() async {
+        #if !DEBUG
         FirebaseApp.configure()
-        
+        #endif
+
         setupAnalytics()
         
         registerNutrientRdiLibrary()
@@ -51,7 +53,11 @@ class AppSetup {
     }
     
     fileprivate static func setupAnalytics() {
+        #if DEBUG
+        let analytics = DefaultAnalytics(analyticsEngine: MockAnalyticsEngine())
+        #else
         let analytics = DefaultAnalytics(analyticsEngine: FirebaseAnalytics())
+        #endif
         
         swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { analytics }
         swinjectContainer.autoregister(UserProfileAnalytics.self) { analytics }
