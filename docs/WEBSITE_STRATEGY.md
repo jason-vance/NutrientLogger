@@ -9,7 +9,7 @@ The website is a **discovery channel**, not a brand destination. At ~300 MAU, th
 
 ---
 
-## Phase 1 — Landing Page *(1-2 days)*
+## Phase 1 — Landing Page ✅ *Complete*
 
 A single-page static site. Deployable for free on GitHub Pages or Netlify.
 

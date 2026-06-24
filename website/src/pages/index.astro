@@ -1,0 +1,183 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL;
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+
+<Base title="Nutrient Logger — Offline Micronutrient & Vitamin Tracker for iOS">
+
+  <!-- Hero -->
+  <section id="hero" class="hero">
+    <div class="container hero-content">
+      <div class="hero-text">
+        <img src={`${base}images/app-icon.png`} alt="Nutrient Logger app icon" width="120" height="120" class="hero-icon">
+        <h1>Track every vitamin, mineral, and amino&nbsp;acid&nbsp;&mdash; completely&nbsp;offline.</h1>
+        <p class="hero-sub">Your data never leaves your device.</p>
+        <a href="https://apps.apple.com/app/nutrient-logger-food-tracker/id1536557332" class="app-store-link" aria-label="Download on the App Store">
+          <img src={`${base}images/app-store-badge.svg`} alt="Download on the App Store" class="app-store-badge">
+        </a>
+      </div>
+      <div class="hero-screenshot">
+        <img src={`${base}images/screenshot-hero.png`} alt="Nutrient Logger dashboard showing daily nutrient breakdown" class="screenshot-placeholder">
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="features">
+    <div class="container">
+      <h2>Everything you need to understand your nutrition</h2>
+      <div class="feature-grid">
+
+        <div class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#x1F9EA;</div>
+          <h3>80+ Nutrients</h3>
+          <p>See your daily intake of both macro and micronutrients, from protein and fiber to magnesium and vitamin B12.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#x1F4F7;</div>
+          <h3>Barcode Scanner</h3>
+          <p>Scan any packaged food to instantly pull in its nutrition data. No subscription required.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#x1F50D;</div>
+          <h3>Extensive Food Database</h3>
+          <p>Search from tens of thousands of USDA-sourced foods, including whole ingredients and packaged items.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#x270F;&#xFE0F;</div>
+          <h3>Custom Foods</h3>
+          <p>Add your own foods when you can't find what you need. Nothing stops you from logging.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#x1F371;</div>
+          <h3>Reusable Meals</h3>
+          <p>Group foods you eat together often and save them for faster, smarter logging.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#x1F3AF;</div>
+          <h3>Personalized Targets</h3>
+          <p>Set your own calorie, macro, and micronutrient goals — or use recommended daily values based on your age and sex.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#x1F4DA;</div>
+          <h3>Learn as You Log</h3>
+          <p>Discover what each nutrient does for your body and why it matters to your overall health.</p>
+        </div>
+
+      </div>
+
+      <div class="screenshot-row">
+        <img src={`${base}images/screenshot-1.png`} alt="App screenshot showing nutrient breakdown" class="screenshot-placeholder">
+        <img src={`${base}images/screenshot-2.png`} alt="App screenshot showing food search" class="screenshot-placeholder">
+        <img src={`${base}images/screenshot-3.png`} alt="App screenshot showing barcode scanner" class="screenshot-placeholder">
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Nutrient Logger -->
+  <section id="why" class="why">
+    <div class="container">
+      <h2>Go beyond calories and macros</h2>
+      <div class="why-grid">
+
+        <div class="why-block">
+          <h3>Micronutrient depth</h3>
+          <p>Most trackers stop at calories, protein, carbs, and fat. Nutrient Logger breaks down 80+ nutrients so you can spot gaps before they become deficiencies.</p>
+        </div>
+
+        <div class="why-block">
+          <h3>Fully offline &amp; private</h3>
+          <p>Your food log never leaves your device. No cloud accounts, no data harvesting, no login required.</p>
+        </div>
+
+        <div class="why-block">
+          <h3>No intrusive ads</h3>
+          <p>No full-screen video ads that hijack your logging. The free version includes small, non-intrusive ads. Premium removes them entirely.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Reviews -->
+  <section id="reviews" class="reviews">
+    <div class="container">
+      <h2>What people are saying</h2>
+      <div class="review-grid">
+
+        <article class="review-card">
+          <div class="review-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>&ldquo;Free and great insight about vitamin and mineral intake.&rdquo;</blockquote>
+          <cite>&mdash; SoaresEM</cite>
+        </article>
+
+        <article class="review-card">
+          <div class="review-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>&ldquo;I love this app, very user friendly and thorough!&rdquo;</blockquote>
+          <cite>&mdash; Kathrynnn G</cite>
+        </article>
+
+        <article class="review-card">
+          <div class="review-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>&ldquo;This is great for people who are trying to get the right nutrients into their diet.&rdquo;</blockquote>
+          <cite>&mdash; Njoynlife66</cite>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest from the blog -->
+  {posts.length > 0 && (
+    <section id="blog" class="blog-preview">
+      <div class="container">
+        <h2>Latest from the blog</h2>
+        <div class="blog-preview-grid">
+          {posts.map((post) => (
+            <a href={`${base}blog/${post.id}/`} class="blog-preview-card">
+              <time datetime={post.data.date.toISOString().slice(0, 10)}>
+                {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+              </time>
+              <h3>{post.data.title}</h3>
+              <p>{post.data.description}</p>
+            </a>
+          ))}
+        </div>
+        <div class="blog-preview-cta">
+          <a href={`${base}blog/`}>View all posts &rarr;</a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Newsletter -->
+  <section id="newsletter" class="newsletter">
+    <div class="container newsletter-content">
+      <h2>Stay in the loop</h2>
+      <p>Get notified about new features and nutrition insights. No spam, ever.</p>
+      <form
+        action="https://buttondown.com/api/emails/embed-subscribe/nutrient_logger"
+        method="post"
+        class="embeddable-buttondown-form signup-form"
+      >
+        <label for="bd-email" class="sr-only">Email address</label>
+        <input type="email" name="email" id="bd-email" placeholder="you@example.com" required />
+        <input type="hidden" value="1" name="embed" />
+        <button type="submit">Subscribe</button>
+      </form>
+      <p class="signup-note">Unsubscribe anytime.</p>
+    </div>
+  </section>
+
+</Base>

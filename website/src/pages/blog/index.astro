@@ -1,0 +1,40 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL;
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Base title="Blog — Nutrient Logger" description="Articles on micronutrient tracking, nutrition gaps, and building a healthier diet.">
+
+  <section class="blog-listing">
+    <div class="container">
+      <h1>Blog</h1>
+      <p class="blog-listing-intro">Micronutrient tracking, nutrition gaps, and what we're learning while building the app.</p>
+
+      {posts.length === 0 ? (
+        <p class="blog-empty">Posts coming soon. <a href={`${base}#newsletter`}>Subscribe</a> to get notified.</p>
+      ) : (
+        <div class="blog-list">
+          {posts.map((post) => (
+            <a href={`${base}blog/${post.id}/`} class="blog-list-item">
+              <time datetime={post.data.date.toISOString().slice(0, 10)}>
+                {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </time>
+              <h2>{post.data.title}</h2>
+              <p>{post.data.description}</p>
+              {post.data.tags.length > 0 && (
+                <div class="post-tags">
+                  {post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+                </div>
+              )}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+</Base>

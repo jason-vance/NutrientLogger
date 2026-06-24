@@ -1,0 +1,57 @@
+---
+import Base from './Base.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  author: string;
+  tags: string[];
+}
+
+const { title, description, date, author, tags } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<Base title={`${title} — Nutrient Logger`} description={description}>
+  <article class="blog-post">
+    <div class="container">
+      <header class="post-header">
+        <a href={`${base}blog/`} class="back-link">&larr; All posts</a>
+        <h1>{title}</h1>
+        <div class="post-meta">
+          <time datetime={date.toISOString().slice(0, 10)}>{formattedDate}</time>
+          <span class="meta-sep">&middot;</span>
+          <span>{author}</span>
+        </div>
+        {tags.length > 0 && (
+          <div class="post-tags">
+            {tags.map((tag) => <span class="tag">{tag}</span>)}
+          </div>
+        )}
+      </header>
+      <div class="post-content">
+        <slot />
+      </div>
+    </div>
+  </article>
+
+  <section class="newsletter post-newsletter">
+    <div class="container newsletter-content">
+      <h2>Enjoyed this post?</h2>
+      <p>Get notified about new articles and app updates. No spam, ever.</p>
+      <form
+        action="https://buttondown.com/api/emails/embed-subscribe/nutrient_logger"
+        method="post"
+        class="embeddable-buttondown-form signup-form"
+      >
+        <label for="bd-email" class="sr-only">Email address</label>
+        <input type="email" name="email" id="bd-email" placeholder="you@example.com" required />
+        <input type="hidden" value="1" name="embed" />
+        <button type="submit">Subscribe</button>
+      </form>
+      <p class="signup-note">Unsubscribe anytime.</p>
+    </div>
+  </section>
+</Base>

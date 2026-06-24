@@ -1,0 +1,76 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Track 80+ vitamins, minerals, and amino acids completely offline. Your data never leaves your device. Available on the App Store.' } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:image" content={`${base}images/app-icon.png`}>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Nutrient Logger">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content={title}>
+  <meta name="twitter:description" content={description}>
+  <meta name="twitter:image" content={`${base}images/app-icon.png`}>
+
+  <meta name="apple-itunes-app" content="app-id=1536557332">
+
+  <link rel="icon" type="image/png" href={`${base}images/app-icon.png`}>
+  <link rel="apple-touch-icon" href={`${base}images/app-icon.png`}>
+
+  <meta name="theme-color" content="#34A853" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+
+</head>
+<body>
+
+  <header class="site-header">
+    <nav class="nav-container">
+      <a href={`${base}`} class="nav-logo">
+        <img src={`${base}images/app-icon.png`} alt="" width="36" height="36" class="nav-icon">
+        <span>Nutrient Logger</span>
+      </a>
+      <div class="nav-links">
+        <a href={`${base}#features`}>Features</a>
+        <a href={`${base}#why`}>Why Us</a>
+        <a href={`${base}blog/`}>Blog</a>
+        <a href={`${base}#newsletter`}>Newsletter</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <a href="https://apps.apple.com/app/nutrient-logger-food-tracker/id1536557332" class="app-store-link" aria-label="Download on the App Store">
+        <img src={`${base}images/app-store-badge.svg`} alt="Download on the App Store" class="app-store-badge">
+      </a>
+      <div class="footer-links">
+        <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Privacy Policy</a>
+      </div>
+      <p class="footer-copy">&copy; 2026 Nutrient Logger</p>
+      <p class="footer-legal">Nutrient Logger is an iOS app. Apple and the Apple logo are trademarks of Apple Inc.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
