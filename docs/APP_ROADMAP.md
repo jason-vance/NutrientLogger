@@ -98,7 +98,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ---
 
-## v3.10 — "Scan" *(~2 weeks)*
+## v3.10 — "Scan" *(~2 weeks)* ✅ Done
 **Theme:** Barcode scanner, on its own. Removes the biggest remaining logging friction for packaged foods, and pairs naturally with v3.8's custom-food entry as the fallback for anything a scan doesn't find. This is a marquee feature that will show up in reviews and word-of-mouth.
 
 ### Code
