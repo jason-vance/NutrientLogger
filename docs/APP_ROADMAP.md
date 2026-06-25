@@ -141,6 +141,9 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   - Sync weight entries to Apple Health if integration is enabled
 - [x] Update paywall copy to list the three new premium features specifically
 - [x] **Analytics:** Track premium feature tap when not subscribed (trend charts, Health sync, weight tracking), chart nutrient selection frequency, and Health sync enable/disable rate
+- [ ] Random improvements
+  1. Auto-select meal time when logging food
+  2. Body measurement streak? (is it as appopriate as a food logging streak? keep alive by logging at least once per week)
 
 ### App Store Connect
 - [x] No subscription product changes needed
@@ -166,18 +169,19 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   4. Notification permission
   5. Paywall (contextual, after they understand the value)
 - [ ] **UI/UX Update**
-  0. App-wide accent color?
-  1. Dashboard should probably be ranamed "Nutrition"
-  2. Daily Streak is better integrated into food dashboard UI (make it a dopamine hit)
-  3. Food search is better integrated into food dashbaord and removed from tabs
-  4. Body goals deadline
-  5. Calculate BMR based off of body goals
-  6. Settings are moved into more appropriate places (food settings on the food dashboard toolbar, body settings on that toolbar)
-  7. Auto-select meal time when logging food
+  1. App-wide accent color?
+  2. Dashboard should probably be renamed "Nutrition"
+  3. Daily Streak is better integrated into Nutition (and Body?) tab UI (make it a dopamine hit)
+  4. Food search is better integrated into food dashboard and removed from tabs
+  5. Body goals deadline
+  6. Calculate BMR based off of body goals
+  7. Settings are moved into more appropriate places (food settings on the food dashboard toolbar, body settings on that toolbar)
   8. More body metrics (optional, BMI, waist circumference)
   9. Ability to select which nutrients, body metrics are on their respective dashboards
-  10. Body measurement streak? (is it as appopriate as a food logging streak? keep alive by logging at least once per week)
-  11. Make water logging a more exciting part of nutrition logging
+  10. Make water logging a more exciting part of nutrition logging
+  11. Add trend charts to calories, macros, water
+  12. Use Swift Charts for nutrient intake charts instead of my own
+  13. A new dashboard tab with at-a-glance updates and info for all kinds of things (tabs: dashboard, nutrition, body, profile)
 - [ ] **Analytics:** Track onboarding funnel (step completion rate, drop-off point), time-to-first-log, and day-1/day-7/day-30 retention cohorts
 - [ ] **iPad app — new platform target, not an optimization.** The main app is currently `TARGETED_DEVICE_FAMILY = 1` (iPhone-only); it doesn't run on iPad at all today. v4.0 is the right time to introduce it properly:
   - Enable iPad in the device family / App ID capabilities

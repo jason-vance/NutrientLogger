@@ -25,7 +25,8 @@ struct WeightUnit: Hashable, Equatable {
     private static let milligramGramAmount = gramGramAmount / 1000.0
 
     private static let microgramName = "μg"
-    private static let microgramNameAlt = "ug"
+    private static let microgramNameAlt1 = "ug"
+    private static let microgramNameAlt2 = "mcg"
     private static let microgramGramAmount = milligramGramAmount / 1000.0
 
     private static let iUName = "iu"
@@ -59,7 +60,8 @@ struct WeightUnit: Hashable, Equatable {
         if (gramName.caseInsensitiveCompare(unitStr) == .orderedSame) { return gram }
         if (milligramName.caseInsensitiveCompare(unitStr) == .orderedSame) { return milligram }
         if (microgramName.caseInsensitiveCompare(unitStr) == .orderedSame) { return microgram }
-        if (microgramNameAlt.caseInsensitiveCompare(unitStr) == .orderedSame) { return microgram }
+        if (microgramNameAlt1.caseInsensitiveCompare(unitStr) == .orderedSame) { return microgram }
+        if (microgramNameAlt2.caseInsensitiveCompare(unitStr) == .orderedSame) { return microgram }
         if (caloriesName.caseInsensitiveCompare(unitStr) == .orderedSame) { return calories }
         if (caloriesNameAlt.caseInsensitiveCompare(unitStr) == .orderedSame) { return calories }
         if (kilojoulesName.caseInsensitiveCompare(unitStr) == .orderedSame) { return kilojoules }
