@@ -11,29 +11,37 @@ import SwinjectAutoregistration
 import Firebase
 
 class AppSetup {
-    
+
     static func doSetup() async {
         #if !DEBUG
         FirebaseApp.configure()
         #endif
 
-        setupAnalytics()
-        
         registerNutrientRdiLibrary()
-        await registerUserService()
         await registerRemoteDatabase()
-        
-//        doMocksForScreenshots()
+
+        if DataController.isScreenshots {
+            setupMocksForScreenshots()
+            await MainActor.run {
+                ScreenshotDataSeeder.seed(into: DataController.shared.container.mainContext)
+            }
+        } else {
+            setupAnalytics()
+            await registerUserService()
+        }
     }
-    
-    fileprivate static func doMocksForScreenshots() {
-        swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { MockNutrientLoggerAnalytics() }
+
+    private static func setupMocksForScreenshots() {
+        let analytics = DefaultAnalytics(analyticsEngine: MockAnalyticsEngine())
+        swinjectContainer.autoregister(NutrientLoggerAnalytics.self) { analytics }
+        swinjectContainer.autoregister(UserProfileAnalytics.self) { analytics }
+        swinjectContainer.autoregister(UserMealsAnalytics.self) { analytics }
+        swinjectContainer.autoregister(UserMealAnalytics.self) { analytics }
+        swinjectContainer.autoregister(ConsumedFoodSaverAnalytics.self) { analytics }
+        swinjectContainer.autoregister(SubscriptionAnalytics.self) { analytics }
+        swinjectContainer.autoregister(EngagementAnalytics.self) { analytics }
+        swinjectContainer.autoregister(PremiumAnalytics.self) { analytics }
         swinjectContainer.autoregister(UserService.self) { UserServiceForScreenshots() }
-        //TODO: Add foods to modelContext for screenshots
-//        swinjectContainer.autoregister(LocalDatabase.self) { LocalDatabaseForScreenshots() }
-        //TODO: Add meals to modelContext for screenshots
-//        swinjectContainer.autoregister(UserMealsDatabase.self) { UserMealsDatabaseForScreenshots() }
-        swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
     }
     
     private static func registerNutrientRdiLibrary() {

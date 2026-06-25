@@ -12,58 +12,68 @@ import Combine
 
 @MainActor
 class DataController: ObservableObject {
-    
+
+    nonisolated static let isScreenshots = ProcessInfo.processInfo.arguments.contains("-screenshots")
+
     static let shared = DataController()
-    
+
     let container: ModelContainer
-    
+
     @Inject private var remoteDatabase: RemoteDatabase
     private var cancellables = Set<AnyCancellable>()
     var onNutrientsUpdated: (([String: Double], Date) -> Void)?
-    
+
     init() {
+        let schema = Schema([
+            ConsumedFood.self,
+            RecentSearch.self,
+            Meal.self,
+            DailySummary.self,
+            WeightEntry.self,
+            BodyFatEntry.self
+        ])
+
         do {
-            let fileManager = FileManager.default
-            
-            // The OLD location (Default App Sandbox)
-            let oldStoreURL = fileManager
-                .urls(for: .applicationSupportDirectory, in: .userDomainMask)
-                .first?
-                .appendingPathComponent("default.store")
-            
-            // The NEW location (App Group Shared Container)
-            let groupURL = fileManager
-                .containerURL(forSecurityApplicationGroupIdentifier: "group.com.jasonsapps.NutrientLogger")?
-                .appendingPathComponent("default.store")
-            
-            guard let oldStoreURL, let groupURL else {
-                throw NSError(domain: "DataController", code: 0, userInfo: nil)
+            if Self.isScreenshots {
+                let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+                container = try ModelContainer(for: schema, configurations: [config])
+            } else {
+                container = try Self.createPersistentContainer(schema: schema)
             }
-            
-            let oldStoreExists = fileManager.fileExists(atPath: oldStoreURL.path)
-            let groupStoreExists = fileManager.fileExists(atPath: groupURL.path)
-            if oldStoreExists && !groupStoreExists {
-                print("Migration: Old store found. Moving to App Group...")
-                do {
-                    try Self.migrateStore(from: oldStoreURL, to: groupURL)
-                } catch {
-                    print("Migration Failed: \(error)")
-                }
-            }
-            
-            let schema = Schema([
-                ConsumedFood.self,
-                RecentSearch.self,
-                Meal.self,
-                DailySummary.self,
-                WeightEntry.self,
-                BodyFatEntry.self
-            ])
-            let config = ModelConfiguration(schema: schema, url: groupURL)
-            container = try ModelContainer(for: schema, configurations: [config])
         } catch {
             fatalError("Failed to configure SwiftData container: \(error)")
         }
+    }
+
+    private static func createPersistentContainer(schema: Schema) throws -> ModelContainer {
+        let fileManager = FileManager.default
+
+        let oldStoreURL = fileManager
+            .urls(for: .applicationSupportDirectory, in: .userDomainMask)
+            .first?
+            .appendingPathComponent("default.store")
+
+        let groupURL = fileManager
+            .containerURL(forSecurityApplicationGroupIdentifier: "group.com.jasonsapps.NutrientLogger")?
+            .appendingPathComponent("default.store")
+
+        guard let oldStoreURL, let groupURL else {
+            throw NSError(domain: "DataController", code: 0, userInfo: nil)
+        }
+
+        let oldStoreExists = fileManager.fileExists(atPath: oldStoreURL.path)
+        let groupStoreExists = fileManager.fileExists(atPath: groupURL.path)
+        if oldStoreExists && !groupStoreExists {
+            print("Migration: Old store found. Moving to App Group...")
+            do {
+                try migrateStore(from: oldStoreURL, to: groupURL)
+            } catch {
+                print("Migration Failed: \(error)")
+            }
+        }
+
+        let config = ModelConfiguration(schema: schema, url: groupURL)
+        return try ModelContainer(for: schema, configurations: [config])
     }
     
     func updateDailySummary() {
