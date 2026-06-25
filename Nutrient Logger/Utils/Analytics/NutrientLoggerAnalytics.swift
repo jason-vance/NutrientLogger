@@ -67,6 +67,7 @@ protocol EngagementAnalytics {
     func healthSyncDisabled()
     func weightLogged()
     func weightDeleted()
+    func trendNutrientViewed(nutrientName: String)
 }
 
 
@@ -512,6 +513,13 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     public func weightDeleted() {
         analytics.log(event: eventWeightDeleted)
+    }
+
+    private let eventTrendNutrientViewed = "trend_nutrient_viewed"
+    private let parameterNutrient = "nutrient"
+
+    public func trendNutrientViewed(nutrientName: String) {
+        analytics.log(event: eventTrendNutrientViewed, parameters: [parameterNutrient: nutrientName])
     }
 
     // MARK: - Premium Feature Engagement

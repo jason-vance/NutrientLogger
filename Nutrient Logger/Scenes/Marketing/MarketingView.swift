@@ -187,9 +187,11 @@ struct MarketingView: View {
         }
 
         VStack {
-            MarketingPoint("Completely ad-free experience")
+            MarketingPoint("7-day and 30-day nutrient trend charts")
+            MarketingPoint("Weight and body fat tracking with goals")
+            MarketingPoint("Apple Health sync for calories, macros, and weight")
             MarketingPoint("Custom micronutrient goals")
-            MarketingPoint("Support an independent developer")
+            MarketingPoint("Completely ad-free experience")
             MarketingPoint("Priority email support")
         }
         .padding(.top, 8)

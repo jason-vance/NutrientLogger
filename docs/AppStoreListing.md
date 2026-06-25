@@ -14,8 +14,7 @@ Micronutrients, Fully Offline
 vitamin,mineral,deficiency,cronometer,myfitnesspal,vitacost,carnivore,keto,vegan,macro,usda,diet,log
 
 ## Promotional Text (0/170 chars)
-Try the new barcode scanner! No subscription needed.
-Try Premium free for 7 days — unlock full nutrient breakdowns and personalized targets. 
+New: nutrient trend charts, weight tracking, and Apple Health sync. Try Premium free for 7 days.
 
 ## Description
 Nutrient Logger is the offline-first nutrition tracker for people who want to know what's actually in their food — not just calories and macros, but the full spectrum of vitamins, minerals, and amino acids your body needs.
@@ -42,6 +41,15 @@ Group foods you eat together often and save them as custom meals for faster, sma
 * Personalized Nutrient Targets
 Set your own calorie, macro, and micronutrient goals — or use recommended daily values based on your age and sex. Track your progress on the dashboard and stay balanced.
 
+* Nutrient Trend Charts (Premium)
+See how your intake of any nutrient changes over 7 or 30 days. Spot patterns, track consistency, and compare against your daily target.
+
+* Weight & Body Fat Tracking (Premium)
+Log your weight and body fat percentage, set goals, and watch your progress over time with built-in charts.
+
+* Apple Health Sync (Premium)
+Automatically write your daily calories, protein, fat, carbs, and water to Apple Health. Import weight data from Health to keep everything in one place.
+
 * Learn as You Log
 Discover what each nutrient does for your body and why it matters to your overall health.
 
@@ -50,5 +58,5 @@ Nutrient Logger is perfect for anyone serious about nutrition—whether you’re
 
 * Apple Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v3.10)
-New: Scan any barcode to instantly log packaged foods. Previously scanned items are saved for one-tap reuse next time.
+## What's New (v3.11)
+Premium: nutrient trend charts, weight tracking, and Apple Health sync. See how your intake changes over 7 or 30 days, track your weight and body fat, and sync it all with Apple Health.

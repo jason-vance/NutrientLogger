@@ -139,8 +139,8 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   - `WeightUnit.swift` already exists in Domain — build the UI on top of it
   - Simple log view: date + weight entry, chart over time
   - Sync weight entries to Apple Health if integration is enabled
-- [ ] Update paywall copy to list the three new premium features specifically
-- [ ] **Analytics:** Track premium feature tap when not subscribed (trend charts, Health sync, weight tracking), chart nutrient selection frequency, and Health sync enable/disable rate
+- [x] Update paywall copy to list the three new premium features specifically
+- [x] **Analytics:** Track premium feature tap when not subscribed (trend charts, Health sync, weight tracking), chart nutrient selection frequency, and Health sync enable/disable rate
 
 ### App Store Connect
 - [x] No subscription product changes needed
@@ -148,8 +148,8 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ### Store Listing
 - [ ] New screenshots showing trend charts and weight tracking
-- [ ] Update description premium features section
-- [ ] **What's New**: "Premium: nutrient trend charts, weight tracking, and Apple Health sync"
+- [x] Update description premium features section
+- [x] **What's New**: "Premium: nutrient trend charts, weight tracking, and Apple Health sync"
 - [ ] Submit for **App Store feature consideration** (apple.com/search) — HealthKit integration makes this more likely to be featured in Health & Fitness
 
 ---
@@ -158,6 +158,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 **Theme:** Major milestone release. Justifies a full store listing refresh, potential press mention, and a reason for lapsed users to return. Version 4.0 signals maturity and intentional investment.
 
 ### Code
+- [ ] Update website features, etc for v3.11.
 - [ ] **Onboarding flow redesign** — current `AppSetupView` gets users into the app but likely doesn't sell the value. New flow:
   1. Hero screen: "Track every vitamin, mineral, and amino acid. Offline."
   2. Goal setting: what are you tracking for? (general health / specific deficiency / diet protocol)
@@ -165,6 +166,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   4. Notification permission
   5. Paywall (contextual, after they understand the value)
 - [ ] **UI/UX Update**
+  0. App-wide accent color?
   1. Dashboard should probably be ranamed "Nutrition"
   2. Daily Streak is better integrated into food dashboard UI (make it a dopamine hit)
   3. Food search is better integrated into food dashbaord and removed from tabs

@@ -30,6 +30,7 @@ struct NutrientTrendView: View {
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var rdiLibrary: NutrientRdiLibrary
     @Inject private var userService: UserService
+    @Inject private var engagementAnalytics: EngagementAnalytics
 
     @State private var period: TrendPeriod = .sevenDay
     @State private var dailyTotals: [DailyNutrientTotal] = []
@@ -117,6 +118,7 @@ struct NutrientTrendView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
         .onChange(of: period, initial: true) { loadData() }
+        .onAppear { engagementAnalytics.trendNutrientViewed(nutrientName: nutrient.name) }
         .fullScreenCover(isPresented: $showMarketingView) {
             MarketingView(trigger: .trendCharts)
         }
@@ -227,6 +229,7 @@ struct NutrientTrendView: View {
     let _ = swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
     let _ = swinjectContainer.autoregister(UserService.self) { MockUserService(currentUser: .sample) }
     let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) { UsdaNutrientRdiLibrary.create() }
+    let _ = swinjectContainer.autoregister(EngagementAnalytics.self) { MockEngagementAnalytics() }
 
     NavigationStack {
         NutrientTrendView(

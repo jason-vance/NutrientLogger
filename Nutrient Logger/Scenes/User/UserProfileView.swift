@@ -19,6 +19,7 @@ struct UserProfileView: View {
 
     @Inject private var userService: UserService
     @Inject private var engagementAnalytics: EngagementAnalytics
+    @Inject private var premiumAnalytics: PremiumAnalytics
 
     @State private var user: User?
     @State private var loadedUser: User?
@@ -296,6 +297,7 @@ struct UserProfileView: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 if !subscriptionManager.isSubscribed {
+                    premiumAnalytics.premiumFeatureTapped(feature: "health_sync")
                     showMarketingView = true
                 }
             }
@@ -499,6 +501,7 @@ struct UserProfileView: View {
     let _ = swinjectContainer.autoregister(UserService.self){MockUserService(currentUser: .sample)}
     let _ = swinjectContainer.autoregister(EngagementAnalytics.self) { MockEngagementAnalytics() }
     let _ = swinjectContainer.autoregister(SubscriptionAnalytics.self) { MockSubscriptionAnalytics() }
+    let _ = swinjectContainer.autoregister(PremiumAnalytics.self) { MockPremiumAnalytics() }
 
     NavigationStack {
         UserProfileView()

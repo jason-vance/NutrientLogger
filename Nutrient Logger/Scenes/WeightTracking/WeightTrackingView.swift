@@ -33,6 +33,7 @@ struct WeightTrackingView: View {
     @State private var ad: Ad?
 
     @Inject private var engagementAnalytics: EngagementAnalytics
+    @Inject private var premiumAnalytics: PremiumAnalytics
 
     @AppStorage("preferredWeightUnit") private var preferredUnitRaw: String = BodyWeightUnit.lbs.rawValue
     @AppStorage("weightGoalKg") private var weightGoalKg: Double = 0
@@ -556,6 +557,7 @@ struct WeightTrackingView: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 if !subscriptionManager.isSubscribed {
+                    premiumAnalytics.premiumFeatureTapped(feature: "weight_goal")
                     showMarketingView = true
                 }
             }
@@ -633,6 +635,7 @@ struct WeightTrackingView: View {
 
 #Preview {
     let _ = swinjectContainer.autoregister(EngagementAnalytics.self) { MockEngagementAnalytics() }
+    let _ = swinjectContainer.autoregister(PremiumAnalytics.self) { MockPremiumAnalytics() }
 
     NavigationStack {
         WeightTrackingView()

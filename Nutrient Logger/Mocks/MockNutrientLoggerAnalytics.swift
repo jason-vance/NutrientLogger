@@ -39,6 +39,7 @@ class MockEngagementAnalytics: EngagementAnalytics {
     func healthSyncDisabled() {}
     func weightLogged() {}
     func weightDeleted() {}
+    func trendNutrientViewed(nutrientName: String) {}
 }
 
 class MockNutrientLoggerAnalytics: NutrientLoggerAnalytics {
