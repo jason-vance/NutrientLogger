@@ -77,6 +77,8 @@
 				Assets.xcassets,
 				Domain/AutoMarketingPromptTrigger.swift,
 				Domain/BodyFatEntry.swift,
+				Domain/BodyMeasurementStreak.swift,
+				Domain/BodyMeasurementStreakStore.swift,
 				Domain/BodyWeightUnit.swift,
 				Domain/CompositeRemoteDatabase.swift,
 				Domain/ConsumedFood.swift,

@@ -43,6 +43,9 @@ struct WeightTrackingView: View {
     @Query(sort: \WeightEntry.date, order: .reverse) private var allWeightEntries: [WeightEntry]
     @Query(sort: \BodyFatEntry.date, order: .reverse) private var allBodyFatEntries: [BodyFatEntry]
 
+    @AppStorage("bodyMeasurementStreakCount") private var streakCount: Int = 0
+    @AppStorage("bodyMeasurementStreakWeekStartDate") private var streakWeekStartDateRaw: Int = 0
+
     @State private var period: WeightTrendPeriod = .thirtyDay
     @State private var showEntrySheet: Bool = false
     @State private var showMarketingView: Bool = false
@@ -128,6 +131,23 @@ struct WeightTrackingView: View {
         return 40
     }
 
+    private var loggedInPastWeek: Bool {
+        let sevenDaysAgo = SimpleDate.today.adding(days: -6)
+        let hasWeight = allWeightEntries.contains { $0.date >= sevenDaysAgo }
+        let hasBodyFat = allBodyFatEntries.contains { $0.date >= sevenDaysAgo }
+        return hasWeight || hasBodyFat
+    }
+
+    private func updateBodyMeasurementStreak() {
+        let store = BodyMeasurementStreakStore()
+        let streak = store.load().updated(loggedInPastWeek: loggedInPastWeek)
+
+        streakCount = streak.count
+        streakWeekStartDateRaw = streak.weekStartDate.map { Int($0) } ?? 0
+
+        store.save(streak)
+    }
+
     private func importHealthKitData() {
         guard healthSyncEnabled, !hasImportedHealthKit else { return }
         hasImportedHealthKit = true
@@ -182,6 +202,8 @@ struct WeightTrackingView: View {
         .navigationTitle("Body")
         .toolbar { Toolbar() }
         .onAppear { importHealthKitData() }
+        .onChange(of: allWeightEntries.count, initial: true) { updateBodyMeasurementStreak() }
+        .onChange(of: allBodyFatEntries.count, initial: true) { updateBodyMeasurementStreak() }
         .sheet(isPresented: $showEntrySheet) {
             WeightEntrySheet()
         }
@@ -192,11 +214,26 @@ struct WeightTrackingView: View {
     }
 
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            StreakBadge()
+        }
         ToolbarItem(placement: .topBarTrailing) {
             Button {
                 showEntrySheet = true
             } label: {
                 Image(systemName: "plus")
+            }
+        }
+    }
+
+    @ViewBuilder private func StreakBadge() -> some View {
+        if streakCount > 0 {
+            HStack(spacing: 4) {
+                Image(systemName: "flame.fill")
+                    .foregroundStyle(.orange)
+                Text("\(streakCount)w")
+                    .font(.subheadline.bold())
+                    .contentTransition(.numericText())
             }
         }
     }

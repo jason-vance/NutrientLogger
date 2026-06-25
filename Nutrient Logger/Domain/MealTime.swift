@@ -38,6 +38,18 @@ enum MealTime: String {
     static let validFields: [MealTime] = [
         .breakfast, .morningSnack, .lunch, .afternoonSnack, .dinner, .eveningSnack
     ]
+
+    static func forCurrentTime(now: Date = .now) -> MealTime {
+        let hour = Calendar.current.component(.hour, from: now)
+        switch hour {
+        case 0..<10:   return .breakfast
+        case 10..<12:  return .morningSnack
+        case 12..<14:  return .lunch
+        case 14..<17:  return .afternoonSnack
+        case 17..<20:  return .dinner
+        default:       return .eveningSnack
+        }
+    }
 }
 
 extension MealTime: Codable {}

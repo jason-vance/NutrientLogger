@@ -141,9 +141,9 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   - Sync weight entries to Apple Health if integration is enabled
 - [x] Update paywall copy to list the three new premium features specifically
 - [x] **Analytics:** Track premium feature tap when not subscribed (trend charts, Health sync, weight tracking), chart nutrient selection frequency, and Health sync enable/disable rate
-- [ ] Random improvements
-  1. Auto-select meal time when logging food
-  2. Body measurement streak? (is it as appopriate as a food logging streak? keep alive by logging at least once per week)
+- [x] Random improvements
+  1. Auto-select meal time when logging food based on time of day
+  2. Body measurement streak (weekly streak on Body tab, kept alive by logging at least once per week)
 
 ### App Store Connect
 - [x] No subscription product changes needed

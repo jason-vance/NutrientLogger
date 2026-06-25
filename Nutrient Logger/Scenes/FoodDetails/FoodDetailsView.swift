@@ -51,7 +51,7 @@ struct FoodDetailsView: View {
         return nf
     }()
     
-    @State private var selectedMealTime: MealTime = .none
+    @State private var selectedMealTime: MealTime = .forCurrentTime()
     
     @State private var logDate: SimpleDate = .today
 
