@@ -214,7 +214,6 @@ These are worth tracking but don't have a clear version slot yet:
 - **Carnivore/keto mode** — preset nutrient goals for specific diet protocols. Natural cross-sell with Carnivore Diet Guide & Recipes.
 - **Meal planning** — suggest meals based on nutrient gaps. High development cost but high premium value.
 - **Android** — only relevant if subscriber base grows to justify the port.
-- **Weekly Nutrition Summary** - Weekly report showing gaps
 - **Nutrition AI Analysis** - Use AI to analyze average nutrition and give feedback on how it might affect their health
 - **Small Nutrient Group Analysis** - For example, analyze electrolyte intake and warn if out-of-balance/too low/etc.
 

@@ -235,6 +235,7 @@ struct WeightTrackingView: View {
                     .font(.subheadline.bold())
                     .contentTransition(.numericText())
             }
+            .fixedSize()
         }
     }
 
