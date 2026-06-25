@@ -27,6 +27,7 @@ enum PaywallTrigger: String {
     case removeAds = "remove_ads"
     case trendCharts = "trend_charts"
     case healthSync = "health_sync"
+    case weightGoal = "weight_goal"
 }
 
 protocol SubscriptionAnalytics {
@@ -64,6 +65,8 @@ protocol EngagementAnalytics {
     func barcodeFallbackTaken(path: String)
     func healthSyncEnabled()
     func healthSyncDisabled()
+    func weightLogged()
+    func weightDeleted()
 }
 
 
@@ -498,6 +501,17 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     public func healthSyncDisabled() {
         analytics.log(event: eventHealthSyncDisabled)
+    }
+
+    private let eventWeightLogged = "weight_logged"
+    private let eventWeightDeleted = "weight_deleted"
+
+    public func weightLogged() {
+        analytics.log(event: eventWeightLogged)
+    }
+
+    public func weightDeleted() {
+        analytics.log(event: eventWeightDeleted)
     }
 
     // MARK: - Premium Feature Engagement

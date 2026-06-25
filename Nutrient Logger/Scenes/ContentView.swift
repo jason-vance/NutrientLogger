@@ -116,6 +116,11 @@ struct ContentView: View {
                     })
                 }
             }
+            Tab("Body", systemImage: "figure.stand", value: AppTab.body) {
+                NavigationStack {
+                    WeightTrackingView()
+                }
+            }
             Tab("Profile", systemImage: "person.crop.circle", value: AppTab.profile) {
                 NavigationStack {
                     UserProfileView()
@@ -126,6 +131,7 @@ struct ContentView: View {
             let name: String = switch tab {
             case .dashboard: "Dashboard"
             case .search: "Search"
+            case .body: "Body"
             case .profile: "Profile"
             }
             engagementAnalytics.screenViewed(screenName: name)

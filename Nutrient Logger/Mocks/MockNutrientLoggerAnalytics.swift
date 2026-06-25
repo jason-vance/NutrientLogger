@@ -37,6 +37,8 @@ class MockEngagementAnalytics: EngagementAnalytics {
     func barcodeFallbackTaken(path: String) {}
     func healthSyncEnabled() {}
     func healthSyncDisabled() {}
+    func weightLogged() {}
+    func weightDeleted() {}
 }
 
 class MockNutrientLoggerAnalytics: NutrientLoggerAnalytics {

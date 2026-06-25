@@ -135,7 +135,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   - Write consumed calories, protein, fat, carbs, water to `HKHealthStore`
   - Request read permission for weight (to populate user profile automatically)
   - Add toggle in `UserProfileView` to enable/disable sync
-- [ ] **Weight tracking**
+- [x] **Weight tracking**
   - `WeightUnit.swift` already exists in Domain — build the UI on top of it
   - Simple log view: date + weight entry, chart over time
   - Sync weight entries to Apple Health if integration is enabled
@@ -143,8 +143,8 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [ ] **Analytics:** Track premium feature tap when not subscribed (trend charts, Health sync, weight tracking), chart nutrient selection frequency, and Health sync enable/disable rate
 
 ### App Store Connect
-- [ ] No subscription product changes needed
-- [ ] Ensure HealthKit capability is added in the App ID (entitlements)
+- [x] No subscription product changes needed
+- [x] Ensure HealthKit capability is added in the App ID (entitlements)
 
 ### Store Listing
 - [ ] New screenshots showing trend charts and weight tracking
@@ -164,6 +164,18 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   3. Profile setup (age, gender → RDI calculation)
   4. Notification permission
   5. Paywall (contextual, after they understand the value)
+- [ ] **UI/UX Update**
+  1. Dashboard should probably be ranamed "Nutrition"
+  2. Daily Streak is better integrated into food dashboard UI (make it a dopamine hit)
+  3. Food search is better integrated into food dashbaord and removed from tabs
+  4. Body goals deadline
+  5. Calculate BMR based off of body goals
+  6. Settings are moved into more appropriate places (food settings on the food dashboard toolbar, body settings on that toolbar)
+  7. Auto-select meal time when logging food
+  8. More body metrics (optional, BMI, waist circumference)
+  9. Ability to select which nutrients, body metrics are on their respective dashboards
+  10. Body measurement streak? (is it as appopriate as a food logging streak? keep alive by logging at least once per week)
+  11. Make water logging a more exciting part of nutrition logging
 - [ ] **Analytics:** Track onboarding funnel (step completion rate, drop-off point), time-to-first-log, and day-1/day-7/day-30 retention cohorts
 - [ ] **iPad app — new platform target, not an optimization.** The main app is currently `TARGETED_DEVICE_FAMILY = 1` (iPhone-only); it doesn't run on iPad at all today. v4.0 is the right time to introduce it properly:
   - Enable iPad in the device family / App ID capabilities
@@ -196,6 +208,9 @@ These are worth tracking but don't have a clear version slot yet:
 - **Carnivore/keto mode** — preset nutrient goals for specific diet protocols. Natural cross-sell with Carnivore Diet Guide & Recipes.
 - **Meal planning** — suggest meals based on nutrient gaps. High development cost but high premium value.
 - **Android** — only relevant if subscriber base grows to justify the port.
+- **Weekly Nutrition Summary** - Weekly report showing gaps
+- **Nutrition AI Analysis** - Use AI to analyze average nutrition and give feedback on how it might affect their health
+- **Small Nutrient Group Analysis** - For example, analyze electrolyte intake and warn if out-of-balance/too low/etc.
 
 ---
 

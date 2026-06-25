@@ -86,12 +86,16 @@ class HealthKitManager {
     ]
 
     private var writeTypes: Set<HKSampleType> {
-        Set(Self.nutrientMappings.values.map { HKQuantityType($0.hkType) })
+        var types = Set(Self.nutrientMappings.values.map { HKQuantityType($0.hkType) })
+        types.insert(HKQuantityType(.bodyMass))
+        types.insert(HKQuantityType(.bodyFatPercentage))
+        return types
     }
 
     private var readTypes: Set<HKObjectType> {
         Set([
             HKQuantityType(.bodyMass),
+            HKQuantityType(.bodyFatPercentage),
         ])
     }
 
@@ -156,6 +160,111 @@ class HealthKitManager {
                 }
                 continuation.resume()
             }
+        }
+    }
+
+    func saveWeight(_ kg: Double, date: Date) async {
+        guard isAvailable, isHealthSyncEnabled else { return }
+
+        let quantityType = HKQuantityType(.bodyMass)
+        let startOfDay = Calendar.current.startOfDay(for: date)
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
+
+        await deleteExistingSamples(type: quantityType, start: startOfDay, end: endOfDay)
+
+        let quantity = HKQuantity(unit: .gramUnit(with: .kilo), doubleValue: kg)
+        let sample = HKQuantitySample(type: quantityType, quantity: quantity, start: startOfDay, end: startOfDay)
+        do {
+            try await healthStore.save(sample)
+        } catch {
+            print("HealthKit save weight failed: \(error.localizedDescription)")
+        }
+    }
+
+    func saveBodyFat(_ percentage: Double, date: Date) async {
+        guard isAvailable, isHealthSyncEnabled else { return }
+
+        let quantityType = HKQuantityType(.bodyFatPercentage)
+        let startOfDay = Calendar.current.startOfDay(for: date)
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
+
+        await deleteExistingSamples(type: quantityType, start: startOfDay, end: endOfDay)
+
+        let fraction = percentage / 100.0
+        let quantity = HKQuantity(unit: .percent(), doubleValue: fraction)
+        let sample = HKQuantitySample(type: quantityType, quantity: quantity, start: startOfDay, end: startOfDay)
+        do {
+            try await healthStore.save(sample)
+        } catch {
+            print("HealthKit save body fat failed: \(error.localizedDescription)")
+        }
+    }
+
+    func deleteWeight(date: Date) async {
+        guard isAvailable, isHealthSyncEnabled else { return }
+        let startOfDay = Calendar.current.startOfDay(for: date)
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
+        await deleteExistingSamples(type: HKQuantityType(.bodyMass), start: startOfDay, end: endOfDay)
+    }
+
+    func deleteBodyFat(date: Date) async {
+        guard isAvailable, isHealthSyncEnabled else { return }
+        let startOfDay = Calendar.current.startOfDay(for: date)
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
+        await deleteExistingSamples(type: HKQuantityType(.bodyFatPercentage), start: startOfDay, end: endOfDay)
+    }
+
+    func fetchWeightHistory(limit: Int = 100) async -> [(date: Date, kg: Double)] {
+        guard isAvailable else { return [] }
+
+        let weightType = HKQuantityType(.bodyMass)
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+
+        return await withCheckedContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: weightType,
+                predicate: nil,
+                limit: limit,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                if let error {
+                    print("HealthKit weight history fetch failed: \(error.localizedDescription)")
+                    continuation.resume(returning: [])
+                    return
+                }
+                let results = (samples as? [HKQuantitySample])?.map { sample in
+                    (date: sample.startDate, kg: sample.quantity.doubleValue(for: .gramUnit(with: .kilo)))
+                } ?? []
+                continuation.resume(returning: results)
+            }
+            healthStore.execute(query)
+        }
+    }
+
+    func fetchBodyFatHistory(limit: Int = 100) async -> [(date: Date, percentage: Double)] {
+        guard isAvailable else { return [] }
+
+        let bfType = HKQuantityType(.bodyFatPercentage)
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+
+        return await withCheckedContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: bfType,
+                predicate: nil,
+                limit: limit,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                if let error {
+                    print("HealthKit body fat history fetch failed: \(error.localizedDescription)")
+                    continuation.resume(returning: [])
+                    return
+                }
+                let results = (samples as? [HKQuantitySample])?.map { sample in
+                    (date: sample.startDate, percentage: sample.quantity.doubleValue(for: .percent()) * 100.0)
+                } ?? []
+                continuation.resume(returning: results)
+            }
+            healthStore.execute(query)
         }
     }
 

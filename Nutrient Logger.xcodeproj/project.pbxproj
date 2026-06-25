@@ -76,6 +76,8 @@
 			membershipExceptions = (
 				Assets.xcassets,
 				Domain/AutoMarketingPromptTrigger.swift,
+				Domain/BodyFatEntry.swift,
+				Domain/BodyWeightUnit.swift,
 				Domain/CompositeRemoteDatabase.swift,
 				Domain/ConsumedFood.swift,
 				Domain/CustomFood.swift,
@@ -128,6 +130,7 @@
 				Domain/Rdi/SpecificNutrients/Zinc_RDIs.swift,
 				Domain/Rdi/UsdaNutrientRdiLibrary.swift,
 				Domain/SimpleDate.swift,
+				Domain/WeightEntry.swift,
 				Domain/WeightUnit.swift,
 				Extensions/ArrayExtensions.swift,
 				Extensions/BundleExtensions.swift,
@@ -208,6 +211,8 @@
 		56EDD0E62F19E9E1006CEE7D /* Exceptions for "Nutrient Logger" folder in "Nutrient Logger WidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Domain/BodyFatEntry.swift,
+				Domain/BodyWeightUnit.swift,
 				Domain/ConsumedFood.swift,
 				Domain/DailySummary.swift,
 				Domain/DataController.swift,
@@ -218,6 +223,7 @@
 				Domain/NutrientGroup.swift,
 				Domain/Portion.swift,
 				Domain/SimpleDate.swift,
+				Domain/WeightEntry.swift,
 				Domain/WeightUnit.swift,
 				Extensions/DateExtensions.swift,
 				Extensions/DoubleExtensions.swift,

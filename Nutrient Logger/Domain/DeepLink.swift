@@ -38,5 +38,6 @@ enum DeepLink: Equatable {
 enum AppTab: Hashable {
     case dashboard
     case search
+    case body
     case profile
 }

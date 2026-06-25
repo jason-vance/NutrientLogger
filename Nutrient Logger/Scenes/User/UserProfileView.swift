@@ -28,7 +28,8 @@ struct UserProfileView: View {
 
     @AppStorage(HealthKitManager.healthSyncEnabledKey)
     private var healthSyncEnabled = false
-    @State private var latestWeight: Double?
+
+    @AppStorage("preferredWeightUnit") private var preferredUnitRaw: String = BodyWeightUnit.lbs.rawValue
 
     @AppStorage(NotificationSettings.dailyReminderEnabledKey)
     private var dailyReminderEnabled = NotificationSettings.defaultDailyReminderEnabled
@@ -86,6 +87,7 @@ struct UserProfileView: View {
             NutritionGoalsSection()
             NotificationSettingsSection()
             AppleHealthSection()
+            WeightTrackingSection()
             UserMealsSection()
             NutrientLibrarySection()
             LegalSection()
@@ -279,13 +281,11 @@ struct UserProfileView: View {
                                     if authorized {
                                         healthSyncEnabled = true
                                         engagementAnalytics.healthSyncEnabled()
-                                        fetchWeight()
                                     }
                                 }
                             } else {
                                 healthSyncEnabled = false
                                 engagementAnalytics.healthSyncDisabled()
-                                latestWeight = nil
                             }
                         }
                     ))
@@ -299,28 +299,18 @@ struct UserProfileView: View {
                     showMarketingView = true
                 }
             }
-            if healthSyncEnabled {
-                HStack {
-                    Text("Weight")
-                    Spacer()
-                    if let weight = latestWeight {
-                        Text("\(weight.formatted(maxDigits: 1)) lbs")
-                            .foregroundStyle(.secondary)
-                    } else {
-                        Text("No data")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .listRowDefaultModifiers()
-                .onAppear { fetchWeight() }
-            }
         }
         }
     }
 
-    private func fetchWeight() {
-        Task {
-            latestWeight = await HealthKitManager.shared.fetchLatestWeight()
+    @ViewBuilder private func WeightTrackingSection() -> some View {
+        Section(header: Text("Body")) {
+            Picker("Weight Unit", selection: $preferredUnitRaw) {
+                ForEach(BodyWeightUnit.allCases, id: \.rawValue) { unit in
+                    Text(unit.label).tag(unit.rawValue)
+                }
+            }
+            .listRowDefaultModifiers()
         }
     }
 

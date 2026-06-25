@@ -55,7 +55,9 @@ class DataController: ObservableObject {
                 ConsumedFood.self,
                 RecentSearch.self,
                 Meal.self,
-                DailySummary.self
+                DailySummary.self,
+                WeightEntry.self,
+                BodyFatEntry.self
             ])
             let config = ModelConfiguration(schema: schema, url: groupURL)
             container = try ModelContainer(for: schema, configurations: [config])
