@@ -35,7 +35,8 @@ struct DashboardMacrosSection: View {
             FdcNutrientGroupMapper.NutrientNumber_TotalLipid_Fat,
             FdcNutrientGroupMapper.NutrientNumber_Carbohydrate_ByDifference,
             FdcNutrientGroupMapper.NutrientNumber_Water,
-            FdcNutrientGroupMapper.NutrientNumber_Energy_Kj
+            FdcNutrientGroupMapper.NutrientNumber_Energy_Kj,
+            FdcNutrientGroupMapper.NutrientNumber_Ash
         ]
         return Set(proximates.nutrients.map(\.fdcNumber))
             .filter({ !dontInclude.contains($0) })

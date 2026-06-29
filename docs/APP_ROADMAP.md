@@ -150,7 +150,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [x] Ensure HealthKit capability is added in the App ID (entitlements)
 
 ### Store Listing
-- [ ] New screenshots showing trend charts and weight tracking
+- [x] New screenshots showing trend charts and weight tracking
 - [x] Update description premium features section
 - [x] **What's New**: "Premium: nutrient trend charts, weight tracking, and Apple Health sync"
 - [ ] Submit for **App Store feature consideration** (apple.com/search) — HealthKit integration makes this more likely to be featured in Health & Fitness
@@ -162,32 +162,34 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ### Code
 - [ ] Update website features, etc for v3.11.
+- [ ] **Visual Identity**
+  1. [ ] App-wide accent color? (currently .systemBlue, not really integrated anywhere except as tint/accent. Should it be a more primary part of the UI?)
+  2. [ ] Remove favorite color setting from profile
+- [ ] **Navigation & Tab Restructure** (still needs some planning)
+  1. [ ] Dashboard should probably be renamed "Nutrition"
+  2. [ ] Food search is better integrated into food dashboard and removed from tabs (search bar (built-in or custom?) at the top of nutrition tab, search for foods, custom foods, meals)
+  3. [ ] Settings are moved into more appropriate places (nutrition settings on the nutrition tab toolbar, body settings on that tab's toolbar)
 - [ ] **Onboarding flow redesign** — current `AppSetupView` gets users into the app but likely doesn't sell the value. New flow:
   1. Hero screen: "Track every vitamin, mineral, and amino acid. Offline."
   2. Goal setting: what are you tracking for? (general health / specific deficiency / diet protocol)
   3. Profile setup (age, gender → RDI calculation)
   4. Notification permission
   5. Paywall (contextual, after they understand the value)
-- [ ] **UI/UX Update**
-  1. App-wide accent color?
-  2. Dashboard should probably be renamed "Nutrition"
-  3. Daily Streak is better integrated into Nutition (and Body?) tab UI (make it a dopamine hit)
-  4. Food search is better integrated into food dashboard and removed from tabs
-  5. Body goals deadline
-  6. Calculate BMR based off of body goals
-  7. Settings are moved into more appropriate places (food settings on the food dashboard toolbar, body settings on that toolbar)
-  8. More body metrics (optional, BMI, waist circumference)
-  9. Ability to select which nutrients, body metrics are on their respective dashboards
-  10. Make water logging a more exciting part of nutrition logging
-  11. Add trend charts to calories, macros, water
-  12. Use Swift Charts for nutrient intake charts instead of my own
-  13. A new dashboard tab with at-a-glance updates and info for all kinds of things (tabs: dashboard, nutrition, body, profile)
+- [ ] **Engagement & Gamification**
+  1. [ ] Daily Streak is better integrated into Nutition (and Body) tab UI (a streak card, probably progress bar working toward a milestone, animations on increment and milestone, tap for streak stats)
+  2. [ ] Make water logging a more exciting part of nutrition logging (trend charts like other nutrients, animations would be nice, quick log)
+- [ ] **Body Metrics & Goals**
+  0. Basic tracking is not premium gated but goals and everything based on goals is premium
+  1. [ ] Body goals deadline (calculate required weekly rate of change, pace tracker, linear(or maybe fancier based on their past performance) projected trajectory on body metric chart(s))
+  2. [ ] calculate BMR from current stats (weight, height, age, sex), then show a TDEE-based calorie target that would move you toward your goal weight by your deadline
+  3. [ ] More body metrics (optional, BMI, waist circumference, healthkit read/write)
+- [ ] **Nutrition Tab Customization & Charts**
+  1. [ ] Ability to select which nutrients, body metrics are on their respective dashboards (per nutrient on/off toggle)
+  2. [ ] Use Swift Charts for nutrient intake charts instead of my own
+  3. [ ] Add trend charts to calories, macros, water (like other nutrients have, navigated to by clicking their tile)
+- [ ] **Misc**
+  1. [ ] Calorie goal ring on nutrition tab
 - [ ] **Analytics:** Track onboarding funnel (step completion rate, drop-off point), time-to-first-log, and day-1/day-7/day-30 retention cohorts
-- [ ] **iPad app — new platform target, not an optimization.** The main app is currently `TARGETED_DEVICE_FAMILY = 1` (iPhone-only); it doesn't run on iPad at all today. v4.0 is the right time to introduce it properly:
-  - Enable iPad in the device family / App ID capabilities
-  - Build a proper iPad layout (e.g. `NavigationSplitView` / sidebar) rather than scaling the iPhone UI
-  - Test all major flows (dashboard, search, logging, charts, settings) at iPad sizes
-  - You have iPad users from the Advanced 1st Aid HD days; this is a genuine new-platform launch that can recapture them
 - [ ] **Export (CSV)** as a premium feature — export all logged foods with nutrient data for a date range. Useful for users tracking for medical or clinical reasons (a natural Nutrient Logger audience).
 - [ ] **Nutrient deficiency insights** — a simple weekly digest view: "You've been consistently low in Vitamin D and Magnesium this week. Here are foods that would help." This is premium-only and differentiates from every macro-focused competitor.
 - [ ] Address the `//TODO: Days with foods hang for a second while loading` in `DashboardView.swift`
@@ -216,6 +218,11 @@ These are worth tracking but don't have a clear version slot yet:
 - **Android** — only relevant if subscriber base grows to justify the port.
 - **Nutrition AI Analysis** - Use AI to analyze average nutrition and give feedback on how it might affect their health
 - **Small Nutrient Group Analysis** - For example, analyze electrolyte intake and warn if out-of-balance/too low/etc.
+- **iPad app — new platform target, not an optimization.** The main app is currently `TARGETED_DEVICE_FAMILY = 1` (iPhone-only); it doesn't run on iPad at all today. v4.0 is the right time to introduce it properly:
+  - Enable iPad in the device family / App ID capabilities
+  - Build a proper iPad layout (e.g. `NavigationSplitView` / sidebar) rather than scaling the iPhone UI
+  - Test all major flows (dashboard, search, logging, charts, settings) at iPad sizes
+  - You have iPad users from the Advanced 1st Aid HD days; this is a genuine new-platform launch that can recapture them
 
 ---
 

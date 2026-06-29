@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <defs>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E1E1E"/>
+      <stop offset="100%" stop-color="#252525"/>
+    </linearGradient>
+    <clipPath id="screenClip">
+      <rect x="0" y="0" width="390" height="844" rx="44"/>
+    </clipPath>
+  </defs>
+
+  <!-- Phone frame -->
+  <rect width="390" height="844" rx="44" fill="#000000"/>
+  <rect x="1" y="1" width="388" height="842" rx="43" fill="#121212" clip-path="url(#screenClip)"/>
+
+  <!-- Status bar -->
+  <text x="36" y="22" font-family="-apple-system, SF Pro, Helvetica" font-size="15" font-weight="600" fill="#FFFFFF">9:41</text>
+  <rect x="330" y="12" width="22" height="10" rx="3" fill="none" stroke="#FFFFFF" stroke-width="1.2"/>
+  <rect x="332" y="14" width="15" height="6" rx="1.5" fill="#FFFFFF"/>
+
+  <!-- Navigation bar -->
+  <text x="20" y="62" font-family="-apple-system, SF Pro, Helvetica" font-size="34" font-weight="700" fill="#FFFFFF">Body</text>
+
+  <!-- Toolbar: streak flame -->
+  <g transform="translate(255, 44)">
+    <path d="M6,14 C6,8 10,6 10,2 C12,6 16,8 16,14 C16,17 13,19 11,19 C9,19 6,17 6,14 Z" fill="#FF9500"/>
+    <path d="M9,14 C9,11 11,10 11,7 C12,10 14,11 14,14 C14,16 12.5,17 11,17 C9.5,17 9,16 9,14 Z" fill="#FFD60A"/>
+    <text x="22" y="18" font-family="-apple-system, SF Pro, Helvetica" font-size="15" font-weight="700" fill="#FFFFFF">4w</text>
+  </g>
+  <!-- Toolbar: gear -->
+  <g transform="translate(326, 42)">
+    <circle cx="8" cy="8" r="7" fill="none" stroke="#4A90D9" stroke-width="1.5"/>
+    <circle cx="8" cy="8" r="3" fill="none" stroke="#4A90D9" stroke-width="1.5"/>
+  </g>
+  <!-- Toolbar: plus -->
+  <text x="355" y="58" font-family="-apple-system, SF Pro, Helvetica" font-size="20" fill="#4A90D9">+</text>
+
+  <!-- Current values row 1: Weight + Body Fat -->
+  <g transform="translate(20, 80)">
+    <rect width="170" height="80" rx="14" fill="url(#cardGrad)"/>
+    <text x="85" y="22" font-family="-apple-system, SF Pro, Helvetica" font-size="12" fill="#888888" text-anchor="middle">Weight</text>
+    <text x="85" y="46" font-family="-apple-system, SF Pro, Helvetica" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">183.2 lbs</text>
+    <!-- Down arrow + value -->
+    <path d="M38,60 L42,65 L46,60" fill="none" stroke="#34C759" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="58" y="66" font-family="-apple-system, SF Pro, Helvetica" font-size="13" fill="#34C759">-0.8</text>
+    <text x="120" y="66" font-family="-apple-system, SF Pro, Helvetica" font-size="11" fill="#666666" text-anchor="middle">vs last</text>
+
+    <g transform="translate(180, 0)">
+      <rect width="170" height="80" rx="14" fill="url(#cardGrad)"/>
+      <text x="85" y="22" font-family="-apple-system, SF Pro, Helvetica" font-size="12" fill="#888888" text-anchor="middle">Body Fat</text>
+      <text x="85" y="46" font-family="-apple-system, SF Pro, Helvetica" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">18.4%</text>
+      <path d="M38,60 L42,65 L46,60" fill="none" stroke="#34C759" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="58" y="66" font-family="-apple-system, SF Pro, Helvetica" font-size="13" fill="#34C759">-0.2</text>
+      <text x="120" y="66" font-family="-apple-system, SF Pro, Helvetica" font-size="11" fill="#666666" text-anchor="middle">vs last</text>
+    </g>
+  </g>
+
+  <!-- Current values row 2: BMI + Waist -->
+  <g transform="translate(20, 170)">
+    <rect width="170" height="60" rx="14" fill="url(#cardGrad)"/>
+    <text x="85" y="20" font-family="-apple-system, SF Pro, Helvetica" font-size="12" fill="#888888" text-anchor="middle">BMI</text>
+    <text x="60" y="44" font-family="-apple-system, SF Pro, Helvetica" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle">24.8</text>
+    <rect x="90" y="30" width="56" height="20" rx="6" fill="#34C759" opacity="0.15"/>
+    <text x="118" y="44" font-family="-apple-system, SF Pro, Helvetica" font-size="12" font-weight="600" fill="#34C759" text-anchor="middle">Normal</text>
+
+    <g transform="translate(180, 0)">
+      <rect width="170" height="60" rx="14" fill="url(#cardGrad)"/>
+      <text x="85" y="20" font-family="-apple-system, SF Pro, Helvetica" font-size="12" fill="#888888" text-anchor="middle">Waist</text>
+      <text x="60" y="44" font-family="-apple-system, SF Pro, Helvetica" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle">34"</text>
+      <path d="M95,38 L99,43 L103,38" fill="none" stroke="#34C759" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="115" y="44" font-family="-apple-system, SF Pro, Helvetica" font-size="13" fill="#34C759">-0.5"</text>
+    </g>
+  </g>
+
+  <!-- Period picker -->
+  <g transform="translate(20, 244)">
+    <rect width="350" height="32" rx="8" fill="#2A2A2A"/>
+    <rect x="2" y="2" width="110" height="28" rx="7" fill="transparent"/>
+    <text x="58" y="22" font-family="-apple-system, SF Pro, Helvetica" font-size="13" fill="#888888" text-anchor="middle">7 Days</text>
+    <rect x="120" y="2" width="110" height="28" rx="7" fill="#3A3A3A"/>
+    <text x="175" y="22" font-family="-apple-system, SF Pro, Helvetica" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">30 Days</text>
+    <rect x="238" y="2" width="110" height="28" rx="7" fill="transparent"/>
+    <text x="293" y="22" font-family="-apple-system, SF Pro, Helvetica" font-size="13" fill="#888888" text-anchor="middle">90 Days</text>
+  </g>
+
+  <!-- Weight Chart -->
+  <text x="20" y="300" font-family="-apple-system, SF Pro, Helvetica" font-size="13" font-weight="600" fill="#888888" letter-spacing="0.5">WEIGHT</text>
+
+  <g transform="translate(20, 310)">
+    <rect width="350" height="140" rx="14" fill="url(#cardGrad)"/>
+    <line x1="16" y1="108" x2="334" y2="108" stroke="#555555" stroke-width="1" stroke-dasharray="4 3"/>
+    <text x="328" y="104" font-family="-apple-system, SF Pro, Helvetica" font-size="9" fill="#555555" text-anchor="end">175 goal</text>
+    <polyline points="30,40 60,52 90,45 120,58 150,50 180,62 210,55 240,68 270,60 300,58 330,54"
+              fill="none" stroke="#4A90D9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="30,40 60,52 90,45 120,58 150,50 180,62 210,55 240,68 270,60 300,58 330,54 330,124 30,124"
+             fill="#4A90D9" opacity="0.06"/>
+    <circle cx="30" cy="40" r="3" fill="#4A90D9"/>
+    <circle cx="90" cy="45" r="3" fill="#4A90D9"/>
+    <circle cx="150" cy="50" r="3" fill="#4A90D9"/>
+    <circle cx="210" cy="55" r="3" fill="#4A90D9"/>
+    <circle cx="270" cy="60" r="3" fill="#4A90D9"/>
+    <circle cx="330" cy="54" r="3.5" fill="#FFFFFF" stroke="#4A90D9" stroke-width="2"/>
+    <text x="30" y="135" font-family="-apple-system, SF Pro, Helvetica" font-size="9" fill="#555555" text-anchor="middle">Jun 1</text>
+    <text x="180" y="135" font-family="-apple-system, SF Pro, Helvetica" font-size="9" fill="#555555" text-anchor="middle">Jun 13</text>
+    <text x="330" y="135" font-family="-apple-system, SF Pro, Helvetica" font-size="9" fill="#555555" text-anchor="middle">Jun 25</text>
+  </g>
+
+  <!-- Body Fat Chart -->
+  <text x="20" y="474" font-family="-apple-system, SF Pro, Helvetica" font-size="13" font-weight="600" fill="#888888" letter-spacing="0.5">BODY FAT</text>
+
+  <g transform="translate(20, 484)">
+    <rect width="350" height="120" rx="14" fill="url(#cardGrad)"/>
+    <line x1="16" y1="90" x2="334" y2="90" stroke="#555555" stroke-width="1" stroke-dasharray="4 3"/>
+    <text x="328" y="86" font-family="-apple-system, SF Pro, Helvetica" font-size="9" fill="#555555" text-anchor="end">15% goal</text>
+    <polyline points="30,30 90,35 150,40 210,38 270,45 330,42"
+              fill="none" stroke="#FF9500" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="30,30 90,35 150,40 210,38 270,45 330,42 330,105 30,105"
+             fill="#FF9500" opacity="0.06"/>
+    <circle cx="30" cy="30" r="3" fill="#FF9500"/>
+    <circle cx="150" cy="40" r="3" fill="#FF9500"/>
+    <circle cx="270" cy="45" r="3" fill="#FF9500"/>
+    <circle cx="330" cy="42" r="3.5" fill="#FFFFFF" stroke="#FF9500" stroke-width="2"/>
+    <text x="30" y="115" font-family="-apple-system, SF Pro, Helvetica" font-size="9" fill="#555555" text-anchor="middle">Jun 1</text>
+    <text x="330" y="115" font-family="-apple-system, SF Pro, Helvetica" font-size="9" fill="#555555" text-anchor="middle">Jun 25</text>
+  </g>
+
+  <!-- Goals with Deadline + Required Rate of Change -->
+  <text x="20" y="630" font-family="-apple-system, SF Pro, Helvetica" font-size="13" font-weight="600" fill="#888888" letter-spacing="0.5">GOALS</text>
+  <rect x="60" y="618" width="68" height="18" rx="6" fill="#4A90D9" opacity="0.15"/>
+  <text x="94" y="631" font-family="-apple-system, SF Pro, Helvetica" font-size="10" font-weight="600" fill="#4A90D9" text-anchor="middle">PREMIUM</text>
+
+  <g transform="translate(20, 640)">
+    <rect width="350" height="108" rx="14" fill="url(#cardGrad)"/>
+    <!-- Weight goal -->
+    <text x="18" y="24" font-family="-apple-system, SF Pro, Helvetica" font-size="14" fill="#CCCCCC">Weight</text>
+    <text x="332" y="24" font-family="-apple-system, SF Pro, Helvetica" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="end">183 &#x2192; 175 lbs</text>
+    <text x="18" y="42" font-family="-apple-system, SF Pro, Helvetica" font-size="12" fill="#888888">Deadline: Sep 1, 2026</text>
+    <rect x="210" y="30" width="80" height="18" rx="6" fill="#34C759" opacity="0.15"/>
+    <text x="250" y="43" font-family="-apple-system, SF Pro, Helvetica" font-size="11" font-weight="500" fill="#34C759" text-anchor="middle">~0.8 lbs/wk</text>
+    <!-- On track indicator -->
+    <rect x="296" y="30" width="36" height="18" rx="6" fill="#34C759" opacity="0.15"/>
+    <polyline points="303,39 308,44 316,35" fill="none" stroke="#34C759" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <line x1="18" y1="54" x2="332" y2="54" stroke="#333333" stroke-width="0.5"/>
+
+    <!-- Body fat goal -->
+    <text x="18" y="76" font-family="-apple-system, SF Pro, Helvetica" font-size="14" fill="#CCCCCC">Body Fat</text>
+    <text x="332" y="76" font-family="-apple-system, SF Pro, Helvetica" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="end">18.4 &#x2192; 15%</text>
+    <text x="18" y="96" font-family="-apple-system, SF Pro, Helvetica" font-size="12" fill="#888888">Deadline: Dec 1, 2026</text>
+    <rect x="210" y="84" width="80" height="18" rx="6" fill="#34C759" opacity="0.15"/>
+    <text x="250" y="97" font-family="-apple-system, SF Pro, Helvetica" font-size="11" font-weight="500" fill="#34C759" text-anchor="middle">~0.3%/mo</text>
+    <rect x="296" y="84" width="36" height="18" rx="6" fill="#34C759" opacity="0.15"/>
+    <polyline points="303,93 308,98 316,89" fill="none" stroke="#34C759" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Tab bar (3 tabs) -->
+  <g transform="translate(0, 780)">
+    <rect width="390" height="64" fill="#1A1A1A"/>
+    <line x1="0" y1="0" x2="390" y2="0" stroke="#333333" stroke-width="0.5"/>
+
+    <!-- Nutrition tab - leaf icon -->
+    <g transform="translate(52, 12)">
+      <path d="M20,20 Q20,6 34,6 Q34,20 20,20 Z" fill="none" stroke="#888888" stroke-width="1.5"/>
+      <path d="M20,20 Q27,16 30,10" fill="none" stroke="#888888" stroke-width="1.2" stroke-linecap="round"/>
+      <text x="27" y="38" font-family="-apple-system, SF Pro, Helvetica" font-size="10" fill="#888888" text-anchor="middle">Nutrition</text>
+    </g>
+
+    <!-- Body tab (active) - figure icon -->
+    <g transform="translate(168, 12)">
+      <rect x="-2" y="4" width="60" height="24" rx="12" fill="#4A90D9" opacity="0.15"/>
+      <circle cx="27" cy="6" r="3" fill="none" stroke="#4A90D9" stroke-width="1.5"/>
+      <line x1="27" y1="9" x2="27" y2="19" stroke="#4A90D9" stroke-width="1.5"/>
+      <line x1="21" y1="13" x2="33" y2="13" stroke="#4A90D9" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="27" y1="19" x2="22" y2="26" stroke="#4A90D9" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="27" y1="19" x2="32" y2="26" stroke="#4A90D9" stroke-width="1.5" stroke-linecap="round"/>
+      <text x="27" y="38" font-family="-apple-system, SF Pro, Helvetica" font-size="10" font-weight="600" fill="#4A90D9" text-anchor="middle">Body</text>
+    </g>
+
+    <!-- Profile tab - person icon -->
+    <g transform="translate(283, 12)">
+      <circle cx="27" cy="8" r="4.5" fill="none" stroke="#888888" stroke-width="1.5"/>
+      <path d="M17,24 Q17,16 27,16 Q37,16 37,24" fill="none" stroke="#888888" stroke-width="1.5" stroke-linecap="round"/>
+      <text x="27" y="38" font-family="-apple-system, SF Pro, Helvetica" font-size="10" fill="#888888" text-anchor="middle">Profile</text>
+    </g>
+  </g>
+
+  <rect x="142" y="826" width="106" height="5" rx="2.5" fill="#555555"/>
+</svg>

@@ -146,8 +146,9 @@ struct DashboardView: View {
             VStack {
                 NativeAdListRow(ad: $ad, size: .small)
                     .padding(.horizontal)
-                DashboardNutrientSections(date: date, foods: foodItems)
-                WhatIAteSection()
+                StreakCard()
+                    .padding(.horizontal)
+                DashboardNutrientSections(date: date, foods: foodItems, consumedFoods: todaysConsumedFoods, allConsumedFoods: consumedFoods)
             }
         }
         .toolbar { Toolbar() }
@@ -182,20 +183,41 @@ struct DashboardView: View {
         ToolbarItem(placement: .principal) {
             DateButton()
         }
-        ToolbarItem(placement: .topBarTrailing) {
-            StreakBadge()
-        }
     }
 
-    @ViewBuilder private func StreakBadge() -> some View {
+    private var nextMilestone: Int? {
+        Self.streakMilestones.sorted().first { $0 > loggingStreakCount }
+    }
+
+    private var previousMilestone: Int {
+        Self.streakMilestones.sorted().last { $0 <= loggingStreakCount } ?? 0
+    }
+
+    @ViewBuilder private func StreakCard() -> some View {
         if loggingStreakCount > 0 {
-            HStack(spacing: 4) {
+            HStack(spacing: 8) {
                 Image(systemName: "flame.fill")
                     .foregroundStyle(.orange)
-                Text("\(loggingStreakCount)")
+                Text("\(loggingStreakCount)-Day Streak")
                     .font(.subheadline.bold())
+                    .foregroundStyle(.orange)
                     .contentTransition(.numericText())
+                Spacer()
+                if let next = nextMilestone {
+                    let prev = previousMilestone
+                    let progress = Double(loggingStreakCount - prev) / Double(next - prev)
+                    HStack(spacing: 6) {
+                        ProgressView(value: progress)
+                            .tint(.orange)
+                            .frame(width: 60)
+                        Text("\(next)")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
             }
+            .padding()
+            .inCard(backgroundColor: .orange)
         }
     }
     
@@ -238,27 +260,6 @@ struct DashboardView: View {
         .listRowDefaultModifiers()
     }
     
-    @ViewBuilder private func WhatIAteSection() -> some View {
-        let meals = DashboardMealList.from(todaysConsumedFoods)
-            .sorted { $0.mealTime < $1.mealTime }
-        
-        if !meals.isEmpty {
-            VStack(spacing: .spacingDefault) {
-                HStack {
-                    Text("Meals")
-                        .listSectionHeader()
-                    Spacer()
-                }
-                .padding(.top)
-                LazyVStack(spacing: .spacingDefault) {
-                    ForEach(meals) { meal in
-                        DashboardMealRow(meal: meal, date: date)
-                    }
-                }
-            }
-            .padding(.horizontal)
-        }
-    }
 }
 
 #Preview {

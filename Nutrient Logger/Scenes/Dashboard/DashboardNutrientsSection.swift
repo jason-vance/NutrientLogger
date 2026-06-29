@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct DashboardNutrientsSection: View {
-    
+
     let blacklist: Set<String>
     let orderedWhitelist: [String]
-    
+
     @Inject private var rdiLibrary: NutrientRdiLibrary
     @Inject private var userService: UserService
     @Inject private var remoteDatabase: RemoteDatabase
@@ -19,29 +19,44 @@ struct DashboardNutrientsSection: View {
     let groupKey: String
     let headerText: String
     let aggregator: NutrientDataAggregator
-    
+
+    @State private var showAll: Bool = false
+
+    private static let previewCount = 3
+
     private var otherNutrientIds: [String] {
         guard let group = aggregator.nutrientGroups
             .first(where: { $0.fdcNumber == groupKey })
         else {
             return []
         }
-        
+
         return Set(group.nutrients.map(\.fdcNumber))
             .filter { !orderedWhitelist.contains($0) && !blacklist.contains($0) }
             .sorted()
     }
-    
+
+    private var allNutrientIds: [String] {
+        orderedWhitelist + otherNutrientIds
+    }
+
+    private var visibleNutrientIds: [String] {
+        if showAll {
+            return allNutrientIds
+        }
+        return Array(allNutrientIds.prefix(Self.previewCount))
+    }
+
     private var colorPalette: ColorPalette {
         ColorPaletteService.getColorPaletteFor(number: groupKey)
     }
-    
+
     private var user: User { userService.currentUser }
-    
+
     private var hasAny: Bool {
         !orderedWhitelist.isEmpty || !otherNutrientIds.isEmpty
     }
-    
+
     var body: some View {
         if hasAny {
             VStack(spacing: .spacingDefault) {
@@ -50,37 +65,40 @@ struct DashboardNutrientsSection: View {
                         .listSectionHeader()
                     Spacer()
                 }
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(minimum: 100)), count: 2), spacing: .spacingDefault) {
-                    ForEach(orderedWhitelist, id: \.self) { nutrientId in
-                        NutrientCell(nutrientId)
-                    }
-                    ForEach(otherNutrientIds, id: \.self) { nutrientId in
-                        NutrientCell(nutrientId)
-                    }
-                }
+                NutrientRows()
             }
+            .animation(.snappy, value: showAll)
         }
     }
-    
-    @ViewBuilder private func NutrientCell(_ nutrientId: String) -> some View {
+
+    @ViewBuilder private func NutrientRows() -> some View {
+        VStack(spacing: 0) {
+            ForEach(Array(visibleNutrientIds.enumerated()), id: \.element) { index, nutrientId in
+                if index > 0 {
+                    Divider()
+                        .padding(.leading, 16)
+                }
+                CompactNutrientRow(nutrientId)
+            }
+            if allNutrientIds.count > Self.previewCount {
+                Divider()
+                    .padding(.leading, 16)
+                MoreButton()
+            }
+        }
+        .padding(.vertical, 4)
+        .inCard(backgroundColor: .gray)
+    }
+
+    @ViewBuilder private func CompactNutrientRow(_ nutrientId: String) -> some View {
         let nutrients = aggregator.nutrientsByNutrientNumber[nutrientId] ?? []
         let nutrient = nutrients.first?.nutrient
             ?? remoteDatabase.getNutrient(withId: nutrientId)
             ?? Nutrient(fdcNumber: nutrientId, name: "Unknown Nutrient", unitName: "")
         let name = FdcNutrientGroupMapper.nutrientDisplayNames[nutrientId] ?? nutrient.name
-        let amount = nutrients.reduce(into: 0.0, { $0 += $1.nutrient.amount })
-        let unit = nutrient.unitName
-        let rdi = {
-            let rdi = NutrientGoalDefaults.effectiveRdi(
-                for: nutrientId,
-                user: user,
-                rdiLibrary: rdiLibrary
-            )
-            let foodsUnit: WeightUnit = .unitFrom(nutrient)
-            if foodsUnit == rdi?.unit { return rdi }
-            guard let rdi else { return nil }
-            return rdi.convertedTo(foodsUnit)
-        }()
+        let amount = nutrients.reduce(into: 0.0) { $0 += $1.nutrient.amount }
+        let rdi = resolvedRdi(for: nutrientId, nutrient: nutrient)
+        let percentage = rdi.map { $0.recommendedAmount > 0 ? amount / $0.recommendedAmount : 0 }
 
         NavigationLink {
             ConsumedNutrientDetailsView(
@@ -88,93 +106,96 @@ struct DashboardNutrientsSection: View {
                 nutrientFoodPairs: nutrients
             )
         } label: {
-            VStack {
-                HStack {
-                    Text(name)
-                        .font(.subheadline)
-                        .fontWeight(.light)
-                        .multilineTextAlignment(.leading)
-                    Spacer(minLength: 0)
-                }
-                HStack {
-                    Text("\(amount.formatted(maxDigits: 1))\(unit)")
-                        .contentTransition(.numericText())
-                        .font(.title3)
+            HStack(spacing: 8) {
+                Text(name)
+                    .font(.subheadline)
+                    .lineLimit(1)
+
+                Spacer(minLength: 0)
+
+                if let percentage {
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            Capsule()
+                                .fill(Color.gray.opacity(0.2))
+                            Capsule()
+                                .fill(progressColor(for: percentage).gradient)
+                                .frame(width: geo.size.width * min(CGFloat(percentage), 1.0))
+                        }
+                    }
+                    .frame(maxWidth: 120, maxHeight: 6)
+
+                    Text("\(Int(percentage * 100))%")
+                        .font(.caption)
                         .fontWeight(.semibold)
                         .fontDesign(.rounded)
-                    Spacer(minLength: 0)
+                        .foregroundStyle(progressColor(for: percentage))
+                        .frame(width: 44, alignment: .trailing)
+                        .contentTransition(.numericText())
+                } else {
+                    Text(formatAmount(amount, unit: nutrient.unitName))
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .fontDesign(.rounded)
+                        .contentTransition(.numericText())
                 }
-                Spacer(minLength: 0)
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
             .foregroundStyle(Color.text)
-            .background(alignment: .trailing) {
-                AmountCircle(amount, rdi: rdi)
-            }
-            .padding()
-            .inCard(backgroundColor: Color.gray)
         }
     }
-    
-    @ViewBuilder private func AmountCircle(_ amount: Double, rdi: LifeStageNutrientRdi?) -> some View {
-        let lineWidth: CGFloat = 6
 
-        if let rdi {
-            let iconName = (amount > rdi.upperLimit) ? "exclamationmark" : (amount > rdi.recommendedAmount) ? "flag.fill" : ""
-            let iconColor = (amount > rdi.upperLimit) ? Color.red.opacity(0.9) : colorPalette.accent.opacity(0.6)
-            let circleTo = (rdi.recommendedAmount > 0) ? CGFloat(amount) / rdi.recommendedAmount : CGFloat(amount) / rdi.upperLimit
-            
-            Circle()
-                .stroke(style: .init(
-                    lineWidth: lineWidth,
-                ))
-                .foregroundStyle(colorPalette.accent.opacity(0.2))
-                .overlay {
-                    Circle()
-                        .trim(from: 0, to: circleTo)
-                        .stroke(style: .init(
-                            lineWidth: lineWidth,
-                            lineCap: .round
-                        ))
-                        .foregroundStyle(colorPalette.accent)
-                        .rotationEffect(.degrees(-90))
-                }
-                .overlay {
-                    if amount > rdi.upperLimit {
-                        Circle()
-                            .trim(from: 0, to: (CGFloat(amount) - rdi.upperLimit) / rdi.upperLimit)
-                            .stroke(style: .init(
-                                lineWidth: lineWidth,
-                                lineCap: .round
-                            ))
-                            .foregroundStyle(iconColor)
-                            .rotationEffect(.degrees(-90))
-                    } else {
-                        Circle()
-                            .trim(from: 0, to: (CGFloat(amount) - rdi.recommendedAmount) / rdi.recommendedAmount)
-                            .stroke(style: .init(
-                                lineWidth: lineWidth,
-                                lineCap: .round
-                            ))
-                            .foregroundStyle(Color.text.opacity(0.2))
-                            .rotationEffect(.degrees(-90))
-                    }
-                }
-                .overlay {
-                    Image(systemName: iconName)
-                        .bold()
-                        .foregroundStyle(iconColor)
-                }
+    @ViewBuilder private func MoreButton() -> some View {
+        Button {
+            showAll.toggle()
+        } label: {
+            HStack {
+                Spacer()
+                Text(showAll ? "Less" : "More")
+                    .font(.subheadline)
+                Image(systemName: "chevron.right")
+                    .font(.caption2)
+                    .rotationEffect(.degrees(showAll ? -90 : 90))
+            }
+            .foregroundStyle(Color.accentColor)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
         }
+    }
+
+    private func resolvedRdi(for nutrientId: String, nutrient: Nutrient) -> LifeStageNutrientRdi? {
+        let rdi = NutrientGoalDefaults.effectiveRdi(
+            for: nutrientId,
+            user: user,
+            rdiLibrary: rdiLibrary
+        )
+        let foodsUnit = WeightUnit.unitFrom(nutrient)
+        if foodsUnit == rdi?.unit { return rdi }
+        guard let rdi else { return nil }
+        return rdi.convertedTo(foodsUnit)
+    }
+
+    private func progressColor(for percentage: Double?) -> Color {
+        guard let percentage else { return colorPalette.accent }
+        if percentage >= 1.0 { return .green }
+        if percentage >= 0.67 { return colorPalette.accent }
+        if percentage >= 0.33 { return .orange }
+        return .red
+    }
+
+    private func formatAmount(_ amount: Double, unit: String) -> String {
+        "\(amount.formatted(maxDigits: 1))\(unit)"
     }
 }
 
 #Preview {
-    let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) {UsdaNutrientRdiLibrary.create()}
-    let _ = swinjectContainer.autoregister(UserService.self) {MockUserService(currentUser: .sample)}
-    let _ = swinjectContainer.autoregister(RemoteDatabase.self) {RemoteDatabaseForScreenshots()}
+    let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) { UsdaNutrientRdiLibrary.create() }
+    let _ = swinjectContainer.autoregister(UserService.self) { MockUserService(currentUser: .sample) }
+    let _ = swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
 
     let sampleFoods = FoodItem.sampleFoods
-    
+
     NavigationStack {
         ScrollView {
             VStack {
@@ -182,10 +203,13 @@ struct DashboardNutrientsSection: View {
                     blacklist: [],
                     orderedWhitelist: [
                         FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca,
-                        FdcNutrientGroupMapper.NutrientNumber_Iron_Fe
+                        FdcNutrientGroupMapper.NutrientNumber_Iron_Fe,
+                        FdcNutrientGroupMapper.NutrientNumber_Magnesium_Mg,
+                        FdcNutrientGroupMapper.NutrientNumber_Zinc_Zn,
+                        FdcNutrientGroupMapper.NutrientNumber_Potassium_K
                     ],
                     groupKey: FdcNutrientGroupMapper.GroupNumber_Minerals,
-                    headerText: "Testing",
+                    headerText: "Minerals",
                     aggregator: NutrientDataAggregator(sampleFoods)
                 )
             }
