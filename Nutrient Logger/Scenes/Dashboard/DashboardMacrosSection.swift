@@ -76,13 +76,20 @@ struct DashboardMacrosSection: View {
         } label: {
             HStack {
                 Spacer()
-                MacrosPieChart(
-                    calories: aggregator.calories,
-                    calorieGoal: user.calorieGoal,
-                    carbs: aggregator.carbs,
-                    fat: aggregator.fat,
-                    protein: aggregator.protein
-                )
+                ZStack {
+                    MacrosPieChart(
+                        calories: aggregator.calories,
+                        calorieGoal: user.calorieGoal,
+                        carbs: aggregator.carbs,
+                        fat: aggregator.fat,
+                        protein: aggregator.protein
+                    )
+                    CalorieGoalRing(
+                        calories: aggregator.calories,
+                        calorieGoal: user.calorieGoal
+                    )
+                    .padding(lineWidthPts + 6)
+                }
                 .aspectRatio(1, contentMode: .fit)
                 Spacer()
             }
