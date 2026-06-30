@@ -4,6 +4,7 @@ struct StreakCardView: View {
     let count: Int
     let unit: String
     let milestones: Set<Int>
+    var onTap: (() -> Void)? = nil
 
     @State private var flameBouncing = false
     @State private var cardScale: CGFloat = 1.0
@@ -58,6 +59,7 @@ struct StreakCardView: View {
             .padding()
             .inCard(backgroundColor: .orange)
             .scaleEffect(cardScale)
+            .onTapGesture { onTap?() }
             .onAppear {
                 withAnimation(.easeOut(duration: 0.7).delay(0.2)) {
                     displayedProgress = progress

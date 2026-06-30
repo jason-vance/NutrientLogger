@@ -34,12 +34,21 @@ struct DashboardView: View {
 
     @AppStorage("loggingStreakCount") private var loggingStreakCount: Int = 0
     @AppStorage("loggingStreakLastLoggedDate") private var loggingStreakLastLoggedDateRaw: Int = 0
+    @AppStorage("loggingStreakLongestCount") private var loggingStreakLongestCount: Int = 0
     @AppStorage("lastAutoMarketingPromptDate") private var lastAutoMarketingPromptDateRaw: Int = 0
 
     @State private var showAutoMarketingView: Bool = false
+    @State private var showStreakStats: Bool = false
 
     private var todaysFoods: [ConsumedFood] {
         consumedFoods.filter { $0.dateLogged == .today }
+    }
+
+    private var loggingStreakStartDate: SimpleDate? {
+        guard loggingStreakCount > 0,
+              let lastLogged = SimpleDate(rawValue: UInt32(loggingStreakLastLoggedDateRaw))
+        else { return nil }
+        return lastLogged.adding(days: -(loggingStreakCount - 1))
     }
 
     private var loggedFoodToday: Bool {
@@ -148,7 +157,7 @@ struct DashboardView: View {
             VStack {
                 NativeAdListRow(ad: $ad, size: .small)
                     .padding(.horizontal)
-                StreakCardView(count: loggingStreakCount, unit: "Day", milestones: Self.streakMilestones)
+                StreakCardView(count: loggingStreakCount, unit: "Day", milestones: Self.streakMilestones, onTap: { showStreakStats = true })
                     .padding(.horizontal)
                 DashboardNutrientSections(date: date, foods: foodItems, consumedFoods: todaysConsumedFoods, allConsumedFoods: consumedFoods)
             }
@@ -186,6 +195,16 @@ struct DashboardView: View {
             .padding(.horizontal)
             .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showStreakStats) {
+            StreakStatsView(
+                title: "Daily Logging",
+                count: loggingStreakCount,
+                unit: "Day",
+                longestCount: loggingStreakLongestCount,
+                startDate: loggingStreakStartDate,
+                milestones: Self.streakMilestones
+            )
         }
     }
     

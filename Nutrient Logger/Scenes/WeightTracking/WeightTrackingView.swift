@@ -51,7 +51,15 @@ struct WeightTrackingView: View {
     @State private var period: WeightTrendPeriod = .thirtyDay
     @State private var showEntrySheet: Bool = false
     @State private var showMarketingView: Bool = false
+    @State private var showStreakStats: Bool = false
     @State private var hasImportedHealthKit: Bool = false
+
+    private var streakStartDate: SimpleDate? {
+        guard streakCount > 0,
+              let weekStart = SimpleDate(rawValue: UInt32(streakWeekStartDateRaw))
+        else { return nil }
+        return weekStart.adding(days: -((streakCount - 1) * 7))
+    }
 
     private var preferredUnit: BodyWeightUnit {
         BodyWeightUnit(rawValue: preferredUnitRaw) ?? .lbs
@@ -191,7 +199,7 @@ struct WeightTrackingView: View {
         ScrollView {
             VStack(spacing: 2 * .spacingDefault) {
                 NativeAdListRow(ad: $ad, size: .small)
-                StreakCardView(count: streakCount, unit: "Week", milestones: Self.streakMilestones)
+                StreakCardView(count: streakCount, unit: "Week", milestones: Self.streakMilestones, onTap: { showStreakStats = true })
                 CurrentValues()
                 PeriodPicker()
                 WeightChartCard()
@@ -209,6 +217,16 @@ struct WeightTrackingView: View {
         .onChange(of: allBodyFatEntries.count, initial: true) { updateBodyMeasurementStreak() }
         .sheet(isPresented: $showEntrySheet) {
             WeightEntrySheet()
+        }
+        .sheet(isPresented: $showStreakStats) {
+            StreakStatsView(
+                title: "Body Measurement",
+                count: streakCount,
+                unit: "Week",
+                longestCount: nil,
+                startDate: streakStartDate,
+                milestones: Self.streakMilestones
+            )
         }
         .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .fullScreenCover(isPresented: $showMarketingView) {

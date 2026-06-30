@@ -180,7 +180,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   1. [x] Daily Streak is moved into a Nutition tab card
   2. [x] Weekly Streak is moved into a Body tab card 
   3. [x] Streak cards - animations on increment and milestone
-  4. [ ] Tap streak card for streak stats
+  4. [x] Tap streak card for streak stats
   5. [ ] Make water logging a more exciting part of nutrition logging (trend charts like other nutrients, animations would be nice, quick log)
 - [ ] **Body Metrics & Goals**
   1. [ ] Body goals deadline (calculate required weekly rate of change, pace tracker, linear(or maybe fancier based on their past performance) projected trajectory on body metric chart(s))
