@@ -163,30 +163,43 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 ### Code
 - [ ] Update website features, etc for v3.11.
 - [ ] **Visual Identity**
-  1. [ ] App-wide accent color? (currently .systemBlue, not really integrated anywhere except as tint/accent. Should it be a more primary part of the UI?)
+  1. [x] App-wide accent color? (currently .systemBlue, not really integrated anywhere except as tint/accent. Should it be a more primary part of the UI?) No
   2. [x] Remove favorite color setting from profile
 - [ ] **Navigation & Tab Restructure** (still needs some planning)
-  1. [ ] Dashboard should probably be renamed "Nutrition"
-  2. [ ] Food search is better integrated into food dashboard and removed from tabs (search bar (built-in or custom?) at the top of nutrition tab, search for foods, custom foods, meals)
-  3. [ ] Settings are moved into more appropriate places (nutrition settings on the nutrition tab toolbar, body settings on that tab's toolbar)
+  1. [x] Dashboard should probably be renamed "Nutrition"
+  2. [x] Food search moved to nutrition tab
+  3. [ ] Food search bar (built-in or custom?) at the top of nutrition tab or left as button?. (search for foods, custom foods, meals)
 - [ ] **Onboarding flow redesign** — current `AppSetupView` gets users into the app but likely doesn't sell the value. New flow:
   1. Hero screen: "Track every vitamin, mineral, and amino acid. Offline."
   2. Goal setting: what are you tracking for? (general health / specific deficiency / diet protocol)
-  3. Profile setup (age, gender → RDI calculation)
+  3. Profile setup (age, gender, weight → RDI, BMI calculation. Height -> useful for anything?)
   4. Notification permission
   5. Paywall (contextual, after they understand the value)
+  6. Discount for quick subscribers (current subscription is advertised as a discount, available for the first 24 hours, countdown on dashboard, afterwards only the "full-priced" subscription is avaialable)
 - [ ] **Engagement & Gamification**
-  1. [ ] Daily Streak is better integrated into Nutition (and Body) tab UI (a streak card, probably progress bar working toward a milestone, animations on increment and milestone, tap for streak stats)
-  2. [ ] Make water logging a more exciting part of nutrition logging (trend charts like other nutrients, animations would be nice, quick log)
+  1. [x] Daily Streak is moved into a Nutition tab card
+  2. [ ] Daily Streak is moved into a Body tab card 
+  3. [ ] Streak cards - animations on increment and milestone, tap for streak stats
+  4. [ ] Make water logging a more exciting part of nutrition logging (trend charts like other nutrients, animations would be nice, quick log)
 - [ ] **Body Metrics & Goals**
-  0. Basic tracking is not premium gated but goals and everything based on goals is premium
   1. [ ] Body goals deadline (calculate required weekly rate of change, pace tracker, linear(or maybe fancier based on their past performance) projected trajectory on body metric chart(s))
   2. [ ] calculate BMR from current stats (weight, height, age, sex), then show a TDEE-based calorie target that would move you toward your goal weight by your deadline
   3. [ ] More body metrics (optional, BMI, waist circumference, healthkit read/write)
+  4. [ ] Basic tracking is not premium gated but goals and everything based on goals is premium
+  5. [ ] Ability to select and order which metrics are on the body tab (per metric on/off toggle)
+  6. [ ] Choose a more active looking icon for the tab bar
 - [ ] **Nutrition Tab Customization & Charts**
-  1. [ ] Ability to select which nutrients, body metrics are on their respective dashboards (per nutrient on/off toggle)
+  1. [ ] Ability to select and order which nutrients are on the nutrition tab (per nutrient on/off toggle, order within nutrient group)
   2. [ ] Use Swift Charts for nutrient intake charts instead of my own
   3. [ ] Add trend charts to calories, macros, water (like other nutrients have, navigated to by clicking their tile)
+  4. [ ] Add 7-day chart to all nutrients (toggle between today's intake line chart and the past 7 days bar chart, more time frames?)
+- [ ] **Profile Tab**
+  1. [ ] Add achievements card
+  2. [ ] Add subscription card
+  3. [ ] Put personal data into a card
+  4. [ ] Group other settings appropriately into cards
+  5. [ ] Copy styling of mockup
+  6. [ ] Add an app version label at the bottom
 - [ ] **Misc**
   1. [x] Calorie goal ring on nutrition tab
   2. [x] Food search bar not immediately in view
