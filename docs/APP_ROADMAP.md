@@ -161,7 +161,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 **Theme:** Major milestone release. Justifies a full store listing refresh, potential press mention, and a reason for lapsed users to return. Version 4.0 signals maturity and intentional investment.
 
 ### Code
-- [ ] Update website features, etc for v3.11.
+- [x] Update website features, etc for v3.11.
 - [ ] **Visual Identity**
   1. [x] App-wide accent color? (currently .systemBlue, not really integrated anywhere except as tint/accent. Should it be a more primary part of the UI?) No
   2. [x] Remove favorite color setting from profile
@@ -191,8 +191,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [ ] **Nutrition Tab Customization & Charts**
   1. [ ] Ability to select and order which nutrients are on the nutrition tab (per nutrient on/off toggle, order within nutrient group)
   2. [ ] Use Swift Charts for nutrient intake charts instead of my own
-  3. [ ] Add trend charts to calories, macros, water (like other nutrients have, navigated to by clicking their tile)
-  4. [ ] Add 7-day chart to all nutrients (toggle between today's intake line chart and the past 7 days bar chart, more time frames?)
+  3. [ ] Add trend charts, and nutrient trend charts, to calories, macros, water (like other nutrients have, navigated to by clicking their tile)
 - [x] **Profile Tab**
   1. [x] Add achievements card
   2. [x] Add subscription card
