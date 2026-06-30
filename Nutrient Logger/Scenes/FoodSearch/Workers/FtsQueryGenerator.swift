@@ -38,7 +38,7 @@ public class FtsQueryGenerator {
 
         return tokens
             .map { stemmedWithWildcards($0) }
-            .joined(separator: " ")
+            .joined(separator: " AND ")
     }
 
     public static func generateExactFrom(_ query: String) -> String {

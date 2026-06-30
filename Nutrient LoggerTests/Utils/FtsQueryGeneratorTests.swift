@@ -16,24 +16,31 @@ struct FtsQueryGeneratorTests {
     }
 
     @Test func multipleWordsUseAndLogic() {
-        expectGenerated("whole milk", "whole* milk*")
+        expectGenerated("whole milk", "whole* AND milk*")
     }
 
     @Test func punctuationRemoved() {
-        expectGenerated("whole, milk", "whole* milk*")
-        expectGenerated("whole , milk", "whole* milk*")
+        expectGenerated("whole, milk", "whole* AND milk*")
+        expectGenerated("whole , milk", "whole* AND milk*")
     }
 
     @Test func extraSpacesCollapsed() {
-        expectGenerated("whole    milk", "whole* milk*")
+        expectGenerated("whole    milk", "whole* AND milk*")
     }
 
     @Test func multipleWordsAllAnd() {
-        expectGenerated("whole milk dessert bar", "whole* milk* dessert* bar*")
+        expectGenerated("whole milk dessert bar", "whole* AND milk* AND dessert* AND bar*")
     }
 
     @Test func duplicateTokensDeduped() {
         expectGenerated("milk milk", "milk*")
+    }
+
+    @Test func nonStemmedTermBeforeStemmedTermIsValidFts5Syntax() {
+        // Regression test: a bareword immediately followed by a parenthesized
+        // OR group (e.g. "Five* (guys* OR guy*)") is invalid FTS5 syntax and
+        // crashes the query. Joining with "AND" keeps it valid.
+        expectGenerated("Five guys", "Five* AND (guys* OR guy*)")
     }
 
     // MARK: - Stemming
@@ -91,9 +98,9 @@ struct FtsQueryGeneratorTests {
     // MARK: - Stop words
 
     @Test func stopWordsRemoved() {
-        expectGenerated("chicken with rice", "chicken* rice*")
-        expectGenerated("a cup of milk", "cup* milk*")
-        expectGenerated("bread and butter", "bread* butter*")
+        expectGenerated("chicken with rice", "chicken* AND rice*")
+        expectGenerated("a cup of milk", "cup* AND milk*")
+        expectGenerated("bread and butter", "bread* AND butter*")
     }
 
     @Test func allStopWordsPreserved() {
@@ -104,10 +111,10 @@ struct FtsQueryGeneratorTests {
     // MARK: - Abbreviations
 
     @Test func abbreviationExpansion() {
-        expectGenerated("oj", "orange* juice*")
-        expectGenerated("OJ", "orange* juice*")
-        expectGenerated("pb toast", "peanut* butter* toast*")
-        expectGenerated("evoo", "extra* virgin* olive* oil*")
+        expectGenerated("oj", "orange* AND juice*")
+        expectGenerated("OJ", "orange* AND juice*")
+        expectGenerated("pb toast", "peanut* AND butter* AND toast*")
+        expectGenerated("evoo", "extra* AND virgin* AND olive* AND oil*")
     }
 
     // MARK: - generateExactFrom
