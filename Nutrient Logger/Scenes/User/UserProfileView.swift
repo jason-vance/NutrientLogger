@@ -24,7 +24,6 @@ struct UserProfileView: View {
     @State private var user: User?
     @State private var loadedUser: User?
 
-    @State private var showFavoriteColorPicker: Bool = false
     @State private var showMarketingView: Bool = false
 
     @AppStorage(HealthKitManager.healthSyncEnabledKey)
@@ -99,12 +98,6 @@ struct UserProfileView: View {
         .onAppear { fetchUser() }
         .onChange(of: user) { saveUser() }
         .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
-        .sheet(isPresented: $showFavoriteColorPicker) {
-            FavoriteColorPicker(.init(
-                get: { user?.preferredColorName ?? .indigo },
-                set: { user?.preferredColorName = $0 }
-            ))
-        }
         .fullScreenCover(isPresented: $showMarketingView) {
             MarketingView(trigger: .healthSync)
         }
@@ -114,7 +107,6 @@ struct UserProfileView: View {
         Section(header: Text("Profile Settings")) {
             BirthdateField()
             GenderField()
-            FavoriteColorField()
         }
     }
 
@@ -358,73 +350,6 @@ struct UserProfileView: View {
             }
         }
         .listRowDefaultModifiers()
-    }
-    
-    @ViewBuilder private func FavoriteColorField() -> some View {
-        HStack {
-            Text("Favorite Color")
-            Spacer()
-            Button {
-                showFavoriteColorPicker = true
-            } label: {
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .fill(user?.preferredColor ?? Color.white)
-                    .stroke(.black, style: .init(lineWidth: 1))
-                    .frame(width: 100, height: 22)
-            }
-        }
-        .listRowDefaultModifiers()
-    }
-    
-    @ViewBuilder private func FavoriteColorPicker(_ preferredColorName: Binding<ColorName>) -> some View {
-        VStack {
-            Text("Pick your favorite color")
-                .frame(height: 44)
-                .bold()
-            Spacer()
-            HStack {
-                ForEach(ColorPalettes.allColors.prefix(4).map { $0.0 }, id: \.self) { colorName in
-                    ColorButton(colorName, preferredColorName: preferredColorName)
-                }
-            }
-            HStack {
-                ForEach(ColorPalettes.allColors.dropFirst(4).prefix(4).map { $0.0 }, id: \.self) { colorName in
-                    ColorButton(colorName, preferredColorName: preferredColorName)
-                }
-            }
-            HStack {
-                ForEach(ColorPalettes.allColors.dropFirst(8).prefix(4).map { $0.0 }, id: \.self) { colorName in
-                    ColorButton(colorName, preferredColorName: preferredColorName)
-                }
-            }
-            Spacer()
-            Button("OK") {
-                showFavoriteColorPicker = false
-            }
-        }
-        .presentationDetents([.medium])
-    }
-    
-    @ViewBuilder private func ColorButton(
-        _ colorName: ColorName,
-        preferredColorName: Binding<ColorName>
-    ) -> some View {
-        Button {
-            withAnimation(.snappy) {
-                preferredColorName.wrappedValue = colorName
-            }
-        } label: {
-            Circle()
-                .fill(ColorPalettes.colorFrom(name: colorName))
-                .stroke(.black, style: .init(lineWidth: 1))
-                .frame(width: 56, height: 56)
-                .padding(4)
-                .background {
-                    Circle()
-                        .stroke(.black, style: .init(lineWidth: 2))
-                        .opacity(preferredColorName.wrappedValue == colorName ? 1 : 0)
-                }
-        }
     }
     
     @ViewBuilder private func UserMealsSection() -> some View {

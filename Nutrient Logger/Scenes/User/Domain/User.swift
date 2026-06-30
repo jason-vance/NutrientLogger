@@ -6,14 +6,11 @@
 //
 
 import Foundation
-import SwiftUI
 
 struct User: Codable {
 
     public var gender: Gender = Gender.unknown
     public var birthdate: SimpleDate? = nil
-    public var preferredColorName: ColorName = ColorName.indigo
-    public var preferredColor: Color { ColorPalettes.colorFrom(name: preferredColorName) }
 
     public var calorieGoal: Double? = nil
     public var carbsGoalGrams: Double? = nil
@@ -22,7 +19,7 @@ struct User: Codable {
     public var micronutrientGoals: [String: Double] = [:]
 
     enum CodingKeys: String, CodingKey {
-        case gender, birthdate, preferredColorName
+        case gender, birthdate
         case calorieGoal, carbsGoalGrams, fatGoalGrams, proteinGoalGrams
         case micronutrientGoals
     }
@@ -30,7 +27,6 @@ struct User: Codable {
     init(
         gender: Gender = .unknown,
         birthdate: SimpleDate? = nil,
-        preferredColorName: ColorName = .indigo,
         calorieGoal: Double? = nil,
         carbsGoalGrams: Double? = nil,
         fatGoalGrams: Double? = nil,
@@ -39,7 +35,6 @@ struct User: Codable {
     ) {
         self.gender = gender
         self.birthdate = birthdate
-        self.preferredColorName = preferredColorName
         self.calorieGoal = calorieGoal
         self.carbsGoalGrams = carbsGoalGrams
         self.fatGoalGrams = fatGoalGrams
@@ -51,7 +46,6 @@ struct User: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         gender = try container.decodeIfPresent(Gender.self, forKey: .gender) ?? .unknown
         birthdate = try container.decodeIfPresent(SimpleDate.self, forKey: .birthdate)
-        preferredColorName = try container.decodeIfPresent(ColorName.self, forKey: .preferredColorName) ?? .indigo
         calorieGoal = try container.decodeIfPresent(Double.self, forKey: .calorieGoal)
         carbsGoalGrams = try container.decodeIfPresent(Double.self, forKey: .carbsGoalGrams)
         fatGoalGrams = try container.decodeIfPresent(Double.self, forKey: .fatGoalGrams)
@@ -66,8 +60,7 @@ struct User: Codable {
 
     public static let sample: User = .init(
         gender: .male,
-        birthdate: .init(year: 1987, month: 6, day: 16),
-        preferredColorName: .indigo
+        birthdate: .init(year: 1987, month: 6, day: 16)
     )
 }
 

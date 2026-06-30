@@ -12,7 +12,6 @@ class UserServiceForScreenshots: UserService {
         User(
             gender: .female,
             birthdate: .init(year: 1988, month: 5, day: 15),
-            preferredColorName: ColorName.indigo,
             calorieGoal: 1700,
             carbsGoalGrams: 200,
             fatGoalGrams: 55,

@@ -74,7 +74,6 @@ protocol EngagementAnalytics {
 protocol UserProfileAnalytics {
     func userSetGender(_ gender: Gender)
     func userSetBirthdate(_ birthdate: Date)
-    func userSetPreferredColor(_ colorName: ColorName)
 }
 
 protocol UserMealsAnalytics {
@@ -175,8 +174,7 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     private let eventUserSetGender = "event_user_set_gender"
     private let eventUserSetBirthdate = "event_user_set_birthdate"
-    private let eventUserSetPreferredColor = "event_user_set_preferred_color"
-    
+
     let analytics: AnalyticsEngine
     
     public init(analyticsEngine: AnalyticsEngine) {
@@ -365,10 +363,6 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     public func userSetBirthdate(_ birthdate: Date) {
         analytics.log(event: eventUserSetBirthdate, parameters: [ analytics.parameterValue: birthdate ])
-    }
-
-    public func userSetPreferredColor(_ colorName: ColorName) {
-        analytics.log(event: eventUserSetPreferredColor, parameters: [ analytics.parameterValue: colorName.value ])
     }
 
     // MARK: - Subscription Funnel

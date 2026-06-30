@@ -164,7 +164,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [ ] Update website features, etc for v3.11.
 - [ ] **Visual Identity**
   1. [ ] App-wide accent color? (currently .systemBlue, not really integrated anywhere except as tint/accent. Should it be a more primary part of the UI?)
-  2. [ ] Remove favorite color setting from profile
+  2. [x] Remove favorite color setting from profile
 - [ ] **Navigation & Tab Restructure** (still needs some planning)
   1. [ ] Dashboard should probably be renamed "Nutrition"
   2. [ ] Food search is better integrated into food dashboard and removed from tabs (search bar (built-in or custom?) at the top of nutrition tab, search for foods, custom foods, meals)
