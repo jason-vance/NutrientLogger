@@ -100,20 +100,9 @@ struct ContentView: View {
     
     @ViewBuilder private func MainContent() -> some View {
         TabView(selection: $selectedTab) {
-            Tab("Dashboard", systemImage: "gauge.with.dots.needle.33percent", value: AppTab.dashboard) {
+            Tab("Nutrition", systemImage: "gauge.with.dots.needle.33percent", value: AppTab.dashboard) {
                 NavigationStack {
                     DashboardView()
-                }
-            }
-            Tab("Search", systemImage: "magnifyingglass", value: AppTab.search) {
-                NavigationStack {
-                    FoodSearchView(onFoodSaved: { foodItem, portion in
-                        try FoodSaver.forConsumedFoods(modelContext: modelContext).saveFoodItem(foodItem, portion)
-
-                        DispatchQueue.main.async {
-                            dataController.updateDailySummary()
-                        }
-                    })
                 }
             }
             Tab("Body", systemImage: "figure.stand", value: AppTab.body) {
@@ -129,8 +118,7 @@ struct ContentView: View {
         }
         .onChange(of: selectedTab, initial: true) { _, tab in
             let name: String = switch tab {
-            case .dashboard: "Dashboard"
-            case .search: "Search"
+            case .dashboard: "Nutrition"
             case .body: "Body"
             case .profile: "Profile"
             }

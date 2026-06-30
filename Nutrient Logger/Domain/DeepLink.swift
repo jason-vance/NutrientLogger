@@ -25,10 +25,8 @@ enum DeepLink: Equatable {
 
     var tab: AppTab {
         switch self {
-        case .dashboard, .premium:
+        case .dashboard, .search, .premium:
             return .dashboard
-        case .search:
-            return .search
         case .profile:
             return .profile
         }
@@ -37,7 +35,6 @@ enum DeepLink: Equatable {
 
 enum AppTab: Hashable {
     case dashboard
-    case search
     case body
     case profile
 }

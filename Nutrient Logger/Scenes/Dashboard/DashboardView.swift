@@ -19,8 +19,10 @@ struct DashboardView: View {
 
     @EnvironmentObject private var adProviderFactory: AdProviderFactory
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
+    @EnvironmentObject private var dataController: DataController
     @State private var adProvider: AdProvider?
     @State private var ad: Ad?
+    @State private var showSearch: Bool = false
 
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var engagementAnalytics: EngagementAnalytics
@@ -159,6 +161,14 @@ struct DashboardView: View {
         .animation(.snappy, value: date)
         .animation(.snappy, value: todaysConsumedFoods)
         .animation(.snappy, value: foodItems)
+        .navigationDestination(isPresented: $showSearch) {
+            FoodSearchView(onFoodSaved: { foodItem, portion in
+                try FoodSaver.forConsumedFoods(modelContext: modelContext).saveFoodItem(foodItem, portion)
+                DispatchQueue.main.async {
+                    dataController.updateDailySummary()
+                }
+            })
+        }
         .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .fullScreenCover(isPresented: $showAutoMarketingView) {
             MarketingView(trigger: .smartPaywall)
@@ -182,6 +192,13 @@ struct DashboardView: View {
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
             DateButton()
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                showSearch = true
+            } label: {
+                Image(systemName: "magnifyingglass")
+            }
         }
     }
 
@@ -255,7 +272,7 @@ struct DashboardView: View {
         ContentUnavailableView(
             "Feeling Hungry?",
             systemImage: "face.smiling.inverse",
-            description: Text("You haven't logged anything yet today. Go to the search tab to find foods and add them to your log!")
+            description: Text("You haven't logged anything yet today. Tap the search icon to find foods and add them to your log!")
         )
         .listRowDefaultModifiers()
     }
