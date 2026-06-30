@@ -39,6 +39,7 @@ enum NotificationPlanner {
         dailyReminderEnabled: Bool,
         dailyReminderHour: Int,
         dailyReminderMinute: Int,
+        streakWarningEnabled: Bool = true,
         calendar: Calendar = .current
     ) -> Plan {
         Plan(
@@ -54,6 +55,7 @@ enum NotificationPlanner {
                 now: now,
                 loggedAnythingToday: loggedAnythingToday,
                 streakCount: streakCount,
+                enabled: streakWarningEnabled,
                 calendar: calendar
             ),
             streakCount: streakCount
@@ -89,9 +91,10 @@ enum NotificationPlanner {
         now: Date,
         loggedAnythingToday: Bool,
         streakCount: Int,
+        enabled: Bool,
         calendar: Calendar
     ) -> Date? {
-        guard streakCount > streakAtRiskThreshold, !loggedAnythingToday else { return nil }
+        guard enabled, streakCount > streakAtRiskThreshold, !loggedAnythingToday else { return nil }
         guard let riskTimeToday = calendar.date(bySettingHour: streakAtRiskHour, minute: 0, second: 0, of: now) else {
             return nil
         }

@@ -28,6 +28,7 @@ enum PaywallTrigger: String {
     case trendCharts = "trend_charts"
     case healthSync = "health_sync"
     case weightGoal = "weight_goal"
+    case profileUpsell = "profile_upsell"
 }
 
 protocol SubscriptionAnalytics {

@@ -31,6 +31,16 @@ class SubscriptionManager: ObservableObject {
             storedIsSubscribed = isSubscribed
         }
     }
+    @Published var activeProductId: String? = nil
+    @Published var expirationDate: Date? = nil
+
+    var planDisplayName: String? {
+        switch activeProductId {
+        case Self.monthlyProductId: return "Premium (Monthly)"
+        case Self.yearlyProductId: return "Premium (Yearly)"
+        default: return nil
+        }
+    }
 
     @AppStorage("storedIsSubscribed") private var storedIsSubscribed: Bool = false
     @AppStorage("storedSubscriptionState") private var storedSubscriptionStateRaw: String = SubscriptionState.none.rawValue
@@ -53,10 +63,13 @@ class SubscriptionManager: ObservableObject {
         
         if isForScreenshots {
             isSubscribed = true
+            activeProductId = Self.yearlyProductId
+            expirationDate = Calendar.current.date(byAdding: .year, value: 1, to: .now)
         } else {
             isSubscribed = storedIsSubscribed
             Task {
                 self.isSubscribed = await isSubscribed()
+                await refreshEntitlementDetails()
             }
         }
     }
@@ -103,6 +116,10 @@ class SubscriptionManager: ObservableObject {
                 isSubscribed = true
             }
         }
+
+        Task {
+            await refreshEntitlementDetails()
+        }
     }
     
     func loadProducts() async {
@@ -132,6 +149,7 @@ class SubscriptionManager: ObservableObject {
                 self.isSubscribed = true
                 storedSubscriptionStateRaw = (isTrial ? SubscriptionState.trial : .paid).rawValue
                 await transaction.finish()
+                await refreshEntitlementDetails()
                 return .completed(isTrial: isTrial)
             case .unverified:
                 throw SubscriptionError.verificationFailed
@@ -153,10 +171,25 @@ class SubscriptionManager: ObservableObject {
         }
         return false
     }
-    
+
+    /// Reads the active entitlement's product ID and expiration date, for display purposes
+    /// (e.g. "Premium (Yearly), renews Jul 12, 2027" on the profile screen).
+    func refreshEntitlementDetails() async {
+        for await result in Transaction.currentEntitlements {
+            if case .verified(let transaction) = result, Self.productIds.contains(transaction.productID) {
+                activeProductId = transaction.productID
+                expirationDate = transaction.expirationDate
+                return
+            }
+        }
+        activeProductId = nil
+        expirationDate = nil
+    }
+
     func restorePurchases() async throws {
         try? await AppStore.sync()
         self.isSubscribed = await isSubscribed()
+        await refreshEntitlementDetails()
     }
 
     func currentSubscriptionState() async -> SubscriptionState {

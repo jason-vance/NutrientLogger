@@ -43,6 +43,8 @@ enum NotificationCoordinator {
                 ?? NotificationSettings.defaultDailyReminderHour,
             dailyReminderMinute: defaults.object(forKey: NotificationSettings.dailyReminderMinuteKey) as? Int
                 ?? NotificationSettings.defaultDailyReminderMinute,
+            streakWarningEnabled: defaults.object(forKey: NotificationSettings.streakWarningEnabledKey) as? Bool
+                ?? NotificationSettings.defaultStreakWarningEnabled,
             calendar: calendar
         )
 

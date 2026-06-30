@@ -193,17 +193,17 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   2. [ ] Use Swift Charts for nutrient intake charts instead of my own
   3. [ ] Add trend charts to calories, macros, water (like other nutrients have, navigated to by clicking their tile)
   4. [ ] Add 7-day chart to all nutrients (toggle between today's intake line chart and the past 7 days bar chart, more time frames?)
-- [ ] **Profile Tab**
-  1. [ ] Add achievements card
-  2. [ ] Add subscription card
-  3. [ ] Put personal data into a card
-  4. [ ] Group other settings appropriately into cards
-  5. [ ] Copy styling of mockup
-  6. [ ] Add an app version label at the bottom
+- [x] **Profile Tab**
+  1. [x] Add achievements card
+  2. [x] Add subscription card
+  3. [x] Put personal data into a card
+  4. [x] Group other settings appropriately into cards
+  5. [x] Add an app version label at the bottom
 - [ ] **Misc**
   1. [x] Calorie goal ring on nutrition tab
   2. [x] Food search bar not immediately in view
   3. [x] Crash when searching "Five guys"
+  4. [ ] Match styling across app (text fields are sometimes black or blue, other inconsistencies?)
 - [ ] **Analytics:** Track onboarding funnel (step completion rate, drop-off point), time-to-first-log, and day-1/day-7/day-30 retention cohorts
 - [ ] **Export (CSV)** as a premium feature — export all logged foods with nutrient data for a date range. Useful for users tracking for medical or clinical reasons (a natural Nutrient Logger audience).
 - [ ] **Nutrient deficiency insights** — a simple weekly digest view: "You've been consistently low in Vitamin D and Magnesium this week. Here are foods that would help." This is premium-only and differentiates from every macro-focused competitor.

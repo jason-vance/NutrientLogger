@@ -16,6 +16,7 @@ struct LoggingStreakStore {
 
     static let countKey = "loggingStreakCount"
     static let lastLoggedDateKey = "loggingStreakLastLoggedDate"
+    static let longestCountKey = "loggingStreakLongestCount"
 
     private let local: UserDefaults
     private let remote: NSUbiquitousKeyValueStore
@@ -29,11 +30,13 @@ struct LoggingStreakStore {
     func load() -> LoggingStreak {
         let localStreak = LoggingStreak(
             count: local.integer(forKey: Self.countKey),
-            lastLoggedDate: SimpleDate(rawValue: UInt32(local.integer(forKey: Self.lastLoggedDateKey)))
+            lastLoggedDate: SimpleDate(rawValue: UInt32(local.integer(forKey: Self.lastLoggedDateKey))),
+            longestCount: local.integer(forKey: Self.longestCountKey)
         )
         let remoteStreak = LoggingStreak(
             count: Int(remote.longLong(forKey: Self.countKey)),
-            lastLoggedDate: SimpleDate(rawValue: UInt32(remote.longLong(forKey: Self.lastLoggedDateKey)))
+            lastLoggedDate: SimpleDate(rawValue: UInt32(remote.longLong(forKey: Self.lastLoggedDateKey))),
+            longestCount: Int(remote.longLong(forKey: Self.longestCountKey))
         )
 
         return LoggingStreak.reconciled(local: localStreak, remote: remoteStreak)
@@ -45,9 +48,11 @@ struct LoggingStreakStore {
 
         local.set(streak.count, forKey: Self.countKey)
         local.set(lastLoggedDateRaw, forKey: Self.lastLoggedDateKey)
+        local.set(streak.longestCount, forKey: Self.longestCountKey)
 
         remote.set(Int64(streak.count), forKey: Self.countKey)
         remote.set(Int64(lastLoggedDateRaw), forKey: Self.lastLoggedDateKey)
+        remote.set(Int64(streak.longestCount), forKey: Self.longestCountKey)
         remote.synchronize()
     }
 }

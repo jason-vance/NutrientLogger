@@ -13,8 +13,10 @@ enum NotificationSettings {
     static let dailyReminderEnabledKey = "dailyReminderEnabled"
     static let dailyReminderHourKey = "dailyReminderHour"
     static let dailyReminderMinuteKey = "dailyReminderMinute"
+    static let streakWarningEnabledKey = "streakWarningEnabled"
 
     static let defaultDailyReminderEnabled = true
     static let defaultDailyReminderHour = 20
     static let defaultDailyReminderMinute = 0
+    static let defaultStreakWarningEnabled = true
 }

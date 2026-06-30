@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
+import StoreKit
 import SwinjectAutoregistration
 
 struct UserProfileView: View {
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.requestReview) private var requestReview
 
     @EnvironmentObject private var adProviderFactory: AdProviderFactory
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
@@ -21,15 +24,24 @@ struct UserProfileView: View {
     @Inject private var engagementAnalytics: EngagementAnalytics
     @Inject private var premiumAnalytics: PremiumAnalytics
 
+    @StateObject private var reviewPrompter = ReviewPrompter()
+
     @State private var user: User?
     @State private var loadedUser: User?
 
     @State private var showMarketingView: Bool = false
+    @State private var marketingTrigger: PaywallTrigger = .healthSync
+    @State private var showManageSubscriptions: Bool = false
+
+    @Query private var consumedFoods: [ConsumedFood]
+    @Query private var weightEntries: [WeightEntry]
+    @Query private var bodyFatEntries: [BodyFatEntry]
 
     @AppStorage(HealthKitManager.healthSyncEnabledKey)
     private var healthSyncEnabled = false
 
     @AppStorage("preferredWeightUnit") private var preferredUnitRaw: String = BodyWeightUnit.lbs.rawValue
+    @AppStorage("preferredHeightUnit") private var preferredHeightUnitRaw: String = HeightUnit.ftIn.rawValue
 
     @AppStorage(NotificationSettings.dailyReminderEnabledKey)
     private var dailyReminderEnabled = NotificationSettings.defaultDailyReminderEnabled
@@ -37,6 +49,16 @@ struct UserProfileView: View {
     private var dailyReminderHour = NotificationSettings.defaultDailyReminderHour
     @AppStorage(NotificationSettings.dailyReminderMinuteKey)
     private var dailyReminderMinute = NotificationSettings.defaultDailyReminderMinute
+    @AppStorage(NotificationSettings.streakWarningEnabledKey)
+    private var streakWarningEnabled = NotificationSettings.defaultStreakWarningEnabled
+
+    private var preferredUnit: BodyWeightUnit {
+        BodyWeightUnit(rawValue: preferredUnitRaw) ?? .lbs
+    }
+
+    private var preferredHeightUnit: HeightUnit {
+        HeightUnit(rawValue: preferredHeightUnitRaw) ?? .ftIn
+    }
 
     private var dailyReminderTime: Binding<Date> {
         Binding(
@@ -80,35 +102,175 @@ struct UserProfileView: View {
         NotificationCoordinator.reschedule(modelContext: modelContext)
     }
 
+    private func presentMarketingView(trigger: PaywallTrigger, feature: String) {
+        premiumAnalytics.premiumFeatureTapped(feature: feature)
+        marketingTrigger = trigger
+        showMarketingView = true
+    }
+
     var body: some View {
-        List {
-            NativeAdListRow(ad: $ad, size: .small)
-            ProfileSettingsSection()
-            NutritionGoalsSection()
-            NotificationSettingsSection()
-            AppleHealthSection()
-            WeightTrackingSection()
-            UserMealsSection()
-            NutrientLibrarySection()
-            LegalSection()
+        ScrollView {
+            VStack(spacing: 2 * .spacingDefault) {
+                NativeAdListRow(ad: $ad, size: .small)
+                ProfileCard()
+                SubscriptionCard()
+                AchievementsCard()
+                NutritionGoalsCard()
+                DataCard()
+                BodyCard()
+                NotificationsCard()
+                AboutFooter()
+                VersionLabel()
+            }
+            .padding(.horizontal)
         }
         .scrollDismissesKeyboard(.immediately)
-        .listDefaultModifiers()
-        .navigationBarTitle("User Profile")
+        .navigationBarTitle("Profile")
         .onAppear { fetchUser() }
         .onChange(of: user) { saveUser() }
         .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .fullScreenCover(isPresented: $showMarketingView) {
-            MarketingView(trigger: .healthSync)
+            MarketingView(trigger: marketingTrigger)
+        }
+        .manageSubscriptionsSheet(isPresented: $showManageSubscriptions)
+    }
+
+    // MARK: - Profile Card
+
+    private var ageGenderHeightSummary: String {
+        var parts: [String] = []
+        if let age = user?.getUserAge() {
+            let years = Int(age / (365.25 * 24 * 3600))
+            parts.append("\(years)")
+        }
+        if let gender = user?.gender, gender != .unknown {
+            parts.append(gender.rawValue.capitalized)
+        }
+        if let cm = user?.heightCm {
+            parts.append(preferredHeightUnit.formattedHeight(cm: cm))
+        }
+        return parts.isEmpty ? "Set up your profile" : parts.joined(separator: " · ")
+    }
+
+    @ViewBuilder private func ProfileCard() -> some View {
+        HStack(spacing: .spacingDefault) {
+            Image(user?.gender == .female ? "profile_female" : "profile_male")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 64, height: 64)
+                .clipShape(Circle())
+            VStack(alignment: .leading, spacing: 4) {
+                Text(ageGenderHeightSummary)
+                    .font(.headline)
+                NavigationLink {
+                    EditProfileView(user: $user)
+                } label: {
+                    HStack(spacing: 2) {
+                        Text("Edit Profile")
+                        Image(systemName: "chevron.right")
+                    }
+                    .font(.caption)
+                }
+            }
+            Spacer()
+        }
+        .padding()
+        .inCard(backgroundColor: Color.gray)
+    }
+
+    // MARK: - Subscription Card
+
+    @ViewBuilder private func SubscriptionCard() -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(subscriptionManager.isSubscribed ? (subscriptionManager.planDisplayName ?? "Premium") : "Free")
+                    .font(.subheadline.bold())
+                Spacer()
+                if subscriptionManager.isSubscribed {
+                    Image(systemName: "checkmark.seal.fill")
+                        .foregroundStyle(.green)
+                }
+            }
+            HStack {
+                if subscriptionManager.isSubscribed, let expirationDate = subscriptionManager.expirationDate {
+                    Text("Renews: \(expirationDate.formatted(date: .abbreviated, time: .omitted))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("Unlock premium features")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button(subscriptionManager.isSubscribed ? "Manage" : "Upgrade") {
+                    if subscriptionManager.isSubscribed {
+                        showManageSubscriptions = true
+                    } else {
+                        presentMarketingView(trigger: .profileUpsell, feature: "profile_subscription_card")
+                    }
+                }
+                .font(.caption.bold())
+            }
+        }
+        .padding()
+        .inCard(backgroundColor: .blue)
+    }
+
+    // MARK: - Achievements Card
+
+    private var longestStreakCount: Int {
+        LoggingStreakStore().load().longestCount
+    }
+
+    private var daysLoggedCount: Int {
+        Set(consumedFoods.map(\.dateLogged)).count
+    }
+
+    private var foodsTrackedCount: Int {
+        Set(consumedFoods.map(\.fdcId)).count
+    }
+
+    private var bodyLogsCount: Int {
+        Set(weightEntries.map(\.date)).union(Set(bodyFatEntries.map(\.date))).count
+    }
+
+    @ViewBuilder private func AchievementsCard() -> some View {
+        VStack(spacing: .spacingDefault) {
+            HStack {
+                Text("Achievements")
+                    .listSectionHeader()
+                Spacer()
+            }
+            VStack(spacing: 0) {
+                AchievementRow(icon: "flame.fill", iconColor: .orange, title: "Longest Streak", value: "\(longestStreakCount) days")
+                Divider().padding(.horizontal)
+                AchievementRow(icon: "calendar", iconColor: .blue, title: "Days Logged", value: "\(daysLoggedCount)")
+                Divider().padding(.horizontal)
+                AchievementRow(icon: "leaf.fill", iconColor: .green, title: "Unique Foods Tracked", value: "\(foodsTrackedCount)")
+                Divider().padding(.horizontal)
+                AchievementRow(icon: "scalemass.fill", iconColor: .purple, title: "Body Logs", value: "\(bodyLogsCount)")
+            }
+            .padding(.vertical, 4)
+            .inCard(backgroundColor: Color.gray)
         }
     }
 
-    @ViewBuilder private func ProfileSettingsSection() -> some View {
-        Section(header: Text("Profile Settings")) {
-            BirthdateField()
-            GenderField()
+    @ViewBuilder private func AchievementRow(icon: String, iconColor: Color, title: String, value: String) -> some View {
+        HStack {
+            Image(systemName: icon)
+                .foregroundStyle(iconColor)
+                .frame(width: 20)
+            Text(title)
+                .font(.subheadline)
+            Spacer()
+            Text(value)
+                .font(.subheadline.bold())
         }
+        .padding(.horizontal)
+        .padding(.vertical, 10)
     }
+
+    // MARK: - Nutrition Goals Card
 
     private func goalBinding(
         get: @escaping () -> Double?,
@@ -127,74 +289,89 @@ struct UserProfileView: View {
         )
     }
 
-    @ViewBuilder private func NutritionGoalsSection() -> some View {
-        Section(header: Text("Nutrition Goals")) {
-            GoalField(
-                "Calories",
-                value: goalBinding(
-                    get: { user?.calorieGoal },
-                    set: { user?.calorieGoal = $0 },
-                    goalName: "calorie"
-                ),
-                unit: "kcal",
-                defaultValue: NutrientGoalDefaults.defaultCalorieGoal(for: user ?? User())
-            )
-            GoalField(
-                "Carbs",
-                value: goalBinding(
-                    get: { user?.carbsGoalGrams },
-                    set: { user?.carbsGoalGrams = $0 },
-                    goalName: "carbs"
-                ),
-                unit: "g",
-                defaultValue: NutrientGoalDefaults.defaultCarbsGoal(for: user ?? User())
-            )
-            GoalField(
-                "Fat",
-                value: goalBinding(
-                    get: { user?.fatGoalGrams },
-                    set: { user?.fatGoalGrams = $0 },
-                    goalName: "fat"
-                ),
-                unit: "g",
-                defaultValue: NutrientGoalDefaults.defaultFatGoal(for: user ?? User())
-            )
-            GoalField(
-                "Protein",
-                value: goalBinding(
-                    get: { user?.proteinGoalGrams },
-                    set: { user?.proteinGoalGrams = $0 },
-                    goalName: "protein"
-                ),
-                unit: "g",
-                defaultValue: NutrientGoalDefaults.defaultProteinGoal(for: user ?? User())
-            )
-            NavigationLink {
-                MicronutrientGoalsView()
-            } label: {
-                VStack {
-                    HStack {
-                        Text("Micronutrient Goals")
-                        if !subscriptionManager.isSubscribed {
-                            Text("PREMIUM")
-                                .font(.caption2.bold())
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background {
-                                    Capsule().foregroundStyle(Color.accentColor.gradient)
-                                }
-                        }
-                        Spacer()
-                    }
-                    HStack {
-                        Text("Set custom targets for vitamins and minerals")
-                        Spacer()
-                    }
-                    .font(.caption)
-                }
+    @ViewBuilder private func NutritionGoalsCard() -> some View {
+        VStack(spacing: .spacingDefault) {
+            HStack {
+                Text("Nutrition Goals")
+                    .listSectionHeader()
+                Spacer()
             }
-            .listRowDefaultModifiers()
+            VStack(spacing: 0) {
+                GoalField(
+                    "Calories",
+                    value: goalBinding(
+                        get: { user?.calorieGoal },
+                        set: { user?.calorieGoal = $0 },
+                        goalName: "calorie"
+                    ),
+                    unit: "kcal",
+                    defaultValue: NutrientGoalDefaults.defaultCalorieGoal(for: user ?? User())
+                )
+                Divider().padding(.horizontal)
+                GoalField(
+                    "Carbs",
+                    value: goalBinding(
+                        get: { user?.carbsGoalGrams },
+                        set: { user?.carbsGoalGrams = $0 },
+                        goalName: "carbs"
+                    ),
+                    unit: "g",
+                    defaultValue: NutrientGoalDefaults.defaultCarbsGoal(for: user ?? User())
+                )
+                Divider().padding(.horizontal)
+                GoalField(
+                    "Fat",
+                    value: goalBinding(
+                        get: { user?.fatGoalGrams },
+                        set: { user?.fatGoalGrams = $0 },
+                        goalName: "fat"
+                    ),
+                    unit: "g",
+                    defaultValue: NutrientGoalDefaults.defaultFatGoal(for: user ?? User())
+                )
+                Divider().padding(.horizontal)
+                GoalField(
+                    "Protein",
+                    value: goalBinding(
+                        get: { user?.proteinGoalGrams },
+                        set: { user?.proteinGoalGrams = $0 },
+                        goalName: "protein"
+                    ),
+                    unit: "g",
+                    defaultValue: NutrientGoalDefaults.defaultProteinGoal(for: user ?? User())
+                )
+                Divider().padding(.horizontal)
+                NavigationLink {
+                    MicronutrientGoalsView()
+                } label: {
+                    VStack {
+                        HStack {
+                            Text("Micronutrient Goals")
+                            if !subscriptionManager.isSubscribed {
+                                Text("PREMIUM")
+                                    .font(.caption2.bold())
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background {
+                                        Capsule().foregroundStyle(Color.accentColor.gradient)
+                                    }
+                            }
+                            Spacer()
+                        }
+                        HStack {
+                            Text("Set custom targets for vitamins and minerals")
+                            Spacer()
+                        }
+                        .font(.caption)
+                    }
+                    .foregroundStyle(Color.primary)
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+            }
+            .padding(.vertical, 4)
+            .inCard(backgroundColor: Color.gray)
         }
     }
 
@@ -233,24 +410,43 @@ struct UserProfileView: View {
                 .fontWeight(.light)
                 .foregroundStyle(.secondary)
         }
-        .listRowDefaultModifiers()
+        .padding(.horizontal)
+        .padding(.vertical, 10)
     }
 
-    @ViewBuilder private func NotificationSettingsSection() -> some View {
-        Section(header: Text("Notifications")) {
-            Toggle("Daily Logging Reminder", isOn: $dailyReminderEnabled)
-                .onChange(of: dailyReminderEnabled) { rescheduleNotifications() }
-                .listRowDefaultModifiers()
-            if dailyReminderEnabled {
-                DatePicker("Reminder Time", selection: dailyReminderTime, displayedComponents: .hourAndMinute)
-                    .listRowDefaultModifiers()
+    // MARK: - Data Card
+
+    @ViewBuilder private func DataCard() -> some View {
+        VStack(spacing: .spacingDefault) {
+            HStack {
+                Text("Data")
+                    .listSectionHeader()
+                Spacer()
             }
+            VStack(spacing: 0) {
+                AppleHealthRow()
+                if HealthKitManager.shared.isAvailable {
+                    Divider().padding(.horizontal)
+                }
+                DataNavRow("Custom Foods Library") {
+                    CustomFoodsLibraryView()
+                }
+                Divider().padding(.horizontal)
+                DataNavRow("Saved Meals") {
+                    UserMealsView()
+                }
+                Divider().padding(.horizontal)
+                DataNavRow("Browse Nutrients") {
+                    NutrientLibraryView()
+                }
+            }
+            .padding(.vertical, 4)
+            .inCard(backgroundColor: Color.gray)
         }
     }
-    
-    @ViewBuilder private func AppleHealthSection() -> some View {
+
+    @ViewBuilder private func AppleHealthRow() -> some View {
         if HealthKitManager.shared.isAvailable {
-        Section(header: Text("Apple Health")) {
             HStack {
                 Text("Sync with Health")
                 if !subscriptionManager.isSubscribed {
@@ -285,140 +481,149 @@ struct UserProfileView: View {
                     .labelsHidden()
                 }
             }
-            .listRowDefaultModifiers()
+            .padding(.horizontal)
+            .padding(.vertical, 10)
             .contentShape(Rectangle())
             .onTapGesture {
                 if !subscriptionManager.isSubscribed {
-                    premiumAnalytics.premiumFeatureTapped(feature: "health_sync")
-                    showMarketingView = true
+                    presentMarketingView(trigger: .healthSync, feature: "health_sync")
                 }
             }
-        }
         }
     }
 
-    @ViewBuilder private func WeightTrackingSection() -> some View {
-        Section(header: Text("Body")) {
-            Picker("Weight Unit", selection: $preferredUnitRaw) {
-                ForEach(BodyWeightUnit.allCases, id: \.rawValue) { unit in
-                    Text(unit.label).tag(unit.rawValue)
-                }
+    @ViewBuilder private func DataNavRow<Destination: View>(
+        _ title: String,
+        @ViewBuilder destination: @escaping () -> Destination
+    ) -> some View {
+        NavigationLink {
+            destination()
+        } label: {
+            HStack {
+                Text(title)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-            .listRowDefaultModifiers()
+            .foregroundStyle(Color.primary)
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 10)
+    }
+
+    // MARK: - Body Card
+
+    @ViewBuilder private func BodyCard() -> some View {
+        VStack(spacing: .spacingDefault) {
+            HStack {
+                Text("Body")
+                    .listSectionHeader()
+                Spacer()
+            }
+            VStack(spacing: 0) {
+                HStack {
+                    Text("Weight Unit")
+                    Spacer()
+                    Picker("Weight Unit", selection: $preferredUnitRaw) {
+                        ForEach(BodyWeightUnit.allCases, id: \.rawValue) { unit in
+                            Text(unit.label).tag(unit.rawValue)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+                Divider().padding(.horizontal)
+                HStack {
+                    Text("Height Unit")
+                    Spacer()
+                    Picker("Height Unit", selection: $preferredHeightUnitRaw) {
+                        ForEach(HeightUnit.allCases, id: \.rawValue) { unit in
+                            Text(unit.label).tag(unit.rawValue)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+            }
+            .padding(.vertical, 4)
+            .inCard(backgroundColor: Color.gray)
         }
     }
 
-    @ViewBuilder private func BirthdateField() -> some View {
-        HStack {
-            Text("Birthdate")
-            Spacer()
-            Button {
-                
-            } label: {
-                Text(user?.birthdate?.toDate()?.relativeDisplayString() ?? "Not Set")
-                    .bold()
+    // MARK: - Notifications Card
+
+    @ViewBuilder private func NotificationsCard() -> some View {
+        VStack(spacing: .spacingDefault) {
+            HStack {
+                Text("Notifications")
+                    .listSectionHeader()
+                Spacer()
             }
-            .overlay{
-                DatePicker(
-                    "",
-                    selection: .init(
-                        get: { user?.birthdate?.toDate() ?? .now },
-                        set: { user?.birthdate = SimpleDate(date: $0)! }
-                    ),
-                    displayedComponents: [.date]
-                )
-                .blendMode(.destinationOver) //MARK: use this extension to keep the clickable functionality
-            }
-        }
-        .listRowDefaultModifiers()
-    }
-    
-    @ViewBuilder private func GenderField() -> some View {
-        HStack {
-            Text("Sex")
-            Spacer()
-            Menu {
-                Button(Gender.male.rawValue) {
-                    user?.gender = .male
+            VStack(spacing: 0) {
+                HStack {
+                    Text("Daily Logging Reminder")
+                    Spacer()
+                    Toggle("", isOn: $dailyReminderEnabled)
+                        .labelsHidden()
+                        .onChange(of: dailyReminderEnabled) { rescheduleNotifications() }
                 }
-                Button(Gender.female.rawValue) {
-                    user?.gender = .female
-                }
-            } label: {
-                Text(user?.gender.rawValue ?? "Not Set")
-                    .bold()
-            }
-        }
-        .listRowDefaultModifiers()
-    }
-    
-    @ViewBuilder private func UserMealsSection() -> some View {
-        Section {
-            NavigationLink {
-                UserMealsView()
-            } label: {
-                VStack {
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+                if dailyReminderEnabled {
+                    Divider().padding(.horizontal)
                     HStack {
-                        Text("My Recipes/Meals")
+                        Text("Reminder Time")
                         Spacer()
+                        DatePicker("", selection: dailyReminderTime, displayedComponents: .hourAndMinute)
+                            .labelsHidden()
                     }
-                    HStack {
-                        Text("Group several food items together for easy logging")
-                        Spacer()
-                    }
-                    .font(.caption)
+                    .padding(.horizontal)
+                    .padding(.vertical, 10)
                 }
+                Divider().padding(.horizontal)
+                HStack {
+                    Text("Streak Warning")
+                    Spacer()
+                    Toggle("", isOn: $streakWarningEnabled)
+                        .labelsHidden()
+                        .onChange(of: streakWarningEnabled) { rescheduleNotifications() }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 10)
             }
-            .listRowDefaultModifiers()
+            .padding(.vertical, 4)
+            .inCard(backgroundColor: Color.gray)
         }
     }
-    
-    @ViewBuilder private func NutrientLibrarySection() -> some View {
-        Section {
-            NavigationLink {
-                NutrientLibraryView()
-            } label: {
-                VStack {
-                    HStack {
-                        Text("Browse Nutrients")
-                        Spacer()
-                    }
-                    HStack {
-                        Text("Learn about each nutrient and what kinds of foods contain them")
-                        Spacer()
-                    }
-                    .font(.caption)
-                }
+
+    // MARK: - About / Legal Footer
+
+    @ViewBuilder private func AboutFooter() -> some View {
+        VStack(spacing: 6) {
+            HStack(spacing: 6) {
+                NavigationLink("Privacy Policy") { PrivacyPolicyView() }
+                Text(".")
+                NavigationLink("Terms of Use") { TermsOfUseView() }
             }
-            .listRowDefaultModifiers()
+            HStack(spacing: 6) {
+                Button("Rate on App Store") { requestReview() }
+                Text(".")
+                Button("Support") { reviewPrompter.leaveFeedback() }
+            }
         }
+        .font(.caption2)
+        .foregroundStyle(.secondary)
+        .padding(.top, .spacingDefault)
     }
-    
-    @ViewBuilder private func LegalSection() -> some View {
-        Section(header: Text("Legal")) {
-            NavigationLink {
-                PrivacyPolicyView()
-            } label: {
-                VStack {
-                    HStack {
-                        Text("Privacy Policy")
-                        Spacer()
-                    }
-                }
-            }
-            .listRowDefaultModifiers()
-            NavigationLink {
-                TermsOfUseView()
-            } label: {
-                VStack {
-                    HStack {
-                        Text("Terms of Use")
-                        Spacer()
-                    }
-                }
-            }
-            .listRowDefaultModifiers()
-        }
+
+    @ViewBuilder private func VersionLabel() -> some View {
+        Text("Version \(AppInfo.versionString) (\(AppInfo.buildNumberString))")
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+            .padding(.bottom, .spacingDefault)
     }
 }
 
@@ -432,4 +637,5 @@ struct UserProfileView: View {
         UserProfileView()
     }
     .environmentObject(AdProviderFactory.forDev)
+    .environmentObject(SubscriptionManager(isForScreenshots: true))
 }

@@ -11,6 +11,7 @@ struct User: Codable {
 
     public var gender: Gender = Gender.unknown
     public var birthdate: SimpleDate? = nil
+    public var heightCm: Double? = nil
 
     public var calorieGoal: Double? = nil
     public var carbsGoalGrams: Double? = nil
@@ -19,7 +20,7 @@ struct User: Codable {
     public var micronutrientGoals: [String: Double] = [:]
 
     enum CodingKeys: String, CodingKey {
-        case gender, birthdate
+        case gender, birthdate, heightCm
         case calorieGoal, carbsGoalGrams, fatGoalGrams, proteinGoalGrams
         case micronutrientGoals
     }
@@ -27,6 +28,7 @@ struct User: Codable {
     init(
         gender: Gender = .unknown,
         birthdate: SimpleDate? = nil,
+        heightCm: Double? = nil,
         calorieGoal: Double? = nil,
         carbsGoalGrams: Double? = nil,
         fatGoalGrams: Double? = nil,
@@ -35,6 +37,7 @@ struct User: Codable {
     ) {
         self.gender = gender
         self.birthdate = birthdate
+        self.heightCm = heightCm
         self.calorieGoal = calorieGoal
         self.carbsGoalGrams = carbsGoalGrams
         self.fatGoalGrams = fatGoalGrams
@@ -46,6 +49,7 @@ struct User: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         gender = try container.decodeIfPresent(Gender.self, forKey: .gender) ?? .unknown
         birthdate = try container.decodeIfPresent(SimpleDate.self, forKey: .birthdate)
+        heightCm = try container.decodeIfPresent(Double.self, forKey: .heightCm)
         calorieGoal = try container.decodeIfPresent(Double.self, forKey: .calorieGoal)
         carbsGoalGrams = try container.decodeIfPresent(Double.self, forKey: .carbsGoalGrams)
         fatGoalGrams = try container.decodeIfPresent(Double.self, forKey: .fatGoalGrams)
@@ -60,7 +64,8 @@ struct User: Codable {
 
     public static let sample: User = .init(
         gender: .male,
-        birthdate: .init(year: 1987, month: 6, day: 16)
+        birthdate: .init(year: 1987, month: 6, day: 16),
+        heightCm: 180
     )
 }
 
