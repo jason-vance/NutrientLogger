@@ -162,7 +162,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ### Code
 - [x] Update website features, etc for v3.11.
-- [ ] **Visual Identity**
+- [x] **Visual Identity**
   1. [x] App-wide accent color? (currently .systemBlue, not really integrated anywhere except as tint/accent. Should it be a more primary part of the UI?) No
   2. [x] Remove favorite color setting from profile
 - [ ] **Navigation & Tab Restructure** (still needs some planning)
@@ -178,7 +178,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   6. Discount for quick subscribers (current subscription is advertised as a discount, available for the first 24 hours, countdown on dashboard, afterwards only the "full-priced" subscription is avaialable)
 - [ ] **Engagement & Gamification**
   1. [x] Daily Streak is moved into a Nutition tab card
-  2. [ ] Daily Streak is moved into a Body tab card 
+  2. [x] Weekly Streak is moved into a Body tab card 
   3. [ ] Streak cards - animations on increment and milestone, tap for streak stats
   4. [ ] Make water logging a more exciting part of nutrition logging (trend charts like other nutrients, animations would be nice, quick log)
 - [ ] **Body Metrics & Goals**

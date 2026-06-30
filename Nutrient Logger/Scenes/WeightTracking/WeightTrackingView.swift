@@ -25,6 +25,8 @@ enum WeightTrendPeriod: String, CaseIterable {
 
 struct WeightTrackingView: View {
 
+    private static let streakMilestones: Set<Int> = [4, 8, 13, 26, 52]
+
     @Environment(\.modelContext) private var modelContext
 
     @EnvironmentObject private var adProviderFactory: AdProviderFactory
@@ -131,6 +133,14 @@ struct WeightTrackingView: View {
         return 40
     }
 
+    private var nextMilestone: Int? {
+        Self.streakMilestones.sorted().first { $0 > streakCount }
+    }
+
+    private var previousMilestone: Int {
+        Self.streakMilestones.sorted().last { $0 <= streakCount } ?? 0
+    }
+
     private var loggedInPastWeek: Bool {
         let sevenDaysAgo = SimpleDate.today.adding(days: -6)
         let hasWeight = allWeightEntries.contains { $0.date >= sevenDaysAgo }
@@ -189,6 +199,7 @@ struct WeightTrackingView: View {
         ScrollView {
             VStack(spacing: 2 * .spacingDefault) {
                 NativeAdListRow(ad: $ad, size: .small)
+                StreakCard()
                 CurrentValues()
                 PeriodPicker()
                 WeightChartCard()
@@ -214,9 +225,6 @@ struct WeightTrackingView: View {
     }
 
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            StreakBadge()
-        }
         ToolbarItem(placement: .topBarTrailing) {
             Button {
                 showEntrySheet = true
@@ -226,16 +234,31 @@ struct WeightTrackingView: View {
         }
     }
 
-    @ViewBuilder private func StreakBadge() -> some View {
+    @ViewBuilder private func StreakCard() -> some View {
         if streakCount > 0 {
-            HStack(spacing: 4) {
+            HStack(spacing: 8) {
                 Image(systemName: "flame.fill")
                     .foregroundStyle(.orange)
-                Text("\(streakCount)w")
+                Text("\(streakCount)-Week Streak")
                     .font(.subheadline.bold())
+                    .foregroundStyle(.orange)
                     .contentTransition(.numericText())
+                Spacer()
+                if let next = nextMilestone {
+                    let prev = previousMilestone
+                    let progress = Double(streakCount - prev) / Double(next - prev)
+                    HStack(spacing: 6) {
+                        ProgressView(value: progress)
+                            .tint(.orange)
+                            .frame(width: 60)
+                        Text("\(next)")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
             }
-            .fixedSize()
+            .padding()
+            .inCard(backgroundColor: .orange)
         }
     }
 
