@@ -482,6 +482,7 @@ struct FoodSearchView: View {
         .animation(.snappy, value: searchResults)
         .searchable(
             text: $searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
             prompt: Text("Foods, Meals, Nutrients...")
         )
         .onChange(of: searchText) {
