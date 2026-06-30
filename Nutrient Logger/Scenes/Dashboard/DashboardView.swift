@@ -148,7 +148,7 @@ struct DashboardView: View {
             VStack {
                 NativeAdListRow(ad: $ad, size: .small)
                     .padding(.horizontal)
-                StreakCard()
+                StreakCardView(count: loggingStreakCount, unit: "Day", milestones: Self.streakMilestones)
                     .padding(.horizontal)
                 DashboardNutrientSections(date: date, foods: foodItems, consumedFoods: todaysConsumedFoods, allConsumedFoods: consumedFoods)
             }
@@ -202,42 +202,6 @@ struct DashboardView: View {
         }
     }
 
-    private var nextMilestone: Int? {
-        Self.streakMilestones.sorted().first { $0 > loggingStreakCount }
-    }
-
-    private var previousMilestone: Int {
-        Self.streakMilestones.sorted().last { $0 <= loggingStreakCount } ?? 0
-    }
-
-    @ViewBuilder private func StreakCard() -> some View {
-        if loggingStreakCount > 0 {
-            HStack(spacing: 8) {
-                Image(systemName: "flame.fill")
-                    .foregroundStyle(.orange)
-                Text("\(loggingStreakCount)-Day Streak")
-                    .font(.subheadline.bold())
-                    .foregroundStyle(.orange)
-                    .contentTransition(.numericText())
-                Spacer()
-                if let next = nextMilestone {
-                    let prev = previousMilestone
-                    let progress = Double(loggingStreakCount - prev) / Double(next - prev)
-                    HStack(spacing: 6) {
-                        ProgressView(value: progress)
-                            .tint(.orange)
-                            .frame(width: 60)
-                        Text("\(next)")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            }
-            .padding()
-            .inCard(backgroundColor: .orange)
-        }
-    }
-    
     @ViewBuilder private func DateButton() -> some View {
         HStack {
             DecrementDateButton()
