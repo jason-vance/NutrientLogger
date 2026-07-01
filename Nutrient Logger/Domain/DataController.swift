@@ -30,7 +30,8 @@ class DataController: ObservableObject {
             Meal.self,
             DailySummary.self,
             WeightEntry.self,
-            BodyFatEntry.self
+            BodyFatEntry.self,
+            WaterEntry.self
         ])
 
         do {

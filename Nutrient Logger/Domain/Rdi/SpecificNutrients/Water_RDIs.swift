@@ -17,7 +17,7 @@ class Water_RDIs : AbstractNutrientRdis {
             gender: Gender.male,
             minAgeYears: 19,
             maxAgeYears: Double.greatestFiniteMagnitude,
-            recommendedAmount: 3673.5,
+            recommendedAmount: 3700,
             upperLimit: Double.greatestFiniteMagnitude,
             unit: WeightUnit.gram
         ))
@@ -26,7 +26,7 @@ class Water_RDIs : AbstractNutrientRdis {
             gender: Gender.female,
             minAgeYears: 19,
             maxAgeYears: Double.greatestFiniteMagnitude,
-            recommendedAmount: 2725.5,
+            recommendedAmount: 2750,
             upperLimit: Double.greatestFiniteMagnitude,
             unit: WeightUnit.gram
         ))

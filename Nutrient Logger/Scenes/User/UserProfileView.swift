@@ -42,6 +42,11 @@ struct UserProfileView: View {
 
     @AppStorage("preferredWeightUnit") private var preferredUnitRaw: String = BodyWeightUnit.lbs.rawValue
     @AppStorage("preferredHeightUnit") private var preferredHeightUnitRaw: String = HeightUnit.ftIn.rawValue
+    @AppStorage(WaterUnit.appStorageKey) private var preferredWaterUnitRaw: String = WaterUnit.cups.rawValue
+
+    private var preferredWaterUnit: WaterUnit {
+        WaterUnit(rawValue: preferredWaterUnitRaw) ?? .cups
+    }
 
     @AppStorage(NotificationSettings.dailyReminderEnabledKey)
     private var dailyReminderEnabled = NotificationSettings.defaultDailyReminderEnabled
@@ -341,6 +346,8 @@ struct UserProfileView: View {
                     defaultValue: NutrientGoalDefaults.defaultProteinGoal(for: user ?? User())
                 )
                 Divider().padding(.horizontal)
+                WaterGoalRow()
+                Divider().padding(.horizontal)
                 NavigationLink {
                     MicronutrientGoalsView()
                 } label: {
@@ -385,7 +392,7 @@ struct UserProfileView: View {
             Text(title)
             Spacer()
             TextField(
-                "\(defaultValue.formatted(maxDigits: 0))\(unit)",
+                "\(defaultValue.formatted(maxDigits: 0))",
                 text: Binding(
                     get: {
                         if let v = value.wrappedValue {
@@ -412,6 +419,45 @@ struct UserProfileView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 10)
+    }
+
+    @ViewBuilder private func WaterGoalRow() -> some View {
+        VStack(spacing: 0) {
+            GoalField(
+                "Water",
+                value: Binding(
+                    get: {
+                        guard let grams = user?.waterGoalGrams else { return nil }
+                        return preferredWaterUnit.fromGrams(grams)
+                    },
+                    set: { newValue in
+                        let hadGoal = user?.waterGoalGrams != nil
+                        user?.waterGoalGrams = newValue.map { preferredWaterUnit.toGrams($0) }
+                        if !hadGoal && newValue != nil {
+                            engagementAnalytics.goalSet(goalName: "water")
+                        }
+                    }
+                ),
+                unit: preferredWaterUnit.rawValue,
+                defaultValue: preferredWaterUnit.fromGrams(
+                    preferredWaterUnit.defaultGoalGrams(gender: user?.gender ?? .unknown)
+                )
+            )
+            HStack {
+                Text("Unit")
+                    .font(.subheadline)
+                Spacer()
+                Picker("Water Unit", selection: $preferredWaterUnitRaw) {
+                    ForEach(WaterUnit.allCases) { unit in
+                        Text(unit.rawValue).tag(unit.rawValue)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .frame(maxWidth: 180)
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 10)
+        }
     }
 
     // MARK: - Data Card

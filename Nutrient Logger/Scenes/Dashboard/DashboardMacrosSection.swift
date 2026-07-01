@@ -6,13 +6,22 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct DashboardMacrosSection: View {
 
     @Inject private var userService: UserService
 
+    @Query private var waterEntries: [WaterEntry]
+
     let date: SimpleDate
     let aggregator: NutrientDataAggregator
+
+    init(date: SimpleDate, aggregator: NutrientDataAggregator) {
+        self.date = date
+        self.aggregator = aggregator
+        _waterEntries = Query(filter: #Predicate<WaterEntry> { $0.date == date })
+    }
 
     private var user: User { userService.currentUser }
     
@@ -252,15 +261,19 @@ struct DashboardMacrosSection: View {
         .frame(width: 24, height: 32)
     }
     
-    //TODO: Add setting to change water units
+    @AppStorage(WaterUnit.appStorageKey) private var preferredWaterUnitRaw: String = WaterUnit.cups.rawValue
+
+    private var waterUnit: WaterUnit { WaterUnit(rawValue: preferredWaterUnitRaw) ?? .cups }
+
+    private var totalWaterGrams: Double {
+        let foodGrams = aggregator.waterCups * 237
+        let directGrams = waterEntries.reduce(0) { $0 + $1.amountGrams }
+        return foodGrams + directGrams
+    }
+
     @ViewBuilder private func Water() -> some View {
-        let waterCups = aggregator.waterCups
-        
         NavigationLink {
-            ConsumedWaterView(
-                date: date,
-                aggregator: aggregator
-            )
+            ConsumedWaterView(date: date, aggregator: aggregator)
         } label: {
             HStack {
                 Image(systemName: "drop.fill")
@@ -269,7 +282,7 @@ struct DashboardMacrosSection: View {
                     .font(.subheadline)
                     .fontWeight(.light)
                 Spacer()
-                Text("\(waterCups.formatted(maxDigits: 1))cups")
+                Text("\(waterUnit.formatted(totalWaterGrams)) \(waterUnit.rawValue)")
                     .fontWeight(.semibold)
                     .fontDesign(.rounded)
                     .contentTransition(.numericText())

@@ -17,11 +17,12 @@ struct User: Codable {
     public var carbsGoalGrams: Double? = nil
     public var fatGoalGrams: Double? = nil
     public var proteinGoalGrams: Double? = nil
+    public var waterGoalGrams: Double? = nil
     public var micronutrientGoals: [String: Double] = [:]
 
     enum CodingKeys: String, CodingKey {
         case gender, birthdate, heightCm
-        case calorieGoal, carbsGoalGrams, fatGoalGrams, proteinGoalGrams
+        case calorieGoal, carbsGoalGrams, fatGoalGrams, proteinGoalGrams, waterGoalGrams
         case micronutrientGoals
     }
 
@@ -33,6 +34,7 @@ struct User: Codable {
         carbsGoalGrams: Double? = nil,
         fatGoalGrams: Double? = nil,
         proteinGoalGrams: Double? = nil,
+        waterGoalGrams: Double? = nil,
         micronutrientGoals: [String: Double] = [:]
     ) {
         self.gender = gender
@@ -42,6 +44,7 @@ struct User: Codable {
         self.carbsGoalGrams = carbsGoalGrams
         self.fatGoalGrams = fatGoalGrams
         self.proteinGoalGrams = proteinGoalGrams
+        self.waterGoalGrams = waterGoalGrams
         self.micronutrientGoals = micronutrientGoals
     }
 
@@ -54,6 +57,7 @@ struct User: Codable {
         carbsGoalGrams = try container.decodeIfPresent(Double.self, forKey: .carbsGoalGrams)
         fatGoalGrams = try container.decodeIfPresent(Double.self, forKey: .fatGoalGrams)
         proteinGoalGrams = try container.decodeIfPresent(Double.self, forKey: .proteinGoalGrams)
+        waterGoalGrams = try container.decodeIfPresent(Double.self, forKey: .waterGoalGrams)
         micronutrientGoals = try container.decodeIfPresent([String: Double].self, forKey: .micronutrientGoals) ?? [:]
     }
 
