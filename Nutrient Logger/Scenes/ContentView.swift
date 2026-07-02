@@ -28,6 +28,25 @@ struct ContentView: View {
     @AppStorage("hasLaunchedAppBefore") private var hasLaunchedAppBefore: Bool = false
     @AppStorage("hasPromptedForNotifications") private var hasPromptedForNotifications: Bool = false
 
+    private static let bodyTabIcons = [
+        "figure.run",
+        "figure.walk",
+        "figure.hiking",
+        "figure.strengthtraining.traditional",
+        "figure.yoga",
+        "figure.pilates",
+        "figure.dance",
+        "figure.jumprope",
+        "figure.kickboxing",
+        "figure.cycling",
+        "figure.swimming",
+        "figure.cooldown",
+        "figure.gymnastics",
+        "figure.flexibility",
+        "figure.cross.training",
+    ]
+    @State private var bodyTabIcon: String = bodyTabIcons.randomElement()!
+
     private func onScenePhaseChange(old: ScenePhase, new: ScenePhase) {
         switch new {
         case .background, .inactive:
@@ -105,7 +124,7 @@ struct ContentView: View {
                     DashboardView()
                 }
             }
-            Tab("Body", systemImage: "figure.stand", value: AppTab.body) {
+            Tab("Body", systemImage: bodyTabIcon, value: AppTab.body) {
                 NavigationStack {
                     WeightTrackingView()
                 }
