@@ -35,7 +35,6 @@ struct WeightTrackingView: View {
     @State private var ad: Ad?
 
     @Inject private var engagementAnalytics: EngagementAnalytics
-    @Inject private var premiumAnalytics: PremiumAnalytics
 
     @AppStorage("preferredWeightUnit") private var preferredUnitRaw: String = BodyWeightUnit.lbs.rawValue
     @AppStorage("weightGoalKg") private var weightGoalKg: Double = 0
@@ -50,7 +49,6 @@ struct WeightTrackingView: View {
 
     @State private var period: WeightTrendPeriod = .thirtyDay
     @State private var showEntrySheet: Bool = false
-    @State private var showMarketingView: Bool = false
     @State private var showStreakStats: Bool = false
     @State private var hasImportedHealthKit: Bool = false
 
@@ -229,9 +227,6 @@ struct WeightTrackingView: View {
             )
         }
         .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
-        .fullScreenCover(isPresented: $showMarketingView) {
-            MarketingView(trigger: .weightGoal)
-        }
     }
 
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
@@ -551,60 +546,42 @@ struct WeightTrackingView: View {
 
     @ViewBuilder private func GoalsCards() -> some View {
         VStack(spacing: .spacingDefault) {
-            HStack {
-                Text("Goals")
-                    .listSectionHeader()
-                if !subscriptionManager.isSubscribed {
-                    Text("PREMIUM")
-                        .font(.caption2.bold())
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background {
-                            Capsule().foregroundStyle(Color.accentColor.gradient)
-                        }
-                }
-                Spacer()
-            }
-            VStack(spacing: 0) {
-                GoalField(
-                    title: "Weight",
-                    value: Binding(
-                        get: { hasWeightGoal ? preferredUnit.fromKg(weightGoalKg) : nil },
-                        set: { newValue in
-                            if let v = newValue {
-                                weightGoalKg = preferredUnit.toKg(v)
-                            } else {
-                                weightGoalKg = 0
+            Text("Goals")
+                .listSectionHeader()
+                .frame(maxWidth: .infinity, alignment: .leading)
+            PremiumGate(trigger: .weightGoal, feature: "weight_goal") {
+                VStack(spacing: 0) {
+                    GoalField(
+                        title: "Weight",
+                        value: Binding(
+                            get: { hasWeightGoal ? preferredUnit.fromKg(weightGoalKg) : nil },
+                            set: { newValue in
+                                if let v = newValue {
+                                    weightGoalKg = preferredUnit.toKg(v)
+                                } else {
+                                    weightGoalKg = 0
+                                }
                             }
-                        }
-                    ),
-                    unit: preferredUnit.label,
-                    placeholder: "Not set"
-                )
-                Divider().padding(.horizontal)
-                GoalField(
-                    title: "Body Fat",
-                    value: Binding(
-                        get: { hasBodyFatGoal ? bodyFatGoalPercentage : nil },
-                        set: { newValue in
-                            bodyFatGoalPercentage = newValue ?? 0
-                        }
-                    ),
-                    unit: "%",
-                    placeholder: "Not set"
-                )
-            }
-            .padding(.vertical, 4)
-            .inCard(backgroundColor: Color.gray)
-            .contentShape(Rectangle())
-            .onTapGesture {
-                if !subscriptionManager.isSubscribed {
-                    premiumAnalytics.premiumFeatureTapped(feature: "weight_goal")
-                    showMarketingView = true
+                        ),
+                        unit: preferredUnit.label,
+                        placeholder: "Not set"
+                    )
+                    Divider().padding(.horizontal)
+                    GoalField(
+                        title: "Body Fat",
+                        value: Binding(
+                            get: { hasBodyFatGoal ? bodyFatGoalPercentage : nil },
+                            set: { newValue in
+                                bodyFatGoalPercentage = newValue ?? 0
+                            }
+                        ),
+                        unit: "%",
+                        placeholder: "Not set"
+                    )
                 }
+                .padding(.vertical, 4)
+                .inCard(backgroundColor: Color.gray)
             }
-            .allowsHitTesting(subscriptionManager.isSubscribed ? true : true)
         }
     }
 
@@ -619,33 +596,28 @@ struct WeightTrackingView: View {
                 .font(.subheadline)
                 .fontWeight(.light)
             Spacer()
-            if subscriptionManager.isSubscribed {
-                TextField(
-                    placeholder,
-                    text: Binding(
-                        get: {
-                            if let v = value.wrappedValue {
-                                return v.formatted(maxDigits: 1)
-                            }
-                            return ""
-                        },
-                        set: { newValue in
-                            if newValue.isEmpty {
-                                value.wrappedValue = nil
-                            } else if let d = Double(newValue) {
-                                value.wrappedValue = d
-                            }
+            TextField(
+                placeholder,
+                text: Binding(
+                    get: {
+                        if let v = value.wrappedValue {
+                            return v.formatted(maxDigits: 1)
                         }
-                    )
+                        return ""
+                    },
+                    set: { newValue in
+                        if newValue.isEmpty {
+                            value.wrappedValue = nil
+                        } else if let d = Double(newValue) {
+                            value.wrappedValue = d
+                        }
+                    }
                 )
-                .keyboardType(.decimalPad)
-                .multilineTextAlignment(.trailing)
-                .bold()
-                .frame(maxWidth: 100)
-            } else {
-                Text(placeholder)
-                    .foregroundStyle(.secondary)
-            }
+            )
+            .keyboardType(.decimalPad)
+            .multilineTextAlignment(.trailing)
+            .bold()
+            .frame(maxWidth: 100)
             Text(unit)
                 .fontWeight(.light)
                 .foregroundStyle(.secondary)
