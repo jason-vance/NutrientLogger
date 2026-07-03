@@ -229,6 +229,7 @@
 				Domain/NutrientGroup.swift,
 				Domain/Portion.swift,
 				Domain/SimpleDate.swift,
+				Domain/WaistEntry.swift,
 				Domain/WaterEntry.swift,
 				Domain/WeightEntry.swift,
 				Domain/WeightUnit.swift,

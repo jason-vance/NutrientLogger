@@ -16,22 +16,30 @@ struct WeightEntrySheet: View {
     @Inject private var engagementAnalytics: EngagementAnalytics
 
     @AppStorage("preferredWeightUnit") private var preferredUnitRaw: String = BodyWeightUnit.lbs.rawValue
+    @AppStorage("preferredHeightUnit") private var preferredHeightUnitRaw: String = HeightUnit.ftIn.rawValue
     @AppStorage(HealthKitManager.healthSyncEnabledKey) private var healthSyncEnabled = false
 
     @State private var date: Date = .now
     @State private var weightText: String = ""
     @State private var bodyFatText: String = ""
+    @State private var waistText: String = ""
 
     let existingWeight: WeightEntry?
     let existingBodyFat: BodyFatEntry?
+    let existingWaist: WaistEntry?
 
     private var preferredUnit: BodyWeightUnit {
         BodyWeightUnit(rawValue: preferredUnitRaw) ?? .lbs
     }
 
-    init(existingWeight: WeightEntry? = nil, existingBodyFat: BodyFatEntry? = nil) {
+    private var preferredWaistUnit: WaistUnit {
+        (HeightUnit(rawValue: preferredHeightUnitRaw) ?? .ftIn).waistUnit
+    }
+
+    init(existingWeight: WeightEntry? = nil, existingBodyFat: BodyFatEntry? = nil, existingWaist: WaistEntry? = nil) {
         self.existingWeight = existingWeight
         self.existingBodyFat = existingBodyFat
+        self.existingWaist = existingWaist
     }
 
     private var hasValidWeight: Bool {
@@ -46,11 +54,18 @@ struct WeightEntrySheet: View {
         return true
     }
 
+    private var hasValidWaist: Bool {
+        guard !waistText.isEmpty else { return false }
+        guard let w = Double(waistText), w > 0 else { return false }
+        return true
+    }
+
     private var canSave: Bool {
-        let hasAtLeastOne = hasValidWeight || hasValidBodyFat
+        let hasAtLeastOne = hasValidWeight || hasValidBodyFat || hasValidWaist
         let weightOk = weightText.isEmpty || hasValidWeight
         let bodyFatOk = bodyFatText.isEmpty || hasValidBodyFat
-        return hasAtLeastOne && weightOk && bodyFatOk
+        let waistOk = waistText.isEmpty || hasValidWaist
+        return hasAtLeastOne && weightOk && bodyFatOk && waistOk
     }
 
     private func populateFromExisting() {
@@ -65,6 +80,12 @@ struct WeightEntrySheet: View {
             }
             bodyFatText = existing.percentage.formatted(maxDigits: 1)
         }
+        if let existing = existingWaist {
+            if existingWeight == nil && existingBodyFat == nil {
+                date = existing.date.toDate() ?? .now
+            }
+            waistText = preferredWaistUnit.fromCm(existing.circumferenceCm).formatted(maxDigits: 1)
+        }
     }
 
     private func save() {
@@ -72,7 +93,6 @@ struct WeightEntrySheet: View {
 
         if hasValidWeight, let weightValue = Double(weightText) {
             let weightKg = preferredUnit.toKg(weightValue)
-
             let weightDescriptor = FetchDescriptor<WeightEntry>(
                 predicate: #Predicate { $0.date == simpleDate }
             )
@@ -81,7 +101,6 @@ struct WeightEntrySheet: View {
             } else {
                 modelContext.insert(WeightEntry(date: simpleDate, weightKg: weightKg))
             }
-
             if healthSyncEnabled {
                 Task { await HealthKitManager.shared.saveWeight(weightKg, date: date) }
             }
@@ -96,9 +115,23 @@ struct WeightEntrySheet: View {
             } else {
                 modelContext.insert(BodyFatEntry(date: simpleDate, percentage: bodyFatValue))
             }
-
             if healthSyncEnabled {
                 Task { await HealthKitManager.shared.saveBodyFat(bodyFatValue, date: date) }
+            }
+        }
+
+        if hasValidWaist, let waistValue = Double(waistText) {
+            let waistCm = preferredWaistUnit.toCm(waistValue)
+            let waistDescriptor = FetchDescriptor<WaistEntry>(
+                predicate: #Predicate { $0.date == simpleDate }
+            )
+            if let existing = try? modelContext.fetch(waistDescriptor).first {
+                existing.circumferenceCm = waistCm
+            } else {
+                modelContext.insert(WaistEntry(date: simpleDate, circumferenceCm: waistCm))
+            }
+            if healthSyncEnabled {
+                Task { await HealthKitManager.shared.saveWaist(waistCm, date: date) }
             }
         }
 
@@ -139,6 +172,20 @@ struct WeightEntrySheet: View {
                             .bold()
                             .frame(maxWidth: 100)
                         Text("%")
+                            .fontWeight(.light)
+                            .foregroundStyle(.secondary)
+                    }
+                    .listRowDefaultModifiers()
+
+                    HStack {
+                        Text("Waist")
+                        Spacer()
+                        TextField("--", text: $waistText)
+                            .keyboardType(.decimalPad)
+                            .multilineTextAlignment(.trailing)
+                            .bold()
+                            .frame(maxWidth: 100)
+                        Text(preferredWaistUnit.label)
                             .fontWeight(.light)
                             .foregroundStyle(.secondary)
                     }

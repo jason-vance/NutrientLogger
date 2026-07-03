@@ -37,4 +37,11 @@ enum HeightUnit: String, CaseIterable {
     func heightToCm(feet: Int, inches: Int) -> Double {
         Double(feet * 12 + inches) / Self.cmToInches
     }
+
+    var waistUnit: WaistUnit {
+        switch self {
+        case .ftIn: return .inches
+        case .cm: return .cm
+        }
+    }
 }

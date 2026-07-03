@@ -35,14 +35,18 @@ struct WeightTrackingView: View {
     @State private var ad: Ad?
 
     @Inject private var engagementAnalytics: EngagementAnalytics
+    @Inject private var userService: UserService
 
     @AppStorage("preferredWeightUnit") private var preferredUnitRaw: String = BodyWeightUnit.lbs.rawValue
+    @AppStorage("preferredHeightUnit") private var preferredHeightUnitRaw: String = HeightUnit.ftIn.rawValue
     @AppStorage("weightGoalKg") private var weightGoalKg: Double = 0
     @AppStorage("bodyFatGoalPercentage") private var bodyFatGoalPercentage: Double = 0
+    @AppStorage("waistGoalCm") private var waistGoalCm: Double = 0
     @AppStorage(HealthKitManager.healthSyncEnabledKey) private var healthSyncEnabled = false
 
     @Query(sort: \WeightEntry.date, order: .reverse) private var allWeightEntries: [WeightEntry]
     @Query(sort: \BodyFatEntry.date, order: .reverse) private var allBodyFatEntries: [BodyFatEntry]
+    @Query(sort: \WaistEntry.date, order: .reverse) private var allWaistEntries: [WaistEntry]
 
     @AppStorage("bodyMeasurementStreakCount") private var streakCount: Int = 0
     @AppStorage("bodyMeasurementStreakWeekStartDate") private var streakWeekStartDateRaw: Int = 0
@@ -63,8 +67,13 @@ struct WeightTrackingView: View {
         BodyWeightUnit(rawValue: preferredUnitRaw) ?? .lbs
     }
 
+    private var preferredWaistUnit: WaistUnit {
+        (HeightUnit(rawValue: preferredHeightUnitRaw) ?? .ftIn).waistUnit
+    }
+
     private var hasWeightGoal: Bool { weightGoalKg > 0 }
     private var hasBodyFatGoal: Bool { bodyFatGoalPercentage > 0 }
+    private var hasWaistGoal: Bool { waistGoalCm > 0 }
 
     private var cutoffDate: SimpleDate {
         SimpleDate.today.adding(days: -(period.days - 1))
@@ -88,10 +97,17 @@ struct WeightTrackingView: View {
         return allBodyFatEntries.filter { $0.date >= cutoff }
     }
 
+    private var filteredWaistEntries: [WaistEntry] {
+        let cutoff = cutoffDate
+        return allWaistEntries.filter { $0.date >= cutoff }
+    }
+
     private var latestWeight: WeightEntry? { allWeightEntries.first }
     private var previousWeight: WeightEntry? { allWeightEntries.dropFirst().first }
     private var latestBodyFat: BodyFatEntry? { allBodyFatEntries.first }
     private var previousBodyFat: BodyFatEntry? { allBodyFatEntries.dropFirst().first }
+    private var latestWaist: WaistEntry? { allWaistEntries.first }
+    private var previousWaist: WaistEntry? { allWaistEntries.dropFirst().first }
 
     private var weightTrend: Double? {
         guard let latest = latestWeight, let previous = previousWeight else { return nil }
@@ -101,6 +117,18 @@ struct WeightTrackingView: View {
     private var bodyFatTrend: Double? {
         guard let latest = latestBodyFat, let previous = previousBodyFat else { return nil }
         return latest.percentage - previous.percentage
+    }
+
+    private var waistTrend: Double? {
+        guard let latest = latestWaist, let previous = previousWaist else { return nil }
+        return latest.circumferenceCm - previous.circumferenceCm
+    }
+
+    private var bmi: Double? {
+        guard let heightCm = userService.currentUser.heightCm, heightCm > 0,
+              let weightKg = latestWeight?.weightKg else { return nil }
+        let heightM = heightCm / 100.0
+        return weightKg / (heightM * heightM)
     }
 
     private var weightChartMin: Double {
@@ -139,11 +167,30 @@ struct WeightTrackingView: View {
         return 40
     }
 
+    private var waistChartMin: Double {
+        let values = filteredWaistEntries.map { preferredWaistUnit.fromCm($0.circumferenceCm) }
+        let dataMin = values.min()
+        let goalValue = hasWaistGoal ? preferredWaistUnit.fromCm(waistGoalCm) : nil
+        let effectiveMin = [dataMin, goalValue].compactMap { $0 }.min()
+        if let effectiveMin { return effectiveMin * 0.97 }
+        return preferredWaistUnit == .inches ? 25 : 60
+    }
+
+    private var waistChartMax: Double {
+        let values = filteredWaistEntries.map { preferredWaistUnit.fromCm($0.circumferenceCm) }
+        let dataMax = values.max()
+        let goalValue = hasWaistGoal ? preferredWaistUnit.fromCm(waistGoalCm) : nil
+        let effectiveMax = [dataMax, goalValue].compactMap { $0 }.max()
+        if let effectiveMax { return effectiveMax * 1.03 }
+        return preferredWaistUnit == .inches ? 50 : 130
+    }
+
     private var loggedInPastWeek: Bool {
         let sevenDaysAgo = SimpleDate.today.adding(days: -6)
         let hasWeight = allWeightEntries.contains { $0.date >= sevenDaysAgo }
         let hasBodyFat = allBodyFatEntries.contains { $0.date >= sevenDaysAgo }
-        return hasWeight || hasBodyFat
+        let hasWaist = allWaistEntries.contains { $0.date >= sevenDaysAgo }
+        return hasWeight || hasBodyFat || hasWaist
     }
 
     private func updateBodyMeasurementStreak() {
@@ -164,6 +211,7 @@ struct WeightTrackingView: View {
             let _ = await HealthKitManager.shared.requestAuthorization()
             let weightHistory = await HealthKitManager.shared.fetchWeightHistory()
             let bodyFatHistory = await HealthKitManager.shared.fetchBodyFatHistory()
+            let waistHistory = await HealthKitManager.shared.fetchWaistHistory()
 
             await MainActor.run {
                 for entry in weightHistory {
@@ -186,6 +234,16 @@ struct WeightTrackingView: View {
                     }
                 }
 
+                for entry in waistHistory {
+                    guard let simpleDate = SimpleDate(date: entry.date) else { continue }
+                    let descriptor = FetchDescriptor<WaistEntry>(
+                        predicate: #Predicate { $0.date == simpleDate }
+                    )
+                    if (try? modelContext.fetch(descriptor).first) == nil {
+                        modelContext.insert(WaistEntry(date: simpleDate, circumferenceCm: entry.cm))
+                    }
+                }
+
                 try? modelContext.save()
             }
         }
@@ -202,6 +260,7 @@ struct WeightTrackingView: View {
                 PeriodPicker()
                 WeightChartCard()
                 BodyFatChartCard()
+                WaistChartCard()
                 GoalsCards()
                 HistoryLink()
             }
@@ -213,6 +272,7 @@ struct WeightTrackingView: View {
         .onAppear { importHealthKitData() }
         .onChange(of: allWeightEntries.count, initial: true) { updateBodyMeasurementStreak() }
         .onChange(of: allBodyFatEntries.count, initial: true) { updateBodyMeasurementStreak() }
+        .onChange(of: allWaistEntries.count, initial: true) { updateBodyMeasurementStreak() }
         .sheet(isPresented: $showEntrySheet) {
             WeightEntrySheet()
         }
@@ -242,9 +302,15 @@ struct WeightTrackingView: View {
     // MARK: - Current Values
 
     @ViewBuilder private func CurrentValues() -> some View {
-        HStack(spacing: .spacingDefault) {
-            CurrentWeightCard()
-            CurrentBodyFatCard()
+        VStack(spacing: .spacingDefault) {
+            HStack(spacing: .spacingDefault) {
+                CurrentWeightCard()
+                CurrentBodyFatCard()
+            }
+            HStack(spacing: .spacingDefault) {
+                CurrentBMICard()
+                CurrentWaistCard()
+            }
         }
     }
 
@@ -303,6 +369,75 @@ struct WeightTrackingView: View {
                 .fontDesign(.rounded)
                 if let trend = bodyFatTrend {
                     TrendIndicator(trend: trend)
+                }
+            } else {
+                Text("--")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .foregroundStyle(Color.text)
+        .padding(.vertical)
+        .inCard(backgroundColor: Color.gray)
+    }
+
+    @ViewBuilder private func CurrentBMICard() -> some View {
+        VStack(spacing: 4) {
+            HStack {
+                Spacer()
+                Text("BMI")
+                    .font(.subheadline)
+                    .fontWeight(.light)
+                Spacer()
+            }
+            if let bmi {
+                HStack(spacing: 4) {
+                    Image(systemName: "figure.arms.open")
+                        .foregroundStyle(Color.purple)
+                    Text(bmi.formatted(maxDigits: 1))
+                        .contentTransition(.numericText())
+                }
+                .font(.title2)
+                .fontWeight(.semibold)
+                .fontDesign(.rounded)
+            } else {
+                Text("--")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.secondary)
+                Text(userService.currentUser.heightCm == nil ? "Set height in profile" : "Log weight to calculate")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .foregroundStyle(Color.text)
+        .padding(.vertical)
+        .inCard(backgroundColor: Color.gray)
+    }
+
+    @ViewBuilder private func CurrentWaistCard() -> some View {
+        VStack(spacing: 4) {
+            HStack {
+                Spacer()
+                Text("Waist")
+                    .font(.subheadline)
+                    .fontWeight(.light)
+                Spacer()
+            }
+            if let latest = latestWaist {
+                HStack(spacing: 4) {
+                    Image(systemName: "ruler")
+                        .foregroundStyle(Color.green)
+                    Text("\(preferredWaistUnit.fromCm(latest.circumferenceCm).formatted(maxDigits: 1))\(preferredWaistUnit.label)")
+                        .contentTransition(.numericText())
+                }
+                .font(.title2)
+                .fontWeight(.semibold)
+                .fontDesign(.rounded)
+                if let trend = waistTrend {
+                    TrendIndicator(trend: preferredWaistUnit.fromCm(trend))
                 }
             } else {
                 Text("--")
@@ -542,6 +677,108 @@ struct WeightTrackingView: View {
         .opacity(isEmpty ? 0.3 : 1)
     }
 
+    // MARK: - Waist Chart
+
+    @ViewBuilder private func WaistChartCard() -> some View {
+        VStack(spacing: .spacingDefault) {
+            HStack {
+                Text("Waist")
+                    .listSectionHeader()
+                Spacer()
+            }
+            ZStack {
+                WaistChart()
+                if filteredWaistEntries.isEmpty {
+                    Text("No waist data for this period")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding()
+            .inCard(backgroundColor: Color.gray)
+        }
+    }
+
+    @ViewBuilder private func WaistChart() -> some View {
+        let entries = filteredWaistEntries.sorted { $0.date < $1.date }
+        let chartMin = waistChartMin
+        let chartMax = waistChartMax
+        let goalValue = hasWaistGoal ? preferredWaistUnit.fromCm(waistGoalCm) : nil
+        let showBars = period == .sevenDay
+        let isEmpty = entries.isEmpty
+
+        Chart {
+            ForEach(entries, id: \.date) { entry in
+                let value = preferredWaistUnit.fromCm(entry.circumferenceCm)
+                if showBars {
+                    BarMark(
+                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
+                        yStart: .value("Baseline", chartMin),
+                        yEnd: .value("Waist", value)
+                    )
+                    .foregroundStyle(Color.green.gradient)
+                    .cornerRadius(4)
+                } else {
+                    PointMark(
+                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
+                        y: .value("Waist", value)
+                    )
+                    .foregroundStyle(Color.green)
+                    .symbolSize(30)
+
+                    LineMark(
+                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
+                        y: .value("Waist", value)
+                    )
+                    .foregroundStyle(Color.green)
+                    .interpolationMethod(.catmullRom)
+                    .lineStyle(StrokeStyle(lineWidth: 2))
+
+                    AreaMark(
+                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
+                        yStart: .value("Baseline", chartMin),
+                        yEnd: .value("Waist", value)
+                    )
+                    .foregroundStyle(Color.green.opacity(0.1).gradient)
+                    .interpolationMethod(.catmullRom)
+                }
+            }
+
+            if let goal = goalValue {
+                RuleMark(y: .value("Goal", goal))
+                    .foregroundStyle(Color.text.opacity(0.5))
+                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 3]))
+                    .annotation(position: .top, alignment: .leading) {
+                        Text("Goal: \(goal.formatted(maxDigits: 1)) \(preferredWaistUnit.label)")
+                            .font(.caption2)
+                            .foregroundStyle(Color.text.opacity(0.5))
+                    }
+            }
+        }
+        .chartYScale(domain: chartMin...chartMax)
+        .chartXScale(domain: chartStartDate...chartEndDate)
+        .chartXAxis {
+            if showBars {
+                AxisMarks(values: .stride(by: .day)) { _ in
+                    AxisValueLabel(format: .dateTime.weekday(.abbreviated))
+                    AxisGridLine()
+                }
+            } else {
+                AxisMarks(values: .automatic(desiredCount: 5)) { _ in
+                    AxisValueLabel(format: .dateTime.month(.abbreviated).day())
+                    AxisGridLine()
+                }
+            }
+        }
+        .chartYAxis {
+            AxisMarks(position: .leading) { _ in
+                AxisValueLabel()
+                AxisGridLine()
+            }
+        }
+        .frame(height: 200)
+        .opacity(isEmpty ? 0.3 : 1)
+    }
+
     // MARK: - Goals (Premium)
 
     @ViewBuilder private func GoalsCards() -> some View {
@@ -576,6 +813,18 @@ struct WeightTrackingView: View {
                             }
                         ),
                         unit: "%",
+                        placeholder: "Not set"
+                    )
+                    Divider().padding(.horizontal)
+                    GoalField(
+                        title: "Waist",
+                        value: Binding(
+                            get: { hasWaistGoal ? preferredWaistUnit.fromCm(waistGoalCm) : nil },
+                            set: { newValue in
+                                waistGoalCm = newValue.map { preferredWaistUnit.toCm($0) } ?? 0
+                            }
+                        ),
+                        unit: preferredWaistUnit.label,
                         placeholder: "Not set"
                     )
                 }

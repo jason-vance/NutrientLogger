@@ -89,6 +89,7 @@ class HealthKitManager {
         var types = Set(Self.nutrientMappings.values.map { HKQuantityType($0.hkType) })
         types.insert(HKQuantityType(.bodyMass))
         types.insert(HKQuantityType(.bodyFatPercentage))
+        types.insert(HKQuantityType(.waistCircumference))
         return types
     }
 
@@ -96,6 +97,7 @@ class HealthKitManager {
         Set([
             HKQuantityType(.bodyMass),
             HKQuantityType(.bodyFatPercentage),
+            HKQuantityType(.waistCircumference),
         ])
     }
 
@@ -261,6 +263,53 @@ class HealthKitManager {
                 }
                 let results = (samples as? [HKQuantitySample])?.map { sample in
                     (date: sample.startDate, percentage: sample.quantity.doubleValue(for: .percent()) * 100.0)
+                } ?? []
+                continuation.resume(returning: results)
+            }
+            healthStore.execute(query)
+        }
+    }
+
+    func saveWaist(_ cm: Double, date: Date) async {
+        guard isAvailable, isHealthSyncEnabled else { return }
+        let quantityType = HKQuantityType(.waistCircumference)
+        let startOfDay = Calendar.current.startOfDay(for: date)
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
+        await deleteExistingSamples(type: quantityType, start: startOfDay, end: endOfDay)
+        let quantity = HKQuantity(unit: .meterUnit(with: .centi), doubleValue: cm)
+        let sample = HKQuantitySample(type: quantityType, quantity: quantity, start: startOfDay, end: startOfDay)
+        do {
+            try await healthStore.save(sample)
+        } catch {
+            print("HealthKit save waist failed: \(error.localizedDescription)")
+        }
+    }
+
+    func deleteWaist(date: Date) async {
+        guard isAvailable, isHealthSyncEnabled else { return }
+        let startOfDay = Calendar.current.startOfDay(for: date)
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
+        await deleteExistingSamples(type: HKQuantityType(.waistCircumference), start: startOfDay, end: endOfDay)
+    }
+
+    func fetchWaistHistory(limit: Int = 100) async -> [(date: Date, cm: Double)] {
+        guard isAvailable else { return [] }
+        let waistType = HKQuantityType(.waistCircumference)
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+        return await withCheckedContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: waistType,
+                predicate: nil,
+                limit: limit,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                if let error {
+                    print("HealthKit waist history fetch failed: \(error.localizedDescription)")
+                    continuation.resume(returning: [])
+                    return
+                }
+                let results = (samples as? [HKQuantitySample])?.map { sample in
+                    (date: sample.startDate, cm: sample.quantity.doubleValue(for: .meterUnit(with: .centi)))
                 } ?? []
                 continuation.resume(returning: results)
             }

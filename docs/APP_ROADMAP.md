@@ -184,7 +184,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [ ] **Body Metrics & Goals**
   1. [x] Choose a more active looking icon for the tab bar
   2. [x] Basic tracking is not premium gated but goals and everything based on goals is premium
-  3. [ ] More body metrics (optional, BMI, waist circumference, healthkit read/write)
+  3. [x] More body metrics (optional, BMI, waist circumference, healthkit read/write)
   4. [ ] Ability to select and order which metrics are on the body tab (per metric on/off toggle)
   5. [ ] Body goals deadline (calculate required weekly rate of change, pace tracker, linear(or maybe fancier based on their past performance) projected trajectory on body metric chart(s))
   6. [ ] calculate BMR from current stats (weight, height, age, sex), then show a TDEE-based calorie target that would move you toward your goal weight by your deadline
@@ -202,6 +202,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   1. [x] Calorie goal ring on nutrition tab
   2. [x] Food search bar not immediately in view
   3. [x] Crash when searching "Five guys"
+  4. [ ] Body charts - today's data on a 7-day chart is off to the right
   4. [ ] Match styling across app (text fields are sometimes black or blue, other inconsistencies?)
 - [ ] **Analytics:** Track onboarding funnel (step completion rate, drop-off point), time-to-first-log, and day-1/day-7/day-30 retention cohorts
 - [ ] **Export (CSV)** as a premium feature — export all logged foods with nutrient data for a date range. Useful for users tracking for medical or clinical reasons (a natural Nutrient Logger audience).

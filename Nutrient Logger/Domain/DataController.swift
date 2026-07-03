@@ -31,6 +31,7 @@ class DataController: ObservableObject {
             DailySummary.self,
             WeightEntry.self,
             BodyFatEntry.self,
+            WaistEntry.self,
             WaterEntry.self
         ])
 
