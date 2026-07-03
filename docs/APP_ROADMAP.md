@@ -188,7 +188,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   4. [x] Ability to select and order which metrics are on the body tab (per metric on/off toggle)
   5. [x] Body goals deadline (calculate required weekly rate of change, pace tracker, linear(or maybe fancier based on their past performance) projected trajectory on body metric chart(s))
   6. [x] calculate BMR from current stats (weight, height, age, sex), then show a TDEE-based calorie target that would move you toward your goal weight by your deadline
-  7. [ ] Change chart time frames (1,3,6,12 months)
+  7. [x] Change chart time frames (1,3,6,12 months)
   8. [ ] Move body settings from profile to body tab settings
   9. [ ] Body metrics change stat should be based on selected time frame 
   10. [ ] Move goals and calorie target to the body tab settings 

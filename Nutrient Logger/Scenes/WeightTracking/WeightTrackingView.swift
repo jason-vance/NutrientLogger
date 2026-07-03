@@ -10,15 +10,17 @@ import SwiftData
 import Charts
 
 enum WeightTrendPeriod: String, CaseIterable {
-    case sevenDay = "7 Days"
-    case thirtyDay = "30 Days"
-    case ninetyDay = "90 Days"
+    case oneMonth = "1M"
+    case threeMonths = "3M"
+    case sixMonths = "6M"
+    case twelveMonths = "12M"
 
-    var days: Int {
+    var months: Int {
         switch self {
-        case .sevenDay: return 7
-        case .thirtyDay: return 30
-        case .ninetyDay: return 90
+        case .oneMonth: return 1
+        case .threeMonths: return 3
+        case .sixMonths: return 6
+        case .twelveMonths: return 12
         }
     }
 }
@@ -59,7 +61,7 @@ struct WeightTrackingView: View {
     @AppStorage(ActivityLevel.appStorageKey) private var activityLevelRaw: String = ActivityLevel.sedentary.rawValue
     @AppStorage("bodyGoalDeadlineRaw") private var bodyGoalDeadlineRaw: Double = 0
 
-    @State private var period: WeightTrendPeriod = .thirtyDay
+    @State private var period: WeightTrendPeriod = .oneMonth
     @State private var showEntrySheet: Bool = false
     @State private var showStreakStats: Bool = false
     @State private var showCustomizeSheet: Bool = false
@@ -188,7 +190,7 @@ struct WeightTrackingView: View {
     }
 
     private var cutoffDate: SimpleDate {
-        SimpleDate.today.adding(days: -(period.days - 1))
+        SimpleDate.today.adding(months: -period.months)
     }
 
     private var chartStartDate: Date {
@@ -646,45 +648,34 @@ struct WeightTrackingView: View {
         let chartMin = weightChartMin
         let chartMax = weightChartMax
         let goalValue = hasWeightGoal ? preferredUnit.fromKg(weightGoalKg) : nil
-        let showBars = period == .sevenDay
         let isEmpty = entries.isEmpty
-        let showTrajectory = !showBars && hasWeightGoal && hasGoalDeadline && !entries.isEmpty
+        let showTrajectory = hasWeightGoal && hasGoalDeadline && !entries.isEmpty
 
         Chart {
             ForEach(entries, id: \.date) { entry in
                 let value = preferredUnit.fromKg(entry.weightKg)
-                if showBars {
-                    BarMark(
-                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
-                        yStart: .value("Baseline", chartMin),
-                        yEnd: .value("Weight", value)
-                    )
-                    .foregroundStyle(Color.blue.gradient)
-                    .cornerRadius(4)
-                } else {
-                    PointMark(
-                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
-                        y: .value("Weight", value)
-                    )
-                    .foregroundStyle(Color.blue)
-                    .symbolSize(30)
+                PointMark(
+                    x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
+                    y: .value("Weight", value)
+                )
+                .foregroundStyle(Color.blue)
+                .symbolSize(30)
 
-                    LineMark(
-                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
-                        y: .value("Weight", value)
-                    )
-                    .foregroundStyle(Color.blue)
-                    .interpolationMethod(.catmullRom)
-                    .lineStyle(StrokeStyle(lineWidth: 2))
+                LineMark(
+                    x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
+                    y: .value("Weight", value)
+                )
+                .foregroundStyle(Color.blue)
+                .interpolationMethod(.catmullRom)
+                .lineStyle(StrokeStyle(lineWidth: 2))
 
-                    AreaMark(
-                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
-                        yStart: .value("Baseline", chartMin),
-                        yEnd: .value("Weight", value)
-                    )
-                    .foregroundStyle(Color.blue.opacity(0.1).gradient)
-                    .interpolationMethod(.catmullRom)
-                }
+                AreaMark(
+                    x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
+                    yStart: .value("Baseline", chartMin),
+                    yEnd: .value("Weight", value)
+                )
+                .foregroundStyle(Color.blue.opacity(0.1).gradient)
+                .interpolationMethod(.catmullRom)
             }
 
             if showTrajectory, let current = latestWeight, let deadline = goalDeadline {
@@ -721,16 +712,9 @@ struct WeightTrackingView: View {
         .chartYScale(domain: chartMin...chartMax)
         .chartXScale(domain: chartStartDate...goalChartEndDate)
         .chartXAxis {
-            if showBars {
-                AxisMarks(values: .stride(by: .day)) { _ in
-                    AxisValueLabel(format: .dateTime.weekday(.abbreviated))
-                    AxisGridLine()
-                }
-            } else {
-                AxisMarks(values: .automatic(desiredCount: 5)) { _ in
-                    AxisValueLabel(format: .dateTime.month(.abbreviated).day())
-                    AxisGridLine()
-                }
+            AxisMarks(values: .automatic(desiredCount: 5)) { _ in
+                AxisValueLabel(format: .dateTime.month(.abbreviated).day())
+                AxisGridLine()
             }
         }
         .chartYAxis {
@@ -776,44 +760,33 @@ struct WeightTrackingView: View {
         let chartMin = bodyFatChartMin
         let chartMax = bodyFatChartMax
         let goalValue = hasBodyFatGoal ? bodyFatGoalPercentage : nil
-        let showBars = period == .sevenDay
         let isEmpty = entries.isEmpty
-        let showTrajectory = !showBars && hasBodyFatGoal && hasGoalDeadline && !entries.isEmpty
+        let showTrajectory = hasBodyFatGoal && hasGoalDeadline && !entries.isEmpty
 
         Chart {
             ForEach(entries, id: \.date) { entry in
-                if showBars {
-                    BarMark(
-                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
-                        yStart: .value("Baseline", chartMin),
-                        yEnd: .value("Body Fat", entry.percentage)
-                    )
-                    .foregroundStyle(Color.orange.gradient)
-                    .cornerRadius(4)
-                } else {
-                    PointMark(
-                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
-                        y: .value("Body Fat", entry.percentage)
-                    )
-                    .foregroundStyle(Color.orange)
-                    .symbolSize(30)
+                PointMark(
+                    x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
+                    y: .value("Body Fat", entry.percentage)
+                )
+                .foregroundStyle(Color.orange)
+                .symbolSize(30)
 
-                    LineMark(
-                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
-                        y: .value("Body Fat", entry.percentage)
-                    )
-                    .foregroundStyle(Color.orange)
-                    .interpolationMethod(.catmullRom)
-                    .lineStyle(StrokeStyle(lineWidth: 2))
+                LineMark(
+                    x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
+                    y: .value("Body Fat", entry.percentage)
+                )
+                .foregroundStyle(Color.orange)
+                .interpolationMethod(.catmullRom)
+                .lineStyle(StrokeStyle(lineWidth: 2))
 
-                    AreaMark(
-                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
-                        yStart: .value("Baseline", chartMin),
-                        yEnd: .value("Body Fat", entry.percentage)
-                    )
-                    .foregroundStyle(Color.orange.opacity(0.1).gradient)
-                    .interpolationMethod(.catmullRom)
-                }
+                AreaMark(
+                    x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
+                    yStart: .value("Baseline", chartMin),
+                    yEnd: .value("Body Fat", entry.percentage)
+                )
+                .foregroundStyle(Color.orange.opacity(0.1).gradient)
+                .interpolationMethod(.catmullRom)
             }
 
             if showTrajectory, let current = latestBodyFat, let deadline = goalDeadline {
@@ -850,16 +823,9 @@ struct WeightTrackingView: View {
         .chartYScale(domain: chartMin...chartMax)
         .chartXScale(domain: chartStartDate...goalChartEndDate)
         .chartXAxis {
-            if showBars {
-                AxisMarks(values: .stride(by: .day)) { _ in
-                    AxisValueLabel(format: .dateTime.weekday(.abbreviated))
-                    AxisGridLine()
-                }
-            } else {
-                AxisMarks(values: .automatic(desiredCount: 5)) { _ in
-                    AxisValueLabel(format: .dateTime.month(.abbreviated).day())
-                    AxisGridLine()
-                }
+            AxisMarks(values: .automatic(desiredCount: 5)) { _ in
+                AxisValueLabel(format: .dateTime.month(.abbreviated).day())
+                AxisGridLine()
             }
         }
         .chartYAxis {
@@ -906,45 +872,34 @@ struct WeightTrackingView: View {
         let chartMin = waistChartMin
         let chartMax = waistChartMax
         let goalValue = hasWaistGoal ? preferredWaistUnit.fromCm(waistGoalCm) : nil
-        let showBars = period == .sevenDay
         let isEmpty = entries.isEmpty
-        let showTrajectory = !showBars && hasWaistGoal && hasGoalDeadline && !entries.isEmpty
+        let showTrajectory = hasWaistGoal && hasGoalDeadline && !entries.isEmpty
 
         Chart {
             ForEach(entries, id: \.date) { entry in
                 let value = preferredWaistUnit.fromCm(entry.circumferenceCm)
-                if showBars {
-                    BarMark(
-                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
-                        yStart: .value("Baseline", chartMin),
-                        yEnd: .value("Waist", value)
-                    )
-                    .foregroundStyle(Color.green.gradient)
-                    .cornerRadius(4)
-                } else {
-                    PointMark(
-                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
-                        y: .value("Waist", value)
-                    )
-                    .foregroundStyle(Color.green)
-                    .symbolSize(30)
+                PointMark(
+                    x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
+                    y: .value("Waist", value)
+                )
+                .foregroundStyle(Color.green)
+                .symbolSize(30)
 
-                    LineMark(
-                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
-                        y: .value("Waist", value)
-                    )
-                    .foregroundStyle(Color.green)
-                    .interpolationMethod(.catmullRom)
-                    .lineStyle(StrokeStyle(lineWidth: 2))
+                LineMark(
+                    x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
+                    y: .value("Waist", value)
+                )
+                .foregroundStyle(Color.green)
+                .interpolationMethod(.catmullRom)
+                .lineStyle(StrokeStyle(lineWidth: 2))
 
-                    AreaMark(
-                        x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
-                        yStart: .value("Baseline", chartMin),
-                        yEnd: .value("Waist", value)
-                    )
-                    .foregroundStyle(Color.green.opacity(0.1).gradient)
-                    .interpolationMethod(.catmullRom)
-                }
+                AreaMark(
+                    x: .value("Date", entry.date.toDate() ?? .now, unit: .day),
+                    yStart: .value("Baseline", chartMin),
+                    yEnd: .value("Waist", value)
+                )
+                .foregroundStyle(Color.green.opacity(0.1).gradient)
+                .interpolationMethod(.catmullRom)
             }
 
             if showTrajectory, let current = latestWaist, let deadline = goalDeadline {
@@ -981,16 +936,9 @@ struct WeightTrackingView: View {
         .chartYScale(domain: chartMin...chartMax)
         .chartXScale(domain: chartStartDate...goalChartEndDate)
         .chartXAxis {
-            if showBars {
-                AxisMarks(values: .stride(by: .day)) { _ in
-                    AxisValueLabel(format: .dateTime.weekday(.abbreviated))
-                    AxisGridLine()
-                }
-            } else {
-                AxisMarks(values: .automatic(desiredCount: 5)) { _ in
-                    AxisValueLabel(format: .dateTime.month(.abbreviated).day())
-                    AxisGridLine()
-                }
+            AxisMarks(values: .automatic(desiredCount: 5)) { _ in
+                AxisValueLabel(format: .dateTime.month(.abbreviated).day())
+                AxisGridLine()
             }
         }
         .chartYAxis {
