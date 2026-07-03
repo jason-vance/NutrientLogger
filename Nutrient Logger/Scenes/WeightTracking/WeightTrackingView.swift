@@ -57,6 +57,7 @@ struct WeightTrackingView: View {
     @AppStorage("bodyMetric_bmi_enabled") private var bmiEnabled: Bool = true
     @AppStorage("bodyMetric_waist_enabled") private var waistEnabled: Bool = true
     @AppStorage(ActivityLevel.appStorageKey) private var activityLevelRaw: String = ActivityLevel.sedentary.rawValue
+    @AppStorage("bodyGoalDeadlineRaw") private var bodyGoalDeadlineRaw: Double = 0
 
     @State private var period: WeightTrendPeriod = .thirtyDay
     @State private var showEntrySheet: Bool = false
@@ -83,6 +84,46 @@ struct WeightTrackingView: View {
     private var hasWeightGoal: Bool { weightGoalKg > 0 }
     private var hasBodyFatGoal: Bool { bodyFatGoalPercentage > 0 }
     private var hasWaistGoal: Bool { waistGoalCm > 0 }
+
+    private var goalDeadline: Date? {
+        guard bodyGoalDeadlineRaw > 0 else { return nil }
+        return Date(timeIntervalSinceReferenceDate: bodyGoalDeadlineRaw)
+    }
+
+    private var hasGoalDeadline: Bool { goalDeadline != nil }
+
+    private var weeksToDeadline: Double? {
+        guard let deadline = goalDeadline else { return nil }
+        return max(deadline.timeIntervalSince(.now) / (7 * 86400), 0)
+    }
+
+    private var requiredWeeklyWeightChangeKg: Double? {
+        guard let weeks = weeksToDeadline, weeks > 0,
+              let currentKg = latestWeight?.weightKg,
+              hasWeightGoal else { return nil }
+        return (weightGoalKg - currentKg) / weeks
+    }
+
+    private var requiredWeeklyBodyFatChange: Double? {
+        guard let weeks = weeksToDeadline, weeks > 0,
+              let currentBF = latestBodyFat?.percentage,
+              hasBodyFatGoal else { return nil }
+        return (bodyFatGoalPercentage - currentBF) / weeks
+    }
+
+    private var requiredWeeklyWaistChangeCm: Double? {
+        guard let weeks = weeksToDeadline, weeks > 0,
+              let currentWaist = latestWaist?.circumferenceCm,
+              hasWaistGoal else { return nil }
+        return (waistGoalCm - currentWaist) / weeks
+    }
+
+    private var goalChartEndDate: Date {
+        if let deadline = goalDeadline, deadline > chartEndDate {
+            return deadline
+        }
+        return chartEndDate
+    }
 
     private var activityLevel: ActivityLevel {
         ActivityLevel(rawValue: activityLevelRaw) ?? .sedentary
@@ -112,8 +153,13 @@ struct WeightTrackingView: View {
 
     private var suggestedCalories: Double? {
         guard let t = tdee, let weightKg = latestWeight?.weightKg else { return nil }
-        let goalKg = hasWeightGoal ? weightGoalKg : nil
-        return BmrCalculator.calorieTarget(tdee: t, currentWeightKg: weightKg, goalWeightKg: goalKg)
+        if hasWeightGoal {
+            if let weeks = weeksToDeadline, weeks > 0 {
+                return BmrCalculator.calorieTarget(tdee: t, currentWeightKg: weightKg, goalWeightKg: weightGoalKg, weeksToDeadline: weeks)
+            }
+            return BmrCalculator.calorieTarget(tdee: t, currentWeightKg: weightKg, goalWeightKg: weightGoalKg)
+        }
+        return nil
     }
 
     private var tdeeHint: String {
@@ -570,10 +616,18 @@ struct WeightTrackingView: View {
 
     @ViewBuilder private func WeightChartCard() -> some View {
         VStack(spacing: .spacingDefault) {
-            HStack {
+            VStack(alignment: .leading, spacing: 2) {
                 Text("Weight")
                     .listSectionHeader()
-                Spacer()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                if let rate = requiredWeeklyWeightChangeKg, let deadline = goalDeadline {
+                    let rateDisplay = preferredUnit.fromKg(abs(rate)).formatted(maxDigits: 2)
+                    let direction = rate < 0 ? "lose" : "gain"
+                    let deadlineLabel = deadline.formatted(date: .abbreviated, time: .omitted)
+                    Text("\(direction) \(rateDisplay) \(preferredUnit.label)/wk to reach goal by \(deadlineLabel)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
             ZStack {
                 WeightChart()
@@ -594,6 +648,7 @@ struct WeightTrackingView: View {
         let goalValue = hasWeightGoal ? preferredUnit.fromKg(weightGoalKg) : nil
         let showBars = period == .sevenDay
         let isEmpty = entries.isEmpty
+        let showTrajectory = !showBars && hasWeightGoal && hasGoalDeadline && !entries.isEmpty
 
         Chart {
             ForEach(entries, id: \.date) { entry in
@@ -632,6 +687,26 @@ struct WeightTrackingView: View {
                 }
             }
 
+            if showTrajectory, let current = latestWeight, let deadline = goalDeadline {
+                let startValue = preferredUnit.fromKg(current.weightKg)
+                let endValue = preferredUnit.fromKg(weightGoalKg)
+                LineMark(
+                    x: .value("Date", current.date.toDate() ?? .now, unit: .day),
+                    y: .value("Weight", startValue),
+                    series: .value("Series", "trajectory")
+                )
+                .foregroundStyle(Color.text.opacity(0.3))
+                .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+
+                LineMark(
+                    x: .value("Date", deadline, unit: .day),
+                    y: .value("Weight", endValue),
+                    series: .value("Series", "trajectory")
+                )
+                .foregroundStyle(Color.text.opacity(0.3))
+                .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+            }
+
             if let goal = goalValue {
                 RuleMark(y: .value("Goal", goal))
                     .foregroundStyle(Color.text.opacity(0.5))
@@ -644,7 +719,7 @@ struct WeightTrackingView: View {
             }
         }
         .chartYScale(domain: chartMin...chartMax)
-        .chartXScale(domain: chartStartDate...chartEndDate)
+        .chartXScale(domain: chartStartDate...goalChartEndDate)
         .chartXAxis {
             if showBars {
                 AxisMarks(values: .stride(by: .day)) { _ in
@@ -672,10 +747,17 @@ struct WeightTrackingView: View {
 
     @ViewBuilder private func BodyFatChartCard() -> some View {
         VStack(spacing: .spacingDefault) {
-            HStack {
+            VStack(alignment: .leading, spacing: 2) {
                 Text("Body Fat")
                     .listSectionHeader()
-                Spacer()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                if let rate = requiredWeeklyBodyFatChange, let deadline = goalDeadline {
+                    let direction = rate < 0 ? "lose" : "gain"
+                    let deadlineLabel = deadline.formatted(date: .abbreviated, time: .omitted)
+                    Text("\(direction) \(abs(rate).formatted(maxDigits: 2))%/wk to reach goal by \(deadlineLabel)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
             ZStack {
                 BodyFatChart()
@@ -696,6 +778,7 @@ struct WeightTrackingView: View {
         let goalValue = hasBodyFatGoal ? bodyFatGoalPercentage : nil
         let showBars = period == .sevenDay
         let isEmpty = entries.isEmpty
+        let showTrajectory = !showBars && hasBodyFatGoal && hasGoalDeadline && !entries.isEmpty
 
         Chart {
             ForEach(entries, id: \.date) { entry in
@@ -733,6 +816,26 @@ struct WeightTrackingView: View {
                 }
             }
 
+            if showTrajectory, let current = latestBodyFat, let deadline = goalDeadline {
+                let startValue = current.percentage
+                let endValue = bodyFatGoalPercentage
+                LineMark(
+                    x: .value("Date", current.date.toDate() ?? .now, unit: .day),
+                    y: .value("Body Fat", startValue),
+                    series: .value("Series", "trajectory")
+                )
+                .foregroundStyle(Color.text.opacity(0.3))
+                .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+
+                LineMark(
+                    x: .value("Date", deadline, unit: .day),
+                    y: .value("Body Fat", endValue),
+                    series: .value("Series", "trajectory")
+                )
+                .foregroundStyle(Color.text.opacity(0.3))
+                .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+            }
+
             if let goal = goalValue {
                 RuleMark(y: .value("Goal", goal))
                     .foregroundStyle(Color.text.opacity(0.5))
@@ -745,7 +848,7 @@ struct WeightTrackingView: View {
             }
         }
         .chartYScale(domain: chartMin...chartMax)
-        .chartXScale(domain: chartStartDate...chartEndDate)
+        .chartXScale(domain: chartStartDate...goalChartEndDate)
         .chartXAxis {
             if showBars {
                 AxisMarks(values: .stride(by: .day)) { _ in
@@ -773,10 +876,18 @@ struct WeightTrackingView: View {
 
     @ViewBuilder private func WaistChartCard() -> some View {
         VStack(spacing: .spacingDefault) {
-            HStack {
+            VStack(alignment: .leading, spacing: 2) {
                 Text("Waist")
                     .listSectionHeader()
-                Spacer()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                if let rate = requiredWeeklyWaistChangeCm, let deadline = goalDeadline {
+                    let rateDisplay = preferredWaistUnit.fromCm(abs(rate)).formatted(maxDigits: 2)
+                    let direction = rate < 0 ? "lose" : "gain"
+                    let deadlineLabel = deadline.formatted(date: .abbreviated, time: .omitted)
+                    Text("\(direction) \(rateDisplay) \(preferredWaistUnit.label)/wk to reach goal by \(deadlineLabel)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
             ZStack {
                 WaistChart()
@@ -797,6 +908,7 @@ struct WeightTrackingView: View {
         let goalValue = hasWaistGoal ? preferredWaistUnit.fromCm(waistGoalCm) : nil
         let showBars = period == .sevenDay
         let isEmpty = entries.isEmpty
+        let showTrajectory = !showBars && hasWaistGoal && hasGoalDeadline && !entries.isEmpty
 
         Chart {
             ForEach(entries, id: \.date) { entry in
@@ -835,6 +947,26 @@ struct WeightTrackingView: View {
                 }
             }
 
+            if showTrajectory, let current = latestWaist, let deadline = goalDeadline {
+                let startValue = preferredWaistUnit.fromCm(current.circumferenceCm)
+                let endValue = preferredWaistUnit.fromCm(waistGoalCm)
+                LineMark(
+                    x: .value("Date", current.date.toDate() ?? .now, unit: .day),
+                    y: .value("Waist", startValue),
+                    series: .value("Series", "trajectory")
+                )
+                .foregroundStyle(Color.text.opacity(0.3))
+                .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+
+                LineMark(
+                    x: .value("Date", deadline, unit: .day),
+                    y: .value("Waist", endValue),
+                    series: .value("Series", "trajectory")
+                )
+                .foregroundStyle(Color.text.opacity(0.3))
+                .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+            }
+
             if let goal = goalValue {
                 RuleMark(y: .value("Goal", goal))
                     .foregroundStyle(Color.text.opacity(0.5))
@@ -847,7 +979,7 @@ struct WeightTrackingView: View {
             }
         }
         .chartYScale(domain: chartMin...chartMax)
-        .chartXScale(domain: chartStartDate...chartEndDate)
+        .chartXScale(domain: chartStartDate...goalChartEndDate)
         .chartXAxis {
             if showBars {
                 AxisMarks(values: .stride(by: .day)) { _ in
@@ -886,6 +1018,8 @@ struct WeightTrackingView: View {
                             if i > 0 { Divider().padding(.horizontal) }
                             MetricGoalField(for: goalMetrics[i])
                         }
+                        Divider().padding(.horizontal)
+                        DeadlineField()
                     }
                     .padding(.vertical, 4)
                     .inCard(backgroundColor: Color.gray)
@@ -901,9 +1035,7 @@ struct WeightTrackingView: View {
                 title: "Weight",
                 value: Binding(
                     get: { hasWeightGoal ? preferredUnit.fromKg(weightGoalKg) : nil },
-                    set: { newValue in
-                        weightGoalKg = newValue.map { preferredUnit.toKg($0) } ?? 0
-                    }
+                    set: { weightGoalKg = $0.map { preferredUnit.toKg($0) } ?? 0 }
                 ),
                 unit: preferredUnit.label,
                 placeholder: "Not set"
@@ -931,6 +1063,38 @@ struct WeightTrackingView: View {
         case .bmi:
             EmptyView()
         }
+    }
+
+    @ViewBuilder private func DeadlineField() -> some View {
+        HStack {
+            Text("By")
+                .font(.subheadline)
+                .fontWeight(.light)
+            Spacer()
+            if hasGoalDeadline {
+                Button("Clear") { bodyGoalDeadlineRaw = 0 }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                DatePicker(
+                    "",
+                    selection: Binding(
+                        get: { goalDeadline ?? .now },
+                        set: { bodyGoalDeadlineRaw = $0.timeIntervalSinceReferenceDate }
+                    ),
+                    in: Date.now...,
+                    displayedComponents: .date
+                )
+                .labelsHidden()
+            } else {
+                Button("Set deadline") {
+                    let threeMonths = Calendar.current.date(byAdding: .month, value: 3, to: .now)!
+                    bodyGoalDeadlineRaw = threeMonths.timeIntervalSinceReferenceDate
+                }
+                .font(.subheadline)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 10)
     }
 
     @ViewBuilder private func GoalField(

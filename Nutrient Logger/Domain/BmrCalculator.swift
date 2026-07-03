@@ -23,7 +23,16 @@ struct BmrCalculator {
         (bmr * activityLevel.multiplier).rounded()
     }
 
-    /// Suggests a daily calorie intake based on how far current weight is from goal.
+    /// Deadline-based: derives exact daily calorie adjustment from the kg-to-change and weeks remaining.
+    /// Deficit/surplus are capped at ±1000 kcal/day and the result is floored at 800 kcal for safety.
+    static func calorieTarget(tdee: Double, currentWeightKg: Double, goalWeightKg: Double, weeksToDeadline: Double) -> Double {
+        guard weeksToDeadline > 0 else { return tdee }
+        let kcalPerDay = (goalWeightKg - currentWeightKg) * 7700 / (weeksToDeadline * 7)
+        let capped = min(max(kcalPerDay, -1000), 1000)
+        return max(800, (tdee + capped).rounded())
+    }
+
+    /// Bracket-based fallback when no deadline is set.
     /// Deficit/surplus are capped at 750 kcal to stay safe and sustainable.
     static func calorieTarget(tdee: Double, currentWeightKg: Double, goalWeightKg: Double?) -> Double {
         guard let goal = goalWeightKg, goal > 0 else { return tdee }
