@@ -44,6 +44,7 @@ struct UserProfileView: View {
     @AppStorage("preferredHeightUnit") private var preferredHeightUnitRaw: String = HeightUnit.ftIn.rawValue
     @AppStorage(WaterUnit.appStorageKey) private var preferredWaterUnitRaw: String = WaterUnit.cups.rawValue
 
+
     private var preferredWaterUnit: WaterUnit {
         WaterUnit(rawValue: preferredWaterUnitRaw) ?? .cups
     }

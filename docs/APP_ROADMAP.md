@@ -186,12 +186,17 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   2. [x] Basic tracking is not premium gated but goals and everything based on goals is premium
   3. [x] More body metrics (optional, BMI, waist circumference, healthkit read/write)
   4. [x] Ability to select and order which metrics are on the body tab (per metric on/off toggle)
-  5. [x] Body goals deadline (calculate required weekly rate of change, pace tracker, linear(or maybe fancier based on their past performance) projected trajectory on body metric chart(s))
-  6. [ ] calculate BMR from current stats (weight, height, age, sex), then show a TDEE-based calorie target that would move you toward your goal weight by your deadline
+  5. [ ] Body goals deadline (calculate required weekly rate of change, pace tracker, linear(or maybe fancier based on their past performance) projected trajectory on body metric chart(s))
+  6. [x] calculate BMR from current stats (weight, height, age, sex), then show a TDEE-based calorie target that would move you toward your goal weight by your deadline
+  7. [ ] Move body settings from profile to body tab settings
+  8. [ ] Change chart time frames (1,3,6,12 months)
+  9. [ ] Body metrics change stat should be based on selected time frame 
+  10. [ ] Move goals and calorie target to the body tab settings 
 - [ ] **Nutrition Tab Customization & Charts**
   1. [ ] Ability to select and order which nutrients are on the nutrition tab (per nutrient on/off toggle, order within nutrient group)
   2. [ ] Use Swift Charts for nutrient intake charts instead of my own
   3. [ ] Add trend charts, and nutrient trend charts, to calories, macros, water (like other nutrients have, navigated to by clicking their tile)
+  4. [ ] Move nutrition goals from profile to nutrition tab settings (same button icon as body tab settings)
 - [x] **Profile Tab**
   1. [x] Add achievements card
   2. [x] Add subscription card
@@ -204,6 +209,9 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   3. [x] Crash when searching "Five guys"
   4. [ ] Body charts - today's data on a 7-day chart is off to the right
   4. [ ] Match styling across app (text fields are sometimes black or blue, other inconsistencies?)
+  5. [ ] Fix food log field tapping area (way to small especially portion amount "1")
+  6. [ ] Search as you type
+  7. [ ] Check places where we show the marketing view. Do they properly block the premium feature (NutrientTrendView does a full screen cover, but dismissing the full screen cover shows the screen after all)
 - [ ] **Analytics:** Track onboarding funnel (step completion rate, drop-off point), time-to-first-log, and day-1/day-7/day-30 retention cohorts
 - [ ] **Export (CSV)** as a premium feature — export all logged foods with nutrient data for a date range. Useful for users tracking for medical or clinical reasons (a natural Nutrient Logger audience).
 - [ ] **Nutrient deficiency insights** — a simple weekly digest view: "You've been consistently low in Vitamin D and Magnesium this week. Here are foods that would help." This is premium-only and differentiates from every macro-focused competitor.
