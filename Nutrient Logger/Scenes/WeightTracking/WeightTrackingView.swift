@@ -60,7 +60,7 @@ struct WeightTrackingView: View {
     @AppStorage("bodyMetric_waist_enabled") private var waistEnabled: Bool = true
     @AppStorage("bodyGoalDeadlineRaw") private var bodyGoalDeadlineRaw: Double = 0
 
-    @State private var period: WeightTrendPeriod = .oneMonth
+    @AppStorage("bodyChartPeriod") private var periodRaw: String = WeightTrendPeriod.oneMonth.rawValue
     @State private var showEntrySheet: Bool = false
     @State private var showStreakStats: Bool = false
     @State private var showCustomizeSheet: Bool = false
@@ -71,6 +71,10 @@ struct WeightTrackingView: View {
               let weekStart = SimpleDate(rawValue: UInt32(streakWeekStartDateRaw))
         else { return nil }
         return weekStart.adding(days: -((streakCount - 1) * 7))
+    }
+
+    private var period: WeightTrendPeriod {
+        WeightTrendPeriod(rawValue: periodRaw) ?? .oneMonth
     }
 
     private var preferredUnit: BodyWeightUnit {
@@ -554,7 +558,10 @@ struct WeightTrackingView: View {
     // MARK: - Period Picker
 
     @ViewBuilder private func PeriodPicker() -> some View {
-        Picker("Period", selection: $period) {
+        Picker("Period", selection: Binding(
+            get: { period },
+            set: { periodRaw = $0.rawValue }
+        )) {
             ForEach(WeightTrendPeriod.allCases, id: \.self) { p in
                 Text(p.rawValue).tag(p)
             }
