@@ -185,8 +185,8 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   1. [x] Choose a more active looking icon for the tab bar
   2. [x] Basic tracking is not premium gated but goals and everything based on goals is premium
   3. [x] More body metrics (optional, BMI, waist circumference, healthkit read/write)
-  4. [ ] Ability to select and order which metrics are on the body tab (per metric on/off toggle)
-  5. [ ] Body goals deadline (calculate required weekly rate of change, pace tracker, linear(or maybe fancier based on their past performance) projected trajectory on body metric chart(s))
+  4. [x] Ability to select and order which metrics are on the body tab (per metric on/off toggle)
+  5. [x] Body goals deadline (calculate required weekly rate of change, pace tracker, linear(or maybe fancier based on their past performance) projected trajectory on body metric chart(s))
   6. [ ] calculate BMR from current stats (weight, height, age, sex), then show a TDEE-based calorie target that would move you toward your goal weight by your deadline
 - [ ] **Nutrition Tab Customization & Charts**
   1. [ ] Ability to select and order which nutrients are on the nutrition tab (per nutrient on/off toggle, order within nutrient group)

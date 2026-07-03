@@ -51,9 +51,16 @@ struct WeightTrackingView: View {
     @AppStorage("bodyMeasurementStreakCount") private var streakCount: Int = 0
     @AppStorage("bodyMeasurementStreakWeekStartDate") private var streakWeekStartDateRaw: Int = 0
 
+    @AppStorage("bodyMetricOrder") private var bodyMetricOrderRaw: String = BodyMetric.defaultOrder
+    @AppStorage("bodyMetric_weight_enabled") private var weightEnabled: Bool = true
+    @AppStorage("bodyMetric_bodyFat_enabled") private var bodyFatEnabled: Bool = true
+    @AppStorage("bodyMetric_bmi_enabled") private var bmiEnabled: Bool = true
+    @AppStorage("bodyMetric_waist_enabled") private var waistEnabled: Bool = true
+
     @State private var period: WeightTrendPeriod = .thirtyDay
     @State private var showEntrySheet: Bool = false
     @State private var showStreakStats: Bool = false
+    @State private var showCustomizeSheet: Bool = false
     @State private var hasImportedHealthKit: Bool = false
 
     private var streakStartDate: SimpleDate? {
@@ -74,6 +81,17 @@ struct WeightTrackingView: View {
     private var hasWeightGoal: Bool { weightGoalKg > 0 }
     private var hasBodyFatGoal: Bool { bodyFatGoalPercentage > 0 }
     private var hasWaistGoal: Bool { waistGoalCm > 0 }
+
+    private var visibleMetrics: [BodyMetric] {
+        BodyMetric.ordered(from: bodyMetricOrderRaw).filter { metric in
+            switch metric {
+            case .weight: return weightEnabled
+            case .bodyFat: return bodyFatEnabled
+            case .bmi: return bmiEnabled
+            case .waist: return waistEnabled
+            }
+        }
+    }
 
     private var cutoffDate: SimpleDate {
         SimpleDate.today.adding(days: -(period.days - 1))
@@ -257,10 +275,15 @@ struct WeightTrackingView: View {
                 NativeAdListRow(ad: $ad, size: .small)
                 StreakCardView(count: streakCount, unit: "Week", milestones: Self.streakMilestones, onTap: { showStreakStats = true })
                 CurrentValues()
-                PeriodPicker()
-                WeightChartCard()
-                BodyFatChartCard()
-                WaistChartCard()
+                let chartMetrics = visibleMetrics.filter(\.hasChart)
+                if !chartMetrics.isEmpty {
+                    PeriodPicker()
+                    ForEach(chartMetrics) { metric in
+                        if metric == .weight { WeightChartCard() }
+                        else if metric == .bodyFat { BodyFatChartCard() }
+                        else if metric == .waist { WaistChartCard() }
+                    }
+                }
                 GoalsCards()
                 HistoryLink()
             }
@@ -275,6 +298,9 @@ struct WeightTrackingView: View {
         .onChange(of: allWaistEntries.count, initial: true) { updateBodyMeasurementStreak() }
         .sheet(isPresented: $showEntrySheet) {
             WeightEntrySheet()
+        }
+        .sheet(isPresented: $showCustomizeSheet) {
+            BodyMetricCustomizeSheet()
         }
         .sheet(isPresented: $showStreakStats) {
             StreakStatsView(
@@ -292,6 +318,13 @@ struct WeightTrackingView: View {
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             Button {
+                showCustomizeSheet = true
+            } label: {
+                Image(systemName: "slider.horizontal.3")
+            }
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
                 showEntrySheet = true
             } label: {
                 Image(systemName: "plus")
@@ -302,15 +335,25 @@ struct WeightTrackingView: View {
     // MARK: - Current Values
 
     @ViewBuilder private func CurrentValues() -> some View {
-        VStack(spacing: .spacingDefault) {
-            HStack(spacing: .spacingDefault) {
-                CurrentWeightCard()
-                CurrentBodyFatCard()
+        if !visibleMetrics.isEmpty {
+            if visibleMetrics.count == 1 {
+                MetricCard(for: visibleMetrics[0])
+            } else {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: .spacingDefault) {
+                    ForEach(visibleMetrics) { metric in
+                        MetricCard(for: metric)
+                    }
+                }
             }
-            HStack(spacing: .spacingDefault) {
-                CurrentBMICard()
-                CurrentWaistCard()
-            }
+        }
+    }
+
+    @ViewBuilder private func MetricCard(for metric: BodyMetric) -> some View {
+        switch metric {
+        case .weight: CurrentWeightCard()
+        case .bodyFat: CurrentBodyFatCard()
+        case .bmi: CurrentBMICard()
+        case .waist: CurrentWaistCard()
         }
     }
 
@@ -782,55 +825,62 @@ struct WeightTrackingView: View {
     // MARK: - Goals (Premium)
 
     @ViewBuilder private func GoalsCards() -> some View {
-        VStack(spacing: .spacingDefault) {
-            Text("Goals")
-                .listSectionHeader()
-                .frame(maxWidth: .infinity, alignment: .leading)
-            PremiumGate(trigger: .weightGoal, feature: "weight_goal") {
-                VStack(spacing: 0) {
-                    GoalField(
-                        title: "Weight",
-                        value: Binding(
-                            get: { hasWeightGoal ? preferredUnit.fromKg(weightGoalKg) : nil },
-                            set: { newValue in
-                                if let v = newValue {
-                                    weightGoalKg = preferredUnit.toKg(v)
-                                } else {
-                                    weightGoalKg = 0
-                                }
-                            }
-                        ),
-                        unit: preferredUnit.label,
-                        placeholder: "Not set"
-                    )
-                    Divider().padding(.horizontal)
-                    GoalField(
-                        title: "Body Fat",
-                        value: Binding(
-                            get: { hasBodyFatGoal ? bodyFatGoalPercentage : nil },
-                            set: { newValue in
-                                bodyFatGoalPercentage = newValue ?? 0
-                            }
-                        ),
-                        unit: "%",
-                        placeholder: "Not set"
-                    )
-                    Divider().padding(.horizontal)
-                    GoalField(
-                        title: "Waist",
-                        value: Binding(
-                            get: { hasWaistGoal ? preferredWaistUnit.fromCm(waistGoalCm) : nil },
-                            set: { newValue in
-                                waistGoalCm = newValue.map { preferredWaistUnit.toCm($0) } ?? 0
-                            }
-                        ),
-                        unit: preferredWaistUnit.label,
-                        placeholder: "Not set"
-                    )
+        let goalMetrics = visibleMetrics.filter { $0 != .bmi }
+        if !goalMetrics.isEmpty {
+            VStack(spacing: .spacingDefault) {
+                Text("Goals")
+                    .listSectionHeader()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                PremiumGate(trigger: .weightGoal, feature: "weight_goal") {
+                    VStack(spacing: 0) {
+                        ForEach(goalMetrics.indices, id: \.self) { i in
+                            if i > 0 { Divider().padding(.horizontal) }
+                            MetricGoalField(for: goalMetrics[i])
+                        }
+                    }
+                    .padding(.vertical, 4)
+                    .inCard(backgroundColor: Color.gray)
                 }
-                .padding(.vertical, 4)
-                .inCard(backgroundColor: Color.gray)
             }
+        }
+    }
+
+    @ViewBuilder private func MetricGoalField(for metric: BodyMetric) -> some View {
+        switch metric {
+        case .weight:
+            GoalField(
+                title: "Weight",
+                value: Binding(
+                    get: { hasWeightGoal ? preferredUnit.fromKg(weightGoalKg) : nil },
+                    set: { newValue in
+                        weightGoalKg = newValue.map { preferredUnit.toKg($0) } ?? 0
+                    }
+                ),
+                unit: preferredUnit.label,
+                placeholder: "Not set"
+            )
+        case .bodyFat:
+            GoalField(
+                title: "Body Fat",
+                value: Binding(
+                    get: { hasBodyFatGoal ? bodyFatGoalPercentage : nil },
+                    set: { bodyFatGoalPercentage = $0 ?? 0 }
+                ),
+                unit: "%",
+                placeholder: "Not set"
+            )
+        case .waist:
+            GoalField(
+                title: "Waist",
+                value: Binding(
+                    get: { hasWaistGoal ? preferredWaistUnit.fromCm(waistGoalCm) : nil },
+                    set: { waistGoalCm = $0.map { preferredWaistUnit.toCm($0) } ?? 0 }
+                ),
+                unit: preferredWaistUnit.label,
+                placeholder: "Not set"
+            )
+        case .bmi:
+            EmptyView()
         }
     }
 
