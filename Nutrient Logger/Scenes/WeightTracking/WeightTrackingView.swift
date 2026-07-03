@@ -217,25 +217,28 @@ struct WeightTrackingView: View {
     }
 
     private var latestWeight: WeightEntry? { allWeightEntries.first }
-    private var previousWeight: WeightEntry? { allWeightEntries.dropFirst().first }
     private var latestBodyFat: BodyFatEntry? { allBodyFatEntries.first }
-    private var previousBodyFat: BodyFatEntry? { allBodyFatEntries.dropFirst().first }
     private var latestWaist: WaistEntry? { allWaistEntries.first }
-    private var previousWaist: WaistEntry? { allWaistEntries.dropFirst().first }
 
     private var weightTrend: Double? {
-        guard let latest = latestWeight, let previous = previousWeight else { return nil }
-        return latest.weightKg - previous.weightKg
+        guard let newest = filteredWeightEntries.first,
+              let oldest = filteredWeightEntries.last,
+              oldest.date < newest.date else { return nil }
+        return newest.weightKg - oldest.weightKg
     }
 
     private var bodyFatTrend: Double? {
-        guard let latest = latestBodyFat, let previous = previousBodyFat else { return nil }
-        return latest.percentage - previous.percentage
+        guard let newest = filteredBodyFatEntries.first,
+              let oldest = filteredBodyFatEntries.last,
+              oldest.date < newest.date else { return nil }
+        return newest.percentage - oldest.percentage
     }
 
     private var waistTrend: Double? {
-        guard let latest = latestWaist, let previous = previousWaist else { return nil }
-        return latest.circumferenceCm - previous.circumferenceCm
+        guard let newest = filteredWaistEntries.first,
+              let oldest = filteredWaistEntries.last,
+              oldest.date < newest.date else { return nil }
+        return newest.circumferenceCm - oldest.circumferenceCm
     }
 
     private var bmi: Double? {
