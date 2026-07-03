@@ -181,7 +181,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   3. [x] Streak cards - animations on increment and milestone
   4. [x] Tap streak card for streak stats
   5. [x] Make water logging a more exciting part of nutrition logging (trend charts like other nutrients, animations would be nice, quick log)
-- [ ] **Body Metrics & Goals**
+- [x] **Body Metrics & Goals**
   1. [x] Choose a more active looking icon for the tab bar
   2. [x] Basic tracking is not premium gated but goals and everything based on goals is premium
   3. [x] More body metrics (optional, BMI, waist circumference, healthkit read/write)
@@ -189,9 +189,9 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   5. [x] Body goals deadline (calculate required weekly rate of change, pace tracker, linear(or maybe fancier based on their past performance) projected trajectory on body metric chart(s))
   6. [x] calculate BMR from current stats (weight, height, age, sex), then show a TDEE-based calorie target that would move you toward your goal weight by your deadline
   7. [x] Change chart time frames (1,3,6,12 months)
-  8. [ ] Move body settings from profile to body tab settings
+  8. [x] Move body settings from profile to body tab settings
   9. [x] Body metrics change stat should be based on selected time frame 
-  10. [ ] Move goals and calorie target to the body tab settings 
+  10. [x] Move goals and calorie target to the body tab settings 
 - [ ] **Nutrition Tab Customization & Charts**
   1. [ ] Ability to select and order which nutrients are on the nutrition tab (per nutrient on/off toggle, order within nutrient group)
   2. [ ] Use Swift Charts for nutrient intake charts instead of my own

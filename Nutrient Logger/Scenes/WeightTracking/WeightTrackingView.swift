@@ -58,7 +58,6 @@ struct WeightTrackingView: View {
     @AppStorage("bodyMetric_bodyFat_enabled") private var bodyFatEnabled: Bool = true
     @AppStorage("bodyMetric_bmi_enabled") private var bmiEnabled: Bool = true
     @AppStorage("bodyMetric_waist_enabled") private var waistEnabled: Bool = true
-    @AppStorage(ActivityLevel.appStorageKey) private var activityLevelRaw: String = ActivityLevel.sedentary.rawValue
     @AppStorage("bodyGoalDeadlineRaw") private var bodyGoalDeadlineRaw: Double = 0
 
     @State private var period: WeightTrendPeriod = .oneMonth
@@ -66,7 +65,6 @@ struct WeightTrackingView: View {
     @State private var showStreakStats: Bool = false
     @State private var showCustomizeSheet: Bool = false
     @State private var hasImportedHealthKit: Bool = false
-    @State private var appliedCalorieGoal: Double? = nil
 
     private var streakStartDate: SimpleDate? {
         guard streakCount > 0,
@@ -125,57 +123,6 @@ struct WeightTrackingView: View {
             return deadline
         }
         return chartEndDate
-    }
-
-    private var activityLevel: ActivityLevel {
-        ActivityLevel(rawValue: activityLevelRaw) ?? .sedentary
-    }
-
-    private var ageYears: Int? {
-        guard let interval = userService.currentUser.getUserAge() else { return nil }
-        return Int(interval / (365.25 * 24 * 3600))
-    }
-
-    private var bmr: Double? {
-        guard let heightCm = userService.currentUser.heightCm, heightCm > 0,
-              let weightKg = latestWeight?.weightKg,
-              let age = ageYears else { return nil }
-        return BmrCalculator.bmr(
-            weightKg: weightKg,
-            heightCm: heightCm,
-            ageYears: age,
-            gender: userService.currentUser.gender
-        )
-    }
-
-    private var tdee: Double? {
-        guard let b = bmr else { return nil }
-        return BmrCalculator.tdee(bmr: b, activityLevel: activityLevel)
-    }
-
-    private var suggestedCalories: Double? {
-        guard let t = tdee, let weightKg = latestWeight?.weightKg else { return nil }
-        if hasWeightGoal {
-            if let weeks = weeksToDeadline, weeks > 0 {
-                return BmrCalculator.calorieTarget(tdee: t, currentWeightKg: weightKg, goalWeightKg: weightGoalKg, weeksToDeadline: weeks)
-            }
-            return BmrCalculator.calorieTarget(tdee: t, currentWeightKg: weightKg, goalWeightKg: weightGoalKg)
-        }
-        return nil
-    }
-
-    private var tdeeHint: String {
-        if userService.currentUser.heightCm == nil { return "Set your height in Profile to calculate TDEE." }
-        if latestWeight == nil { return "Log your weight to calculate TDEE." }
-        if userService.currentUser.birthdate == nil { return "Set your birthdate in Profile to calculate TDEE." }
-        return "Complete your profile to calculate TDEE."
-    }
-
-    private func saveCalorieGoal(_ kcal: Double) {
-        var updated = userService.currentUser
-        updated.calorieGoal = kcal
-        Task { try? await userService.save(user: updated) }
-        appliedCalorieGoal = kcal
     }
 
     private var visibleMetrics: [BodyMetric] {
@@ -383,8 +330,6 @@ struct WeightTrackingView: View {
                         else if metric == .waist { WaistChartCard() }
                     }
                 }
-                GoalsCards()
-                TdeeCard()
                 HistoryLink()
             }
             .padding(.horizontal)
@@ -400,7 +345,7 @@ struct WeightTrackingView: View {
             WeightEntrySheet()
         }
         .sheet(isPresented: $showCustomizeSheet) {
-            BodyMetricCustomizeSheet()
+            BodySettingsSheet()
         }
         .sheet(isPresented: $showStreakStats) {
             StreakStatsView(
@@ -952,268 +897,6 @@ struct WeightTrackingView: View {
         }
         .frame(height: 200)
         .opacity(isEmpty ? 0.3 : 1)
-    }
-
-    // MARK: - Goals (Premium)
-
-    @ViewBuilder private func GoalsCards() -> some View {
-        let goalMetrics = visibleMetrics.filter { $0 != .bmi }
-        if !goalMetrics.isEmpty {
-            VStack(spacing: .spacingDefault) {
-                Text("Goals")
-                    .listSectionHeader()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                PremiumGate(trigger: .weightGoal, feature: "weight_goal") {
-                    VStack(spacing: 0) {
-                        ForEach(goalMetrics.indices, id: \.self) { i in
-                            if i > 0 { Divider().padding(.horizontal) }
-                            MetricGoalField(for: goalMetrics[i])
-                        }
-                        Divider().padding(.horizontal)
-                        DeadlineField()
-                    }
-                    .padding(.vertical, 4)
-                    .inCard(backgroundColor: Color.gray)
-                }
-            }
-        }
-    }
-
-    @ViewBuilder private func MetricGoalField(for metric: BodyMetric) -> some View {
-        switch metric {
-        case .weight:
-            GoalField(
-                title: "Weight",
-                value: Binding(
-                    get: { hasWeightGoal ? preferredUnit.fromKg(weightGoalKg) : nil },
-                    set: { weightGoalKg = $0.map { preferredUnit.toKg($0) } ?? 0 }
-                ),
-                unit: preferredUnit.label,
-                placeholder: "Not set"
-            )
-        case .bodyFat:
-            GoalField(
-                title: "Body Fat",
-                value: Binding(
-                    get: { hasBodyFatGoal ? bodyFatGoalPercentage : nil },
-                    set: { bodyFatGoalPercentage = $0 ?? 0 }
-                ),
-                unit: "%",
-                placeholder: "Not set"
-            )
-        case .waist:
-            GoalField(
-                title: "Waist",
-                value: Binding(
-                    get: { hasWaistGoal ? preferredWaistUnit.fromCm(waistGoalCm) : nil },
-                    set: { waistGoalCm = $0.map { preferredWaistUnit.toCm($0) } ?? 0 }
-                ),
-                unit: preferredWaistUnit.label,
-                placeholder: "Not set"
-            )
-        case .bmi:
-            EmptyView()
-        }
-    }
-
-    @ViewBuilder private func DeadlineField() -> some View {
-        HStack {
-            Text("By")
-                .font(.subheadline)
-                .fontWeight(.light)
-            Spacer()
-            if hasGoalDeadline {
-                Button("Clear") { bodyGoalDeadlineRaw = 0 }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                DatePicker(
-                    "",
-                    selection: Binding(
-                        get: { goalDeadline ?? .now },
-                        set: { bodyGoalDeadlineRaw = $0.timeIntervalSinceReferenceDate }
-                    ),
-                    in: Date.now...,
-                    displayedComponents: .date
-                )
-                .labelsHidden()
-            } else {
-                Button("Set deadline") {
-                    let threeMonths = Calendar.current.date(byAdding: .month, value: 3, to: .now)!
-                    bodyGoalDeadlineRaw = threeMonths.timeIntervalSinceReferenceDate
-                }
-                .font(.subheadline)
-            }
-        }
-        .padding(.horizontal)
-        .padding(.vertical, 10)
-    }
-
-    @ViewBuilder private func GoalField(
-        title: String,
-        value: Binding<Double?>,
-        unit: String,
-        placeholder: String
-    ) -> some View {
-        HStack {
-            Text(title)
-                .font(.subheadline)
-                .fontWeight(.light)
-            Spacer()
-            TextField(
-                placeholder,
-                text: Binding(
-                    get: {
-                        if let v = value.wrappedValue {
-                            return v.formatted(maxDigits: 1)
-                        }
-                        return ""
-                    },
-                    set: { newValue in
-                        if newValue.isEmpty {
-                            value.wrappedValue = nil
-                        } else if let d = Double(newValue) {
-                            value.wrappedValue = d
-                        }
-                    }
-                )
-            )
-            .keyboardType(.decimalPad)
-            .multilineTextAlignment(.trailing)
-            .bold()
-            .frame(maxWidth: 100)
-            Text(unit)
-                .fontWeight(.light)
-                .foregroundStyle(.secondary)
-        }
-        .padding(.horizontal)
-        .padding(.vertical, 10)
-    }
-
-    // MARK: - TDEE / Calorie Target
-
-    @ViewBuilder private func TdeeCard() -> some View {
-        VStack(spacing: .spacingDefault) {
-            HStack {
-                Text("Calorie Target")
-                    .listSectionHeader()
-                Spacer()
-            }
-            if let bmrValue = bmr, let tdeeValue = tdee {
-                let target = suggestedCalories ?? tdeeValue
-                let diff = target - tdeeValue
-                VStack(spacing: 0) {
-                    VStack(spacing: 0) {
-                        HStack {
-                            Text("Activity Level")
-                                .font(.subheadline)
-                            Spacer()
-                            Picker("Activity Level", selection: $activityLevelRaw) {
-                                ForEach(ActivityLevel.allCases) { level in
-                                    Text(level.label).tag(level.rawValue)
-                                }
-                            }
-                            .pickerStyle(.menu)
-                            .onChange(of: activityLevelRaw) { appliedCalorieGoal = nil }
-                        }
-                        HStack {
-                            Text(activityLevel.description)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                        }
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 10)
-
-                    Divider().padding(.horizontal)
-
-                    HStack {
-                        Text("BMR")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        Text("\(bmrValue.formatted(maxDigits: 0)) kcal")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 6)
-
-                    HStack {
-                        Text("TDEE")
-                            .font(.subheadline)
-                        Spacer()
-                        Text("\(tdeeValue.formatted(maxDigits: 0)) kcal")
-                            .font(.subheadline.bold())
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 6)
-
-                    Divider().padding(.horizontal)
-
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Suggested Intake")
-                                .font(.subheadline)
-                            if diff < -50 {
-                                Text("\(Int(diff).formatted()) kcal deficit")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            } else if diff > 50 {
-                                Text("+\(Int(diff).formatted()) kcal surplus")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            } else {
-                                Text("Maintenance")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        Spacer()
-                        Text("\(target.formatted(maxDigits: 0)) kcal")
-                            .font(.subheadline.bold())
-                            .foregroundStyle(Color.accentColor)
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-
-                    Divider().padding(.horizontal)
-
-                    Button {
-                        saveCalorieGoal(target)
-                    } label: {
-                        HStack {
-                            Spacer()
-                            if let applied = appliedCalorieGoal {
-                                Label("Applied \(applied.formatted(maxDigits: 0)) kcal", systemImage: "checkmark")
-                                    .foregroundStyle(.secondary)
-                            } else {
-                                Text("Apply as Calorie Goal")
-                                    .foregroundStyle(Color.accentColor)
-                            }
-                            Spacer()
-                        }
-                    }
-                    .disabled(appliedCalorieGoal != nil)
-                    .padding(.horizontal)
-                    .padding(.vertical, 10)
-                }
-                .padding(.vertical, 4)
-                .inCard(backgroundColor: Color.gray)
-
-                Text("**BMR** (Basal Metabolic Rate) is the calories your body burns at rest. **TDEE** (Total Daily Energy Expenditure) adds your activity level on top of that.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            } else {
-                Text(tdeeHint)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-                    .inCard(backgroundColor: Color.gray)
-            }
-        }
     }
 
     // MARK: - History

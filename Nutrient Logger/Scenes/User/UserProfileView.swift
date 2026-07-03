@@ -564,7 +564,7 @@ struct UserProfileView: View {
     @ViewBuilder private func BodyCard() -> some View {
         VStack(spacing: .spacingDefault) {
             HStack {
-                Text("Body")
+                Text("Units")
                     .listSectionHeader()
                 Spacer()
             }
