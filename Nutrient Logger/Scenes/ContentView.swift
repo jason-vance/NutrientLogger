@@ -27,6 +27,7 @@ struct ContentView: View {
 
     @AppStorage("hasLaunchedAppBefore") private var hasLaunchedAppBefore: Bool = false
     @AppStorage("hasPromptedForNotifications") private var hasPromptedForNotifications: Bool = false
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
 
     private static let bodyTabIcons = [
         "figure.run",
@@ -65,11 +66,14 @@ struct ContentView: View {
 
     private func onSetupComplete() {
         if !hasLaunchedAppBefore {
-            // Don't interrupt the very first launch with a permission prompt.
             hasLaunchedAppBefore = true
-        } else if !hasPromptedForNotifications {
+        } else if hasCompletedOnboarding && !hasPromptedForNotifications {
             showNotificationPrompt = true
         }
+    }
+
+    private func onOnboardingComplete() {
+        withAnimation(.snappy) { hasCompletedOnboarding = true }
     }
 
     private func onNotificationPromptComplete() {
@@ -106,7 +110,9 @@ struct ContentView: View {
     @ViewBuilder private func AppSetupRouter() -> some View {
         ZStack {
             if isSetup {
-                if showNotificationPrompt {
+                if !hasCompletedOnboarding {
+                    OnboardingView(onComplete: onOnboardingComplete)
+                } else if showNotificationPrompt {
                     NotificationPermissionPromptView(onComplete: onNotificationPromptComplete)
                 } else {
                     MainContent()

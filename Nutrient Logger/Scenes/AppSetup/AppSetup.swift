@@ -13,6 +13,8 @@ import Firebase
 class AppSetup {
 
     static func doSetup() async {
+        migrateExistingUserPastOnboarding()
+
         #if !DEBUG
         FirebaseApp.configure()
         #endif
@@ -28,6 +30,18 @@ class AppSetup {
         } else {
             setupAnalytics()
             await registerUserService()
+        }
+    }
+
+    // Silently marks onboarding complete for users who installed before it existed.
+    // Gated on !hasStartedOnboarding so a user killed mid-onboarding is not skipped.
+    private static func migrateExistingUserPastOnboarding() {
+        let defaults = UserDefaults.standard
+        let hasLaunched = defaults.bool(forKey: "hasLaunchedAppBefore")
+        let hasCompleted = defaults.bool(forKey: "hasCompletedOnboarding")
+        let hasStarted = defaults.bool(forKey: "hasStartedOnboarding")
+        if hasLaunched && !hasCompleted && !hasStarted {
+            defaults.set(true, forKey: "hasCompletedOnboarding")
         }
     }
 
