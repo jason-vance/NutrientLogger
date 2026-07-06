@@ -312,6 +312,31 @@ class FdcNutrientGroupMapper {
         FdcNutrientGroupMapper.NutrientNumber_Sodium_Na: "Sodium",
         FdcNutrientGroupMapper.NutrientNumber_Sulfur_S: "Sulfur",
         FdcNutrientGroupMapper.NutrientNumber_Zinc_Zn: "Zinc",
+
+        FdcNutrientGroupMapper.NutrientNumber_Cholesterol: "Cholesterol",
+
+        FdcNutrientGroupMapper.NutrientNumber_Tryptophan: "Tryptophan",
+        FdcNutrientGroupMapper.NutrientNumber_Threonine: "Threonine",
+        FdcNutrientGroupMapper.NutrientNumber_Isoleucine: "Isoleucine",
+        FdcNutrientGroupMapper.NutrientNumber_Leucine: "Leucine",
+        FdcNutrientGroupMapper.NutrientNumber_Lysine: "Lysine",
+        FdcNutrientGroupMapper.NutrientNumber_Methionine: "Methionine",
+        FdcNutrientGroupMapper.NutrientNumber_Cystine: "Cystine",
+        FdcNutrientGroupMapper.NutrientNumber_Phenylalanine: "Phenylalanine",
+        FdcNutrientGroupMapper.NutrientNumber_Tyrosine: "Tyrosine",
+        FdcNutrientGroupMapper.NutrientNumber_Valine: "Valine",
+        FdcNutrientGroupMapper.NutrientNumber_Arginine: "Arginine",
+        FdcNutrientGroupMapper.NutrientNumber_Histidine: "Histidine",
+        FdcNutrientGroupMapper.NutrientNumber_Alanine: "Alanine",
+        FdcNutrientGroupMapper.NutrientNumber_AsparticAcid: "Aspartic Acid",
+        FdcNutrientGroupMapper.NutrientNumber_GlutamicAcid: "Glutamic Acid",
+        FdcNutrientGroupMapper.NutrientNumber_Glycine: "Glycine",
+        FdcNutrientGroupMapper.NutrientNumber_Proline: "Proline",
+        FdcNutrientGroupMapper.NutrientNumber_Serine: "Serine",
+        FdcNutrientGroupMapper.NutrientNumber_Hydroxyproline: "Hydroxyproline",
+        FdcNutrientGroupMapper.NutrientNumber_Cysteine: "Cysteine",
+        FdcNutrientGroupMapper.NutrientNumber_Glutamine: "Glutamine",
+        FdcNutrientGroupMapper.NutrientNumber_Taurine: "Taurine",
     ]
     
     public static let NutrientNameOverrides: [String:String] = [

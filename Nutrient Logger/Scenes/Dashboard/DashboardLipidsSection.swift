@@ -97,13 +97,25 @@ struct DashboardLipidsSection: View {
     ]
     
     let lipidsKey = FdcNutrientGroupMapper.GroupNumber_Lipids
-    
+
+    @AppStorage("nutrientCustomize_lipids_order") private var orderRaw: String = ""
+    @AppStorage("nutrientCustomize_lipids_hidden") private var hiddenRaw: String = ""
+
     let aggregator: NutrientDataAggregator
-    
+
+    private var effectiveOrder: [String] {
+        if orderRaw.isEmpty { return Self.orderedWhitelist }
+        return orderRaw.split(separator: ",").map(String.init)
+    }
+
+    private var hiddenSet: Set<String> {
+        Set(hiddenRaw.split(separator: ",").map(String.init).filter { !$0.isEmpty })
+    }
+
     var body: some View {
         DashboardNutrientsSection(
-            blacklist: Self.blacklist,
-            orderedWhitelist: Self.orderedWhitelist,
+            blacklist: Self.blacklist.union(hiddenSet),
+            orderedWhitelist: effectiveOrder.filter { !hiddenSet.contains($0) },
             groupKey: lipidsKey,
             headerText: "Lipids",
             aggregator: aggregator

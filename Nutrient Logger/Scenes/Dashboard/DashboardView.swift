@@ -40,6 +40,7 @@ struct DashboardView: View {
     @State private var showAutoMarketingView: Bool = false
     @State private var showStreakStats: Bool = false
     @State private var showLaunchOfferPaywall: Bool = false
+    @State private var showCustomizeNutrients: Bool = false
     @State private var now: Date = .now
 
     @AppStorage("onboardingStartedAt") private var onboardingStartedAt: Double = 0
@@ -230,11 +231,21 @@ struct DashboardView: View {
                 milestones: Self.streakMilestones
             )
         }
+        .sheet(isPresented: $showCustomizeNutrients) {
+            NutrientCustomizeSheet()
+        }
     }
     
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
             DateButton()
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                showCustomizeNutrients = true
+            } label: {
+                Image(systemName: "slider.horizontal.3")
+            }
         }
         ToolbarItem(placement: .topBarTrailing) {
             Button {

@@ -199,7 +199,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   5. Paywall (contextual, after they understand the value)
   6. Discount for quick subscribers (current subscription is advertised as a discount, available for the first 24 hours, countdown on dashboard, afterwards only the "full-priced" subscription is avaialable)
 - [ ] **Nutrition Tab Customization & Charts**
-  1. [ ] Ability to select and order which nutrients are on the nutrition tab (per nutrient on/off toggle, order within nutrient group)
+  1. [x] Ability to select and order which nutrients are on the nutrition tab (per nutrient on/off toggle, order within nutrient group)
   2. [ ] Use Swift Charts for nutrient intake charts instead of my own
   3. [ ] Add trend charts, and nutrient trend charts, to calories, macros, water (like other nutrients have, navigated to by clicking their tile)
   4. [ ] Move nutrition goals from profile to nutrition tab settings (same button icon as body tab settings)
