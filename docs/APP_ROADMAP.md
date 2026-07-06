@@ -168,13 +168,6 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [ ] **Navigation & Tab Restructure** (still needs some planning)
   1. [x] Dashboard should probably be renamed "Nutrition"
   2. [x] Food search moved to nutrition tab
-- [ ] **Onboarding flow redesign** — current `AppSetupView` gets users into the app but likely doesn't sell the value. New flow:
-  1. Hero screen: "Track every vitamin, mineral, and amino acid. Offline."
-  2. Goal setting: what are you tracking for? (general health / specific deficiency / diet protocol)
-  3. Profile setup (age, gender, weight → RDI, BMI calculation. Height -> useful for anything?)
-  4. Notification permission
-  5. Paywall (contextual, after they understand the value)
-  6. Discount for quick subscribers (current subscription is advertised as a discount, available for the first 24 hours, countdown on dashboard, afterwards only the "full-priced" subscription is avaialable)
 - [x] **Engagement & Gamification**
   1. [x] Daily Streak is moved into a Nutition tab card
   2. [x] Weekly Streak is moved into a Body tab card 
@@ -192,30 +185,36 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   8. [x] Move body settings from profile to body tab settings
   9. [x] Body metrics change stat should be based on selected time frame 
   10. [x] Move goals and calorie target to the body tab settings 
-- [ ] **Nutrition Tab Customization & Charts**
-  1. [ ] Ability to select and order which nutrients are on the nutrition tab (per nutrient on/off toggle, order within nutrient group)
-  2. [ ] Use Swift Charts for nutrient intake charts instead of my own
-  3. [ ] Add trend charts, and nutrient trend charts, to calories, macros, water (like other nutrients have, navigated to by clicking their tile)
-  4. [ ] Move nutrition goals from profile to nutrition tab settings (same button icon as body tab settings)
 - [x] **Profile Tab**
   1. [x] Add achievements card
   2. [x] Add subscription card
   3. [x] Put personal data into a card
   4. [x] Group other settings appropriately into cards
   5. [x] Add an app version label at the bottom
-- [ ] **Misc**
-  1. [x] Calorie goal ring on nutrition tab
-  2. [x] Food search bar not immediately in view
-  3. [x] Crash when searching "Five guys"
-  4. [ ] Body charts - today's data on a 7-day chart is off to the right
-  4. [ ] Match styling across app (text fields are sometimes black or blue, other inconsistencies?)
-  5. [ ] Fix food log field tapping area (way to small especially portion amount "1")
-  6. [ ] Search as you type
-  7. [ ] Check places where we show the marketing view. Do they properly block the premium feature (NutrientTrendView does a full screen cover, but dismissing the full screen cover shows the screen after all)
+- [ ] **Onboarding flow redesign** — current `AppSetupView` gets users into the app but likely doesn't sell the value. New flow:
+  1. Hero screen: "Track every vitamin, mineral, and amino acid. Offline."
+  2. Goal setting: what are you tracking for? (general health / specific deficiency / diet protocol)
+  3. Profile setup (age, gender, weight → RDI, BMI calculation. Height -> useful for anything?)
+  4. Notification permission
+  5. Paywall (contextual, after they understand the value)
+  6. Discount for quick subscribers (current subscription is advertised as a discount, available for the first 24 hours, countdown on dashboard, afterwards only the "full-priced" subscription is avaialable)
+- [ ] **Nutrition Tab Customization & Charts**
+  1. [ ] Ability to select and order which nutrients are on the nutrition tab (per nutrient on/off toggle, order within nutrient group)
+  2. [ ] Use Swift Charts for nutrient intake charts instead of my own
+  3. [ ] Add trend charts, and nutrient trend charts, to calories, macros, water (like other nutrients have, navigated to by clicking their tile)
+  4. [ ] Move nutrition goals from profile to nutrition tab settings (same button icon as body tab settings)
 - [ ] **Analytics:** Track onboarding funnel (step completion rate, drop-off point), time-to-first-log, and day-1/day-7/day-30 retention cohorts
 - [ ] **Export (CSV)** as a premium feature — export all logged foods with nutrient data for a date range. Useful for users tracking for medical or clinical reasons (a natural Nutrient Logger audience).
 - [ ] **Nutrient deficiency insights** — a simple weekly digest view: "You've been consistently low in Vitamin D and Magnesium this week. Here are foods that would help." This is premium-only and differentiates from every macro-focused competitor.
 - [ ] Address the `//TODO: Days with foods hang for a second while loading` in `DashboardView.swift`
+- [ ] **Misc**
+  1. [x] Calorie goal ring on nutrition tab
+  2. [x] Food search bar not immediately in view
+  3. [x] Crash when searching "Five guys"
+  4. [ ] Match styling across app (text fields are sometimes black or blue, other inconsistencies?. Generally, interactive elements should be .accentColor, non-interactive text should be .black.)
+  5. [ ] Fix food log field tapping area (way to small especially portion amount "1")
+  6. [ ] Search as you type
+  7. [ ] Check places where we show the marketing view. Do they properly block the premium feature (NutrientTrendView does a full screen cover, but dismissing the full screen cover shows the screen after all)
 
 ### App Store Connect
 - [ ] Consider adding a **third subscription tier**: an annual "Family" or one-time lifetime purchase if StoreKit 2 supports it — v4.0 is a natural moment to introduce this
