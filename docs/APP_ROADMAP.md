@@ -191,7 +191,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   3. [x] Put personal data into a card
   4. [x] Group other settings appropriately into cards
   5. [x] Add an app version label at the bottom
-- [ ] **Onboarding flow redesign** — current `AppSetupView` gets users into the app but likely doesn't sell the value. New flow:
+- [x] **Onboarding flow redesign** — current `AppSetupView` gets users into the app but likely doesn't sell the value. New flow:
   1. Hero screen: "Track every vitamin, mineral, and amino acid. Offline."
   2. Goal setting: what are you tracking for? (general health / specific deficiency / diet protocol)
   3. Profile setup (age, gender, weight → RDI, BMI calculation. Height -> useful for anything?)

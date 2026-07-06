@@ -17,8 +17,12 @@ struct OnboardingView: View {
     @Inject private var userService: UserService
 
     @AppStorage("hasStartedOnboarding") private var hasStartedOnboarding: Bool = false
+    @AppStorage("onboardingStartedAt") private var onboardingStartedAt: Double = 0
+    @AppStorage("hasPromptedForNotifications") private var hasPromptedForNotifications: Bool = false
 
     @State private var step: Int = 0
+
+    private static let totalSteps = 5
 
     private func advance() {
         withAnimation(.easeInOut(duration: 0.3)) {
@@ -33,8 +37,13 @@ struct OnboardingView: View {
                 let entry = WeightEntry(date: .today, weightKg: kg)
                 await MainActor.run { modelContext.insert(entry) }
             }
-            await MainActor.run { onComplete() }
+            await MainActor.run { advance() }
         }
+    }
+
+    private func finishOnboarding() {
+        hasPromptedForNotifications = true
+        onComplete()
     }
 
     var body: some View {
@@ -50,34 +59,36 @@ struct OnboardingView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .onAppear { hasStartedOnboarding = true }
+        .onAppear {
+            hasStartedOnboarding = true
+            if onboardingStartedAt == 0 {
+                onboardingStartedAt = Date.now.timeIntervalSince1970
+            }
+        }
     }
 
     @ViewBuilder private var stepContent: some View {
         if step == 0 {
             OnboardingHeroView(onContinue: advance)
-                .transition(.asymmetric(
-                    insertion: .move(edge: .trailing),
-                    removal: .move(edge: .leading)
-                ))
+                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
         } else if step == 1 {
             OnboardingGoalView(onContinue: advance)
-                .transition(.asymmetric(
-                    insertion: .move(edge: .trailing),
-                    removal: .move(edge: .leading)
-                ))
-        } else {
+                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+        } else if step == 2 {
             OnboardingProfileView(onComplete: saveAndComplete)
-                .transition(.asymmetric(
-                    insertion: .move(edge: .trailing),
-                    removal: .move(edge: .leading)
-                ))
+                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+        } else if step == 3 {
+            OnboardingNotificationView(onContinue: advance)
+                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+        } else {
+            OnboardingPaywallView(onComplete: finishOnboarding)
+                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
         }
     }
 
     @ViewBuilder private func ProgressDots(step: Int) -> some View {
         HStack(spacing: 8) {
-            ForEach(0..<3, id: \.self) { i in
+            ForEach(0..<Self.totalSteps, id: \.self) { i in
                 Capsule()
                     .fill(i == step ? Color.white : Color.white.opacity(0.3))
                     .frame(width: i == step ? 24 : 8, height: 8)
@@ -89,6 +100,9 @@ struct OnboardingView: View {
 
 #Preview {
     let _ = swinjectContainer.autoregister(UserService.self) { MockUserService(currentUser: .sample) }
+    let _ = swinjectContainer.autoregister(EngagementAnalytics.self) { MockEngagementAnalytics() }
+    let _ = swinjectContainer.autoregister(SubscriptionAnalytics.self) { MockSubscriptionAnalytics() }
 
     OnboardingView(onComplete: {})
+        .environmentObject(SubscriptionManager(isForScreenshots: true))
 }

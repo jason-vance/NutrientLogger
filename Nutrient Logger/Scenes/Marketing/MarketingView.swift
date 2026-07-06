@@ -30,15 +30,22 @@ struct MarketingView: View {
     @State private var isCheckingDiscountCode = false
     
     private var displayProducts: [Product] {
-        // Highest price first so the yearly plan (best value/LTV) is shown before monthly.
-        subscriptionManager.products
-            .map { $0.value }
-            .sorted { $0.price > $1.price }
+        let ids = subscriptionManager.isInDiscountWindow
+            ? [SubscriptionManager.yearlyDiscountedProductId, SubscriptionManager.monthlyDiscountedProductId]
+            : [SubscriptionManager.yearlyProductId, SubscriptionManager.monthlyProductId]
+        return ids.compactMap { subscriptionManager.products[$0] }
     }
 
     private var yearlySavingsPercent: Int? {
-        guard let monthly = subscriptionManager.products[SubscriptionManager.monthlyProductId],
-              let yearly = subscriptionManager.products[SubscriptionManager.yearlyProductId],
+        let monthlyId = subscriptionManager.isInDiscountWindow
+            ? SubscriptionManager.monthlyDiscountedProductId
+            : SubscriptionManager.monthlyProductId
+        let yearlyId = subscriptionManager.isInDiscountWindow
+            ? SubscriptionManager.yearlyDiscountedProductId
+            : SubscriptionManager.yearlyProductId
+
+        guard let monthly = subscriptionManager.products[monthlyId],
+              let yearly = subscriptionManager.products[yearlyId],
               monthly.price > 0 else {
             return nil
         }
@@ -224,7 +231,8 @@ struct MarketingView: View {
     
     @ViewBuilder private func SubscribeButton(product: Product) -> some View {
         VStack(alignment: .trailing, spacing: 4) {
-            if product.id == SubscriptionManager.yearlyProductId, let percent = yearlySavingsPercent {
+            let isYearly = product.id == SubscriptionManager.yearlyProductId || product.id == SubscriptionManager.yearlyDiscountedProductId
+            if isYearly, let percent = yearlySavingsPercent {
                 SavingsBadge(percent: percent)
             }
 
@@ -288,9 +296,16 @@ struct MarketingView: View {
     }
 }
 
-#Preview {
+#Preview("In Discount Window") {
+    let _ = UserDefaults.standard.set(Date.now.timeIntervalSince1970, forKey: "onboardingStartedAt")
     let _ = swinjectContainer.autoregister(SubscriptionAnalytics.self) { MockSubscriptionAnalytics() }
+    MarketingView(trigger: .smartPaywall)
+        .environmentObject(SubscriptionManager())
+}
 
+#Preview("Out of Discount Window") {
+    let _ = UserDefaults.standard.set(0.0, forKey: "onboardingStartedAt")
+    let _ = swinjectContainer.autoregister(SubscriptionAnalytics.self) { MockSubscriptionAnalytics() }
     MarketingView(trigger: .smartPaywall)
         .environmentObject(SubscriptionManager())
 }

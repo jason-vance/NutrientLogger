@@ -36,8 +36,8 @@ class SubscriptionManager: ObservableObject {
 
     var planDisplayName: String? {
         switch activeProductId {
-        case Self.monthlyProductId: return "Premium (Monthly)"
-        case Self.yearlyProductId: return "Premium (Yearly)"
+        case Self.monthlyProductId, Self.monthlyDiscountedProductId: return "Premium (Monthly)"
+        case Self.yearlyProductId, Self.yearlyDiscountedProductId: return "Premium (Yearly)"
         default: return nil
         }
     }
@@ -47,13 +47,30 @@ class SubscriptionManager: ObservableObject {
 
     private static var hasCheckedTransitions = false
     
-    static let monthlyProductId = "nutrient.logger.premium.monthly"
-    static let yearlyProductId = "nutrient.logger.premium.yearly"
+    static let monthlyDiscountedProductId = "nutrient.logger.premium.monthly"
+    static let yearlyDiscountedProductId = "nutrient.logger.premium.yearly"
+    static let monthlyProductId = "nutrient.logger.premium.monthly.full.price"
+    static let yearlyProductId = "nutrient.logger.premium.yearly.full.price"
 
     static let productIds = [
+        monthlyDiscountedProductId,
+        yearlyDiscountedProductId,
         monthlyProductId,
         yearlyProductId,
     ]
+
+    /// True when the user is within the 24-hour window that begins when they first opened the onboarding flow.
+    var isInDiscountWindow: Bool {
+        let startedAt = UserDefaults.standard.double(forKey: "onboardingStartedAt")
+        guard startedAt > 0 else { return false }
+        return Date.now.timeIntervalSince1970 - startedAt < 24 * 3600
+    }
+
+    var discountSecondsRemaining: TimeInterval {
+        let startedAt = UserDefaults.standard.double(forKey: "onboardingStartedAt")
+        guard startedAt > 0 else { return 0 }
+        return max(0, 24 * 3600 - (Date.now.timeIntervalSince1970 - startedAt))
+    }
     
     private var transactionUpdates: Task<Void, Never>? = nil
 

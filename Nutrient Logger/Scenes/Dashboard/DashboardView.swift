@@ -39,6 +39,22 @@ struct DashboardView: View {
 
     @State private var showAutoMarketingView: Bool = false
     @State private var showStreakStats: Bool = false
+    @State private var showLaunchOfferPaywall: Bool = false
+    @State private var now: Date = .now
+
+    @AppStorage("onboardingStartedAt") private var onboardingStartedAt: Double = 0
+
+    private var isInDiscountWindow: Bool {
+        guard onboardingStartedAt > 0 else { return false }
+        return Date.now.timeIntervalSince1970 - onboardingStartedAt < 24 * 3600
+    }
+
+    private var discountTimeRemaining: String {
+        let seconds = max(0, 24 * 3600 - (now.timeIntervalSince1970 - onboardingStartedAt))
+        let h = Int(seconds) / 3600
+        let m = (Int(seconds) % 3600) / 60
+        return h > 0 ? "\(h)h \(m)m" : "\(m)m"
+    }
 
     private var todaysFoods: [ConsumedFood] {
         consumedFoods.filter { $0.dateLogged == .today }
@@ -157,6 +173,10 @@ struct DashboardView: View {
             VStack {
                 NativeAdListRow(ad: $ad, size: .small)
                     .padding(.horizontal)
+                if isInDiscountWindow && !subscriptionManager.isSubscribed {
+                    LaunchDiscountBanner()
+                        .padding(.horizontal)
+                }
                 StreakCardView(count: loggingStreakCount, unit: "Day", milestones: Self.streakMilestones, onTap: { showStreakStats = true })
                     .padding(.horizontal)
                 DashboardNutrientSections(date: date, foods: foodItems, consumedFoods: todaysConsumedFoods, allConsumedFoods: consumedFoods)
@@ -165,6 +185,10 @@ struct DashboardView: View {
         .toolbar { Toolbar() }
         .navigationTitle(Text(navigationTitle))
         .task { await subscriptionManager.checkSubscriptionTransitions(analytics: subscriptionAnalytics) }
+        .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { now = $0 }
+        .fullScreenCover(isPresented: $showLaunchOfferPaywall) {
+            MarketingView(trigger: .smartPaywall)
+        }
         .onChange(of: todaysConsumedFoods, initial: true) { fetchFoods() }
         .onChange(of: todaysFoods, initial: true) { _, _ in onTodaysFoodsChanged() }
         .animation(.snappy, value: date)
@@ -259,7 +283,40 @@ struct DashboardView: View {
         )
         .listRowDefaultModifiers()
     }
-    
+
+    @ViewBuilder private func LaunchDiscountBanner() -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "clock.fill")
+                .foregroundStyle(Color.accentColor)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Launch offer ends in \(discountTimeRemaining)")
+                    .font(.subheadline.bold())
+                Text("Upgrade at a discount before it expires")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            Button("Upgrade") {
+                showLaunchOfferPaywall = true
+            }
+            .font(.caption.bold())
+            .foregroundStyle(.white)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(Color.accentColor)
+            .clipShape(Capsule())
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.accentColor.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
+                )
+        )
+    }
+
 }
 
 #Preview {
