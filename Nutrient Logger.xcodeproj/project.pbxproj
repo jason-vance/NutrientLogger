@@ -183,6 +183,7 @@
 				Scenes/ConsumedWater/WaterTrendDataProvider.swift,
 				Scenes/Dashboard/Domain/DashboardMealList.swift,
 				Scenes/Dashboard/Domain/NutrientDataAggregator.swift,
+				Scenes/Export/CsvExportService.swift,
 				Scenes/FoodDetails/Workers/FoodSaver.swift,
 				Scenes/FoodSearch/Domain/RecentSearch.swift,
 				Scenes/FoodSearch/Domain/SearchCategory.swift,

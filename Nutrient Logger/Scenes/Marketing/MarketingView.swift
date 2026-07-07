@@ -198,6 +198,7 @@ struct MarketingView: View {
             MarketingPoint("Weight and body fat tracking with goals")
             MarketingPoint("Apple Health sync for calories, macros, and weight")
             MarketingPoint("Custom micronutrient goals")
+            MarketingPoint("Export your data to CSV")
             MarketingPoint("Completely ad-free experience")
             MarketingPoint("Priority email support")
         }

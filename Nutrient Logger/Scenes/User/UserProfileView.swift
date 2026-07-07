@@ -294,9 +294,42 @@ struct UserProfileView: View {
                 DataNavRow("Browse Nutrients") {
                     NutrientLibraryView()
                 }
+                Divider().padding(.horizontal)
+                ExportDataRow()
             }
             .padding(.vertical, 4)
             .inCard(backgroundColor: Color.gray)
+        }
+    }
+
+    @ViewBuilder private func ExportDataRow() -> some View {
+        if subscriptionManager.isSubscribed {
+            DataNavRow("Export Data (CSV)") {
+                ExportDataView()
+            }
+        } else {
+            Button {
+                presentMarketingView(trigger: .csvExport, feature: "csv_export")
+            } label: {
+                HStack {
+                    Text("Export Data (CSV)")
+                    Text("PREMIUM")
+                        .font(.caption2.bold())
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background {
+                            Capsule().foregroundStyle(Color.accentColor.gradient)
+                        }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .foregroundStyle(Color.primary)
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 10)
         }
     }
 

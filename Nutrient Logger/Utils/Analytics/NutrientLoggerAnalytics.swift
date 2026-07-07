@@ -29,6 +29,7 @@ enum PaywallTrigger: String {
     case healthSync = "health_sync"
     case weightGoal = "weight_goal"
     case profileUpsell = "profile_upsell"
+    case csvExport = "csv_export"
 }
 
 protocol SubscriptionAnalytics {
@@ -71,6 +72,7 @@ protocol EngagementAnalytics {
     func weightLogged()
     func weightDeleted()
     func trendNutrientViewed(nutrientName: String)
+    func dataExported(foodCount: Int)
 }
 
 
@@ -555,6 +557,13 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     public func trendNutrientViewed(nutrientName: String) {
         analytics.log(event: eventTrendNutrientViewed, parameters: [parameterNutrient: nutrientName])
+    }
+
+    private let eventDataExported = "data_exported"
+    private let parameterFoodCount = "food_count"
+
+    public func dataExported(foodCount: Int) {
+        analytics.log(event: eventDataExported, parameters: [parameterFoodCount: foodCount])
     }
 
     // MARK: - Premium Feature Engagement
