@@ -9,7 +9,6 @@ import SwiftUI
 import SwinjectAutoregistration
 
 //TODO: Add a toast-like notification for when a food is successfully saved
-//TODO: Hard to tap portion amount field 
 struct FoodDetailsView: View {
     
     enum Mode {
@@ -399,6 +398,8 @@ struct FoodDetailsView: View {
             } label: {
                 Text(selectedPortion?.name ?? "Select Portion")
                     .bold()
+                    .frame(minHeight: 44, alignment: .trailing)
+                    .contentShape(Rectangle())
             }
         }
         .listRowDefaultModifiers()
@@ -420,6 +421,8 @@ struct FoodDetailsView: View {
             .multilineTextAlignment(.trailing)
             .bold()
             .foregroundStyle(Color.accentColor)
+            .frame(minWidth: 44, minHeight: 44, alignment: .trailing)
+            .contentShape(Rectangle())
         }
         .listRowDefaultModifiers()
     }
