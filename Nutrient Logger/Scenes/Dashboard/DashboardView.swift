@@ -232,7 +232,7 @@ struct DashboardView: View {
             )
         }
         .sheet(isPresented: $showCustomizeNutrients) {
-            NutrientCustomizeSheet()
+            NutritionSettingsSheet()
         }
     }
     

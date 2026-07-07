@@ -198,11 +198,11 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   4. Notification permission
   5. Paywall (contextual, after they understand the value)
   6. Discount for quick subscribers (current subscription is advertised as a discount, available for the first 24 hours, countdown on dashboard, afterwards only the "full-priced" subscription is avaialable)
-- [ ] **Nutrition Tab Customization & Charts**
+- [x] **Nutrition Tab Customization & Charts**
   1. [x] Ability to select and order which nutrients are on the nutrition tab (per nutrient on/off toggle, order within nutrient group)
   2. [x] Use Swift Charts for nutrient intake charts instead of my own
   3. [x] Add trend charts, and nutrient trend charts, to calories, macros, water (like other nutrients have, navigated to by clicking their tile)
-  4. [ ] Move nutrition goals from profile to nutrition tab settings (same button icon as body tab settings)
+  4. [x] Move nutrition goals from profile to nutrition tab settings (same button icon as body tab settings)
 - [ ] **Analytics:** Track onboarding funnel (step completion rate, drop-off point), time-to-first-log, and day-1/day-7/day-30 retention cohorts
 - [ ] **Export (CSV)** as a premium feature — export all logged foods with nutrient data for a date range. Useful for users tracking for medical or clinical reasons (a natural Nutrient Logger audience).
 - [ ] **Nutrient deficiency insights** — a simple weekly digest view: "You've been consistently low in Vitamin D and Magnesium this week. Here are foods that would help." This is premium-only and differentiates from every macro-focused competitor.
