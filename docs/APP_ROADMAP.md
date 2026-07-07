@@ -203,7 +203,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   2. [x] Use Swift Charts for nutrient intake charts instead of my own
   3. [x] Add trend charts, and nutrient trend charts, to calories, macros, water (like other nutrients have, navigated to by clicking their tile)
   4. [x] Move nutrition goals from profile to nutrition tab settings (same button icon as body tab settings)
-- [ ] **Analytics:** Track onboarding funnel (step completion rate, drop-off point), time-to-first-log, and day-1/day-7/day-30 retention cohorts
+- [x] **Analytics:** Track onboarding funnel (step completion rate, drop-off point), time-to-first-log, and day-1/day-7/day-30 retention cohorts
 - [ ] **Export (CSV)** as a premium feature — export all logged foods with nutrient data for a date range. Useful for users tracking for medical or clinical reasons (a natural Nutrient Logger audience).
 - [ ] **Nutrient deficiency insights** — a simple weekly digest view: "You've been consistently low in Vitamin D and Magnesium this week. Here are foods that would help." This is premium-only and differentiates from every macro-focused competitor.
 - [ ] Address the `//TODO: Days with foods hang for a second while loading` in `DashboardView.swift`
@@ -233,6 +233,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 These are worth tracking but don't have a clear version slot yet:
 
+- **Analytics:** Build the onboarding funnel tracking on Google Analytics
 - **Food database coverage** — evaluate supplementing or replacing the underlying food database to close common-food gaps surfaced in reviews (beyond the search-ranking fix in v3.9). Separate problem from matching/ranking: this is about what's *in* the database, not how it's found.
 - **AI photo logging** — the market is moving here fast (PlateLens, Nutrola). Expensive to build well; consider a third-party API (LogMeal, Calorie Mama) rather than training your own model.
 - **Carnivore/keto mode** — preset nutrient goals for specific diet protocols. Natural cross-sell with Carnivore Diet Guide & Recipes.

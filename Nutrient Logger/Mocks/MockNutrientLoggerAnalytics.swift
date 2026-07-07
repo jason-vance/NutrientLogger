@@ -25,6 +25,8 @@ class MockPremiumAnalytics: PremiumAnalytics {
 
 class MockEngagementAnalytics: EngagementAnalytics {
     func screenViewed(screenName: String) {}
+    func onboardingStepViewed(stepName: String, stepIndex: Int) {}
+    func onboardingCompleted() {}
     func customFoodCreated() {}
     func customFoodEdited() {}
     func customFoodDeleted() {}

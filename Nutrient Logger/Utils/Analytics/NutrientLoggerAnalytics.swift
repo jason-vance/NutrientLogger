@@ -54,6 +54,8 @@ enum NotificationPermissionResult: String {
 
 protocol EngagementAnalytics {
     func screenViewed(screenName: String)
+    func onboardingStepViewed(stepName: String, stepIndex: Int)
+    func onboardingCompleted()
     func customFoodCreated()
     func customFoodEdited()
     func customFoodDeleted()
@@ -205,6 +207,28 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
         var dict = [String:Any]()
         addFoodToDictionary(food, &dict)
         analytics.log(event: eventFoodLogged, parameters: dict)
+        recordTimeToFirstLogIfNeeded()
+    }
+
+    // MARK: - Time to First Log
+
+    private let keyOnboardingCompletedAt = "onboardingCompletedAt"
+    private let keyHasLoggedFirstFood = "hasLoggedFirstFood"
+    private let eventTimeToFirstLog = "time_to_first_log"
+    private let parameterSeconds = "seconds"
+
+    // Only fires for users who completed the current onboarding flow (which stamps
+    // onboardingCompletedAt), so migrated/existing users don't skew the metric.
+    private func recordTimeToFirstLogIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: keyHasLoggedFirstFood) else { return }
+        defaults.set(true, forKey: keyHasLoggedFirstFood)
+
+        let onboardingCompletedAt = defaults.double(forKey: keyOnboardingCompletedAt)
+        guard onboardingCompletedAt > 0 else { return }
+
+        let seconds = Date.now.timeIntervalSince1970 - onboardingCompletedAt
+        analytics.log(event: eventTimeToFirstLog, parameters: [parameterSeconds: seconds])
     }
 
     public func foodLogFailed(_ food: FoodItem) {
@@ -440,6 +464,22 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     public func screenViewed(screenName: String) {
         analytics.log(event: eventScreenViewed, parameters: [parameterScreenName: screenName])
+    }
+
+    private let eventOnboardingStepViewed = "onboarding_step_viewed"
+    private let eventOnboardingCompleted = "onboarding_completed"
+    private let parameterStepName = "step_name"
+    private let parameterStepIndex = "step_index"
+
+    public func onboardingStepViewed(stepName: String, stepIndex: Int) {
+        analytics.log(event: eventOnboardingStepViewed, parameters: [
+            parameterStepName: stepName,
+            parameterStepIndex: stepIndex,
+        ])
+    }
+
+    public func onboardingCompleted() {
+        analytics.log(event: eventOnboardingCompleted)
     }
 
     public func customFoodCreated() {

@@ -15,14 +15,22 @@ struct OnboardingView: View {
     @Environment(\.modelContext) private var modelContext
 
     @Inject private var userService: UserService
+    @Inject private var engagementAnalytics: EngagementAnalytics
 
     @AppStorage("hasStartedOnboarding") private var hasStartedOnboarding: Bool = false
     @AppStorage("onboardingStartedAt") private var onboardingStartedAt: Double = 0
+    @AppStorage("onboardingCompletedAt") private var onboardingCompletedAt: Double = 0
     @AppStorage("hasPromptedForNotifications") private var hasPromptedForNotifications: Bool = false
 
     @State private var step: Int = 0
 
     private static let totalSteps = 5
+    private static let stepNames = ["hero", "goal", "profile", "notification", "paywall"]
+
+    private func trackStepViewed(_ step: Int) {
+        guard Self.stepNames.indices.contains(step) else { return }
+        engagementAnalytics.onboardingStepViewed(stepName: Self.stepNames[step], stepIndex: step)
+    }
 
     private func advance() {
         withAnimation(.easeInOut(duration: 0.3)) {
@@ -43,6 +51,8 @@ struct OnboardingView: View {
 
     private func finishOnboarding() {
         hasPromptedForNotifications = true
+        onboardingCompletedAt = Date.now.timeIntervalSince1970
+        engagementAnalytics.onboardingCompleted()
         onComplete()
     }
 
@@ -64,6 +74,10 @@ struct OnboardingView: View {
             if onboardingStartedAt == 0 {
                 onboardingStartedAt = Date.now.timeIntervalSince1970
             }
+            trackStepViewed(step)
+        }
+        .onChange(of: step) { _, newStep in
+            trackStepViewed(newStep)
         }
     }
 
