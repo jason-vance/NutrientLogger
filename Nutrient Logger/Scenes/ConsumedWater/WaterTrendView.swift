@@ -16,6 +16,7 @@ struct WaterTrendView: View {
     @Inject private var rdiLibrary: NutrientRdiLibrary
     @Inject private var userService: UserService
     @Inject private var engagementAnalytics: EngagementAnalytics
+    @Inject private var remoteDatabase: RemoteDatabase
 
     let waterUnit: WaterUnit
 
@@ -66,14 +67,29 @@ struct WaterTrendView: View {
         let startDate = range.start
         let endDate = range.end
 
-        let descriptor = FetchDescriptor<WaterEntry>(
+        let waterEntryDescriptor = FetchDescriptor<WaterEntry>(
             predicate: #Predicate { $0.date >= startDate && $0.date <= endDate }
         )
-        let entries = (try? modelContext.fetch(descriptor)) ?? []
+        let entries = (try? modelContext.fetch(waterEntryDescriptor)) ?? []
         let waterData = entries.map { (date: $0.date, amountGrams: $0.amountGrams) }
+
+        let consumedFoodDescriptor = FetchDescriptor<ConsumedFood>(
+            predicate: #Predicate { food in
+                food.dateLogged >= startDate && food.dateLogged <= endDate
+            }
+        )
+        let consumedFoods = (try? modelContext.fetch(consumedFoodDescriptor)) ?? []
+        let foodWaterTotals = NutrientTrendDataProvider(remoteDatabase: remoteDatabase).dailyTotals(
+            for: FdcNutrientGroupMapper.NutrientNumber_Water,
+            consumedFoods: consumedFoods,
+            startDate: startDate,
+            endDate: endDate
+        )
+        let foodWaterGramsByDate = Dictionary(uniqueKeysWithValues: foodWaterTotals.map { ($0.date, $0.amount) })
 
         dailyTotals = WaterTrendDataProvider().dailyTotals(
             directWaterData: waterData,
+            foodWaterGramsByDate: foodWaterGramsByDate,
             startDate: startDate,
             endDate: endDate,
             unit: waterUnit
@@ -196,6 +212,7 @@ struct WaterTrendView: View {
 #Preview {
     let _ = swinjectContainer.autoregister(UserService.self) { MockUserService(currentUser: .sample) }
     let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) { UsdaNutrientRdiLibrary.create() }
+    let _ = swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
     let _ = swinjectContainer.autoregister(EngagementAnalytics.self) { MockEngagementAnalytics() }
 
     NavigationStack {

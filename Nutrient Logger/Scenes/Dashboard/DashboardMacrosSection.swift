@@ -67,7 +67,12 @@ struct DashboardMacrosSection: View {
     private var proteinColorPalette: ColorPalette {
         ColorPaletteService.getColorPaletteFor(number: FdcNutrientGroupMapper.GroupNumber_AminoAcids)
     }
-    
+
+    private func nutrientAndPairs(fdcNumber: String, name: String, unit: String) -> (nutrient: Nutrient, pairs: [NutrientFoodPair]) {
+        let pairs = aggregator.nutrientsByNutrientNumber[fdcNumber] ?? []
+        return (Nutrient(fdcNumber: fdcNumber, name: name, unitName: unit), pairs)
+    }
+
     var body: some View {
         VStack(spacing: .spacingDefault) {
             CaloriesCard()
@@ -79,9 +84,14 @@ struct DashboardMacrosSection: View {
     
     @ViewBuilder private func CaloriesCard() -> some View {
         let lineWidthPts: CGFloat = 32
+        let calories = nutrientAndPairs(
+            fdcNumber: FdcNutrientGroupMapper.NutrientNumber_Energy_KCal,
+            name: "Calories",
+            unit: aggregator.caloriesUnit
+        )
 
         NavigationLink {
-            ConsumedMealsView(date: date)
+            ConsumedNutrientDetailsView(nutrient: calories.nutrient, nutrientFoodPairs: calories.pairs)
         } label: {
             HStack {
                 Spacer()
@@ -118,8 +128,7 @@ struct DashboardMacrosSection: View {
                 amount: aggregator.carbs,
                 unit: aggregator.carbsUnit,
                 goal: user.carbsGoalGrams,
-                key: FdcNutrientGroupMapper.GroupNumber_Carbohydrates,
-                detailHeaderText: "Carbohydrates"
+                fdcNumber: FdcNutrientGroupMapper.NutrientNumber_Carbohydrate_ByDifference
             )
             Macro(
                 name: "Fat",
@@ -128,8 +137,7 @@ struct DashboardMacrosSection: View {
                 amount: aggregator.fat,
                 unit: aggregator.fatUnit,
                 goal: user.fatGoalGrams,
-                key: FdcNutrientGroupMapper.GroupNumber_Lipids,
-                detailHeaderText: "Lipids"
+                fdcNumber: FdcNutrientGroupMapper.NutrientNumber_TotalLipid_Fat
             )
             Macro(
                 name: "Protein",
@@ -138,28 +146,11 @@ struct DashboardMacrosSection: View {
                 amount: aggregator.protein,
                 unit: aggregator.proteinUnit,
                 goal: user.proteinGoalGrams,
-                key: FdcNutrientGroupMapper.GroupNumber_AminoAcids,
-                detailHeaderText: "Amino Acids"
+                fdcNumber: FdcNutrientGroupMapper.NutrientNumber_Protein
             )
         }
     }
-    
-    @ViewBuilder private func MacroDetail(title: String, headerText: String, key: String) -> some View {
-        ScrollView {
-            VStack {
-                DashboardNutrientsSection(
-                    blacklist: [],
-                    orderedWhitelist: [],
-                    groupKey: key,
-                    headerText: headerText,
-                    aggregator: aggregator
-                )
-            }
-            .padding(.horizontal)
-        }
-        .navigationTitle(title)
-    }
-    
+
     @ViewBuilder private func Macro(
         name: String,
         iconName: String,
@@ -167,15 +158,12 @@ struct DashboardMacrosSection: View {
         amount: Double,
         unit: String,
         goal: Double?,
-        key: String,
-        detailHeaderText: String
+        fdcNumber: String
     ) -> some View {
+        let macro = nutrientAndPairs(fdcNumber: fdcNumber, name: name, unit: unit)
+
         NavigationLink {
-            MacroDetail(
-                title: name,
-                headerText: detailHeaderText,
-                key: key
-            )
+            ConsumedNutrientDetailsView(nutrient: macro.nutrient, nutrientFoodPairs: macro.pairs)
         } label: {
             VStack(spacing: 4) {
                 HStack {

@@ -36,6 +36,10 @@ struct NutrientGoalDefaults {
         user: User,
         rdiLibrary: NutrientRdiLibrary
     ) -> LifeStageNutrientRdi? {
+        if let macroRdi = macroGoalRdi(for: nutrientId, user: user) {
+            return macroRdi
+        }
+
         let baseRdi = rdiLibrary.getRdis(nutrientId)?.getRdi(user)
 
         guard let customGoal = user.micronutrientGoals[nutrientId] else {
@@ -53,6 +57,32 @@ struct NutrientGoalDefaults {
             maxAgeYears: .greatestFiniteMagnitude,
             recommendedAmount: customGoal,
             upperLimit: baseRdi?.upperLimit ?? .greatestFiniteMagnitude,
+            unit: unit
+        )
+    }
+
+    private static func macroGoalRdi(for nutrientId: String, user: User) -> LifeStageNutrientRdi? {
+        let (recommendedAmount, unit): (Double, WeightUnit)
+        switch nutrientId {
+        case FdcNutrientGroupMapper.NutrientNumber_Energy_KCal:
+            (recommendedAmount, unit) = (user.calorieGoal ?? defaultCalorieGoal(for: user), .calories)
+        case FdcNutrientGroupMapper.NutrientNumber_Carbohydrate_ByDifference:
+            (recommendedAmount, unit) = (user.carbsGoalGrams ?? defaultCarbsGoal(for: user), .gram)
+        case FdcNutrientGroupMapper.NutrientNumber_TotalLipid_Fat:
+            (recommendedAmount, unit) = (user.fatGoalGrams ?? defaultFatGoal(for: user), .gram)
+        case FdcNutrientGroupMapper.NutrientNumber_Protein:
+            (recommendedAmount, unit) = (user.proteinGoalGrams ?? defaultProteinGoal(for: user), .gram)
+        default:
+            return nil
+        }
+
+        return LifeStageNutrientRdi.create(
+            nutrientFdcNumber: nutrientId,
+            gender: .unknown,
+            minAgeYears: 0,
+            maxAgeYears: .greatestFiniteMagnitude,
+            recommendedAmount: recommendedAmount,
+            upperLimit: .greatestFiniteMagnitude,
             unit: unit
         )
     }

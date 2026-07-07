@@ -40,6 +40,13 @@ struct ConsumedNutrientDetailsView: View {
     private let nutrientFoodPairs: [NutrientFoodPair]
     
     private var colorPalette: ColorPalette {
+        if nutrient.fdcNumber == FdcNutrientGroupMapper.NutrientNumber_TotalLipid_Fat {
+            return ColorPaletteService.getColorPaletteFor(number: FdcNutrientGroupMapper.GroupNumber_Lipids)
+        }
+        if nutrient.fdcNumber == FdcNutrientGroupMapper.NutrientNumber_Protein {
+            return ColorPaletteService.getColorPaletteFor(number: FdcNutrientGroupMapper.GroupNumber_AminoAcids)
+        }
+
         let num = FdcNutrientGroupMapper.groupNumberForNutrient(nutrient.fdcNumber)
         return ColorPaletteService.getColorPaletteFor(number: num)
     }
@@ -49,7 +56,8 @@ struct ConsumedNutrientDetailsView: View {
     private var hasRdi: Bool { recommendedAmount != nil || upperLimit != nil }
     
     private var nutrientUnit: WeightUnit {
-        WeightUnit.unitFrom(nutrientFoodPairs[0].nutrient)
+        guard let first = nutrientFoodPairs.first else { return WeightUnit.unitFrom(nutrient) }
+        return WeightUnit.unitFrom(first.nutrient)
     }
     
     private var unitName: String {
