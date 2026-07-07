@@ -6,102 +6,54 @@
 //
 
 import SwiftUI
+import Charts
 
 struct ConsumedNutrientChart: View {
-    
-    let capsuleSpacing: CGFloat = 4
-    
+
     enum Style {
         case cumulative
         case individual
     }
-    
+
     struct ChartValue: Identifiable {
         var id: MealTime { mealTime }
         let mealTime: MealTime
         let value: Double
     }
-    
-    private let mealTimeValueMap: [MealTime:Double]
+
+    private let mealTimeValueMap: [MealTime: Double]
     private let rdi: LifeStageNutrientRdi?
     private let style: Style
-    
+    let accentColor: Color
+
     private var chartValues: [ChartValue] {
         MealTime.validFields
             .map { mealTime in
                 ChartValue(mealTime: mealTime, value: mealTimeValueMap[mealTime, default: 0])
             }
     }
-    
+
     private var weightUnit: String {
         rdi?.unit.name ?? ""
     }
-    
+
     private var recommendedValue: Double? {
         guard let rdi else { return nil }
         guard rdi.recommendedAmount > 0, rdi.recommendedAmount < .greatestFiniteMagnitude else { return nil }
         return rdi.recommendedAmount
     }
-    
-    private var recommendedString: String? {
-        guard let recommendedValue else { return nil }
-        return "Recommended Amount: \(recommendedValue.formatted(maxDigits: 2))\(weightUnit)"
-    }
-    
+
     private var upperLimit: Double? {
         guard let rdi else { return nil }
         guard rdi.upperLimit > 0, rdi.upperLimit < .greatestFiniteMagnitude else { return nil }
         return rdi.upperLimit
     }
-    
-    private var upperLimitString: String? {
-        guard let upperLimit else { return nil }
-        return "Upper Limit: \(upperLimit.formatted(maxDigits: 2))\(weightUnit)"
-    }
-    
-    private var chartMaxValue: Double {
-        let maxNutrientValue = {
-            switch style {
-            case .cumulative:
-                chartValues.reduce(into: 0) { $0 += $1.value }
-            case .individual:
-                chartValues.map { $0.value }.max() ?? 0
-            }
-        }()
-        let max = max(maxNutrientValue, recommendedValue ?? 0)
-        return max
-    }
-    
-    private func capsuleSize(
-        width: CGFloat
-    ) -> CGFloat {
-        var multiplier: CGFloat = 1
-        switch style {
-        case .cumulative: multiplier = 2; break;
-        default: multiplier = 1; break;
-        }
-        
-        return (width / (multiplier * CGFloat(MealTime.validFields.count))) - capsuleSpacing
-    }
-    
-    private func capsuleOffset(
-        _ chartValue: ChartValue,
-        unitsPerHeight: CGFloat
-    ) -> CGFloat {
-        switch style {
-        case .individual:
-            return 0
-        case .cumulative:
-            let indexOfMealTime = chartValues.firstIndex { $0.mealTime == chartValue.mealTime }
-            let cumulation = chartValues[0..<indexOfMealTime!].reduce(into: 0) { $0 += $1.value }
-            return -(cumulation * unitsPerHeight)
-        }
-    }
-    
+
     init(
         nutrientFoodPairs: [NutrientFoodPair],
         rdi: LifeStageNutrientRdi?,
-        style: Style
+        style: Style,
+        accentColor: Color = .blue
     ) {
         self.mealTimeValueMap = nutrientFoodPairs
             .reduce(into: [:]) { result, pair in
@@ -109,7 +61,7 @@ struct ConsumedNutrientChart: View {
                     result[mealTime, default: 0] += pair.nutrient.amount
                 }
             }
-        
+
         self.rdi = {
             guard let first = nutrientFoodPairs.first else { return rdi }
             let foodsUnit: WeightUnit = .unitFrom(first.nutrient)
@@ -118,108 +70,89 @@ struct ConsumedNutrientChart: View {
             return rdi.convertedTo(foodsUnit)
         }()
         self.style = style
+        self.accentColor = accentColor
     }
-    
-    var body: some View {
-        GeometryReader { geometry in
-            let capsuleSize = capsuleSize(width: geometry.size.width)
-            let chartHeight = geometry.size.height - capsuleSize
-            let unitsPerHeight = chartHeight / chartMaxValue
-            
-            ZStack {
-                Capsules(unitsPerHeight: unitsPerHeight, capsuleSize: capsuleSize)
-                if style == .cumulative {
-                    RecommendedAmount(unitsPerHeight: unitsPerHeight, capsuleSize: capsuleSize)
-                    UpperLimit(unitsPerHeight: unitsPerHeight, capsuleSize: capsuleSize, chartHeight: chartHeight)
-                }
-            }
-        }
-    }
-    
-    @ViewBuilder private func Capsules(
-        unitsPerHeight: CGFloat,
-        capsuleSize: CGFloat
-    ) -> some View {
-        HStack(spacing: 0) {
-            ForEach(chartValues) { chartValue in
-                let offset = capsuleOffset(chartValue, unitsPerHeight: unitsPerHeight)
-                let height = (chartValue.value * unitsPerHeight) + capsuleSize
-                let showDoubleCapsule = style == .cumulative
-                
-                if showDoubleCapsule {
-                    if chartValue.mealTime != .breakfast {
-                        Spacer(minLength: 0)
-                    }
-                    VStack {
-                        Spacer(minLength: 0)
-                        Capsule(style: .continuous)
-                            .frame(width: capsuleSize, height: capsuleSize)
-                            .offset(y: offset)
-                    }
-                }
-                if showDoubleCapsule || chartValue.mealTime != .breakfast {
-                    Spacer(minLength: 0)
-                }
-                VStack {
-                    Spacer(minLength: 0)
-                    Capsule(style: .continuous)
-                        .frame(width: capsuleSize, height: height)
-                        .offset(y: offset)
-                }
-            }
-        }
-    }
-    
-    @ViewBuilder private func RecommendedAmount(
-        unitsPerHeight: CGFloat,
-        capsuleSize: CGFloat
-    ) -> some View {
-        if let recommendedValue = recommendedValue, let recommendedString = recommendedString {
-            let offset = -(recommendedValue * unitsPerHeight)
-            
-            VStack {
-                Spacer()
-                Rectangle()
-                    .frame(height: 1)
-                    .offset(y: offset)
-                    .overlay(alignment: .bottom) {
-                        HStack {
-                            Text(recommendedString)
-                                .font(.caption)
-                            Spacer()
-                        }
-                        .offset(y: offset)
-                    }
-            }
-            .foregroundStyle(Color.text.opacity(0.5))
-        }
-    }
-    
-    @ViewBuilder private func UpperLimit(
-        unitsPerHeight: CGFloat,
-        capsuleSize: CGFloat,
-        chartHeight: CGFloat
-    ) -> some View {
-        if let upperLimit = upperLimit, let upperLimitString = upperLimitString {
-            let offset = -(upperLimit * unitsPerHeight)
 
-            if -offset < chartHeight {
-                VStack {
-                    Spacer()
-                    Rectangle()
-                        .frame(height: 1)
-                        .offset(y: offset)
-                        .overlay(alignment: .bottom) {
-                            HStack {
-                                Text(upperLimitString)
-                                    .font(.caption)
-                                Spacer()
-                            }
-                            .offset(y: offset)
-                        }
-                }
-                .foregroundStyle(Color.text.opacity(0.5))
+    var body: some View {
+        switch style {
+        case .individual: IndividualChart()
+        case .cumulative: CumulativeChart()
+        }
+    }
+
+    @ViewBuilder private func IndividualChart() -> some View {
+        Chart {
+            ForEach(chartValues) { cv in
+                BarMark(
+                    x: .value("Meal", cv.mealTime.rawValue),
+                    y: .value("Amount", cv.value)
+                )
+                .foregroundStyle(accentColor.gradient)
+                .cornerRadius(4)
             }
+            RefLines()
+        }
+        .chartYScale(domain: .automatic(includesZero: true))
+        .chartYAxis {
+            AxisMarks(position: .leading) { _ in
+                AxisValueLabel()
+                AxisGridLine()
+            }
+        }
+    }
+
+    @ViewBuilder private func CumulativeChart() -> some View {
+        Chart {
+            ForEach(chartValues) { cv in
+                BarMark(
+                    x: .value("", "Total"),
+                    y: .value("Amount", cv.value)
+                )
+                .foregroundStyle(by: .value("Meal", cv.mealTime.rawValue))
+                .cornerRadius(2)
+            }
+            RefLines()
+        }
+        .chartForegroundStyleScale(
+            domain: MealTime.validFields.map(\.rawValue),
+            range: mealColorRange
+        )
+        .chartXAxis(.hidden)
+        .chartLegend(position: .bottom, alignment: .center)
+        .chartYScale(domain: .automatic(includesZero: true))
+        .chartYAxis {
+            AxisMarks(position: .leading) { _ in
+                AxisValueLabel()
+                AxisGridLine()
+            }
+        }
+    }
+
+    private var mealColorRange: [Color] {
+        let opacities: [Double] = [1.0, 0.85, 0.70, 0.55, 0.40, 0.25]
+        return opacities.map { accentColor.opacity($0) }
+    }
+
+    @ChartContentBuilder private func RefLines() -> some ChartContent {
+        if let rec = recommendedValue {
+            RuleMark(y: .value("Recommended", rec))
+                .foregroundStyle(Color.text.opacity(0.5))
+                .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 3]))
+                .annotation(position: .top, alignment: .leading) {
+                    Text("Recommended: \(rec.formatted(maxDigits: 2))\(weightUnit)")
+                        .font(.caption)
+                        .foregroundStyle(Color.text.opacity(0.5))
+                }
+        }
+        if let ul = upperLimit {
+            RuleMark(y: .value("Upper Limit", ul))
+                .foregroundStyle(Color.orange.opacity(0.7))
+                .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 3]))
+                .annotation(position: .top, alignment: .leading) {
+                    Text("Upper Limit: \(ul.formatted(maxDigits: 2))\(weightUnit)")
+                        .font(.caption)
+                        .foregroundStyle(Color.orange.opacity(0.7))
+                }
         }
     }
 }
@@ -227,27 +160,27 @@ struct ConsumedNutrientChart: View {
 #Preview {
     let pairs = NutrientDataAggregator(FoodItem.sampleFoods)
         .nutrientsByNutrientNumber[FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca]
-    
+
     let rdi = UsdaNutrientRdiLibrary
         .create()
         .getRdis(FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca)?
         .getRdi(.sample)
-    
+
     List {
         ConsumedNutrientChart(
             nutrientFoodPairs: pairs!,
             rdi: rdi,
-            style: .individual
+            style: .individual,
+            accentColor: .red
         )
         .frame(height: 250)
-        .foregroundStyle(Color.red.gradient)
         ConsumedNutrientChart(
             nutrientFoodPairs: pairs!,
             rdi: rdi,
-            style: .cumulative
+            style: .cumulative,
+            accentColor: .blue
         )
         .frame(height: 250)
-        .foregroundStyle(Color.blue)
     }
     .listDefaultModifiers()
 }

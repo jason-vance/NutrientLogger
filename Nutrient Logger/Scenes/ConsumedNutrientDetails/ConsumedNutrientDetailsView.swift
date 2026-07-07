@@ -223,10 +223,10 @@ struct ConsumedNutrientDetailsView: View {
         ConsumedNutrientChart(
             nutrientFoodPairs: nutrientFoodPairs,
             rdi: rdi,
-            style: .cumulative
+            style: .cumulative,
+            accentColor: colorPalette.accent
         )
         .frame(height: 250)
-        .foregroundStyle(colorPalette.accent.gradient)
         .listRowDefaultModifiers()
     }
     
