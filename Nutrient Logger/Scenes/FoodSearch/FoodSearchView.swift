@@ -137,6 +137,7 @@ struct FoodSearchView: View {
     @State private var searchText: String = ""
     @State private var hasSearched: Bool = false
     @State private var isLoading: Bool = false
+    @State private var searchDebounceTask: Task<Void, Never>? = nil
     
     @State private var searchResults: [SearchResult] = []
     @State private var showCreateCustomFood: Bool = false
@@ -487,8 +488,15 @@ struct FoodSearchView: View {
         )
         .onChange(of: searchText) {
             hasSearched = false
+            searchDebounceTask?.cancel()
             if searchText.isEmpty {
                 resetViewState()
+            } else {
+                searchDebounceTask = Task {
+                    try? await Task.sleep(for: .milliseconds(300))
+                    guard !Task.isCancelled else { return }
+                    doSearch()
+                }
             }
         }
         .onChange(of: customFoodDatabase.foods) {
@@ -504,7 +512,10 @@ struct FoodSearchView: View {
                 searchResults.append(contentsOf: fresh)
             }
         }
-        .onSubmit(of: .search) { doSearch() }
+        .onSubmit(of: .search) {
+            searchDebounceTask?.cancel()
+            doSearch()
+        }
         .onAppear { fetchInitialSuggestions() }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }

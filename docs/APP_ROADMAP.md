@@ -213,7 +213,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   3. [x] Crash when searching "Five guys"
   4. [ ] Match styling across app (text fields are sometimes black or blue, other inconsistencies?. Generally, interactive elements should be .accentColor, non-interactive text should be .black.)
   5. [x] Fix food log field tapping area (way to small especially portion amount "1")
-  6. [ ] Search as you type
+  6. [x] Search as you type
   7. [ ] Check places where we show the marketing view. Do they properly block the premium feature (NutrientTrendView does a full screen cover, but dismissing the full screen cover shows the screen after all)
 
 ### App Store Connect
