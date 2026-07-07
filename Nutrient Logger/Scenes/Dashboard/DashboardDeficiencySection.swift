@@ -14,6 +14,11 @@ struct DashboardDeficiencySection: View {
     @Inject private var rdiLibrary: NutrientRdiLibrary
     @Inject private var userService: UserService
     @Inject private var remoteDatabase: RemoteDatabase
+    @Inject private var premiumAnalytics: PremiumAnalytics
+
+    @EnvironmentObject private var subscriptionManager: SubscriptionManager
+
+    @State private var showMarketingView: Bool = false
 
     let allConsumedFoods: [ConsumedFood]
     let date: SimpleDate
@@ -28,7 +33,6 @@ struct DashboardDeficiencySection: View {
         let name: String
         let percentage: Double
         let nutrient: Nutrient
-        let nutrientFoodPairs: [NutrientFoodPair]
     }
 
     private var recentFoods: [ConsumedFood] {
@@ -43,7 +47,7 @@ struct DashboardDeficiencySection: View {
         let foodsByDate = Dictionary(grouping: foods) { $0.dateLogged }
         let daysWithData = foodsByDate.count
 
-        var totalsByNutrient: [String: (total: Double, nutrient: Nutrient, pairs: [NutrientFoodPair])] = [:]
+        var totalsByNutrient: [String: (total: Double, nutrient: Nutrient)] = [:]
 
         for (_, dayFoods) in foodsByDate {
             let foodItems: [FoodItem] = dayFoods.compactMap { consumedFood in
@@ -64,13 +68,12 @@ struct DashboardDeficiencySection: View {
 
                 if var existing = totalsByNutrient[nutrientId] {
                     existing.total += amount
-                    existing.pairs += pairs
                     totalsByNutrient[nutrientId] = existing
                 } else {
                     let nutrient = pairs.first?.nutrient
                         ?? remoteDatabase.getNutrient(withId: nutrientId)
                         ?? Nutrient(fdcNumber: nutrientId, name: "Unknown", unitName: "")
-                    totalsByNutrient[nutrientId] = (total: amount, nutrient: nutrient, pairs: pairs)
+                    totalsByNutrient[nutrientId] = (total: amount, nutrient: nutrient)
                 }
             }
         }
@@ -98,8 +101,7 @@ struct DashboardDeficiencySection: View {
                 id: nutrientId,
                 name: displayName,
                 percentage: percentage,
-                nutrient: entry.nutrient,
-                nutrientFoodPairs: entry.pairs
+                nutrient: entry.nutrient
             )
         }
         .sorted { $0.percentage < $1.percentage }
@@ -111,8 +113,10 @@ struct DashboardDeficiencySection: View {
         if !recentFoods.isEmpty {
             if deficiencies.isEmpty {
                 OnTrackCard()
-            } else {
+            } else if subscriptionManager.isSubscribed {
                 DeficiencyCard(deficiencies)
+            } else {
+                LockedDeficiencyCard(count: deficiencies.count)
             }
         }
     }
@@ -129,6 +133,35 @@ struct DashboardDeficiencySection: View {
         .inCard(backgroundColor: .green)
     }
 
+    @ViewBuilder private func LockedDeficiencyCard(count: Int) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Low This Week")
+                    .font(.subheadline.bold())
+                Text("\(count) nutrient\(count == 1 ? "" : "s") running low — unlock to see which, and foods that would help")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            Image(systemName: "lock.fill")
+                .foregroundStyle(.white)
+                .padding(6)
+                .background { Circle().fill(Color.accentColor.gradient) }
+        }
+        .padding()
+        .inCard(backgroundColor: .orange)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            premiumAnalytics.premiumFeatureTapped(feature: "deficiency_insights")
+            showMarketingView = true
+        }
+        .sheet(isPresented: $showMarketingView) {
+            MarketingView(trigger: .deficiencyInsights)
+        }
+    }
+
     @ViewBuilder private func DeficiencyCard(_ deficiencies: [DeficientNutrient]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
@@ -138,13 +171,13 @@ struct DashboardDeficiencySection: View {
                     .font(.subheadline.bold())
                 Spacer()
             }
+            Text("Tap a nutrient to see foods that would help")
+                .font(.caption)
+                .foregroundStyle(.secondary)
             FlowLayout(spacing: 6) {
                 ForEach(deficiencies) { deficiency in
                     NavigationLink {
-                        ConsumedNutrientDetailsView(
-                            nutrient: deficiency.nutrient,
-                            nutrientFoodPairs: deficiency.nutrientFoodPairs
-                        )
+                        NutrientLibraryDetailView(nutrient: deficiency.nutrient)
                     } label: {
                         HStack(spacing: 4) {
                             Circle()
@@ -226,10 +259,11 @@ struct FlowLayout: Layout {
     }
 }
 
-#Preview {
+#Preview("Subscriber") {
     let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) { UsdaNutrientRdiLibrary.create() }
     let _ = swinjectContainer.autoregister(UserService.self) { MockUserService(currentUser: .sample) }
     let _ = swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
+    let _ = swinjectContainer.autoregister(PremiumAnalytics.self) { MockPremiumAnalytics() }
 
     NavigationStack {
         ScrollView {
@@ -242,4 +276,25 @@ struct FlowLayout: Layout {
             .padding(.horizontal)
         }
     }
+    .environmentObject(SubscriptionManager(isForScreenshots: true))
+}
+
+#Preview("Free user") {
+    let _ = swinjectContainer.autoregister(NutrientRdiLibrary.self) { UsdaNutrientRdiLibrary.create() }
+    let _ = swinjectContainer.autoregister(UserService.self) { MockUserService(currentUser: .sample) }
+    let _ = swinjectContainer.autoregister(RemoteDatabase.self) { RemoteDatabaseForScreenshots() }
+    let _ = swinjectContainer.autoregister(PremiumAnalytics.self) { MockPremiumAnalytics() }
+
+    NavigationStack {
+        ScrollView {
+            VStack {
+                DashboardDeficiencySection(
+                    allConsumedFoods: [.dashboardSample],
+                    date: .today
+                )
+            }
+            .padding(.horizontal)
+        }
+    }
+    .environmentObject(SubscriptionManager(isForScreenshots: false))
 }

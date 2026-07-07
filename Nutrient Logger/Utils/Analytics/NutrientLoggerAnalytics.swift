@@ -30,6 +30,7 @@ enum PaywallTrigger: String {
     case weightGoal = "weight_goal"
     case profileUpsell = "profile_upsell"
     case csvExport = "csv_export"
+    case deficiencyInsights = "deficiency_insights"
 }
 
 protocol SubscriptionAnalytics {

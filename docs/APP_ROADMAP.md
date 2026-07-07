@@ -205,7 +205,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   4. [x] Move nutrition goals from profile to nutrition tab settings (same button icon as body tab settings)
 - [x] **Analytics:** Track onboarding funnel (step completion rate, drop-off point), time-to-first-log, and day-1/day-7/day-30 retention cohorts
 - [x] **Export (CSV)** as a premium feature — export all logged foods with nutrient data for a date range. Useful for users tracking for medical or clinical reasons (a natural Nutrient Logger audience).
-- [ ] **Nutrient deficiency insights** — a simple weekly digest view: "You've been consistently low in Vitamin D and Magnesium this week. Here are foods that would help." This is premium-only and differentiates from every macro-focused competitor.
+- [x] **Nutrient deficiency insights** — a simple weekly digest view: "You've been consistently low in Vitamin D and Magnesium this week. Here are foods that would help." This is premium-only and differentiates from every macro-focused competitor.
 - [ ] Address the `//TODO: Days with foods hang for a second while loading` in `DashboardView.swift`
 - [ ] **Misc**
   1. [x] Calorie goal ring on nutrition tab
