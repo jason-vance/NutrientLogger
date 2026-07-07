@@ -25,8 +25,6 @@ struct NutrientTrendView: View {
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.modelContext) private var modelContext
 
-    @EnvironmentObject private var subscriptionManager: SubscriptionManager
-
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var rdiLibrary: NutrientRdiLibrary
     @Inject private var userService: UserService
@@ -35,7 +33,6 @@ struct NutrientTrendView: View {
     @State private var period: TrendPeriod = .sevenDay
     @State private var dailyTotals: [DailyNutrientTotal] = []
     @State private var isLoading: Bool = true
-    @State private var showMarketingView: Bool = false
 
     let nutrient: Nutrient
     let colorPalette: ColorPalette
@@ -119,9 +116,6 @@ struct NutrientTrendView: View {
         .toolbar { Toolbar() }
         .onChange(of: period, initial: true) { loadData() }
         .onAppear { engagementAnalytics.trendNutrientViewed(nutrientName: nutrient.name) }
-        .fullScreenCover(isPresented: $showMarketingView) {
-            MarketingView(trigger: .trendCharts)
-        }
     }
 
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
@@ -237,5 +231,4 @@ struct NutrientTrendView: View {
             colorPalette: ColorPalettes.mint
         )
     }
-    .environmentObject(SubscriptionManager(isForScreenshots: true))
 }
