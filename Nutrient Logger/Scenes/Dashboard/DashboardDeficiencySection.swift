@@ -19,6 +19,7 @@ struct DashboardDeficiencySection: View {
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
 
     @State private var showMarketingView: Bool = false
+    @State private var deficiencies: [DeficientNutrient] = []
 
     let allConsumedFoods: [ConsumedFood]
     let date: SimpleDate
@@ -40,10 +41,35 @@ struct DashboardDeficiencySection: View {
         return allConsumedFoods.filter { $0.dateLogged >= startDate && $0.dateLogged <= date }
     }
 
-    private var deficientNutrients: [DeficientNutrient] {
+    private func updateDeficiencies() {
         let foods = recentFoods
-        guard !foods.isEmpty else { return [] }
+        guard !foods.isEmpty else {
+            deficiencies = []
+            return
+        }
 
+        let user = self.user
+        let rdiLibrary = self.rdiLibrary
+        let remoteDatabase = self.remoteDatabase
+
+        Task {
+            deficiencies = Self.computeDeficientNutrients(
+                foods: foods,
+                user: user,
+                rdiLibrary: rdiLibrary,
+                remoteDatabase: remoteDatabase
+            )
+        }
+    }
+
+    // Hits the on-disk food database, so this must run off the main thread
+    // (called from a Task) rather than as a view body computed property.
+    private static func computeDeficientNutrients(
+        foods: [ConsumedFood],
+        user: User,
+        rdiLibrary: NutrientRdiLibrary,
+        remoteDatabase: RemoteDatabase
+    ) -> [DeficientNutrient] {
         let foodsByDate = Dictionary(grouping: foods) { $0.dateLogged }
         let daysWithData = foodsByDate.count
 
@@ -62,7 +88,7 @@ struct DashboardDeficiencySection: View {
 
             let dayAggregator = NutrientDataAggregator(foodItems)
 
-            for nutrientId in Self.trackedNutrientIds {
+            for nutrientId in trackedNutrientIds {
                 let pairs = dayAggregator.nutrientsByNutrientNumber[nutrientId] ?? []
                 let amount = pairs.reduce(into: 0.0) { $0 += $1.nutrient.amount }
 
@@ -78,7 +104,7 @@ struct DashboardDeficiencySection: View {
             }
         }
 
-        return Self.trackedNutrientIds.compactMap { nutrientId in
+        return trackedNutrientIds.compactMap { nutrientId in
             let rdi = NutrientGoalDefaults.effectiveRdi(
                 for: nutrientId,
                 user: user,
@@ -108,17 +134,19 @@ struct DashboardDeficiencySection: View {
     }
 
     var body: some View {
-        let deficiencies = deficientNutrients
-
-        if !recentFoods.isEmpty {
-            if deficiencies.isEmpty {
-                OnTrackCard()
-            } else if subscriptionManager.isSubscribed {
-                DeficiencyCard(deficiencies)
-            } else {
-                LockedDeficiencyCard(count: deficiencies.count)
+        Group {
+            if !recentFoods.isEmpty {
+                if deficiencies.isEmpty {
+                    OnTrackCard()
+                } else if subscriptionManager.isSubscribed {
+                    DeficiencyCard(deficiencies)
+                } else {
+                    LockedDeficiencyCard(count: deficiencies.count)
+                }
             }
         }
+        .onChange(of: date, initial: true) { updateDeficiencies() }
+        .onChange(of: allConsumedFoods) { updateDeficiencies() }
     }
 
     @ViewBuilder private func OnTrackCard() -> some View {

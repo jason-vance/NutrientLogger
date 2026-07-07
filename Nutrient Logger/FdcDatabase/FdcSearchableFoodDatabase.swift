@@ -14,15 +14,18 @@ class FdcSearchableFoodDatabase {
     }
     
     public let dbPath: String
-    
+    private let db: Connection
+
     init(dbPath: URL) async throws {
         self.dbPath = dbPath.path
+        self.db = try await Task(priority: .userInitiated) {
+            try Connection(dbPath.path)
+        }.value
         try await createFts5Table()
     }
-    
+
     private func createFts5Table() async throws {
         _ = try await Task.init(priority: .userInitiated) {
-            let db = try Connection(dbPath)
             try createSearchableFoodTable(db)
         }.value
     }
@@ -66,7 +69,6 @@ class FdcSearchableFoodDatabase {
     ) throws -> [FdcSearchableFood] {
         if prefixQuery.isEmpty { return [] }
 
-        let db = try Connection(dbPath)
         var seenIds = Set<Int>()
         var results = [FdcSearchableFood]()
 
@@ -97,7 +99,6 @@ class FdcSearchableFoodDatabase {
     public func searchOr(query: String, limit: Int) throws -> [FdcSearchableFood] {
         guard !query.isEmpty else { return [] }
 
-        let db = try Connection(dbPath)
         var results = [FdcSearchableFood]()
 
         let search = Tables.searchableFood
@@ -113,7 +114,7 @@ class FdcSearchableFoodDatabase {
     }
 
     public func getFood(_ fdcId: Int) throws -> FdcFood? {
-        if let foodRow = try Connection(dbPath).pluck(Tables.food.filter(Columns.fdcId == fdcId)) {
+        if let foodRow = try db.pluck(Tables.food.filter(Columns.fdcId == fdcId)) {
             return FoodWrapper(foodRow).food
         }
         return nil
@@ -121,7 +122,7 @@ class FdcSearchableFoodDatabase {
 
     public func getPortions(_ foodFdcId: Int) throws -> [FdcPortion] {
         var portions = [FdcPortion]()
-        for portionRow in try Connection(dbPath).prepare(Tables.portion.filter(Columns.fdcId == foodFdcId)) {
+        for portionRow in try db.prepare(Tables.portion.filter(Columns.fdcId == foodFdcId)) {
             portions.append(PortionWrapper(portionRow).portion)
         }
         return portions
@@ -132,7 +133,7 @@ class FdcSearchableFoodDatabase {
             .select(Columns.id, Columns.fdcId, Columns.nutrientId, Columns.amount)
             .filter(Columns.fdcId == foodFdcId)
             .order(Columns.nutrientId)
-        let iterator = try Connection(dbPath).prepareRowIterator(query)
+        let iterator = try db.prepareRowIterator(query)
         let rows = try iterator.map { $0 }
         return rows.map {
             NutrientLinkWrapper($0).link
@@ -145,7 +146,7 @@ class FdcSearchableFoodDatabase {
             .group(Columns.nutrientId)
         
         var counts = [Int:FdcFoodContainingNutrientCount]()
-        for row in try Connection(dbPath).prepare(query) {
+        for row in try db.prepare(query) {
             let count = FoodContainingNutrientCountWrapper(row).count
             counts[count.nutrientId] = count
         }
@@ -153,8 +154,8 @@ class FdcSearchableFoodDatabase {
     }
 
     public func getFoodsContainingNutrient(_ nutrient: Nutrient) throws -> [FdcNutrientFoodPair] {
-        let connection = try Connection(dbPath)
-        
+        let connection = db
+
         let nutrientQuery = Tables.nutrientLink
             .filter(Columns.nutrientId == nutrient.fdcId)
             .where(Columns.amount > 0)

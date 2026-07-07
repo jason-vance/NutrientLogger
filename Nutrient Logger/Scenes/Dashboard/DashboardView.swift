@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 import SwinjectAutoregistration
 
-//TODO: Days with foods hang for a second while loading
 struct DashboardView: View {
 
     private static let streakMilestones: Set<Int> = [3, 7, 14, 30, 60, 90, 180, 365]

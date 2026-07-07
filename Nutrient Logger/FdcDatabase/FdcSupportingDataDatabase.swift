@@ -10,15 +10,17 @@ import SQLite
 
 public class FdcSupportingDataDatabase {
     public let dbPath: String
-    
+    private let db: Connection
+
     init(dbPath: URL) throws {
         self.dbPath = dbPath.path
+        self.db = try Connection(dbPath.path)
     }
     
     public func getNutrients(_ nutrientLinks: [FdcNutrientLink]) throws -> [FdcNutrientLink:FdcNutrient] {
         var rv = [FdcNutrientLink:FdcNutrient]()
         for link in nutrientLinks {
-            if let row = try Connection(dbPath).pluck(Tables.nutrient.filter(Columns.id == link.nutrientId)) {
+            if let row = try db.pluck(Tables.nutrient.filter(Columns.id == link.nutrientId)) {
                 rv[link] = NutrientWrapper(row).nutrient
             }
         }
@@ -27,14 +29,14 @@ public class FdcSupportingDataDatabase {
 
     public func getAllNutrients() throws -> [FdcNutrient] {
         var nutrients = [FdcNutrient]()
-        for row in try Connection(dbPath).prepare(Tables.nutrient) {
+        for row in try db.prepare(Tables.nutrient) {
             nutrients.append(NutrientWrapper(row).nutrient)
         }
         return nutrients
     }
 
     public func getNutrient(_ nutrientNumber: String) throws -> FdcNutrient? {
-        if let row = try Connection(dbPath).pluck(Tables.nutrient.filter(Columns.nutrientNumber == nutrientNumber)) {
+        if let row = try db.pluck(Tables.nutrient.filter(Columns.nutrientNumber == nutrientNumber)) {
             return NutrientWrapper(row).nutrient
         }
         return nil
