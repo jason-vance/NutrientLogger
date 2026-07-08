@@ -38,6 +38,8 @@ struct NutritionSettingsSheet: View {
     @AppStorage("nutrientCustomize_aminoAcids_order") private var aminoAcidsOrderRaw: String = ""
     @AppStorage("nutrientCustomize_aminoAcids_hidden") private var aminoAcidsHiddenRaw: String = ""
 
+    @State private var showMicronutrientGoals = false
+
     @State private var vitamins: [String] = []
     @State private var minerals: [String] = []
     @State private var lipids: [String] = []
@@ -157,6 +159,9 @@ struct NutritionSettingsSheet: View {
             }
             .environment(\.editMode, .constant(.active))
             .scrollDismissesKeyboard(.immediately)
+            .navigationDestination(isPresented: $showMicronutrientGoals) {
+                MicronutrientGoalsView()
+            }
             .navigationTitle("Nutrition Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -221,8 +226,8 @@ struct NutritionSettingsSheet: View {
                 defaultValue: NutrientGoalDefaults.defaultProteinGoal(for: user ?? User())
             )
             WaterGoalRow()
-            NavigationLink {
-                MicronutrientGoalsView()
+            Button {
+                showMicronutrientGoals = true
             } label: {
                 VStack {
                     HStack {
@@ -238,6 +243,9 @@ struct NutritionSettingsSheet: View {
                                 }
                         }
                         Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                     HStack {
                         Text("Set custom targets for vitamins and minerals")
