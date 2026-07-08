@@ -221,16 +221,17 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   11. [x] Have onboarding match light or dark mode instead of being dark all the time
   12. [x] Onboarding weight entry - dismiss keyboard on scroll
   13. [x] Onboarding paywall - add discount percentage off
+  14. [ ] ConsumedNutrientDetailView chart - Only show upper limit if the intake is close to or above the upper limit.
+  15. [ ] NutrientTrendView - Add upper limit to trend chart. Only show upper limit if the intake is close to or above the upper limit.
+  16. [ ] Log Food Screen - Put date, meal time, portion, portion amount in a card together like other screens with grouped fields
 
 ### App Store Connect
-- [ ] Consider adding a **third subscription tier**: an annual "Family" or one-time lifetime purchase if StoreKit 2 supports it — v4.0 is a natural moment to introduce this
-- [ ] Prepare **promotional pricing** for launch week (introductory offer on yearly plan)
+- [x] Consider adding a **third subscription tier**: an annual "Family" or one-time lifetime purchase if StoreKit 2 supports it — v4.0 is a natural moment to introduce this
+- [x] Prepare **promotional pricing** for launch week (introductory offer on yearly plan)
 
 ### Store Listing
 - [ ] **Full screenshot refresh** — all new screens focusing on user outcomes (What's the best background color for this kind of app to catch the customer's eye while they are searching on the app store)
-- [ ] **App Preview video** (30-second screen recording) — barcode scan → dashboard with nutrient breakdown is a compelling 30 seconds
 - [ ] Update **app description** completely — the v4.0 feature set is now materially different from what shipped in v3.x
-- [ ] **Localization** — your EU install data (Germany #1, Netherlands, Sweden, Ireland) suggests German and Swedish localizations could meaningfully increase conversion in those markets. v4.0 is the right moment to invest.
 - [ ] Write a **launch blog post or Reddit post** in r/nutrition, r/carnivore, r/keto explaining the v4.0 story — what changed and why. Indie dev narrative resonates in those communities.
 
 ---
@@ -253,6 +254,8 @@ These are worth tracking but don't have a clear version slot yet:
   - Test all major flows (dashboard, search, logging, charts, settings) at iPad sizes
   - You have iPad users from the Advanced 1st Aid HD days; this is a genuine new-platform launch that can recapture them
 - **Custom search bar** - Could it provide better UI/UX? Should it be put directly on the root view of the nutrition tab?
+- **App Preview video** (30-second screen recording) — barcode scan → dashboard with nutrient breakdown is a compelling 30 seconds
+- **Localization** — your EU install data (Germany #1, Netherlands, Sweden, Ireland) suggests German and Swedish localizations could meaningfully increase conversion in those markets. v4.0 is the right moment to invest.
 
 ---
 
