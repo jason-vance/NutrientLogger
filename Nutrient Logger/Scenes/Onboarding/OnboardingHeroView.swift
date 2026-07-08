@@ -30,12 +30,12 @@ struct OnboardingHeroView: View {
             Text("Track every vitamin,\nmineral, and amino acid.")
                 .font(.largeTitle.bold())
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .padding(.horizontal, 32)
 
             Text("Completely offline.")
                 .font(.title3)
-                .foregroundStyle(.white.opacity(0.6))
+                .foregroundStyle(.secondary)
                 .padding(.top, 16)
 
             Spacer()

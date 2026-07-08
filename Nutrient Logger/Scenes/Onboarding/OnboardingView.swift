@@ -58,7 +58,7 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Color(.systemBackground).ignoresSafeArea()
 
             VStack(spacing: 0) {
                 ProgressDots(step: step)
@@ -104,7 +104,7 @@ struct OnboardingView: View {
         HStack(spacing: 8) {
             ForEach(0..<Self.totalSteps, id: \.self) { i in
                 Capsule()
-                    .fill(i == step ? Color.white : Color.white.opacity(0.3))
+                    .fill(i == step ? Color.primary : Color.primary.opacity(0.3))
                     .frame(width: i == step ? 24 : 8, height: 8)
                     .animation(.spring(duration: 0.3), value: step)
             }

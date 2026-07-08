@@ -52,7 +52,7 @@ struct OnboardingGoalView: View {
             Text("What are you\ntracking for?")
                 .font(.largeTitle.bold())
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .padding(.top, 48)
                 .padding(.horizontal, 24)
 
@@ -76,7 +76,7 @@ struct OnboardingGoalView: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(selectedGoal != nil ? Color.accentColor : Color.gray.opacity(0.4))
+                    .background(selectedGoal != nil ? Color.accentColor : Color(.systemGray4))
                     .foregroundStyle(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
             }
@@ -95,29 +95,29 @@ struct OnboardingGoalView: View {
             HStack(spacing: 16) {
                 ZStack {
                     Circle()
-                        .fill(isSelected ? Color.accentColor : Color.white.opacity(0.1))
+                        .fill(isSelected ? Color.accentColor : Color.primary.opacity(0.1))
                         .frame(width: 48, height: 48)
                     Image(systemName: goal.icon)
-                        .foregroundStyle(isSelected ? .white : Color.white.opacity(0.6))
+                        .foregroundStyle(isSelected ? .white : Color.primary.opacity(0.6))
                         .font(.system(size: 20))
                 }
                 VStack(alignment: .leading, spacing: 4) {
                     Text(goal.title)
                         .font(.headline)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.primary)
                     Text(goal.subtitle)
                         .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.6))
+                        .foregroundStyle(.secondary)
                 }
                 Spacer()
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(isSelected ? Color.accentColor : Color.white.opacity(0.3))
+                    .foregroundStyle(isSelected ? Color.accentColor : Color.primary.opacity(0.3))
                     .font(.system(size: 22))
             }
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 14)
-                    .fill(Color.white.opacity(isSelected ? 0.12 : 0.06))
+                    .fill(Color.primary.opacity(isSelected ? 0.12 : 0.06))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
                             .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 1.5)

@@ -52,10 +52,10 @@ struct OnboardingProfileView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Tell us about you")
                             .font(.largeTitle.bold())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.primary)
                         Text("Used to calculate your personal nutrient targets")
                             .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.6))
+                            .foregroundStyle(.secondary)
                     }
                     .padding(.top, 16)
 
@@ -75,7 +75,6 @@ struct OnboardingProfileView: View {
                         .pickerStyle(.wheel)
                         .frame(height: 120)
                         .clipped()
-                        .colorScheme(.dark)
                     }
 
                     FieldSection(label: "Height") {
@@ -87,14 +86,12 @@ struct OnboardingProfileView: View {
                                 .pickerStyle(.wheel)
                                 .frame(maxWidth: .infinity, maxHeight: 120)
                                 .clipped()
-                                .colorScheme(.dark)
                                 Picker("Inches", selection: $heightInches) {
                                     ForEach(0...11, id: \.self) { Text("\($0) in").tag($0) }
                                 }
                                 .pickerStyle(.wheel)
                                 .frame(maxWidth: .infinity, maxHeight: 120)
                                 .clipped()
-                                .colorScheme(.dark)
                             }
                         } else {
                             HStack {
@@ -104,9 +101,9 @@ struct OnboardingProfileView: View {
                                 ))
                                 .keyboardType(.numberPad)
                                 .font(.title2.bold())
-                                .foregroundStyle(.white)
+                                .foregroundStyle(.primary)
                                 Text("cm")
-                                    .foregroundStyle(.white.opacity(0.6))
+                                    .foregroundStyle(.secondary)
                             }
                         }
                     }
@@ -116,11 +113,11 @@ struct OnboardingProfileView: View {
                             TextField("e.g. 165", text: $weightText)
                                 .keyboardType(.decimalPad)
                                 .font(.title2.bold())
-                                .foregroundStyle(.white)
-                                .tint(.white)
+                                .foregroundStyle(.primary)
+                                .tint(Color.primary)
                             if !weightText.isEmpty {
                                 Text(preferredWeightUnit.label)
-                                    .foregroundStyle(.white.opacity(0.6))
+                                    .foregroundStyle(.secondary)
                             }
                         }
                     }
@@ -150,7 +147,7 @@ struct OnboardingProfileView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text(label.uppercased())
                 .font(.caption.bold())
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(.secondary)
                 .tracking(1)
             content()
         }
@@ -168,13 +165,13 @@ struct OnboardingProfileView: View {
                 .padding(.vertical, 14)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(isSelected ? Color.accentColor : Color.white.opacity(0.08))
+                        .fill(isSelected ? Color.accentColor : Color.primary.opacity(0.08))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 1.5)
                         )
                 )
-                .foregroundStyle(.white)
+                .foregroundStyle(isSelected ? .white : Color.primary)
         }
         .buttonStyle(.plain)
         .animation(.easeInOut(duration: 0.15), value: isSelected)

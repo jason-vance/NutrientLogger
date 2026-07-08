@@ -79,7 +79,7 @@ struct OnboardingPaywallView: View {
                         }
                         Text("Unlock Nutrient Logger Premium")
                             .font(.largeTitle.bold())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.primary)
                     }
                     .padding(.top, 16)
 
@@ -93,7 +93,7 @@ struct OnboardingPaywallView: View {
 
                     if subscriptionManager.isLoading {
                         ProgressView()
-                            .tint(.white)
+                            .tint(Color.primary)
                             .frame(maxWidth: .infinity)
                             .padding()
                     } else {
@@ -106,7 +106,7 @@ struct OnboardingPaywallView: View {
                         Button(action: restorePurchases) {
                             Text("Restore Purchases")
                                 .font(.caption)
-                                .foregroundStyle(.white.opacity(0.4))
+                                .foregroundStyle(.secondary)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.top, 4)
@@ -119,7 +119,7 @@ struct OnboardingPaywallView: View {
             Button(action: onComplete) {
                 Text("Skip for Now")
                     .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(.secondary)
             }
             .padding(.top, 8)
             .padding(.bottom, 48)
@@ -150,7 +150,7 @@ struct OnboardingPaywallView: View {
                 .frame(width: 20)
             Text(text)
                 .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.85))
+                .foregroundStyle(Color.primary.opacity(0.85))
             Spacer()
         }
     }
@@ -161,10 +161,10 @@ struct OnboardingPaywallView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(product.displayName)
                         .font(.headline)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.primary)
                     Text(product.displayPrice + (product.subscription?.subscriptionPeriod.unit == .month ? "/mo" : "/yr"))
                         .font(.subheadline)
-                        .foregroundStyle(.white.opacity(isRecommended ? 0.9 : 0.6))
+                        .foregroundStyle(Color.primary.opacity(isRecommended ? 0.9 : 0.6))
                 }
                 Spacer()
                 if isRecommended {
@@ -179,10 +179,10 @@ struct OnboardingPaywallView: View {
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 14)
-                    .fill(isRecommended ? Color.accentColor.opacity(0.25) : Color.white.opacity(0.08))
+                    .fill(isRecommended ? Color.accentColor.opacity(0.25) : Color.primary.opacity(0.08))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
-                            .stroke(isRecommended ? Color.accentColor : Color.white.opacity(0.15), lineWidth: 1.5)
+                            .stroke(isRecommended ? Color.accentColor : Color.primary.opacity(0.15), lineWidth: 1.5)
                     )
             )
         }

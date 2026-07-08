@@ -44,12 +44,12 @@ struct OnboardingNotificationView: View {
 
             Text("Stay on Track")
                 .font(.largeTitle.bold())
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
 
             Text("Get a gentle daily reminder to log your meals and a heads up before you lose a streak.")
                 .font(.body)
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.white.opacity(0.6))
+                .foregroundStyle(.secondary)
                 .padding(.horizontal, 32)
                 .padding(.top, 16)
 
@@ -72,7 +72,7 @@ struct OnboardingNotificationView: View {
                 onContinue()
             }
             .font(.subheadline)
-            .foregroundStyle(.white.opacity(0.5))
+            .foregroundStyle(.secondary)
             .disabled(isRequesting)
             .padding(.top, 16)
             .padding(.bottom, 48)
