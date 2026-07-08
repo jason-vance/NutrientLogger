@@ -219,7 +219,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   9. [x] Micronutrient goals button doesn't navigate
   10. [x] Profile image should be primary color so that it is black in light mode and white in dark mode
   11. [x] Have onboarding match light or dark mode instead of being dark all the time
-  12. [ ] Onboarding weight entry - dismiss keyboard on scroll
+  12. [x] Onboarding weight entry - dismiss keyboard on scroll
   13. [ ] Onboarding paywall - add discount percentage off
 
 ### App Store Connect
@@ -227,7 +227,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [ ] Prepare **promotional pricing** for launch week (introductory offer on yearly plan)
 
 ### Store Listing
-- [ ] **Full screenshot refresh** — all new screens reflecting the redesigned onboarding and v4.0 UI
+- [ ] **Full screenshot refresh** — all new screens focusing on user outcomes (What's the best background color for this kind of app to catch the customer's eye while they are searching on the app store)
 - [ ] **App Preview video** (30-second screen recording) — barcode scan → dashboard with nutrient breakdown is a compelling 30 seconds
 - [ ] Update **app description** completely — the v4.0 feature set is now materially different from what shipped in v3.x
 - [ ] **Localization** — your EU install data (Germany #1, Netherlands, Sweden, Ireland) suggests German and Swedish localizations could meaningfully increase conversion in those markets. v4.0 is the right moment to invest.

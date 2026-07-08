@@ -125,6 +125,7 @@ struct OnboardingProfileView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
             }
+            .scrollDismissesKeyboard(.immediately)
 
             Button(action: { onComplete(builtUser, weightKg) }) {
                 Text("Get Started")
