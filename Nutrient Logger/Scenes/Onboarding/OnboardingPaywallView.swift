@@ -28,6 +28,29 @@ struct OnboardingPaywallView: View {
         return ids.compactMap { subscriptionManager.products[$0] }
     }
 
+    private func fullPriceProductId(for discountedProductId: String) -> String? {
+        switch discountedProductId {
+        case SubscriptionManager.monthlyDiscountedProductId: return SubscriptionManager.monthlyProductId
+        case SubscriptionManager.yearlyDiscountedProductId: return SubscriptionManager.yearlyProductId
+        default: return nil
+        }
+    }
+
+    private func discountPercent(for product: Product) -> Int? {
+        guard subscriptionManager.isInDiscountWindow,
+              let fullPriceId = fullPriceProductId(for: product.id),
+              let fullPriceProduct = subscriptionManager.products[fullPriceId],
+              fullPriceProduct.price > product.price else {
+            return nil
+        }
+        let savings = (fullPriceProduct.price - product.price) / fullPriceProduct.price
+        return Int(NSDecimalNumber(decimal: savings * 100).doubleValue)
+    }
+
+    private var launchOfferPercent: Int? {
+        displayProducts.first.flatMap(discountPercent)
+    }
+
     private func purchase(_ product: Product) {
         Task {
             isPurchasing = true
@@ -70,7 +93,7 @@ struct OnboardingPaywallView: View {
                 VStack(alignment: .leading, spacing: 24) {
                     VStack(alignment: .leading, spacing: 8) {
                         if subscriptionManager.isInDiscountWindow {
-                            Text("Launch Offer")
+                            Text(launchOfferPercent.map { "Launch Offer — \($0)% Off" } ?? "Launch Offer")
                                 .font(.caption.bold())
                                 .foregroundStyle(Color.accentColor)
                                 .padding(.horizontal, 10)
@@ -97,6 +120,13 @@ struct OnboardingPaywallView: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                     } else {
+                        if let percent = launchOfferPercent {
+                            HStack {
+                                Spacer()
+                                DiscountBanner(percent: percent)
+                            }
+                        }
+
                         VStack(spacing: 12) {
                             ForEach(Array(displayProducts.enumerated()), id: \.element.id) { index, product in
                                 ProductButton(product: product, isRecommended: index == 0)
@@ -187,6 +217,15 @@ struct OnboardingPaywallView: View {
             )
         }
         .buttonStyle(.plain)
+    }
+
+    @ViewBuilder private func DiscountBanner(percent: Int) -> some View {
+        Text("\(percent)% off the regular price")
+            .font(.caption.bold())
+            .foregroundStyle(Color.white)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 2)
+            .background(Capsule().foregroundStyle(Color.green.gradient))
     }
 }
 

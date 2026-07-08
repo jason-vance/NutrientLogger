@@ -220,7 +220,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   10. [x] Profile image should be primary color so that it is black in light mode and white in dark mode
   11. [x] Have onboarding match light or dark mode instead of being dark all the time
   12. [x] Onboarding weight entry - dismiss keyboard on scroll
-  13. [ ] Onboarding paywall - add discount percentage off
+  13. [x] Onboarding paywall - add discount percentage off
 
 ### App Store Connect
 - [ ] Consider adding a **third subscription tier**: an annual "Family" or one-time lifetime purchase if StoreKit 2 supports it — v4.0 is a natural moment to introduce this
