@@ -138,6 +138,7 @@ struct BodySettingsSheet: View {
                 MetricsSection()
             }
             .environment(\.editMode, .constant(.active))
+            .scrollDismissesKeyboard(.immediately)
             .navigationTitle("Body Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

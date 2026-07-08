@@ -156,6 +156,7 @@ struct NutritionSettingsSheet: View {
                 )
             }
             .environment(\.editMode, .constant(.active))
+            .scrollDismissesKeyboard(.immediately)
             .navigationTitle("Nutrition Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
