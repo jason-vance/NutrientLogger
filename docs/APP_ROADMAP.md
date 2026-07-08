@@ -222,7 +222,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   12. [x] Onboarding weight entry - dismiss keyboard on scroll
   13. [x] Onboarding paywall - add discount percentage off
   14. [x] ConsumedNutrientDetailView chart - Only show upper limit if the intake is close to or above the upper limit.
-  15. [ ] NutrientTrendView - Add upper limit to trend chart. Only show upper limit if the intake is close to or above the upper limit.
+  15. [x] NutrientTrendView - Add upper limit to trend chart. Only show upper limit if the intake is close to or above the upper limit.
   16. [ ] Log Food Screen - Put date, meal time, portion, portion amount in a card together like other screens with grouped fields
 
 ### App Store Connect

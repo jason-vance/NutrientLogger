@@ -15,9 +15,21 @@ struct NutrientTrendChart: View {
     let accentColor: Color
     let unitName: String
 
+    private static let upperLimitProximityThreshold: Double = 0.8
+
+    private var dataMax: Double {
+        dailyTotals.map(\.amount).max() ?? 0
+    }
+
+    private var upperLimit: Double? {
+        guard let rdi else { return nil }
+        guard rdi.upperLimit > 0, rdi.upperLimit < .greatestFiniteMagnitude else { return nil }
+        guard dataMax >= rdi.upperLimit * Self.upperLimitProximityThreshold else { return nil }
+        return rdi.upperLimit
+    }
+
     private var maxValue: Double {
-        let dataMax = dailyTotals.map(\.amount).max() ?? 0
-        let rdiMax = rdi?.recommendedAmount ?? 0
+        let rdiMax = max(rdi?.recommendedAmount ?? 0, upperLimit ?? 0)
         return max(dataMax, rdiMax) * 1.1
     }
 
@@ -76,6 +88,17 @@ struct NutrientTrendChart: View {
                             .foregroundStyle(Color.text.opacity(0.5))
                     }
             }
+
+            if let ul = upperLimit {
+                RuleMark(y: .value("Upper Limit", ul))
+                    .foregroundStyle(Color.orange.opacity(0.7))
+                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 3]))
+                    .annotation(position: .top, alignment: .leading) {
+                        Text("Upper Limit: \(ul.formatted(maxDigits: 1))\(unitName)")
+                            .font(.caption2)
+                            .foregroundStyle(Color.orange.opacity(0.7))
+                    }
+            }
         }
         .chartYScale(domain: 0...maxValue)
         .chartXAxis {
@@ -115,6 +138,16 @@ struct NutrientTrendChart: View {
                         .fill(Color.text.opacity(0.5))
                         .frame(width: 12, height: 1)
                     Text("Goal")
+                        .font(.caption2)
+                        .foregroundStyle(Color.text.opacity(0.6))
+                }
+            }
+            if upperLimit != nil {
+                HStack(spacing: 4) {
+                    Rectangle()
+                        .fill(Color.orange.opacity(0.7))
+                        .frame(width: 12, height: 1)
+                    Text("Upper Limit")
                         .font(.caption2)
                         .foregroundStyle(Color.text.opacity(0.6))
                 }
