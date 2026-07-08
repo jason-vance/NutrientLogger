@@ -246,12 +246,7 @@ struct FoodDetailsView: View {
         List {
             NativeAdListRow(ad: $ad, size: .small)
             FoodName()
-            if askForDateAndMealTime {
-                DateField()
-                MealTimeField()
-            }
-            PortionField()
-            PortionAmountField()
+            LogDetailsCard()
 
             if !displayNutrients.isEmpty {
                 NutritionFactsSection(
@@ -384,6 +379,23 @@ struct FoodDetailsView: View {
         .listRowDefaultModifiers()
     }
     
+    @ViewBuilder private func LogDetailsCard() -> some View {
+        VStack(spacing: 0) {
+            if askForDateAndMealTime {
+                DateField()
+                Divider().padding(.horizontal)
+                MealTimeField()
+                Divider().padding(.horizontal)
+            }
+            PortionField()
+            Divider().padding(.horizontal)
+            PortionAmountField()
+        }
+        .padding(.vertical, 4)
+        .inCard(backgroundColor: Color.gray)
+        .listRowDefaultModifiers()
+    }
+
     @ViewBuilder private func PortionField() -> some View {
         HStack {
             Text("Portion")
@@ -402,7 +414,8 @@ struct FoodDetailsView: View {
                     .contentShape(Rectangle())
             }
         }
-        .listRowDefaultModifiers()
+        .padding(.horizontal)
+        .padding(.vertical, 10)
     }
 
     @ViewBuilder private func PortionAmountField() -> some View {
@@ -424,15 +437,16 @@ struct FoodDetailsView: View {
             .frame(minWidth: 44, minHeight: 44, alignment: .trailing)
             .contentShape(Rectangle())
         }
-        .listRowDefaultModifiers()
+        .padding(.horizontal)
+        .padding(.vertical, 10)
     }
-    
+
     @ViewBuilder private func DateField() -> some View {
         HStack {
             Text("Date")
             Spacer()
             Button {
-                
+
             } label: {
                 Text(logDate.formatted())
                     .bold()
@@ -449,9 +463,10 @@ struct FoodDetailsView: View {
                 .blendMode(.destinationOver) //MARK: use this extension to keep the clickable functionality
             }
         }
-        .listRowDefaultModifiers()
+        .padding(.horizontal)
+        .padding(.vertical, 10)
     }
-    
+
     @ViewBuilder private func MealTimeField() -> some View {
         HStack {
             Text("Meal Time")
@@ -468,7 +483,8 @@ struct FoodDetailsView: View {
                     .underlined(!canSave, color: .red, lineWidth: 1)
             }
         }
-        .listRowDefaultModifiers()
+        .padding(.horizontal)
+        .padding(.vertical, 10)
     }
 }
 

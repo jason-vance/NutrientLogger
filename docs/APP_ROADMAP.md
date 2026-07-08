@@ -223,7 +223,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   13. [x] Onboarding paywall - add discount percentage off
   14. [x] ConsumedNutrientDetailView chart - Only show upper limit if the intake is close to or above the upper limit.
   15. [x] NutrientTrendView - Add upper limit to trend chart. Only show upper limit if the intake is close to or above the upper limit.
-  16. [ ] Log Food Screen - Put date, meal time, portion, portion amount in a card together like other screens with grouped fields
+  16. [x] Log Food Screen - Put date, meal time, portion, portion amount in a card together like other screens with grouped fields
 
 ### App Store Connect
 - [x] Consider adding a **third subscription tier**: an annual "Family" or one-time lifetime purchase if StoreKit 2 supports it — v4.0 is a natural moment to introduce this
