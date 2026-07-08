@@ -13,8 +13,8 @@ Micronutrients, Fully Offline
 ## Keywords (100/100 chars)
 vitamin,mineral,deficiency,cronometer,myfitnesspal,vitacost,carnivore,keto,vegan,macro,usda,diet,log
 
-## Promotional Text (0/170 chars)
-New: nutrient trend charts, weight tracking, and Apple Health sync. Try Premium free for 7 days.
+## Promotional Text (160/170 chars)
+v4.0: a redesigned Body tab with goal deadlines & calorie targets, weekly deficiency insights, CSV export, and streak achievements. Try Premium free for 7 days.
 
 ## Description
 Nutrient Logger is the offline-first nutrition tracker for people who want to know what's actually in their food — not just calories and macros, but the full spectrum of vitamins, minerals, and amino acids your body needs.
@@ -24,7 +24,7 @@ Unlike cloud-based trackers, your food log never leaves your device. And unlike 
 Key Features:
 
 * Detailed Nutrient Breakdown
-See your daily intake of both macro and micronutrients, from protein and fiber to magnesium and vitamin B12.
+See your daily intake of both macro and micronutrients, from protein and fiber to magnesium and vitamin B12. Choose which nutrients matter to you and reorder them to build a Nutrition tab that fits your goals.
 
 * Barcode Scanner
 Scan any packaged food to instantly pull in its nutrition data. If we don't recognize a barcode, you can search manually or add it as a custom food — nothing stops you from logging.
@@ -33,22 +33,31 @@ Scan any packaged food to instantly pull in its nutrition data. If we don't reco
 Search from tens of thousands of foods, including whole ingredients and packaged items, to log meals with precision. Smart search understands what you mean — type "whole milk" and find it instantly, even expand common shortcuts like "OJ" or "PB".
 
 * Log Anything
-Scan barcodes, search our database, or add your own
+Scan barcodes, search our database, or add your own — and save your go-to meals for faster logging next time.
 
-* Reusable Meals
-Group foods you eat together often and save them as custom meals for faster, smarter logging.
+* Personalized Targets
+Set your own calorie, macro, and micronutrient goals — or use recommended daily values based on your age and sex. Track your progress and stay balanced, with trend charts for calories, macros, and water alongside every nutrient.
 
-* Personalized Nutrient Targets
-Set your own calorie, macro, and micronutrient goals — or use recommended daily values based on your age and sex. Track your progress on the dashboard and stay balanced.
+* Water Tracking
+Log water with one tap and watch an animated tracker fill toward your daily goal. See your hydration trends over 7 or 30 days (Premium).
+
+* Body Metrics & Goals (Premium)
+Track weight, body fat, BMI, and waist circumference — pick which ones matter to you. Set a goal and deadline and Nutrient Logger calculates the pace you need, projects your trajectory, and sets a BMR/TDEE-based calorie target to get you there.
+
+* Streaks & Achievements
+Build a daily logging streak and a weekly body-tracking streak, with milestone celebrations along the way. See your longest streak, total days logged, and more on your profile.
 
 * Nutrient Trend Charts (Premium)
 See how your intake of any nutrient changes over 7 or 30 days. Spot patterns, track consistency, and compare against your daily target.
 
-* Weight & Body Fat Tracking (Premium)
-Log your weight and body fat percentage, set goals, and watch your progress over time with built-in charts.
+* Weekly Deficiency Insights (Premium)
+A weekly digest flags the nutrients you've been running low on, with foods that would help close the gap.
 
 * Apple Health Sync (Premium)
 Automatically write your daily calories, protein, fat, carbs, and water to Apple Health. Import weight data from Health to keep everything in one place.
+
+* CSV Export (Premium)
+Export your full food log with nutrient data for any date range — ideal for sharing with a doctor or dietitian.
 
 * Learn as You Log
 Discover what each nutrient does for your body and why it matters to your overall health.
@@ -58,5 +67,12 @@ Nutrient Logger is perfect for anyone serious about nutrition—whether you’re
 
 * Apple Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v3.11)
-Premium: nutrient trend charts, weight tracking, and Apple Health sync. See how your intake changes over 7 or 30 days, track your weight and body fat, and sync it all with Apple Health.
+## What's New (v4.0)
+Nutrient Logger 4.0 — a new chapter:
+• Redesigned Nutrition tab with reorderable nutrients and new trend charts for calories, macros, and water
+• All-new Body tab: track weight, body fat, BMI, and waist circumference with goal deadlines, pace tracking, and a BMR/TDEE calorie target (Premium)
+• Daily and weekly streaks with milestones, plus an Achievements card on your profile
+• Weekly deficiency insights show which nutrients you've been low on, and foods to fix it (Premium)
+• Export your food log to CSV (Premium)
+• A more exciting way to log water, with an animated tracker and trend charts
+• Freshly redesigned onboarding, with a limited-time launch discount for new subscribers

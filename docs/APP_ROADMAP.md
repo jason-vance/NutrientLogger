@@ -207,7 +207,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [x] **Export (CSV)** as a premium feature — export all logged foods with nutrient data for a date range. Useful for users tracking for medical or clinical reasons (a natural Nutrient Logger audience).
 - [x] **Nutrient deficiency insights** — a simple weekly digest view: "You've been consistently low in Vitamin D and Magnesium this week. Here are foods that would help." This is premium-only and differentiates from every macro-focused competitor.
 - [x] Address the `//TODO: Days with foods hang for a second while loading` in `DashboardView.swift`
-- [ ] **Misc**
+- [x] **Misc**
   1. [x] Calorie goal ring on nutrition tab
   2. [x] Food search bar not immediately in view
   3. [x] Crash when searching "Five guys"
@@ -230,8 +230,8 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [x] Prepare **promotional pricing** for launch week (introductory offer on yearly plan)
 
 ### Store Listing
-- [ ] **Full screenshot refresh** — all new screens focusing on user outcomes (What's the best background color for this kind of app to catch the customer's eye while they are searching on the app store)
-- [ ] Update **app description** completely — the v4.0 feature set is now materially different from what shipped in v3.x
+- [x] **Full screenshot refresh** — all new screens focusing on user outcomes (What's the best background color for this kind of app to catch the customer's eye while they are searching on the app store)
+- [x] Update **app description** completely — the v4.0 feature set is now materially different from what shipped in v3.x
 - [ ] Write a **launch blog post or Reddit post** in r/nutrition, r/carnivore, r/keto explaining the v4.0 story — what changed and why. Indie dev narrative resonates in those communities.
 
 ---
