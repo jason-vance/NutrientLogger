@@ -162,7 +162,7 @@ struct EditMealView: View {
                 text: $mealName,
                 axis: .vertical,
             )
-            .textFieldStyle(.roundedBorder)
+            .foregroundStyle(Color.accentColor)
         }
         .listRowDefaultModifiers()
     }

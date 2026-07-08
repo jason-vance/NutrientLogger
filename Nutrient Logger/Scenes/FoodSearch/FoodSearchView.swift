@@ -766,7 +766,7 @@ struct FoodSearchView: View {
             } label: {
                 Label("Edit", systemImage: "pencil")
             }
-            .tint(.blue)
+            .tint(.accentColor)
         }
     }
 }

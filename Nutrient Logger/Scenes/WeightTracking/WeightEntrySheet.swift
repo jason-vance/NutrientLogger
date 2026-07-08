@@ -144,8 +144,27 @@ struct WeightEntrySheet: View {
         NavigationStack {
             List {
                 Section {
-                    DatePicker("Date", selection: $date, displayedComponents: .date)
-                        .listRowDefaultModifiers()
+                    HStack {
+                        Text("Date")
+                        Spacer()
+                        Button {
+
+                        } label: {
+                            Text(date.formatted(date: .abbreviated, time: .omitted))
+                                .bold()
+                                .foregroundStyle(Color.accentColor)
+                        }
+                        .overlay {
+                            DatePicker(
+                                "",
+                                selection: $date,
+                                displayedComponents: .date
+                            )
+                            .labelsHidden()
+                            .blendMode(.destinationOver)
+                        }
+                    }
+                    .listRowDefaultModifiers()
                 }
 
                 Section {
@@ -156,6 +175,7 @@ struct WeightEntrySheet: View {
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
                             .bold()
+                            .foregroundStyle(Color.accentColor)
                             .frame(maxWidth: 100)
                         Text(preferredUnit.label)
                             .fontWeight(.light)
@@ -170,6 +190,7 @@ struct WeightEntrySheet: View {
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
                             .bold()
+                            .foregroundStyle(Color.accentColor)
                             .frame(maxWidth: 100)
                         Text("%")
                             .fontWeight(.light)
@@ -184,6 +205,7 @@ struct WeightEntrySheet: View {
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
                             .bold()
+                            .foregroundStyle(Color.accentColor)
                             .frame(maxWidth: 100)
                         Text(preferredWaistUnit.label)
                             .fontWeight(.light)

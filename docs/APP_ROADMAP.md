@@ -211,10 +211,14 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   1. [x] Calorie goal ring on nutrition tab
   2. [x] Food search bar not immediately in view
   3. [x] Crash when searching "Five guys"
-  4. [ ] Match styling across app (text fields are sometimes black or blue, other inconsistencies?. Generally, interactive elements should be .accentColor, non-interactive text should be .black.)
+  4. [x] Match styling across app (text fields are sometimes black or blue, other inconsistencies?. Generally, interactive elements should be .accentColor, non-interactive text should be .black.) — colored the black-text editable TextFields to `.accentColor` (EditProfileView height, BodyMetricCustomizeSheet goals, NutritionSettingsSheet, WeightEntrySheet, ConsumedWaterView custom amount, EditMealView name); dropped EditMealView's stray `.roundedBorder` style; replaced BodyMetricCustomizeSheet's hardcoded `Color.black` (broke dark mode) with default `.primary`; replaced hardcoded `.blue` with semantic `.accentColor` in FoodSearchView and MarketingView
   5. [x] Fix food log field tapping area (way to small especially portion amount "1")
   6. [x] Search as you type
   7. [x] Check places where we show the marketing view. Do they properly block the premium feature (audited all `MarketingView` presentation sites — all gate correctly; removed dead `showMarketingView`/`fullScreenCover` code in `NutrientTrendView` that never fired since its only caller already blocks free users)
+  8. [ ] Dismiss keyboard on scroll in BodyMetricCustomizeSheet, NutritionSettingsSheet
+  9. [ ] Micronutrient goals button doesn't navigate
+  10. [ ] Profile image should be primary color so that it is black in light mode and white in dark mode
+  11. [ ] Have onboarding match light or dark mode instead of being dark all the time
 
 ### App Store Connect
 - [ ] Consider adding a **third subscription tier**: an annual "Family" or one-time lifetime purchase if StoreKit 2 supports it — v4.0 is a natural moment to introduce this

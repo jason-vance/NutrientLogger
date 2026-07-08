@@ -132,6 +132,7 @@ struct EditProfileView: View {
                 .keyboardType(.numberPad)
                 .multilineTextAlignment(.trailing)
                 .bold()
+                .foregroundStyle(Color.accentColor)
                 .frame(maxWidth: 100)
                 Text("cm")
                     .fontWeight(.light)

@@ -205,7 +205,6 @@ struct BodySettingsSheet: View {
                     Spacer()
                     Text("\(target.formatted(maxDigits: 0)) kcal")
                         .bold()
-                        .foregroundStyle(Color.black)
                 }
 
                 Button {
@@ -309,6 +308,7 @@ struct BodySettingsSheet: View {
             .keyboardType(.decimalPad)
             .multilineTextAlignment(.trailing)
             .bold()
+            .foregroundStyle(Color.accentColor)
             .frame(maxWidth: 100)
             Text(unit)
                 .fontWeight(.light)
@@ -328,22 +328,33 @@ struct BodySettingsSheet: View {
                 Button("Clear") { bodyGoalDeadlineRaw = 0 }
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                DatePicker(
-                    "",
-                    selection: Binding(
-                        get: { goalDeadline ?? .now },
-                        set: { bodyGoalDeadlineRaw = $0.timeIntervalSinceReferenceDate }
-                    ),
-                    in: Date.now...,
-                    displayedComponents: .date
-                )
-                .labelsHidden()
+                Button {
+
+                } label: {
+                    Text((goalDeadline ?? .now).formatted(date: .abbreviated, time: .omitted))
+                        .bold()
+                        .foregroundStyle(Color.accentColor)
+                }
+                .overlay {
+                    DatePicker(
+                        "",
+                        selection: Binding(
+                            get: { goalDeadline ?? .now },
+                            set: { bodyGoalDeadlineRaw = $0.timeIntervalSinceReferenceDate }
+                        ),
+                        in: Date.now...,
+                        displayedComponents: .date
+                    )
+                    .labelsHidden()
+                    .blendMode(.destinationOver)
+                }
             } else {
                 Button("Set deadline") {
                     let threeMonths = Calendar.current.date(byAdding: .month, value: 3, to: .now)!
                     bodyGoalDeadlineRaw = threeMonths.timeIntervalSinceReferenceDate
                 }
                 .font(.subheadline)
+                .bold()
             }
         }
         .padding(.horizontal)

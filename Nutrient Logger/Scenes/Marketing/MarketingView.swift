@@ -281,18 +281,18 @@ struct MarketingView: View {
             showDiscountCodeDialog = true
             discountCode = ""
         }
-        .foregroundColor(.blue)
+        .foregroundColor(.accentColor)
         .offerCodeRedemption(isPresented: $showDiscountCodeDialog) { result in
             handleOfferCodeCompletion()
         }
         .padding(.top)
     }
-    
+
     @ViewBuilder private func RestoreSubscriptionButton() -> some View {
         Button("Restore Subscription") {
             restorePurchases()
         }
-        .foregroundColor(.blue)
+        .foregroundColor(.accentColor)
         .padding(.top)
     }
 }

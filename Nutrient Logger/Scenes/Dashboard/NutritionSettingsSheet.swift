@@ -281,6 +281,7 @@ struct NutritionSettingsSheet: View {
             .keyboardType(.numberPad)
             .multilineTextAlignment(.trailing)
             .bold()
+            .foregroundStyle(Color.accentColor)
             .frame(maxWidth: 100)
             Text(unit)
                 .fontWeight(.light)

@@ -356,6 +356,7 @@ struct ConsumedWaterView: View {
                             .keyboardType(.decimalPad)
                             .font(.title2.bold())
                             .multilineTextAlignment(.trailing)
+                            .foregroundStyle(Color.accentColor)
                         Text(waterUnit.rawValue)
                             .foregroundStyle(.secondary)
                     }
@@ -367,23 +368,25 @@ struct ConsumedWaterView: View {
             .listDefaultModifiers()
             .navigationTitle("Log Water")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { showCustomAmountSheet = false }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Log") {
-                        if let amount = Double(customAmountText), amount > 0 {
-                            withAnimation { logWater(grams: waterUnit.toGrams(amount)) }
-                        }
-                        showCustomAmountSheet = false
-                    }
-                    .bold()
-                    .disabled(Double(customAmountText) == nil || (Double(customAmountText) ?? 0) <= 0)
-                }
-            }
+            .toolbar { CustomAmountSheetToolbar() }
         }
-        .presentationDetents([.height(200)])
+        .presentationDetents([.height(260)])
+    }
+    
+    @ToolbarContentBuilder private func CustomAmountSheetToolbar() -> some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            Button("Cancel") { showCustomAmountSheet = false }
+        }
+        ToolbarItem(placement: .confirmationAction) {
+            Button("Log") {
+                if let amount = Double(customAmountText), amount > 0 {
+                    withAnimation { logWater(grams: waterUnit.toGrams(amount)) }
+                }
+                showCustomAmountSheet = false
+            }
+            .bold()
+            .disabled(Double(customAmountText) == nil || (Double(customAmountText) ?? 0) <= 0)
+        }
     }
 }
 
