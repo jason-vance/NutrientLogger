@@ -154,9 +154,11 @@ struct UserProfileView: View {
     @ViewBuilder private func ProfileCard() -> some View {
         HStack(spacing: .spacingDefault) {
             Image(user?.gender == .female ? "profile_female" : "profile_male")
+                .renderingMode(.template)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 64, height: 64)
+                .foregroundStyle(Color.primary)
                 .clipShape(Circle())
             VStack(alignment: .leading, spacing: 4) {
                 Text(ageGenderHeightSummary)

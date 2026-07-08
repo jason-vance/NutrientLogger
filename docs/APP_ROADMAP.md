@@ -217,7 +217,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
   7. [x] Check places where we show the marketing view. Do they properly block the premium feature (audited all `MarketingView` presentation sites — all gate correctly; removed dead `showMarketingView`/`fullScreenCover` code in `NutrientTrendView` that never fired since its only caller already blocks free users)
   8. [x] Dismiss keyboard on scroll in BodyMetricCustomizeSheet, NutritionSettingsSheet
   9. [x] Micronutrient goals button doesn't navigate
-  10. [ ] Profile image should be primary color so that it is black in light mode and white in dark mode
+  10. [x] Profile image should be primary color so that it is black in light mode and white in dark mode
   11. [ ] Have onboarding match light or dark mode instead of being dark all the time
 
 ### App Store Connect
