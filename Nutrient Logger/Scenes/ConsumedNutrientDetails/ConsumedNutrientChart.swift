@@ -43,9 +43,16 @@ struct ConsumedNutrientChart: View {
         return rdi.recommendedAmount
     }
 
+    private static let upperLimitProximityThreshold: Double = 0.8
+
+    private var totalConsumed: Double {
+        mealTimeValueMap.values.reduce(0, +)
+    }
+
     private var upperLimit: Double? {
         guard let rdi else { return nil }
         guard rdi.upperLimit > 0, rdi.upperLimit < .greatestFiniteMagnitude else { return nil }
+        guard totalConsumed >= rdi.upperLimit * Self.upperLimitProximityThreshold else { return nil }
         return rdi.upperLimit
     }
 
