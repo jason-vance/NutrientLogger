@@ -232,7 +232,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 ### Store Listing
 - [x] **Full screenshot refresh** — all new screens focusing on user outcomes (What's the best background color for this kind of app to catch the customer's eye while they are searching on the app store)
 - [x] Update **app description** completely — the v4.0 feature set is now materially different from what shipped in v3.x
-- [ ] Write a **launch blog post or Reddit post** in r/nutrition, r/carnivore, r/keto explaining the v4.0 story — what changed and why. Indie dev narrative resonates in those communities.
+- [x] Write a **launch blog post or Reddit post** in r/nutrition, r/carnivore, r/keto explaining the v4.0 story — what changed and why. Indie dev narrative resonates in those communities.
 
 ---
 

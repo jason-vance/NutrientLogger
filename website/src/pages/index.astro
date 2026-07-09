@@ -89,8 +89,8 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
 
         <div class="feature-card">
           <div class="feature-icon" aria-hidden="true">&#x2696;&#xFE0F;</div>
-          <h3>Weight Tracking</h3>
-          <p>Log your weight over time and see your progress on a chart. Syncs with Apple Health if you have it enabled.</p>
+          <h3>Body Tracking &amp; Goals</h3>
+          <p>Track weight, BMI, and waist circumference over time. Set a goal with a deadline and get a TDEE-based calorie target and pace tracker to get you there.</p>
         </div>
 
         <div class="feature-card">
@@ -99,12 +99,32 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
           <p>Build a daily nutrition habit with streak tracking. Get a nudge at night if your streak is at risk so you never lose your momentum.</p>
         </div>
 
+        <div class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#x1F3C6;</div>
+          <h3>Achievements</h3>
+          <p>Unlock milestones as you build your logging habit and hit your nutrition and body goals.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#x26A0;&#xFE0F;</div>
+          <h3>Nutrient Deficiency Insights</h3>
+          <p>A weekly digest that flags which nutrients you've been consistently low in — and which foods would help close the gap.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#x1F4CB;</div>
+          <h3>CSV Export</h3>
+          <p>Export your logged foods and nutrient data for any date range. Useful for tracking with a doctor, dietitian, or coach.</p>
+        </div>
+
       </div>
 
       <div class="screenshot-row">
-        <img src={`${base}images/screenshot-1.png`} alt="App screenshot showing nutrient breakdown" class="screenshot-placeholder">
-        <img src={`${base}images/screenshot-2.png`} alt="App screenshot showing food search" class="screenshot-placeholder">
-        <img src={`${base}images/screenshot-3.png`} alt="App screenshot showing barcode scanner" class="screenshot-placeholder">
+        <img src={`${base}images/screenshot-1.png`} alt="Body tab showing a weight trend chart with a goal line and BMI" class="screenshot-placeholder">
+        <img src={`${base}images/screenshot-2.png`} alt="Food search with barcode scanner button" class="screenshot-placeholder">
+        <img src={`${base}images/screenshot-3.png`} alt="Profile tab showing achievements and premium status" class="screenshot-placeholder">
+        <img src={`${base}images/screenshot-4.png`} alt="Weekly nutrient deficiency digest" class="screenshot-placeholder">
+        <img src={`${base}images/screenshot-5.png`} alt="7-day nutrient trend chart with goal line" class="screenshot-placeholder">
       </div>
     </div>
   </section>
