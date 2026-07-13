@@ -8,7 +8,6 @@
 import SwiftUI
 import SwinjectAutoregistration
 
-//TODO: ConsumedNutrientDetailsView is displaying multiple of the same foods (Identifiable thing, I think)
 struct ConsumedNutrientDetailsView: View {
     
     private struct MealFoods: Identifiable {
@@ -88,13 +87,19 @@ struct ConsumedNutrientDetailsView: View {
     
     private var mealFoods: [MealFoods] {
         var mealTimeFoodMap: [MealTime: [FoodItem]] = [:]
-        
+
         nutrientFoodPairs
             .map { $0.food }
             .forEach { food in
-                mealTimeFoodMap[food.mealTime ?? .none, default: []].append(food)
+                var foods = mealTimeFoodMap[food.mealTime ?? .none, default: []]
+                // Guards against the same food being paired with this nutrient more than once
+                // upstream from rendering as duplicate rows here.
+                if !foods.contains(food) {
+                    foods.append(food)
+                }
+                mealTimeFoodMap[food.mealTime ?? .none] = foods
             }
-        
+
         return mealTimeFoodMap
             .reduce(into: []) { result, element in
                 result.append(MealFoods(mealTime: element.key, foods: element.value))
@@ -285,19 +290,34 @@ struct ConsumedNutrientDetailsView: View {
         if !mealFoods.isEmpty {
             Section {
                 ForEach(mealFoods) { mealFoods in
-                    Text(mealFoods.mealTime.rawValue)
-                        .listSubsectionHeader()
-                    ForEach(Array(mealFoods.foods.enumerated()), id: \.offset) { _, food in
-                        ConsumedNutrientDetailsFoodRow(
-                            nutrientNumber: nutrient.fdcNumber,
-                            food: food
-                        )
-                    }
+                    MealCard(mealFoods)
                 }
             } header: {
                 Text("Contributing Foods")
             }
         }
+    }
+
+    @ViewBuilder private func MealCard(_ mealFoods: MealFoods) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(mealFoods.mealTime.rawValue)
+                .listSubsectionHeader()
+                .padding(.bottom, 4)
+            ForEach(Array(mealFoods.foods.enumerated()), id: \.offset) { index, food in
+                if index > 0 {
+                    Divider()
+                        .padding(.vertical, 4)
+                }
+                ConsumedNutrientDetailsFoodRow(
+                    nutrientNumber: nutrient.fdcNumber,
+                    food: food,
+                    wrapInCard: false
+                )
+            }
+        }
+        .padding()
+        .inCard(backgroundColor: Color.gray)
+        .listRowDefaultModifiers()
     }
 }
 

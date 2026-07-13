@@ -50,9 +50,9 @@ struct FoodDetailsView: View {
         return nf
     }()
     
-    @State private var selectedMealTime: MealTime = .forCurrentTime()
-    
-    @State private var logDate: SimpleDate = .today
+    @State private var selectedMealTime: MealTime
+
+    @State private var logDate: SimpleDate
 
     @State private var showDeleteConfirmation: Bool = false
     @State private var showDeleteCustomFoodConfirmation: Bool = false
@@ -235,11 +235,15 @@ struct FoodDetailsView: View {
     init(
         mode: Mode,
         askForDateAndMealTime: Bool = true,
+        initialDate: SimpleDate = .today,
+        initialMealTime: MealTime? = nil,
         onFoodSaved: @escaping (FoodItem, Portion) throws -> Void
     ) {
         self.mode = mode
         self.askForDateAndMealTime = askForDateAndMealTime
         self.onFoodSaved = onFoodSaved
+        _selectedMealTime = State(initialValue: initialMealTime ?? .forCurrentTime())
+        _logDate = State(initialValue: initialDate)
     }
     
     var body: some View {

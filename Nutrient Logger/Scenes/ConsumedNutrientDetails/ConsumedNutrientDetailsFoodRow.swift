@@ -11,19 +11,24 @@ struct ConsumedNutrientDetailsFoodRow: View {
     
     let nutrientNumber: String
     let food: FoodItem
-    
+    var wrapInCard: Bool = true
+
     private var nutrient: Nutrient? {
         return food.nutrientGroups
             .reduce(into: []) { result, group in result += group.nutrients }
             .first(where: { $0.fdcNumber == nutrientNumber })
     }
-    
+
     var body: some View {
-        RowContent()
-            .padding(.horizontal)
-            .padding(.vertical, 8)
-            .inCard(backgroundColor: Color.gray)
-        .listRowDefaultModifiers()
+        if wrapInCard {
+            RowContent()
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+                .inCard(backgroundColor: Color.gray)
+                .listRowDefaultModifiers()
+        } else {
+            RowContent()
+        }
     }
     
     @ViewBuilder private func RowContent() -> some View {

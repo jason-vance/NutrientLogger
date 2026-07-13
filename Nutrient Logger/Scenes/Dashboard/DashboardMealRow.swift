@@ -11,39 +11,43 @@ struct DashboardMealRow: View {
 
     static let calsKey = FdcNutrientGroupMapper.NutrientNumber_Energy_KCal
 
-    @State var meal: DashboardMealList.Meal
-    @State var date: SimpleDate
+    let meal: DashboardMealList.Meal
+    let date: SimpleDate
 
     @Inject private var remoteDatabase: RemoteDatabase
 
     @State private var foodItems: [(FoodItem, ConsumedFood)] = []
     @State private var caloriesString: String = ""
 
+    // `meal`'s identity (mealTime) is stable across days, so a plain `.task { }` would only run
+    // once and never notice the day changing underneath it. Keying on `date` forces a refetch
+    // whenever the dashboard's selected day changes.
     private func fetchFoods() async {
-        guard foodItems.isEmpty else { return }
-
-        Task {
-            foodItems = meal.foods
-                .compactMap { consumedFood in
-                    do {
-                        var food = try remoteDatabase.getFood(String(consumedFood.fdcId))
-                        food = try food?.applyingPortion(consumedFood.portion)
-                        food?.dateLogged = consumedFood.dateLogged
-                        food?.mealTime = consumedFood.mealTime
-                        if let food {
-                            return (food, consumedFood)
-                        }
-                    } catch {
-                        print("Failed to fetch food with id \(consumedFood.fdcId): \(error)")
-                    }
-                    return nil
-                }
-
-            let aggregator = NutrientDataAggregator(foodItems.map { $0.0 })
-            let calsAmount = aggregator.nutrientsByNutrientNumber[Self.calsKey]?
-                .reduce(into: 0.0) { $0 += $1.nutrient.amount } ?? 0
-            caloriesString = "\(calsAmount.formatted(maxDigits: 0)) kcal"
+        guard !meal.foods.isEmpty else {
+            foodItems = []
+            return
         }
+
+        foodItems = meal.foods
+            .compactMap { consumedFood in
+                do {
+                    var food = try remoteDatabase.getFood(String(consumedFood.fdcId))
+                    food = try food?.applyingPortion(consumedFood.portion)
+                    food?.dateLogged = consumedFood.dateLogged
+                    food?.mealTime = consumedFood.mealTime
+                    if let food {
+                        return (food, consumedFood)
+                    }
+                } catch {
+                    print("Failed to fetch food with id \(consumedFood.fdcId): \(error)")
+                }
+                return nil
+            }
+
+        let aggregator = NutrientDataAggregator(foodItems.map { $0.0 })
+        let calsAmount = aggregator.nutrientsByNutrientNumber[Self.calsKey]?
+            .reduce(into: 0.0) { $0 += $1.nutrient.amount } ?? 0
+        caloriesString = "\(calsAmount.formatted(maxDigits: 0)) kcal"
     }
 
     private var foodNamesString: String {
@@ -60,13 +64,15 @@ struct DashboardMealRow: View {
                         .font(.subheadline)
                         .fontWeight(.semibold)
                     Spacer()
-                    Text(foodItems.isEmpty ? "--- kcal" : caloriesString)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .contentTransition(.numericText())
-                        .redacted(reason: foodItems.isEmpty ? [.placeholder] : [])
+                    if !meal.foods.isEmpty {
+                        Text(foodItems.isEmpty ? "--- kcal" : caloriesString)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .contentTransition(.numericText())
+                            .redacted(reason: foodItems.isEmpty ? [.placeholder] : [])
+                    }
                 }
-                Text(foodNamesString)
+                Text(meal.foods.isEmpty ? "No foods logged yet" : foodNamesString)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -75,7 +81,7 @@ struct DashboardMealRow: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
         }
-        .task { await fetchFoods() }
+        .task(id: date) { await fetchFoods() }
     }
 }
 

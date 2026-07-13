@@ -153,6 +153,8 @@ struct FoodSearchView: View {
 
     let searchFunction: SearchFunction
     let askForDateAndMealTime: Bool
+    let initialDate: SimpleDate
+    let initialMealTime: MealTime?
     let onFoodSaved: (FoodItem, Portion) throws -> Void
 
     private var groupedSearchResults: [SearchResultsSection] {
@@ -436,10 +438,14 @@ struct FoodSearchView: View {
     init(
         searchFunction: SearchFunction = .defaultSearchFunction,
         askForDateAndMealTime: Bool = true,
+        initialDate: SimpleDate = .today,
+        initialMealTime: MealTime? = nil,
         onFoodSaved: @escaping (FoodItem, Portion) throws -> Void
     ) {
         self.searchFunction = searchFunction
         self.askForDateAndMealTime = askForDateAndMealTime
+        self.initialDate = initialDate
+        self.initialMealTime = initialMealTime
         self.onFoodSaved = onFoodSaved
     }
     
@@ -588,6 +594,8 @@ struct FoodSearchView: View {
             FoodDetailsView(
                 mode: .customFood(food: food),
                 askForDateAndMealTime: askForDateAndMealTime,
+                initialDate: initialDate,
+                initialMealTime: initialMealTime,
                 onFoodSaved: { foodItem, portion in
                     try onFoodSaved(foodItem, portion)
                     resetViewState()
@@ -598,6 +606,8 @@ struct FoodSearchView: View {
             FoodDetailsView(
                 mode: .searchResult(fdcId: fdcId),
                 askForDateAndMealTime: askForDateAndMealTime,
+                initialDate: initialDate,
+                initialMealTime: initialMealTime,
                 onFoodSaved: { foodItem, portion in
                     try onFoodSaved(foodItem, portion)
                     resetViewState()
@@ -677,6 +687,8 @@ struct FoodSearchView: View {
             FoodDetailsView(
                 mode: .searchResult(fdcId: food.fdcId),
                 askForDateAndMealTime: askForDateAndMealTime,
+                initialDate: initialDate,
+                initialMealTime: initialMealTime,
                 onFoodSaved: onFoodSaved
             )
         } label: {
@@ -693,6 +705,8 @@ struct FoodSearchView: View {
             FoodDetailsView(
                 mode: .searchResult(fdcId: food.fdcId),
                 askForDateAndMealTime: askForDateAndMealTime,
+                initialDate: initialDate,
+                initialMealTime: initialMealTime,
                 onFoodSaved: { foodItem, portion in
                     try onFoodSaved(foodItem, portion)
                     resetViewState()
@@ -736,6 +750,8 @@ struct FoodSearchView: View {
             FoodDetailsView(
                 mode: .customFood(food: food),
                 askForDateAndMealTime: askForDateAndMealTime,
+                initialDate: initialDate,
+                initialMealTime: initialMealTime,
                 onFoodSaved: { foodItem, portion in
                     try onFoodSaved(foodItem, portion)
                     resetViewState()

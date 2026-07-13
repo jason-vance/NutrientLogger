@@ -8,9 +8,13 @@
 import Foundation
 
 struct NutrientFoodPair: Equatable, Identifiable {
-    
-    var id: String { "\(nutrient.fdcNumber)-\(food.fdcId)" }
-    
+
+    // Includes date/meal/portion, not just nutrient+fdcId, so two separate log entries of the
+    // same food (e.g. eggs logged for both breakfast and dinner) don't collide on identity.
+    var id: String {
+        "\(nutrient.fdcNumber)-\(food.fdcId)-\(food.dateLogged ?? 0)-\(food.mealTime?.rawValue ?? "")-\(food.portionName)-\(food.amount)"
+    }
+
     public let nutrient: Nutrient
     public let food: FoodItem
 }

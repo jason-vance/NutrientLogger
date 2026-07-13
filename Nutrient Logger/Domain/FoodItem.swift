@@ -52,23 +52,26 @@ struct FoodItem: Identifiable, Codable {
     
     public init(fdcId: Int) {
         self.fdcId = fdcId
+        self.id = fdcId
         self.name = ""
     }
     public init(name: String) {
         self.name = name
     }
-    
+
     public init(fdcId: Int, name: String, fdcType: String?, gramWeight: Double, portionName: String, amount: Double) {
         self.fdcId = fdcId
+        self.id = fdcId
         self.name = name
         self.fdcType = fdcType
         self.gramWeight = gramWeight
         self.portionName = portionName
         self.amount = amount
     }
-    
+
     public init(fdcId: Int, name: String, fdcType: String, nutrientGroups: [NutrientGroup], gramWeight: Double) {
         self.fdcId = fdcId
+        self.id = fdcId
         self.name = name
         self.fdcType = fdcType
         self.nutrientGroups = nutrientGroups

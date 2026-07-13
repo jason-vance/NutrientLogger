@@ -8,34 +8,35 @@
 import Foundation
 
 enum DashboardMealList {
-    
+
+    // Always includes every valid meal time, even ones with no logged foods yet, so callers can
+    // show an empty "Breakfast" card (etc.) as an invitation to log rather than hiding it. Foods
+    // logged under the legacy/edge-case `.none` meal time still get their own card, but only when
+    // they actually exist.
     public static func from(_ foods: [ConsumedFood]) -> [Meal] {
-        let meals: [MealTime: Meal] = [
-            .none: .init(),
-            .breakfast: .init(),
-            .lunch: .init(),
-            .dinner: .init(),
-            .eveningSnack: .init(),
-            .afternoonSnack: .init(),
-            .morningSnack: .init(),
-        ]
-        
-        for food in foods {
-            meals[food.mealTime, default: .init()].append(food)
+        var meals: [MealTime: Meal] = [:]
+        for mealTime in MealTime.validFields {
+            meals[mealTime] = Meal(mealTime: mealTime)
         }
 
-        return meals.compactMap {
-            $0.value.foods.count > 0 ? $0.value : nil
+        for food in foods {
+            meals[food.mealTime, default: Meal(mealTime: food.mealTime)].append(food)
         }
+
+        return meals.values.sorted { $0.mealTime < $1.mealTime }
     }
-    
+
     public class Meal: Identifiable {
-        
+
+        public let mealTime: MealTime
         private(set) var foods: [ConsumedFood] = []
-        
-        var mealTime: MealTime { foods.first?.mealTime ?? .none }
-        
+
+        public var id: MealTime { mealTime }
         public var name: String { mealTime.rawValue }
+
+        public init(mealTime: MealTime = .none) {
+            self.mealTime = mealTime
+        }
 
         public func append(_ food: ConsumedFood) {
             foods.append(food)
@@ -45,7 +46,7 @@ enum DashboardMealList {
 
 extension DashboardMealList.Meal {
     static let sample: DashboardMealList.Meal = {
-        let meal = DashboardMealList.Meal()
+        let meal = DashboardMealList.Meal(mealTime: .breakfast)
         meal.append(.dashboardSample)
         return meal
     }()
@@ -56,8 +57,16 @@ extension DashboardMealList.Meal: Comparable {
         lhs.mealTime == rhs.mealTime
         && lhs.foods == rhs.foods
     }
-    
+
     static func < (lhs: DashboardMealList.Meal, rhs: DashboardMealList.Meal) -> Bool {
         lhs.mealTime < rhs.mealTime
+    }
+}
+
+extension DashboardMealList.Meal: Hashable {
+    // Only needs to be consistent with `==`, not fully distinguish every unequal instance, so
+    // hashing on `mealTime` alone (there's only ever one Meal per meal time) is sufficient.
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(mealTime)
     }
 }

@@ -42,29 +42,28 @@ struct DashboardNutrientSections: View {
     }
 
     @ViewBuilder private func MealsSection() -> some View {
+        // DashboardMealList.from always returns every valid meal time (empty ones included), so
+        // this section stays visible as a logging entry point even on a day with nothing logged.
         let meals = DashboardMealList.from(consumedFoods)
-            .sorted { $0.mealTime < $1.mealTime }
 
-        if !meals.isEmpty {
-            VStack(spacing: 0) {
-                HStack {
-                    Text("Meals")
-                        .listSectionHeader()
-                    Spacer()
-                }
-                VStack(spacing: 0) {
-                    ForEach(Array(meals.enumerated()), id: \.element.id) { index, meal in
-                        if index > 0 {
-                            Divider()
-                                .padding(.leading, 16)
-                        }
-                        DashboardMealRow(meal: meal, date: date)
-                    }
-                }
-                .padding(.vertical, 4)
-                .inCard(backgroundColor: .gray)
-                .padding(.top, .spacingDefault)
+        VStack(spacing: 0) {
+            HStack {
+                Text("Meals")
+                    .listSectionHeader()
+                Spacer()
             }
+            VStack(spacing: 0) {
+                ForEach(Array(meals.enumerated()), id: \.element.id) { index, meal in
+                    if index > 0 {
+                        Divider()
+                            .padding(.leading, 16)
+                    }
+                    DashboardMealRow(meal: meal, date: date)
+                }
+            }
+            .padding(.vertical, 4)
+            .inCard(backgroundColor: .gray)
+            .padding(.top, .spacingDefault)
         }
     }
 }

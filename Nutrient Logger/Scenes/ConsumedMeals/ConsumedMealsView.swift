@@ -19,11 +19,17 @@ struct ConsumedMealsView: View {
     @Query private var consumedFoods: [ConsumedFood]
 
     @State private var mealPendingDelete: DashboardMealList.Meal? = nil
+    @State private var foodBeingEdited: ConsumedFood? = nil
+    @State private var mealAddingFoodTo: DashboardMealList.Meal? = nil
 
     private var todaysConsumedFoods: [ConsumedFood] {
         consumedFoods
             .filter { $0.dateLogged == date }
             .sorted { $0.name < $1.name }
+    }
+
+    private var meals: [DashboardMealList.Meal] {
+        DashboardMealList.from(todaysConsumedFoods)
     }
 
     private func deleteMeal(_ meal: DashboardMealList.Meal) {
@@ -35,20 +41,48 @@ struct ConsumedMealsView: View {
 
     var body: some View {
         List {
-            if !todaysConsumedFoods.isEmpty {
-                let meals = DashboardMealList.from(todaysConsumedFoods)
-                    .sorted { $0.mealTime < $1.mealTime }
-
-                ForEach(meals) { meal in
-                    MealHeader(meal)
-                    ForEach(meal.foods) { food in
-                        FoodRow(food)
-                    }
-                }
+            ForEach(meals) { meal in
+                ConsumedMealCard(
+                    meal: meal,
+                    date: date,
+                    onDeleteRequested: { mealPendingDelete = meal },
+                    onFoodTapped: { foodBeingEdited = $0 },
+                    onAddFoodTapped: { mealAddingFoodTo = meal }
+                )
+                .listRowDefaultModifiers()
             }
         }
         .listDefaultModifiers()
         .navigationTitle("\(date.formatted())'s Meals")
+        // These live on the List itself (not inside each row's view) so a single, stable
+        // navigationDestination handles every meal card — attaching one per row/card is a known
+        // SwiftUI pitfall that can misroute navigation when the list re-renders.
+        .navigationDestination(item: $foodBeingEdited) { consumedFood in
+            FoodDetailsView(
+                mode: .loggedFood(food: consumedFood),
+                onFoodSaved: { (foodItem: FoodItem, portion: Portion) in
+                    consumedFood.portionAmount = portion.amount
+                    consumedFood.portionGramWeight = portion.gramWeight
+                    consumedFood.portionName = portion.name
+                    consumedFood.dateLogged = foodItem.dateLogged ?? consumedFood.dateLogged
+                    consumedFood.mealTime = foodItem.mealTime ?? consumedFood.mealTime
+
+                    dataController.updateDailySummary()
+                }
+            )
+        }
+        .navigationDestination(item: $mealAddingFoodTo) { meal in
+            FoodSearchView(
+                initialDate: date,
+                initialMealTime: meal.mealTime == .none ? nil : meal.mealTime,
+                onFoodSaved: { foodItem, portion in
+                    try FoodSaver.forConsumedFoods(modelContext: modelContext).saveFoodItem(foodItem, portion)
+                    DispatchQueue.main.async {
+                        dataController.updateDailySummary()
+                    }
+                }
+            )
+        }
         .confirmationDialog(
             "Delete \(mealPendingDelete?.name ?? "Meal")?\n\nThis will remove all \(mealPendingDelete?.foods.count ?? 0) food(s) logged for this meal.",
             isPresented: Binding(
@@ -68,122 +102,104 @@ struct ConsumedMealsView: View {
             }
         }
     }
-
-    @ViewBuilder private func MealHeader(_ meal: DashboardMealList.Meal) -> some View {
-        HStack {
-            Text(meal.name)
-                .listSubsectionHeader()
-            Spacer()
-            Button {
-                mealPendingDelete = meal
-            } label: {
-                Image(systemName: "trash")
-                    .foregroundStyle(.red)
-                    .font(.footnote)
-            }
-            .buttonStyle(.plain)
-        }
-    }
-    
-    @ViewBuilder private func FoodRow(_ consumedFood: ConsumedFood) -> some View {
-        NavigationLink {
-            FoodDetailsView(
-                mode: .loggedFood(food: consumedFood),
-                onFoodSaved: { (foodItem: FoodItem, portion: Portion) in
-                    consumedFood.portionAmount = portion.amount
-                    consumedFood.portionGramWeight = portion.gramWeight
-                    consumedFood.portionName = portion.name
-                    consumedFood.dateLogged = foodItem.dateLogged ?? consumedFood.dateLogged
-                    consumedFood.mealTime = foodItem.mealTime ?? consumedFood.mealTime
-
-                    dataController.updateDailySummary()
-                }
-            )
-        } label: {
-            ConsumedMealFoodRow(consumedFood: consumedFood)
-        }
-        .listRowDefaultModifiers()
-    }
 }
 
-struct ConsumedMealFoodRow: View {
-    
+private struct ConsumedMealCard: View {
+
     static let calsKey = FdcNutrientGroupMapper.NutrientNumber_Energy_KCal
     static let carbsKey = FdcNutrientGroupMapper.NutrientNumber_Carbohydrate_ByDifference
     static let fatKey = FdcNutrientGroupMapper.NutrientNumber_TotalLipid_Fat
     static let proteinKey = FdcNutrientGroupMapper.NutrientNumber_Protein
-    
-    let consumedFood: ConsumedFood
-    @State private var foodItem: FoodItem?
-    @State private var aggregator: NutrientDataAggregator?
-    
+
+    let meal: DashboardMealList.Meal
+    let date: SimpleDate
+    let onDeleteRequested: () -> Void
+    let onFoodTapped: (ConsumedFood) -> Void
+    let onAddFoodTapped: () -> Void
+
     @Inject private var remoteDatabase: RemoteDatabase
-    
-    private var caloriesString: String? {
-        guard let aggregator else { return nil }
-        
-        let calsAmount = aggregator.nutrientsByNutrientNumber[Self.calsKey]?
-            .reduce(into: 0.0, { $0 += $1.nutrient.amount }) ?? 0
-        return "\(calsAmount.formatted(maxDigits: 0)) cals"
+
+    @State private var foodItems: [FoodItem] = []
+
+    private var aggregator: NutrientDataAggregator? {
+        foodItems.isEmpty ? nil : NutrientDataAggregator(foodItems)
     }
-    
-    private var portionString: String? {
-        guard foodItem != nil else { return nil }
-        return "\(consumedFood.portionAmount.formatted(maxDigits: 2)) \(consumedFood.portionName)"
-    }
-    
-    private var weightString: String? {
-        guard foodItem != nil else { return nil }
-        return "\((consumedFood.portionAmount * consumedFood.portionGramWeight).formatted(maxDigits: 0))g"
-    }
-    
-    func fetchFoodItem() async {
-        guard foodItem == nil else { return }
-        
+
+    private func fetchFoodItems() async {
+        guard foodItems.isEmpty, !meal.foods.isEmpty else { return }
+
         Task {
-            do {
-                if let foodItem = try remoteDatabase.getFood(String(consumedFood.fdcId))?
-                    .applyingPortion(Portion(amount: consumedFood.portionAmount, gramWeight: consumedFood.portionGramWeight))
-                {
-                    let aggregator = NutrientDataAggregator([foodItem])
-                    
-                    self.foodItem = foodItem
-                    self.aggregator = aggregator
-                } else {
-                    throw NSError(domain: "FoodItem was nil", code: 0, userInfo: nil)
+            foodItems = meal.foods.compactMap { consumedFood in
+                do {
+                    var food = try remoteDatabase.getFood(String(consumedFood.fdcId))
+                    food = try food?.applyingPortion(consumedFood.portion)
+                    return food
+                } catch {
+                    print("Failed to fetch food with id \(consumedFood.fdcId): \(error)")
+                    return nil
                 }
-            } catch {
-                print("Error fetching food item: \(error.localizedDescription)")
             }
         }
     }
-    
+
+    private func amount(for key: String) -> Double {
+        aggregator?.nutrientsByNutrientNumber[key]?
+            .reduce(into: 0.0) { $0 += $1.nutrient.amount } ?? 0
+    }
+
     var body: some View {
-        VStack {
-            HStack {
-                Text(consumedFood.name)
-                    .font(.headline)
-                Spacer()
+        VStack(alignment: .leading, spacing: 8) {
+            MealHeader()
+            if !meal.foods.isEmpty {
+                QuickStats()
+                CarbsFatProtein()
+                    .padding(.top, 4)
+                Divider()
+                FoodsList()
             }
-            QuickStats()
-            CarbsFatProtein()
-                .padding(.top, 8)
+            Divider()
+            AddFoodButton()
         }
-        .foregroundStyle(Color.text)
         .padding()
+        .foregroundStyle(Color.text)
         .inCard(backgroundColor: Color.gray)
-        .task { await fetchFoodItem() }
+        .task { await fetchFoodItems() }
     }
-    
+
+    @ViewBuilder private func MealHeader() -> some View {
+        HStack {
+            Text(meal.name)
+                .font(.headline)
+            Spacer()
+            if !meal.foods.isEmpty {
+                Button {
+                    onDeleteRequested()
+                } label: {
+                    Image(systemName: "trash")
+                        .foregroundStyle(.red)
+                        .font(.footnote)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
     @ViewBuilder private func QuickStats() -> some View {
         HStack(spacing: 4) {
-            QuickStat(icon: "flame.fill", iconColor: .orange, text: caloriesString)
-            QuickStat(icon: "fork.knife", iconColor: .teal, text: portionString)
-            QuickStat(icon: "scalemass.fill", iconColor: .purple, text: weightString)
+            QuickStat(
+                icon: "flame.fill",
+                iconColor: .orange,
+                text: foodItems.isEmpty ? nil : "\(amount(for: Self.calsKey).formatted(maxDigits: 0)) cals"
+            )
+            QuickStat(
+                icon: "fork.knife",
+                iconColor: .teal,
+                text: "\(meal.foods.count) food\(meal.foods.count == 1 ? "" : "s")"
+            )
             Spacer()
         }
     }
-    
+
     @ViewBuilder private func QuickStat(icon: String, iconColor: Color, text: String?) -> some View {
         HStack(spacing: 4) {
             Image(systemName: icon)
@@ -195,44 +211,20 @@ struct ConsumedMealFoodRow: View {
         }
         .font(.footnote)
     }
-    
+
     @ViewBuilder private func CarbsFatProtein() -> some View {
-        let carbs = aggregator?
-            .nutrientsByNutrientNumber[Self.carbsKey]?
-            .reduce(into: 0.0, { $0 += $1.nutrient.amount }) ?? 0
-        let fat = aggregator?
-            .nutrientsByNutrientNumber[Self.fatKey]?
-            .reduce(into: 0.0, { $0 += $1.nutrient.amount }) ?? 0
-        let protein = aggregator?
-            .nutrientsByNutrientNumber[Self.proteinKey]?
-            .reduce(into: 0.0, { $0 += $1.nutrient.amount }) ?? 0
+        let carbs = amount(for: Self.carbsKey)
+        let fat = amount(for: Self.fatKey)
+        let protein = amount(for: Self.proteinKey)
         let totalMacroCals = (carbs * 4) + (fat * 9) + (protein * 4)
 
         HStack {
-            Macro(
-                name: "Carbs",
-                amount: carbs,
-                calorieFactor: 4,
-                totalMacroCals: totalMacroCals,
-                color: foodItem == nil ? .gray : .indigo
-            )
-            Macro(
-                name: "Fat",
-                amount: fat,
-                calorieFactor: 9,
-                totalMacroCals: totalMacroCals,
-                color: foodItem == nil ? .gray : .red
-            )
-            Macro(
-                name: "Protein",
-                amount: protein,
-                calorieFactor: 4,
-                totalMacroCals: totalMacroCals,
-                color: foodItem == nil ? .gray : .green
-            )
+            Macro(name: "Carbs", amount: carbs, calorieFactor: 4, totalMacroCals: totalMacroCals, color: foodItems.isEmpty ? .gray : .indigo)
+            Macro(name: "Fat", amount: fat, calorieFactor: 9, totalMacroCals: totalMacroCals, color: foodItems.isEmpty ? .gray : .red)
+            Macro(name: "Protein", amount: protein, calorieFactor: 4, totalMacroCals: totalMacroCals, color: foodItems.isEmpty ? .gray : .green)
         }
     }
-    
+
     @ViewBuilder private func Macro(
         name: String,
         amount: Double,
@@ -244,12 +236,12 @@ struct ConsumedMealFoodRow: View {
             CircleChart(
                 amount: amount * calorieFactor,
                 total: totalMacroCals,
-                config: .init(color: color)
+                config: .init(size: 28, lineWidth: 5, color: color)
             )
             VStack {
                 HStack {
                     Text(name)
-                        .font(.caption)
+                        .font(.caption2)
                         .fontWeight(.light)
                         .multilineTextAlignment(.leading)
                     Spacer()
@@ -257,12 +249,60 @@ struct ConsumedMealFoodRow: View {
                 HStack {
                     Text("\(amount.formatted(maxDigits: 0))g")
                         .contentTransition(.numericText())
-                        .font(.callout)
+                        .font(.caption)
                         .fontWeight(.semibold)
                         .fontDesign(.rounded)
                     Spacer()
                 }
             }
+        }
+    }
+
+    @ViewBuilder private func FoodsList() -> some View {
+        VStack(spacing: 0) {
+            ForEach(Array(meal.foods.enumerated()), id: \.element.id) { index, food in
+                if index > 0 {
+                    Divider()
+                }
+                FoodRow(food)
+            }
+        }
+    }
+
+    @ViewBuilder private func FoodRow(_ consumedFood: ConsumedFood) -> some View {
+        Button {
+            onFoodTapped(consumedFood)
+        } label: {
+            HStack {
+                Text(consumedFood.name)
+                    .font(.subheadline)
+                Spacer()
+                Text("\(consumedFood.portionAmount.formatted(maxDigits: 2)) \(consumedFood.portionName)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Image(systemName: "chevron.right")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+            .foregroundStyle(Color.text)
+            .padding(.vertical, 6)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder private func AddFoodButton() -> some View {
+        Button {
+            onAddFoodTapped()
+        } label: {
+            HStack {
+                Spacer()
+                Image(systemName: "plus.circle")
+                Text("Add Food")
+                Spacer()
+            }
+            .font(.subheadline)
+            .foregroundStyle(Color.accentColor)
         }
     }
 }
@@ -287,7 +327,7 @@ struct ConsumedMealFoodRow: View {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
-    
+
     NavigationStack {
         ConsumedMealsView(date: .today)
     }
