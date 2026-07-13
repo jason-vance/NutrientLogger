@@ -43,6 +43,12 @@ private struct WaterWaveCircle: View {
     let goalGrams: Double
     let waterUnit: WaterUnit
 
+    // A small visual floor so the wave never reads as a totally dry/empty state first thing in
+    // the day — the amount/goal text below stays accurate regardless.
+    private var displayProgress: Double {
+        max(progress, 0.03)
+    }
+
     var body: some View {
         GeometryReader { geo in
             let size = min(geo.size.width, geo.size.height)
@@ -57,12 +63,12 @@ private struct WaterWaveCircle: View {
                         .fill(Color.blue.opacity(0.1))
 
                     // Back wave (lighter, offset phase)
-                    WaveShape(progress: CGFloat(progress), phase: phase + .pi, amplitude: amplitude * 0.8)
+                    WaveShape(progress: CGFloat(displayProgress), phase: phase + .pi, amplitude: amplitude * 0.8)
                         .fill(Color.blue.opacity(0.35))
                         .clipShape(Circle())
 
                     // Front wave
-                    WaveShape(progress: CGFloat(progress), phase: phase, amplitude: amplitude)
+                    WaveShape(progress: CGFloat(displayProgress), phase: phase, amplitude: amplitude)
                         .fill(Color.blue.opacity(0.7))
                         .clipShape(Circle())
 
@@ -95,7 +101,7 @@ private struct WaterWaveCircle: View {
                 .position(x: geo.size.width / 2, y: geo.size.height / 2)
             }
         }
-        .animation(.easeInOut(duration: 0.6), value: progress)
+        .animation(.easeInOut(duration: 0.6), value: displayProgress)
     }
 }
 

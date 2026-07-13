@@ -36,6 +36,29 @@ struct MarketingView: View {
         return ids.compactMap { subscriptionManager.products[$0] }
     }
 
+    // Reframes the ask around what the user is missing out on, matching the "Don't break your
+    // streak!" loss-aversion framing already used by the streak-at-risk notification, rather than
+    // a purely gain-framed pitch. Only applies to triggers tied to one specific locked feature —
+    // generic entry points (smart paywall, deep link, profile upsell) keep the neutral headline.
+    private var contextualLossHeadline: String? {
+        switch trigger {
+        case .trendCharts:
+            return "Don't miss out on your 7 & 30-day nutrient trends"
+        case .healthSync:
+            return "Don't miss out on automatic Apple Health sync"
+        case .weightGoal:
+            return "Don't miss out on weight & body fat goal tracking"
+        case .micronutrientGoals:
+            return "Don't miss out on custom micronutrient goals"
+        case .csvExport:
+            return "Don't miss out on exporting your data to CSV"
+        case .weeklyNutrientWatch:
+            return "Don't miss out on this week's low & high nutrient alerts"
+        case .smartPaywall, .deepLink, .removeAds, .profileUpsell:
+            return nil
+        }
+    }
+
     private var yearlySavingsPercent: Int? {
         let monthlyId = subscriptionManager.isInDiscountWindow
             ? SubscriptionManager.monthlyDiscountedProductId
@@ -182,13 +205,17 @@ struct MarketingView: View {
             .padding(.bottom, 16)
 
         HStack {
-            Text("Unlock Nutrient Logger Premium")
+            Text(contextualLossHeadline ?? "Unlock Nutrient Logger Premium")
                 .font(.system(size: 28, weight: .bold))
             Spacer()
         }
 
         HStack {
-            Text("Track every vitamin, mineral, and amino acid — completely offline. Your data never leaves your device.")
+            Text(
+                contextualLossHeadline == nil
+                    ? "Track every vitamin, mineral, and amino acid — completely offline. Your data never leaves your device."
+                    : "Track every vitamin, mineral, and amino acid — completely offline. Unlock Premium to get this and everything else Nutrient Logger offers."
+            )
                 .foregroundStyle(.secondary)
             Spacer()
         }
@@ -230,9 +257,18 @@ struct MarketingView: View {
         }
     }
     
+    // Only meaningful for the yearly product — gives it a directly-comparable per-month figure
+    // to sit next to monthly's sticker price, the same contrast trick as "$90 steak next to a
+    // $40 salmon": the yearly lump sum alone doesn't read as cheap, its monthly-equivalent does.
+    private func monthlyEquivalentPrice(for product: Product) -> String? {
+        guard product.subscription?.subscriptionPeriod.unit == .year else { return nil }
+        return (product.price / 12).formatted(product.priceFormatStyle)
+    }
+
     @ViewBuilder private func SubscribeButton(product: Product) -> some View {
+        let isYearly = product.id == SubscriptionManager.yearlyProductId || product.id == SubscriptionManager.yearlyDiscountedProductId
+
         VStack(alignment: .trailing, spacing: 4) {
-            let isYearly = product.id == SubscriptionManager.yearlyProductId || product.id == SubscriptionManager.yearlyDiscountedProductId
             if isYearly, let percent = yearlySavingsPercent {
                 SavingsBadge(percent: percent)
             }
@@ -241,9 +277,16 @@ struct MarketingView: View {
                 doPurchase(productId: product.id)
             } label: {
                 HStack(spacing: 0) {
-                    Text(product.displayName)
-                        .font(.body.bold())
-                        .multilineTextAlignment(.leading)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(product.displayName)
+                            .font(.body.bold())
+                            .multilineTextAlignment(.leading)
+                        if isYearly, let monthlyEquivalent = monthlyEquivalentPrice(for: product) {
+                            Text("Just \(monthlyEquivalent)/mo")
+                                .font(.caption2)
+                                .opacity(0.85)
+                        }
+                    }
                     Spacer()
                     VStack(alignment: .trailing) {
                         Text(product.displayPrice)
@@ -254,12 +297,15 @@ struct MarketingView: View {
                         }
                     }
                 }
-                .foregroundStyle(Color.white)
+                .foregroundStyle(isYearly ? Color.white : Color.accentColor)
                 .padding(.vertical, 8)
                 .padding(.horizontal, 24)
                 .background {
-                    RoundedRectangle(cornerRadius: .infinity, style: .continuous)
-                        .foregroundStyle(Color.accentColor.gradient)
+                    if isYearly {
+                        Capsule().foregroundStyle(Color.accentColor.gradient)
+                    } else {
+                        Capsule().strokeBorder(Color.accentColor, lineWidth: 1.5)
+                    }
                 }
             }
             .disabled(isPurchasing)

@@ -354,7 +354,7 @@ struct NutritionSettingsSheet: View {
         } header: {
             Text(title)
         } footer: {
-            Text("Drag to reorder. Disabled nutrients are hidden from the Nutrition tab.")
+            Text("Drag to reorder and build your Nutrition tab exactly the way you want it. Disabled nutrients are hidden.")
         }
     }
 }

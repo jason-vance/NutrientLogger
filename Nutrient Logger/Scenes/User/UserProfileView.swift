@@ -33,6 +33,10 @@ struct UserProfileView: View {
     @State private var marketingTrigger: PaywallTrigger = .healthSync
     @State private var showManageSubscriptions: Bool = false
 
+    #if DEBUG
+    @State private var showDebugMenu: Bool = false
+    #endif
+
     @Query private var consumedFoods: [ConsumedFood]
     @Query private var weightEntries: [WeightEntry]
     @Query private var bodyFatEntries: [BodyFatEntry]
@@ -514,6 +518,20 @@ struct UserProfileView: View {
             .font(.caption2)
             .foregroundStyle(.secondary)
             .padding(.bottom, .spacingDefault)
+            #if DEBUG
+            .onLongPressGesture(minimumDuration: 1) {
+                showDebugMenu = true
+            }
+            .confirmationDialog("Debug Menu", isPresented: $showDebugMenu, titleVisibility: .visible) {
+                Button("Reset Streaks", role: .destructive) {
+                    LoggingStreakStore().reset()
+                    BodyMeasurementStreakStore().reset()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Clears the daily logging streak and weekly body-measurement streak from both local storage and iCloud, so a reinstall won't bring them back.")
+            }
+            #endif
     }
 }
 

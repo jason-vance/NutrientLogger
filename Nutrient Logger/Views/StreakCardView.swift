@@ -21,61 +21,63 @@ struct StreakCardView: View {
         sortedMilestones.last { $0 <= count } ?? 0
     }
 
+    // Never let the mini progress bar read as a totally blank sliver, even on day/week zero —
+    // the streak count/label itself stays honest ("Start a Day Streak"), this is purely decorative.
+    private static let minimumVisualProgress: Double = 0.05
+
     private var progress: Double {
         guard let next = nextMilestone, next > previousMilestone else { return 1.0 }
         return Double(count - previousMilestone) / Double(next - previousMilestone)
     }
 
     var body: some View {
-        if count > 0 {
-            HStack(spacing: 8) {
-                Image(systemName: "flame.fill")
-                    .foregroundStyle(.orange)
-                    .symbolEffect(.bounce, value: flameBouncing)
-                    .overlay {
-                        ZStack {
-                            ForEach(particles) { particle in
-                                StreakParticleView(particle: particle)
-                            }
+        HStack(spacing: 8) {
+            Image(systemName: "flame.fill")
+                .foregroundStyle(count > 0 ? .orange : .orange.opacity(0.35))
+                .symbolEffect(.bounce, value: flameBouncing)
+                .overlay {
+                    ZStack {
+                        ForEach(particles) { particle in
+                            StreakParticleView(particle: particle)
                         }
-                        .allowsHitTesting(false)
                     }
-                Text("\(count)-\(unit) Streak")
-                    .font(.subheadline.bold())
-                    .foregroundStyle(.orange)
-                    .contentTransition(.numericText())
-                Spacer()
-                if nextMilestone != nil {
-                    HStack(spacing: 6) {
-                        ProgressView(value: displayedProgress)
-                            .tint(.orange)
-                            .frame(width: 60)
-                        Text("\(nextMilestone!)")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
+                    .allowsHitTesting(false)
+                }
+            Text(count > 0 ? "\(count)-\(unit) Streak" : "Start a \(unit) Streak")
+                .font(.subheadline.bold())
+                .foregroundStyle(.orange)
+                .contentTransition(.numericText())
+            Spacer()
+            if let nextMilestone {
+                HStack(spacing: 6) {
+                    ProgressView(value: displayedProgress)
+                        .tint(.orange)
+                        .frame(width: 60)
+                    Text("\(nextMilestone)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
                 }
             }
-            .padding()
-            .inCard(backgroundColor: .orange)
-            .scaleEffect(cardScale)
-            .onTapGesture { onTap?() }
-            .onAppear {
-                withAnimation(.easeOut(duration: 0.7).delay(0.2)) {
-                    displayedProgress = progress
-                }
+        }
+        .padding()
+        .inCard(backgroundColor: .orange)
+        .scaleEffect(cardScale)
+        .onTapGesture { onTap?() }
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.7).delay(0.2)) {
+                displayedProgress = max(progress, Self.minimumVisualProgress)
             }
-            .onChange(of: count) { oldCount, newCount in
-                guard newCount > oldCount else { return }
-                animateIncrement(isMilestone: milestones.contains(newCount))
-            }
+        }
+        .onChange(of: count) { oldCount, newCount in
+            guard newCount > oldCount else { return }
+            animateIncrement(isMilestone: milestones.contains(newCount))
         }
     }
 
     private func animateIncrement(isMilestone: Bool) {
         flameBouncing.toggle()
         withAnimation(.easeInOut(duration: 0.5).delay(0.1)) {
-            displayedProgress = progress
+            displayedProgress = max(progress, Self.minimumVisualProgress)
         }
         withAnimation(.spring(response: 0.25, dampingFraction: 0.4)) {
             cardScale = 1.06

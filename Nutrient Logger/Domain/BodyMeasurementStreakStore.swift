@@ -36,4 +36,16 @@ struct BodyMeasurementStreakStore {
         remote.set(Int64(weekStartDateRaw), forKey: Self.weekStartDateKey)
         remote.synchronize()
     }
+
+    /// Debug-only: clears the streak from both local storage and iCloud. Clearing local storage
+    /// alone isn't enough to simulate a fresh install — `load()`'s reconciliation would just pull
+    /// the old streak back down from iCloud.
+    func reset() {
+        local.removeObject(forKey: Self.countKey)
+        local.removeObject(forKey: Self.weekStartDateKey)
+
+        remote.removeObject(forKey: Self.countKey)
+        remote.removeObject(forKey: Self.weekStartDateKey)
+        remote.synchronize()
+    }
 }

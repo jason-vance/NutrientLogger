@@ -33,7 +33,7 @@ struct CustomFoodsLibraryView: View {
                 ContentUnavailableView(
                     "No Custom Foods... Yet!",
                     systemImage: "fork.knife",
-                    description: Text("You haven't created any custom foods yet. Tap the plus (+) button in the bottom right corner to get started!")
+                    description: Text("Foods you create are saved to your own personal library, ready to log again anytime. Tap the plus (+) button in the bottom right corner to create your first one!")
                 )
                 .listRowDefaultModifiers()
             } else {
@@ -64,7 +64,7 @@ struct CustomFoodsLibraryView: View {
 
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
-            Text("Custom Foods")
+            Text("My Custom Foods")
                 .bold()
         }
         ToolbarItem(placement: .topBarLeading) {

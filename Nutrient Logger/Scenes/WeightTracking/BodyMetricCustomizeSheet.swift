@@ -381,7 +381,7 @@ struct BodySettingsSheet: View {
         } header: {
             Text("Metrics")
         } footer: {
-            Text("Drag to reorder. Disabled metrics are hidden from the Body tab.")
+            Text("Drag to reorder and build your Body tab exactly the way you want it. Disabled metrics are hidden.")
         }
     }
 }

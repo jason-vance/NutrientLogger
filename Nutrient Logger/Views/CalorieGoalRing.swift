@@ -70,7 +70,9 @@ struct CalorieGoalRing: View {
                             .stroke(style: .init(lineWidth: config.lineWidth))
                             .foregroundStyle(config.trackColor)
 
-                        let progress = CGFloat(calories / calorieGoal)
+                        // A small visual floor so the ring never reads as a totally dead/blank
+                        // state first thing in the day — the calorie number itself stays accurate.
+                        let progress = max(CGFloat(calories / calorieGoal), 0.02)
 
                         Circle()
                             .trim(from: 0, to: progress)
