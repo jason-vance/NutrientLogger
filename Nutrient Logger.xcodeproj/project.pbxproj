@@ -182,6 +182,8 @@
 				Scenes/ConsumedNutrientDetails/Workers/StaticNutrientExplanations.swift,
 				Scenes/ConsumedWater/WaterTrendDataProvider.swift,
 				Scenes/Dashboard/Domain/DashboardMealList.swift,
+				Scenes/Dashboard/Domain/GoalProgressBarLayout.swift,
+				Scenes/Dashboard/Domain/HighLimitCalculator.swift,
 				Scenes/Dashboard/Domain/NutrientDataAggregator.swift,
 				Scenes/Export/CsvExportService.swift,
 				Scenes/FoodDetails/Workers/FoodSaver.swift,

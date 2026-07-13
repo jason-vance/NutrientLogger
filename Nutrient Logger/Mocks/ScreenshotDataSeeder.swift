@@ -137,6 +137,15 @@ class ScreenshotDataSeeder {
                 ))
             }
         }
+
+        // Extra heavy-handed soy sauce on one day this week so Sodium reliably crosses its
+        // upper limit (~2300mg) for the "This Week" dashboard card's "High" section, regardless
+        // of what the rest of that day's baseline sodium happens to add up to.
+        context.insert(ConsumedFood(
+            fdcId: 1100456, name: "Soy sauce",
+            portionAmount: 4, portionGramWeight: 64,
+            portionName: "tbsp", dateLogged: today.adding(days: -2), mealTime: .dinner
+        ))
     }
 
     // MARK: - Daily Summaries (past 45 days)

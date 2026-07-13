@@ -236,6 +236,43 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ---
 
+## v4.1 — "Tighten Up" *(~5–7 weeks)*
+**Theme:** A grab-bag release grouped into three like-kind batches: fix data/goal-display accuracy, reduce scroll/tap friction on the two food-listing screens, and a scoped UX-psychology pass on retention/conversion surfaces.
+
+### Code
+
+**Nutrient Accuracy & Upper-Limit Awareness**
+- [x] **Fix Sodium always reading 0%** — `Sodium_RDIs.swift` sets `recommendedAmount: -Double.greatestFiniteMagnitude` for every life stage (sodium has no RDA, only an AI/upper-limit in the DRI tables), and every percentage calculation in the app guards with `recommendedAmount > 0`, so it silently computes 0% everywhere. Fix: set `recommendedAmount` to the standard AI value per life stage, same precedent as `Potassium_RDIs.swift` (also AI-only). The displayed percentage becomes "% of AI" for sodium specifically.
+- [x] **Remove Fluoride from the nutrition dashboard** — confirmed showing up right after Zinc, always at 0%. Root cause is a data-coverage gap, not a bug: fluoride has 0 rows in `fdc_survey.db` and only 538 in `fdc_legacy.db` (vs. ~7,000+ for sodium), so almost no logged foods carry fluoride data. Rather than fix the underlying data (see Backlog: Food database coverage), just remove it from the visible dashboard list — too few foods have it to make the % meaningful. Fixed the root leak too: it was already excluded from `DashboardMineralsSection`'s curated whitelist, but the "More" fallback (`otherNutrientIds`) surfaced any group nutrient not explicitly blacklisted — now permanently excluded via `DashboardMineralsSection.permanentlyExcluded`.
+- [x] **Exceeded-goal dashed bar styling** — extend `CalorieGoalRing`'s existing dashed-arc-past-100% visual language (solid arc to goal, translucent-fill + dashed-stroke arc for the overage) to:
+  - Macro bars (`DashboardMacrosSection`'s `Macro()`, currently a native `ProgressView` capped with `min(amount/goal, 1.0)`) — solid bar to goal, dashed overage bar in the *same* per-macro color (carbs/fat/protein accent), since exceeding a macro goal isn't inherently bad.
+  - Vitamin/mineral bars (`DashboardNutrientsSection`'s `CompactNutrientRow`, currently a Capsule gradient bar capped at 100%) — solid bar to goal (existing green/accent/orange/red threshold coloring), dashed overage bar in a warning color, triggered by crossing `upperLimit` (not just the RDA/goal) — reuse `LifeStageNutrientRdi.upperLimit`, same source the v4.0 trend/detail charts already read.
+  - Add unit tests for the goal-vs-upper-limit threshold logic (when the dashed segment should appear).
+  - Shipped as a shared `GoalProgressBar` view (`Views/GoalProgressBar.swift`) backed by pure layout math in `Scenes/Dashboard/Domain/GoalProgressBarLayout.swift` (11 unit tests), used by both `DashboardMacrosSection` and `DashboardNutrientsSection`.
+- [x] **"High this week" card** — nutrients that exceeded their `upperLimit` on any day in the last 7 days. Qualification logic lives in `HighLimitCalculator.swift` (10 unit tests). Merged into a single combined **"This Week"** card together with the existing deficiency ("Low") signal — one `DashboardWeeklyNutrientWatchSection` (replacing the separate `DashboardDeficiencySection`/`DashboardHighLimitSection`) with labeled "Low"/"High" chip groups, since both are the same "things to watch this week" concept sharing the same 7-day window. Still premium-gated as a whole (locked teaser + `MarketingView`, unified `weeklyNutrientWatch` trigger), and still tapping a "High" nutrient navigates to its trend view (a "Low" nutrient still goes to its library detail view, unchanged). Added a guaranteed high-sodium day (extra soy sauce) to the App Store screenshot seed data so the "High" section always has something to show.
+
+**Meal-Card Restructure**
+- [ ] **`ConsumedMealsView`: one card per meal** — collapse each meal's `ForEach(meal.foods) { FoodRow }` into a single card per meal with a combined calorie/macro summary (reuse `CircleChart`/`MacrosPieChart`-style visuals at meal scale) and foods listed as rows inside the card. Keep the existing `MealHeader` delete-whole-meal action as the card's header — that data grouping already exists, this is a layout change.
+- [ ] **Add-food button per meal** — add an "Add food" button at the bottom of each meal card in `ConsumedMealsView`, deep-linking to `FoodSearchView` pre-filled with that meal's time (reuses v3.11's meal-time auto-select logic, passing the time in explicitly instead of inferring it).
+- [ ] **`ConsumedNutrientDetailsView`: one card per meal** — same per-meal card treatment for the "Contributing Foods" section, replacing the current per-food cards grouped under a plain meal-time text label.
+- [ ] **Fix duplicate-foods bug** — while in `ConsumedNutrientDetailsView`, fix the existing known bug (`//TODO` at the top of the file) where the same food can appear more than once in the contributing-foods list, likely an `Identifiable`/id collision in the `ForEach`.
+- [ ] Add unit tests for any new meal-level aggregation math (per-meal calorie/macro totals).
+
+**Behavioral Design** *(mostly copy/reorder, low code risk)*
+- [ ] **Goal gradient effect** — audit every "0% at day start" moment (calorie ring, water tracker, weekly streak card on a fresh week) and give each a small head-start visual so users never see a literal empty state.
+- [ ] **Loss aversion** — reframe paywall/trial-ending copy (`MarketingView`) around what the user would *lose* (trend charts, Health sync, weekly deficiency digest) rather than what they'd gain by subscribing. The existing streak-at-risk notification already uses this framing — extend it to the paywall.
+- [ ] **Contrast effect** — reorder paywall product presentation so the v4.0 lifetime/family tier anchors next to the yearly plan, making yearly read as the discounted middle option.
+- [ ] **Endowment / IKEA effect** — mostly copy: label the already-customizable surfaces (nutrient tab ordering, body metric selection, custom foods) as "your" dashboard/plan in headers and empty states, reinforcing that the user built it.
+- Deliberately **not** doing this pass: reciprocity (already covered by the 7-day trial + first-24-hours discount from v4.0) and smart defaults / less friction (already substantial — auto meal-time selection, search-as-you-type); revisit only if reviews flag specific friction points.
+
+### App Store Connect
+- No product changes needed
+
+### Store Listing
+- Update **What's New**: "Fixed sodium tracking, upper-limit warnings, and a cleaner meal-by-meal view of your day"
+
+---
+
 ## Backlog (v4.x and beyond)
 
 These are worth tracking but don't have a clear version slot yet:
@@ -270,3 +307,4 @@ These are worth tracking but don't have a clear version slot yet:
 | v3.10 | ~2 weeks | Install increase (new keyword surface) + logging retention |
 | v3.11 | ~3 weeks | Subscription conversion (concrete premium features) |
 | v4.0 | ~4–6 weeks | Lapsed user reactivation + press/feature opportunity |
+| v4.1 | ~5–7 weeks | Data trust + upper-limit awareness + reduced logging friction + behavioral conversion tuning |

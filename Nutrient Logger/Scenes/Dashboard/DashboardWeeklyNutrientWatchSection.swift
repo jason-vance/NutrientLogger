@@ -1,5 +1,5 @@
 //
-//  DashboardDeficiencySection.swift
+//  DashboardWeeklyNutrientWatchSection.swift
 //  Nutrient Logger
 //
 //  Created by Jason Vance on 6/29/26.
@@ -7,9 +7,12 @@
 
 import SwiftUI
 
-struct DashboardDeficiencySection: View {
+/// Combines the "running low" (deficiency) and "over the upper limit" (high) weekly signals
+/// into a single card, since both are the same "things to watch this week" concept and
+/// share the same 7-day window.
+struct DashboardWeeklyNutrientWatchSection: View {
 
-    private static let averagingDays = 7
+    private static let windowDays = 7
 
     @Inject private var rdiLibrary: NutrientRdiLibrary
     @Inject private var userService: UserService
@@ -20,6 +23,7 @@ struct DashboardDeficiencySection: View {
 
     @State private var showMarketingView: Bool = false
     @State private var deficiencies: [DeficientNutrient] = []
+    @State private var highNutrients: [HighNutrient] = []
 
     let allConsumedFoods: [ConsumedFood]
     let date: SimpleDate
@@ -36,25 +40,44 @@ struct DashboardDeficiencySection: View {
         let nutrient: Nutrient
     }
 
+    struct HighNutrient: Identifiable {
+        let id: String
+        let name: String
+        let daysExceeded: Int
+        let peakPercentageOfLimit: Double
+        let nutrient: Nutrient
+    }
+
     private var recentFoods: [ConsumedFood] {
-        let startDate = date.adding(days: -(Self.averagingDays - 1))
+        let startDate = date.adding(days: -(Self.windowDays - 1))
         return allConsumedFoods.filter { $0.dateLogged >= startDate && $0.dateLogged <= date }
     }
 
-    private func updateDeficiencies() {
+    private func updateWeeklyNutrients() {
         let foods = recentFoods
         guard !foods.isEmpty else {
             deficiencies = []
+            highNutrients = []
             return
         }
 
         let user = self.user
         let rdiLibrary = self.rdiLibrary
         let remoteDatabase = self.remoteDatabase
+        let startDate = date.adding(days: -(Self.windowDays - 1))
+        let endDate = date
 
         Task {
             deficiencies = Self.computeDeficientNutrients(
                 foods: foods,
+                user: user,
+                rdiLibrary: rdiLibrary,
+                remoteDatabase: remoteDatabase
+            )
+            highNutrients = Self.computeHighNutrients(
+                foods: foods,
+                startDate: startDate,
+                endDate: endDate,
                 user: user,
                 rdiLibrary: rdiLibrary,
                 remoteDatabase: remoteDatabase
@@ -133,20 +156,116 @@ struct DashboardDeficiencySection: View {
         .sorted { $0.percentage < $1.percentage }
     }
 
+    // Hits the on-disk food database, so this must run off the main thread
+    // (called from a Task) rather than as a view body computed property.
+    private static func computeHighNutrients(
+        foods: [ConsumedFood],
+        startDate: SimpleDate,
+        endDate: SimpleDate,
+        user: User,
+        rdiLibrary: NutrientRdiLibrary,
+        remoteDatabase: RemoteDatabase
+    ) -> [HighNutrient] {
+        let foodsByDate = Dictionary(grouping: foods) { $0.dateLogged }
+
+        var dailyAmountsByNutrient: [String: [Double]] = [:]
+        var nutrientByNutrientId: [String: Nutrient] = [:]
+
+        var current = startDate
+        while current <= endDate {
+            let dayFoods = foodsByDate[current] ?? []
+            let foodItems: [FoodItem] = dayFoods.compactMap { consumedFood in
+                do {
+                    var food = try remoteDatabase.getFood(String(consumedFood.fdcId))
+                    food = try food?.applyingPortion(consumedFood.portion)
+                    return food
+                } catch {
+                    return nil
+                }
+            }
+
+            let dayAggregator = NutrientDataAggregator(foodItems)
+
+            for nutrientId in trackedNutrientIds {
+                let pairs = dayAggregator.nutrientsByNutrientNumber[nutrientId] ?? []
+                let amount = pairs.reduce(into: 0.0) { $0 += $1.nutrient.amount }
+                dailyAmountsByNutrient[nutrientId, default: []].append(amount)
+
+                if nutrientByNutrientId[nutrientId] == nil, let nutrient = pairs.first?.nutrient {
+                    nutrientByNutrientId[nutrientId] = nutrient
+                }
+            }
+
+            current = current.adding(days: 1)
+        }
+
+        return trackedNutrientIds.compactMap { nutrientId -> HighNutrient? in
+            guard let rdi = NutrientGoalDefaults.effectiveRdi(
+                for: nutrientId,
+                user: user,
+                rdiLibrary: rdiLibrary
+            ) else { return nil }
+
+            let nutrient = nutrientByNutrientId[nutrientId]
+                ?? remoteDatabase.getNutrient(withId: nutrientId)
+                ?? Nutrient(fdcNumber: nutrientId, name: "Unknown", unitName: "")
+
+            let foodsUnit = WeightUnit.unitFrom(nutrient)
+            let convertedRdi = (foodsUnit == rdi.unit) ? rdi : rdi.convertedTo(foodsUnit)
+
+            let dailyAmounts = dailyAmountsByNutrient[nutrientId] ?? []
+            guard let result = HighLimitCalculator.evaluate(
+                dailyAmounts: dailyAmounts,
+                upperLimit: convertedRdi.upperLimit
+            ) else {
+                return nil
+            }
+
+            let displayName = FdcNutrientGroupMapper.nutrientDisplayNames[nutrientId] ?? nutrient.name
+
+            return HighNutrient(
+                id: nutrientId,
+                name: displayName,
+                daysExceeded: result.daysExceeded,
+                peakPercentageOfLimit: result.peakPercentageOfLimit,
+                nutrient: nutrient
+            )
+        }
+        .sorted { $0.peakPercentageOfLimit > $1.peakPercentageOfLimit }
+    }
+
+    private func colorPalette(for nutrientId: String) -> ColorPalette {
+        let groupKey = DashboardVitaminsSection.orderedWhitelist.contains(nutrientId)
+            ? FdcNutrientGroupMapper.GroupNumber_VitaminsAndOtherComponents
+            : FdcNutrientGroupMapper.GroupNumber_Minerals
+        return ColorPaletteService.getColorPaletteFor(number: groupKey)
+    }
+
+    private func deficiencyColor(for percentage: Double) -> Color {
+        percentage < 0.25 ? .red : .orange
+    }
+
+    private func summaryText(lowCount: Int, highCount: Int) -> String {
+        var parts: [String] = []
+        if lowCount > 0 { parts.append("\(lowCount) running low") }
+        if highCount > 0 { parts.append("\(highCount) over the limit") }
+        return parts.joined(separator: ", ") + " this week — unlock to see which"
+    }
+
     var body: some View {
         Group {
             if !recentFoods.isEmpty {
-                if deficiencies.isEmpty {
+                if deficiencies.isEmpty && highNutrients.isEmpty {
                     OnTrackCard()
                 } else if subscriptionManager.isSubscribed {
-                    DeficiencyCard(deficiencies)
+                    WeeklyWatchCard()
                 } else {
-                    LockedDeficiencyCard(count: deficiencies.count)
+                    LockedWeeklyWatchCard(lowCount: deficiencies.count, highCount: highNutrients.count)
                 }
             }
         }
-        .onChange(of: date, initial: true) { updateDeficiencies() }
-        .onChange(of: allConsumedFoods) { updateDeficiencies() }
+        .onChange(of: date, initial: true) { updateWeeklyNutrients() }
+        .onChange(of: allConsumedFoods) { updateWeeklyNutrients() }
     }
 
     @ViewBuilder private func OnTrackCard() -> some View {
@@ -161,14 +280,14 @@ struct DashboardDeficiencySection: View {
         .inCard(backgroundColor: .green)
     }
 
-    @ViewBuilder private func LockedDeficiencyCard(count: Int) -> some View {
+    @ViewBuilder private func LockedWeeklyWatchCard(lowCount: Int, highCount: Int) -> some View {
         HStack(spacing: 8) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(.orange)
             VStack(alignment: .leading, spacing: 2) {
-                Text("Low This Week")
+                Text("This Week")
                     .font(.subheadline.bold())
-                Text("\(count) nutrient\(count == 1 ? "" : "s") running low — unlock to see which, and foods that would help")
+                Text(summaryText(lowCount: lowCount, highCount: highCount))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -182,45 +301,52 @@ struct DashboardDeficiencySection: View {
         .inCard(backgroundColor: .orange)
         .contentShape(Rectangle())
         .onTapGesture {
-            premiumAnalytics.premiumFeatureTapped(feature: "deficiency_insights")
+            premiumAnalytics.premiumFeatureTapped(feature: "weekly_nutrient_watch")
             showMarketingView = true
         }
         .sheet(isPresented: $showMarketingView) {
-            MarketingView(trigger: .deficiencyInsights)
+            MarketingView(trigger: .weeklyNutrientWatch)
         }
     }
 
-    @ViewBuilder private func DeficiencyCard(_ deficiencies: [DeficientNutrient]) -> some View {
+    @ViewBuilder private func WeeklyWatchCard() -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundStyle(.orange)
-                Text("Low This Week")
+                Text("This Week")
                     .font(.subheadline.bold())
                 Spacer()
             }
-            Text("Tap a nutrient to see foods that would help")
+            Text("Tap a nutrient to see foods that would help, or its trend")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            FlowLayout(spacing: 6) {
-                ForEach(deficiencies) { deficiency in
-                    NavigationLink {
-                        NutrientLibraryDetailView(nutrient: deficiency.nutrient)
-                    } label: {
-                        HStack(spacing: 4) {
-                            Circle()
-                                .fill(deficiencyColor(for: deficiency.percentage))
-                                .frame(width: 6, height: 6)
-                            Text(deficiency.name)
-                                .font(.caption)
+
+            if !deficiencies.isEmpty {
+                SubsectionLabel("Low", color: .orange)
+                FlowLayout(spacing: 6) {
+                    ForEach(deficiencies) { deficiency in
+                        NavigationLink {
+                            NutrientLibraryDetailView(nutrient: deficiency.nutrient)
+                        } label: {
+                            Chip(dotColor: deficiencyColor(for: deficiency.percentage), text: deficiency.name)
                         }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            Capsule()
-                                .fill(Color.gray.opacity(0.15))
-                        )
-                        .foregroundStyle(Color.text)
+                    }
+                }
+            }
+
+            if !highNutrients.isEmpty {
+                SubsectionLabel("High", color: .red)
+                FlowLayout(spacing: 6) {
+                    ForEach(highNutrients) { high in
+                        NavigationLink {
+                            NutrientTrendView(
+                                nutrient: high.nutrient,
+                                colorPalette: colorPalette(for: high.id)
+                            )
+                        } label: {
+                            Chip(dotColor: .red, text: "\(high.name) · \(high.daysExceeded)d")
+                        }
                     }
                 }
             }
@@ -229,61 +355,27 @@ struct DashboardDeficiencySection: View {
         .inCard(backgroundColor: .orange)
     }
 
-    private func deficiencyColor(for percentage: Double) -> Color {
-        percentage < 0.25 ? .red : .orange
-    }
-}
-
-struct FlowLayout: Layout {
-    var spacing: CGFloat = 6
-
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let result = computeLayout(proposal: proposal, subviews: subviews)
-        return result.size
+    @ViewBuilder private func SubsectionLabel(_ text: String, color: Color) -> some View {
+        Text(text.uppercased())
+            .font(.caption2.bold())
+            .foregroundStyle(color)
     }
 
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let result = computeLayout(proposal: proposal, subviews: subviews)
-        for (index, position) in result.positions.enumerated() {
-            subviews[index].place(
-                at: CGPoint(x: bounds.minX + position.x, y: bounds.minY + position.y),
-                proposal: .unspecified
-            )
+    @ViewBuilder private func Chip(dotColor: Color, text: String) -> some View {
+        HStack(spacing: 4) {
+            Circle()
+                .fill(dotColor)
+                .frame(width: 6, height: 6)
+            Text(text)
+                .font(.caption)
         }
-    }
-
-    private struct LayoutResult {
-        var size: CGSize
-        var positions: [CGPoint]
-    }
-
-    private func computeLayout(proposal: ProposedViewSize, subviews: Subviews) -> LayoutResult {
-        let maxWidth = proposal.width ?? .infinity
-        var positions: [CGPoint] = []
-        var x: CGFloat = 0
-        var y: CGFloat = 0
-        var rowHeight: CGFloat = 0
-        var totalHeight: CGFloat = 0
-
-        for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
-
-            if x + size.width > maxWidth && x > 0 {
-                x = 0
-                y += rowHeight + spacing
-                rowHeight = 0
-            }
-
-            positions.append(CGPoint(x: x, y: y))
-            rowHeight = max(rowHeight, size.height)
-            x += size.width + spacing
-            totalHeight = y + rowHeight
-        }
-
-        return LayoutResult(
-            size: CGSize(width: maxWidth, height: totalHeight),
-            positions: positions
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(
+            Capsule()
+                .fill(Color.gray.opacity(0.15))
         )
+        .foregroundStyle(Color.text)
     }
 }
 
@@ -296,7 +388,7 @@ struct FlowLayout: Layout {
     NavigationStack {
         ScrollView {
             VStack {
-                DashboardDeficiencySection(
+                DashboardWeeklyNutrientWatchSection(
                     allConsumedFoods: [.dashboardSample],
                     date: .today
                 )
@@ -316,7 +408,7 @@ struct FlowLayout: Layout {
     NavigationStack {
         ScrollView {
             VStack {
-                DashboardDeficiencySection(
+                DashboardWeeklyNutrientWatchSection(
                     allConsumedFoods: [.dashboardSample],
                     date: .today
                 )

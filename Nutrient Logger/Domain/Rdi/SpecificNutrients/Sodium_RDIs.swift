@@ -17,7 +17,7 @@ class Sodium_RDIs : AbstractNutrientRdis {
             gender: Gender.unknown,
             minAgeYears: 1,
             maxAgeYears: 4,
-            recommendedAmount: -Double.greatestFiniteMagnitude,
+            recommendedAmount: 800,
             upperLimit: 1000,
             unit: WeightUnit.milligram
         ))
@@ -26,7 +26,7 @@ class Sodium_RDIs : AbstractNutrientRdis {
             gender: Gender.unknown,
             minAgeYears: 4,
             maxAgeYears: 9,
-            recommendedAmount: -Double.greatestFiniteMagnitude,
+            recommendedAmount: 1000,
             upperLimit: 1500,
             unit: WeightUnit.milligram
         ))
@@ -35,7 +35,7 @@ class Sodium_RDIs : AbstractNutrientRdis {
             gender: Gender.unknown,
             minAgeYears: 9,
             maxAgeYears: 14,
-            recommendedAmount: -Double.greatestFiniteMagnitude,
+            recommendedAmount: 1200,
             upperLimit: 1800,
             unit: WeightUnit.milligram
         ))
@@ -44,7 +44,7 @@ class Sodium_RDIs : AbstractNutrientRdis {
             gender: Gender.unknown,
             minAgeYears: 14,
             maxAgeYears: Double.greatestFiniteMagnitude,
-            recommendedAmount: -Double.greatestFiniteMagnitude,
+            recommendedAmount: 1500,
             upperLimit: 2300,
             unit: WeightUnit.milligram
         ))

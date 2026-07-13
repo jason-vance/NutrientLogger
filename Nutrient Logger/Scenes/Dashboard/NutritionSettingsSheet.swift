@@ -174,6 +174,7 @@ struct NutritionSettingsSheet: View {
                 fetchUser()
                 vitamins = effectiveOrder(raw: vitaminsOrderRaw, default: DashboardVitaminsSection.orderedWhitelist)
                 minerals = effectiveOrder(raw: mineralsOrderRaw, default: DashboardMineralsSection.orderedWhitelist)
+                    .filter { !DashboardMineralsSection.permanentlyExcluded.contains($0) }
                 lipids = effectiveOrder(raw: lipidsOrderRaw, default: DashboardLipidsSection.orderedWhitelist)
                 aminoAcids = effectiveOrder(raw: aminoAcidsOrderRaw, default: DashboardAminoAcidsSection.orderedWhitelist)
             }

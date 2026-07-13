@@ -113,16 +113,15 @@ struct DashboardNutrientsSection: View {
 
                 Spacer(minLength: 0)
 
-                if let percentage {
-                    GeometryReader { geo in
-                        ZStack(alignment: .leading) {
-                            Capsule()
-                                .fill(Color.gray.opacity(0.2))
-                            Capsule()
-                                .fill(progressColor(for: percentage).gradient)
-                                .frame(width: geo.size.width * min(CGFloat(percentage), 1.0))
-                        }
-                    }
+                if let percentage, let rdi {
+                    GoalProgressBar(
+                        amount: amount,
+                        goal: rdi.recommendedAmount,
+                        dashedThreshold: rdi.upperLimit,
+                        fillColor: progressColor(for: percentage),
+                        exceededFillColor: .red.opacity(0.25),
+                        exceededOutlineColor: .red
+                    )
                     .frame(maxWidth: 120, maxHeight: 6)
 
                     Text("\(Int(percentage * 100))%")

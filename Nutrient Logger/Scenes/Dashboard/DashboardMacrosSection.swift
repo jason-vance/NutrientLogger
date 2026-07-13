@@ -183,9 +183,15 @@ struct DashboardMacrosSection: View {
                 .fontWeight(.semibold)
                 .fontDesign(.rounded)
                 if let goal {
-                    ProgressView(value: min(amount / goal, 1.0))
-                        .tint(iconColor)
-                        .padding(.horizontal, 8)
+                    GoalProgressBar(
+                        amount: amount,
+                        goal: goal,
+                        dashedThreshold: goal,
+                        fillColor: iconColor,
+                        exceededFillColor: iconColor.opacity(0.25),
+                        exceededOutlineColor: iconColor
+                    )
+                    .padding(.horizontal, 8)
                     Text("of \(goal.formatted(maxDigits: 0))\(unit)")
                         .font(.caption2)
                         .fontWeight(.light)

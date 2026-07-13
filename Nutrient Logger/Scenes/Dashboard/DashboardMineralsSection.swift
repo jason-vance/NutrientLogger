@@ -32,7 +32,14 @@ struct DashboardMineralsSection: View {
 //        FdcNutrientGroupMapper.NutrientNumber_Nickel_Ni,
 //        FdcNutrientGroupMapper.NutrientNumber_Sulfur_S,
     ]
-    
+
+    // Minerals with too little food-data coverage to show meaningfully. Excluded from the
+    // "More" fallback too, not just the default whitelist, since that fallback surfaces any
+    // group nutrient not explicitly blacklisted.
+    static let permanentlyExcluded: Set<String> = [
+        FdcNutrientGroupMapper.NutrientNumber_Fluoride_F
+    ]
+
     let mineralsKey = FdcNutrientGroupMapper.GroupNumber_Minerals
 
     @AppStorage("nutrientCustomize_minerals_order") private var orderRaw: String = ""
@@ -47,6 +54,7 @@ struct DashboardMineralsSection: View {
 
     private var hiddenSet: Set<String> {
         Set(hiddenRaw.split(separator: ",").map(String.init).filter { !$0.isEmpty })
+            .union(Self.permanentlyExcluded)
     }
 
     var body: some View {
