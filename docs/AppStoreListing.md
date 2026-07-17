@@ -13,8 +13,8 @@ Micronutrients, Fully Offline
 ## Keywords (100/100 chars)
 vitamin,mineral,deficiency,cronometer,myfitnesspal,vitacost,carnivore,keto,vegan,macro,usda,diet,log
 
-## Promotional Text (160/170 chars)
-v4.0: a redesigned Body tab with goal deadlines & calorie targets, weekly deficiency insights, CSV export, and streak achievements. Try Premium free for 7 days.
+## Promotional Text (165/170 chars)
+v4.1: meals get a cleaner look with one card per meal, plus new upper-limit warnings so you can catch too much sodium as easily as too little iron. 7-day free trial.
 
 ## Description
 Nutrient Logger is the offline-first nutrition tracker for people who want to know what's actually in their food — not just calories and macros, but the full spectrum of vitamins, minerals, and amino acids your body needs.
@@ -67,12 +67,30 @@ Nutrient Logger is perfect for anyone serious about nutrition—whether you’re
 
 * Apple Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.0)
-Nutrient Logger 4.0 — a new chapter:
-• Redesigned Nutrition tab with reorderable nutrients and new trend charts for calories, macros, and water
-• All-new Body tab: track weight, body fat, BMI, and waist circumference with goal deadlines, pace tracking, and a BMR/TDEE calorie target (Premium)
-• Daily and weekly streaks with milestones, plus an Achievements card on your profile
-• Weekly deficiency insights show which nutrients you've been low on, and foods to fix it (Premium)
-• Export your food log to CSV (Premium)
-• A more exciting way to log water, with an animated tracker and trend charts
-• Freshly redesigned onboarding, with a limited-time launch discount for new subscribers
+## What's New (v4.1)
+• Redesigned meal screens: one card per meal, with every meal slot always visible so you can see your day at a glance
+• Add food straight to a meal — the right date and meal time are filled in for you
+• New upper-limit awareness: a "High This Week" card flags nutrients you may be getting too much of, right alongside the ones you're low on
+• Progress bars and the calorie ring now clearly show when you've gone past a goal or limit
+• Fixed sodium always showing 0% of its daily target
+• Bug fixes and polish throughout
+
+## Screenshots
+1. Every vitamin and mineral, not just calories
+2. Spot Deficiencies Before They Become Problems
+3. Your Data Never Leaves Your Phone
+    100% offline. No account, no cloud, no ads mid-log
+4. Build a Habit That Sticks
+    Daily reminders and streaks keep you coming back
+5. Watch Your Whole Health, Not Just Your Plate
+    Track weight and body fat alongside nutrition
+6. Goals Built for Your Body
+    Personalized targets by age, sex, and activity - or set your own
+7. Everything in One Place
+    Syncs automatically with Apple Health
+8. Your Go-To Meals, One Tap Away
+    Save what you eat often, log it in seconds next time
+9. Log Anything in Seconds
+    Scan a barcode, search thousands of foods, or add your own
+10. Understand Why It Matters
+    Quick, clear explanations for every nutrient you track
