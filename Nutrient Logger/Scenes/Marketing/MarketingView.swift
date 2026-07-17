@@ -53,7 +53,7 @@ struct MarketingView: View {
         case .csvExport:
             return "Don't miss out on exporting your data to CSV"
         case .weeklyNutrientWatch:
-            return "Don't miss out on this week's low & high nutrient alerts"
+            return "Don't miss out on this week's low, high & out-of-balance nutrient alerts"
         case .smartPaywall, .deepLink, .removeAds, .profileUpsell:
             return nil
         }
@@ -227,6 +227,7 @@ struct MarketingView: View {
 
         VStack {
             MarketingPoint("7-day and 30-day nutrient trend charts")
+            MarketingPoint("Weekly low, high & out-of-balance nutrient alerts")
             MarketingPoint("Weight and body fat tracking with goals")
             MarketingPoint("Apple Health sync for calories, macros, and weight")
             MarketingPoint("Custom micronutrient goals")

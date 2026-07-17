@@ -39,6 +39,7 @@ struct NutritionSettingsSheet: View {
     @AppStorage("nutrientCustomize_aminoAcids_hidden") private var aminoAcidsHiddenRaw: String = ""
 
     @State private var showMicronutrientGoals = false
+    @State private var showNutrientBalances = false
 
     @State private var vitamins: [String] = []
     @State private var minerals: [String] = []
@@ -162,6 +163,9 @@ struct NutritionSettingsSheet: View {
             .navigationDestination(isPresented: $showMicronutrientGoals) {
                 MicronutrientGoalsView()
             }
+            .navigationDestination(isPresented: $showNutrientBalances) {
+                NutrientBalanceSettingsView()
+            }
             .navigationTitle("Nutrition Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -250,6 +254,35 @@ struct NutritionSettingsSheet: View {
                     }
                     HStack {
                         Text("Set custom targets for vitamins and minerals")
+                        Spacer()
+                    }
+                    .font(.caption)
+                }
+                .foregroundStyle(Color.primary)
+            }
+            Button {
+                showNutrientBalances = true
+            } label: {
+                VStack {
+                    HStack {
+                        Text("Nutrient Balances")
+                        if !subscriptionManager.isSubscribed {
+                            Text("PREMIUM")
+                                .font(.caption2.bold())
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background {
+                                    Capsule().foregroundStyle(Color.accentColor.gradient)
+                                }
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    HStack {
+                        Text("Watch nutrients that are out of proportion, like sodium vs. potassium")
                         Spacer()
                     }
                     .font(.caption)

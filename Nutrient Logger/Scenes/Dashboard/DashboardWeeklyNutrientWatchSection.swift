@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-/// Combines the "running low" (deficiency) and "over the upper limit" (high) weekly signals
-/// into a single card, since both are the same "things to watch this week" concept and
-/// share the same 7-day window.
+/// Combines the "running low" (deficiency), "over the upper limit" (high), and "out of balance"
+/// (ratio) weekly signals into a single card, since all three are the same "things to watch this
+/// week" concept and share the same 7-day window.
 struct DashboardWeeklyNutrientWatchSection: View {
 
     private static let windowDays = 7
@@ -24,11 +24,20 @@ struct DashboardWeeklyNutrientWatchSection: View {
     @State private var showMarketingView: Bool = false
     @State private var deficiencies: [DeficientNutrient] = []
     @State private var highNutrients: [HighNutrient] = []
+    @State private var balances: [NutrientBalanceResult] = []
+    @State private var selectedBalance: NutrientBalanceResult?
+
+    @AppStorage(NutrientBalanceSettings.hiddenKey) private var balanceHiddenRaw: String = ""
+    @AppStorage(NutrientBalanceSettings.customKey) private var balanceCustomRaw: String = ""
 
     let allConsumedFoods: [ConsumedFood]
     let date: SimpleDate
 
     private var user: User { userService.currentUser }
+
+    private var effectiveRatios: [NutrientRatio] {
+        NutrientBalanceSettings.effectiveRatios(hiddenRaw: balanceHiddenRaw, customRaw: balanceCustomRaw)
+    }
 
     private static let trackedNutrientIds: [String] =
         DashboardVitaminsSection.orderedWhitelist + DashboardMineralsSection.orderedWhitelist
@@ -57,41 +66,71 @@ struct DashboardWeeklyNutrientWatchSection: View {
         guard !foods.isEmpty else {
             deficiencies = []
             highNutrients = []
+            balances = []
             return
         }
 
         let user = self.user
         let rdiLibrary = self.rdiLibrary
         let remoteDatabase = self.remoteDatabase
+        let ratios = self.effectiveRatios
 
         Task {
-            deficiencies = Self.computeDeficientNutrients(
+            let results = Self.computeWeeklyWatch(
                 foods: foods,
+                ratios: ratios,
                 user: user,
                 rdiLibrary: rdiLibrary,
                 remoteDatabase: remoteDatabase
             )
-            highNutrients = Self.computeHighNutrients(
-                foods: foods,
-                user: user,
-                rdiLibrary: rdiLibrary,
-                remoteDatabase: remoteDatabase
-            )
+            deficiencies = results.deficiencies
+            highNutrients = results.highNutrients
+            balances = results.balances
         }
     }
 
-    // Hits the on-disk food database, so this must run off the main thread
-    // (called from a Task) rather than as a view body computed property.
-    private static func computeDeficientNutrients(
+    private struct WeeklyWatchResults {
+        var deficiencies: [DeficientNutrient] = []
+        var highNutrients: [HighNutrient] = []
+        var balances: [NutrientBalanceResult] = []
+    }
+
+    // Hits the on-disk food database, so this must run off the main thread (called from a Task)
+    // rather than as a view body computed property. All three signals share one aggregation pass
+    // over the week's foods so the database is only read once.
+    private static func computeWeeklyWatch(
         foods: [ConsumedFood],
+        ratios: [NutrientRatio],
         user: User,
         rdiLibrary: NutrientRdiLibrary,
         remoteDatabase: RemoteDatabase
-    ) -> [DeficientNutrient] {
-        let foodsByDate = Dictionary(grouping: foods) { $0.dateLogged }
-        let daysWithData = foodsByDate.count
+    ) -> WeeklyWatchResults {
+        let ratioIds = ratios.flatMap { $0.allNutrientIds }
+        let idsToAggregate = Set(trackedNutrientIds).union(ratioIds)
+        let (daysWithData, totals) = aggregateTotals(
+            foods: foods,
+            nutrientIds: idsToAggregate,
+            remoteDatabase: remoteDatabase
+        )
+        guard daysWithData > 0 else { return WeeklyWatchResults() }
 
-        var totalsByNutrient: [String: (total: Double, nutrient: Nutrient)] = [:]
+        return WeeklyWatchResults(
+            deficiencies: computeDeficiencies(totals: totals, daysWithData: daysWithData, user: user, rdiLibrary: rdiLibrary),
+            highNutrients: computeHighs(totals: totals, daysWithData: daysWithData, user: user, rdiLibrary: rdiLibrary),
+            balances: computeBalances(totals: totals, ratios: ratios)
+        )
+    }
+
+    /// Sums each nutrient's daily intake across the days that have logged food, keeping one
+    /// representative `Nutrient` (for its unit/name) per id. Grouping by date means empty days
+    /// don't count against the average, matching how deficiencies are measured.
+    private static func aggregateTotals(
+        foods: [ConsumedFood],
+        nutrientIds: Set<String>,
+        remoteDatabase: RemoteDatabase
+    ) -> (daysWithData: Int, totals: [String: (total: Double, nutrient: Nutrient)]) {
+        let foodsByDate = Dictionary(grouping: foods) { $0.dateLogged }
+        var totals: [String: (total: Double, nutrient: Nutrient)] = [:]
 
         for (_, dayFoods) in foodsByDate {
             let foodItems: [FoodItem] = dayFoods.compactMap { consumedFood in
@@ -106,23 +145,32 @@ struct DashboardWeeklyNutrientWatchSection: View {
 
             let dayAggregator = NutrientDataAggregator(foodItems)
 
-            for nutrientId in trackedNutrientIds {
+            for nutrientId in nutrientIds {
                 let pairs = dayAggregator.nutrientsByNutrientNumber[nutrientId] ?? []
                 let amount = pairs.reduce(into: 0.0) { $0 += $1.nutrient.amount }
 
-                if var existing = totalsByNutrient[nutrientId] {
+                if var existing = totals[nutrientId] {
                     existing.total += amount
-                    totalsByNutrient[nutrientId] = existing
+                    totals[nutrientId] = existing
                 } else {
                     let nutrient = pairs.first?.nutrient
                         ?? remoteDatabase.getNutrient(withId: nutrientId)
                         ?? Nutrient(fdcNumber: nutrientId, name: "Unknown", unitName: "")
-                    totalsByNutrient[nutrientId] = (total: amount, nutrient: nutrient)
+                    totals[nutrientId] = (total: amount, nutrient: nutrient)
                 }
             }
         }
 
-        return trackedNutrientIds.compactMap { nutrientId in
+        return (foodsByDate.count, totals)
+    }
+
+    private static func computeDeficiencies(
+        totals: [String: (total: Double, nutrient: Nutrient)],
+        daysWithData: Int,
+        user: User,
+        rdiLibrary: NutrientRdiLibrary
+    ) -> [DeficientNutrient] {
+        trackedNutrientIds.compactMap { nutrientId in
             let rdi = NutrientGoalDefaults.effectiveRdi(
                 for: nutrientId,
                 user: user,
@@ -130,7 +178,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
             )
             guard let rdi, rdi.recommendedAmount > 0 else { return nil }
 
-            guard let entry = totalsByNutrient[nutrientId] else { return nil }
+            guard let entry = totals[nutrientId] else { return nil }
             let averageAmount = entry.total / Double(daysWithData)
 
             let foodsUnit = WeightUnit.unitFrom(entry.nutrient)
@@ -151,57 +199,20 @@ struct DashboardWeeklyNutrientWatchSection: View {
         .sorted { $0.percentage < $1.percentage }
     }
 
-    // Hits the on-disk food database, so this must run off the main thread
-    // (called from a Task) rather than as a view body computed property.
-    private static func computeHighNutrients(
-        foods: [ConsumedFood],
+    private static func computeHighs(
+        totals: [String: (total: Double, nutrient: Nutrient)],
+        daysWithData: Int,
         user: User,
-        rdiLibrary: NutrientRdiLibrary,
-        remoteDatabase: RemoteDatabase
+        rdiLibrary: NutrientRdiLibrary
     ) -> [HighNutrient] {
-        let foodsByDate = Dictionary(grouping: foods) { $0.dateLogged }
-        let daysWithData = foodsByDate.count
-        guard daysWithData > 0 else { return [] }
-
-        var totalsByNutrient: [String: (total: Double, nutrient: Nutrient)] = [:]
-
-        for (_, dayFoods) in foodsByDate {
-            let foodItems: [FoodItem] = dayFoods.compactMap { consumedFood in
-                do {
-                    var food = try remoteDatabase.getFood(String(consumedFood.fdcId))
-                    food = try food?.applyingPortion(consumedFood.portion)
-                    return food
-                } catch {
-                    return nil
-                }
-            }
-
-            let dayAggregator = NutrientDataAggregator(foodItems)
-
-            for nutrientId in trackedNutrientIds {
-                let pairs = dayAggregator.nutrientsByNutrientNumber[nutrientId] ?? []
-                let amount = pairs.reduce(into: 0.0) { $0 += $1.nutrient.amount }
-
-                if var existing = totalsByNutrient[nutrientId] {
-                    existing.total += amount
-                    totalsByNutrient[nutrientId] = existing
-                } else {
-                    let nutrient = pairs.first?.nutrient
-                        ?? remoteDatabase.getNutrient(withId: nutrientId)
-                        ?? Nutrient(fdcNumber: nutrientId, name: "Unknown", unitName: "")
-                    totalsByNutrient[nutrientId] = (total: amount, nutrient: nutrient)
-                }
-            }
-        }
-
-        return trackedNutrientIds.compactMap { nutrientId -> HighNutrient? in
+        trackedNutrientIds.compactMap { nutrientId -> HighNutrient? in
             guard let rdi = NutrientGoalDefaults.effectiveRdi(
                 for: nutrientId,
                 user: user,
                 rdiLibrary: rdiLibrary
             ) else { return nil }
 
-            guard let entry = totalsByNutrient[nutrientId] else { return nil }
+            guard let entry = totals[nutrientId] else { return nil }
             let averageAmount = entry.total / Double(daysWithData)
 
             let foodsUnit = WeightUnit.unitFrom(entry.nutrient)
@@ -226,6 +237,23 @@ struct DashboardWeeklyNutrientWatchSection: View {
         .sorted { $0.percentageOfLimit > $1.percentageOfLimit }
     }
 
+    private static func computeBalances(
+        totals: [String: (total: Double, nutrient: Nutrient)],
+        ratios: [NutrientRatio]
+    ) -> [NutrientBalanceResult] {
+        // Convert every side to a common unit (grams) so a ratio is unitless and sides made of
+        // different nutrients still add up. Ratios cancel the day count, so raw totals are fine.
+        var gramsByNutrient: [String: Double] = [:]
+        for (id, entry) in totals {
+            let unit = WeightUnit.unitFrom(entry.nutrient)
+            gramsByNutrient[id] = unit.convertTo(.gram, entry.total)
+        }
+
+        return ratios
+            .compactMap { NutrientBalanceCalculator.evaluate(ratio: $0, gramsByNutrient: gramsByNutrient) }
+            .sorted { $0.severity > $1.severity }
+    }
+
     private func colorPalette(for nutrientId: String) -> ColorPalette {
         let groupKey = DashboardVitaminsSection.orderedWhitelist.contains(nutrientId)
             ? FdcNutrientGroupMapper.GroupNumber_VitaminsAndOtherComponents
@@ -237,27 +265,38 @@ struct DashboardWeeklyNutrientWatchSection: View {
         percentage < 0.25 ? .red : .orange
     }
 
-    private func summaryText(lowCount: Int, highCount: Int) -> String {
+    private var hasAnyWatchItems: Bool {
+        !deficiencies.isEmpty || !highNutrients.isEmpty || !balances.isEmpty
+    }
+
+    private func summaryText(lowCount: Int, highCount: Int, balanceCount: Int) -> String {
         var parts: [String] = []
         if lowCount > 0 { parts.append("\(lowCount) running low") }
         if highCount > 0 { parts.append("\(highCount) over the limit") }
+        if balanceCount > 0 { parts.append("\(balanceCount) out of balance") }
         return parts.joined(separator: ", ") + " this week — unlock to see which"
     }
 
     var body: some View {
         Group {
             if !recentFoods.isEmpty {
-                if deficiencies.isEmpty && highNutrients.isEmpty {
+                if !hasAnyWatchItems {
                     OnTrackCard()
                 } else if subscriptionManager.isSubscribed {
                     WeeklyWatchCard()
                 } else {
-                    LockedWeeklyWatchCard(lowCount: deficiencies.count, highCount: highNutrients.count)
+                    LockedWeeklyWatchCard(
+                        lowCount: deficiencies.count,
+                        highCount: highNutrients.count,
+                        balanceCount: balances.count
+                    )
                 }
             }
         }
         .onChange(of: date, initial: true) { updateWeeklyNutrients() }
         .onChange(of: allConsumedFoods) { updateWeeklyNutrients() }
+        .onChange(of: balanceHiddenRaw) { updateWeeklyNutrients() }
+        .onChange(of: balanceCustomRaw) { updateWeeklyNutrients() }
     }
 
     @ViewBuilder private func OnTrackCard() -> some View {
@@ -272,14 +311,14 @@ struct DashboardWeeklyNutrientWatchSection: View {
         .inCard(backgroundColor: .green)
     }
 
-    @ViewBuilder private func LockedWeeklyWatchCard(lowCount: Int, highCount: Int) -> some View {
+    @ViewBuilder private func LockedWeeklyWatchCard(lowCount: Int, highCount: Int, balanceCount: Int) -> some View {
         HStack(spacing: 8) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(.orange)
             VStack(alignment: .leading, spacing: 2) {
                 Text("This Week")
                     .font(.subheadline.bold())
-                Text(summaryText(lowCount: lowCount, highCount: highCount))
+                Text(summaryText(lowCount: lowCount, highCount: highCount, balanceCount: balanceCount))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -310,7 +349,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
                     .font(.subheadline.bold())
                 Spacer()
             }
-            Text("Tap a nutrient to see foods that would help, or its trend")
+            Text("Tap an item for foods that would help, its trend, or what a balance means")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -342,9 +381,77 @@ struct DashboardWeeklyNutrientWatchSection: View {
                     }
                 }
             }
+
+            if !balances.isEmpty {
+                SubsectionLabel("Out of Balance", color: .purple)
+                FlowLayout(spacing: 6) {
+                    ForEach(balances) { balance in
+                        Button {
+                            selectedBalance = balance
+                        } label: {
+                            Chip(dotColor: .purple, text: "\(balance.name) · \(balance.ratioText)")
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
         }
         .padding()
         .inCard(backgroundColor: .orange)
+        .sheet(item: $selectedBalance) { balance in
+            BalanceInfoSheet(balance)
+        }
+    }
+
+    @ViewBuilder private func BalanceInfoSheet(_ balance: NutrientBalanceResult) -> some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "scalemass.fill")
+                            .foregroundStyle(.purple)
+                        Text(balance.name)
+                            .font(.title2.bold())
+                    }
+
+                    HStack(spacing: 12) {
+                        BalanceStat(title: "Your week", value: balance.ratioText, color: .purple)
+                        BalanceStat(title: "Target", value: balance.targetText.replacingOccurrences(of: "Aim for ", with: ""), color: .green)
+                    }
+
+                    Text(balance.explanation)
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+            }
+            .navigationTitle("Balance")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { selectedBalance = nil }
+                        .bold()
+                }
+            }
+        }
+        .presentationDetents([.medium])
+    }
+
+    @ViewBuilder private func BalanceStat(title: String, value: String, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title.uppercased())
+                .font(.caption2.bold())
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.headline)
+                .foregroundStyle(color)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Color.gray.opacity(0.12)))
     }
 
     @ViewBuilder private func SubsectionLabel(_ text: String, color: Color) -> some View {
