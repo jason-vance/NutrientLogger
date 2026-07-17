@@ -545,6 +545,8 @@ struct UserProfileView: View {
                 NavigationLink("Privacy Policy") { PrivacyPolicyView() }
                 Text(".")
                 NavigationLink("Terms of Use") { TermsOfUseView() }
+                Text(".")
+                NavigationLink("Data Sources") { DataSourcesView() }
             }
             HStack(spacing: 6) {
                 Button("Rate on App Store") { requestReview() }

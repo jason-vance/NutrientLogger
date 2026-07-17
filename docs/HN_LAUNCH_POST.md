@@ -66,7 +66,7 @@ Have these ready; response speed in the first hour matters more than the post it
 
 ## Pre-flight checklist
 
-- [ ] Verify Open Food Facts attribution exists in the app (ODbL requirement) — check before HN finds it
+- [x] Verify Open Food Facts attribution exists in the app (ODbL requirement) — check before HN finds it
 - [ ] Confirm database-update story (how do bundled DBs get refreshed?) so the answer is ready
 - [ ] Landing page live, loads fast, App Store link above the fold
 - [ ] Decide the analytics answer (keep Firebase vs. commit to privacy-respecting analytics) — don't improvise this one

@@ -281,7 +281,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 ### Code
 
 - [x] Redesign onboarding
-- [ ] Add Open Food Facts attribution
+- [x] Add Open Food Facts attribution
 - [ ] Out of proportion nutrients (electrolytes, others?)
 - [ ] Too high nutrients should be averaged like too low
 

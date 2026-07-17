@@ -74,8 +74,23 @@ struct BarcodeProductReviewView: View {
                 }
 
                 actionButtons
+                attributionFooter
             }
         }
+    }
+
+    private var attributionFooter: some View {
+        // Open Food Facts data is licensed under ODbL, which requires attribution wherever the
+        // data is shown. This is the point-of-use credit; a fuller notice lives in Data Sources.
+        VStack(spacing: 2) {
+            Text("Product data from Open Food Facts")
+            Link("Licensed under ODbL", destination: URL(string: "https://opendatacommons.org/licenses/odbl/1-0/")!)
+        }
+        .font(.caption2)
+        .foregroundStyle(.secondary)
+        .multilineTextAlignment(.center)
+        .padding(.horizontal)
+        .padding(.bottom)
     }
 
     private var headerSection: some View {
