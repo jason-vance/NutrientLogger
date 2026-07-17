@@ -27,21 +27,30 @@ struct OnboardingHeroView: View {
             }
             .padding(.bottom, 48)
 
-            Text("Track every vitamin,\nmineral, and amino acid.")
+            Text("Are you ready to track every vitamin, mineral, and amino acid?")
                 .font(.largeTitle.bold())
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.primary)
                 .padding(.horizontal, 32)
 
-            Text("Completely offline.")
+            Text("Completely offline. Your data never leaves your device.")
                 .font(.title3)
+                .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
+                .padding(.horizontal, 32)
                 .padding(.top, 16)
 
             Spacer()
 
+            OnboardingReviewQuote(
+                quote: "Free and great insight about vitamin and mineral intake.",
+                author: "SoaresEM"
+            )
+            .padding(.horizontal, 24)
+            .padding(.bottom, 24)
+
             Button(action: onContinue) {
-                Text("Get Started")
+                Text("I'm ready!")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()

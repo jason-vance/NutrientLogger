@@ -91,68 +91,74 @@ struct OnboardingPaywallView: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        if subscriptionManager.isInDiscountWindow {
-                            Text(launchOfferPercent.map { "Launch Offer — \($0)% Off" } ?? "Launch Offer")
-                                .font(.caption.bold())
-                                .foregroundStyle(Color.accentColor)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 4)
-                                .background(Capsule().fill(Color.accentColor.opacity(0.15)))
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack(alignment: .top, spacing: 12) {
+                            Text("\u{201C}I'm so glad you're here! My name is Jason, and I built Nutrient Logger to finally get a handle on my own health and nutrition. It's changed how I eat, and I can't wait for it to do the same for you. Thank you for giving it a try!\u{201D}")
+                                .font(.title3)
+                                .foregroundStyle(.primary)
+                            Image("me")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 64, height: 64)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.primary.opacity(0.1), lineWidth: 1))
                         }
-                        Text("Unlock Nutrient Logger Premium")
-                            .font(.largeTitle.bold())
-                            .foregroundStyle(.primary)
+
+                        Text("Start your 7 day free trial now to get the most out of Nutrient Logger. Cancel anytime.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                     }
                     .padding(.top, 16)
 
                     VStack(spacing: 12) {
-                        FeatureRow(icon: "chart.line.uptrend.xyaxis", text: "7-day and 30-day nutrient trend charts")
-                        FeatureRow(icon: "scalemass.fill", text: "Weight and body fat tracking with goals")
-                        FeatureRow(icon: "heart.fill", text: "Apple Health sync for calories, macros, and weight")
-                        FeatureRow(icon: "target", text: "Custom micronutrient goals")
-                        FeatureRow(icon: "xmark.circle.fill", text: "Completely ad-free experience")
-                    }
-
-                    if subscriptionManager.isLoading {
-                        ProgressView()
-                            .tint(Color.primary)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                    } else {
-                        if let percent = launchOfferPercent {
-                            HStack {
-                                Spacer()
-                                DiscountBanner(percent: percent)
-                            }
-                        }
-
-                        VStack(spacing: 12) {
-                            ForEach(Array(displayProducts.enumerated()), id: \.element.id) { index, product in
-                                ProductButton(product: product, isRecommended: index == 0)
-                            }
-                        }
-
-                        Button(action: restorePurchases) {
-                            Text("Restore Purchases")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 4)
+                        FeatureRow(icon: "chart.line.uptrend.xyaxis", text: "Spot nutrient gaps early with 7- & 30-day trends")
+                        FeatureRow(icon: "scalemass.fill", text: "Reach your goals with weight & body fat tracking")
+                        FeatureRow(icon: "heart.fill", text: "Save time with automatic Apple Health sync")
+                        FeatureRow(icon: "target", text: "Tailor your diet with custom micronutrient goals")
+                        FeatureRow(icon: "xmark.circle.fill", text: "Stay focused with zero ads, ever")
                     }
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 16)
             }
-
-            Button(action: onComplete) {
-                Text("Skip for Now")
-                    .font(.subheadline)
+            
+            VStack {
+                if subscriptionManager.isLoading {
+                    ProgressView()
+                        .tint(Color.primary)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                } else {
+                    VStack(spacing: 8) {
+                        if let percent = launchOfferPercent {
+                            DiscountBanner(percent: percent)
+                        }
+                        
+                        VStack(spacing: 12) {
+                            ForEach(Array(displayProducts.enumerated()), id: \.element.id) { index, product in
+                                ProductButton(product: product, isRecommended: index == 0)
+                            }
+                        }
+                    }
+                    
+                    HStack {
+                        Button(action: restorePurchases) {
+                            Text("Restore Purchases")
+                        }
+                        Image(systemName: "circle.fill")
+                            .scaleEffect(0.25)
+                        Button(action: onComplete) {
+                            Text("Skip for Now")
+                        }
+                    }
+                    .font(.caption)
                     .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 4)
+                }
             }
-            .padding(.top, 8)
-            .padding(.bottom, 48)
+            .padding(.horizontal, 24)
+            .padding(.bottom, 16)
         }
         .overlay {
             if isPurchasing {
@@ -168,7 +174,12 @@ struct OnboardingPaywallView: View {
             Text(errorMessage ?? "An unknown error occurred")
         })
         .onAppear {
-            subscriptionManager.refreshProducts()
+            // Products are loaded once at app launch (SubscriptionManager.init). Re-refreshing here
+            // flips `isLoading` mid slide-in, which pops the product bar on top of the outgoing
+            // screen during the transition — only refresh if the initial load hasn't landed yet.
+            if displayProducts.isEmpty {
+                subscriptionManager.refreshProducts()
+            }
             subscriptionAnalytics.paywallShown(trigger: .smartPaywall)
         }
     }
@@ -220,20 +231,32 @@ struct OnboardingPaywallView: View {
     }
 
     @ViewBuilder private func DiscountBanner(percent: Int) -> some View {
-        Text("\(percent)% off the regular price")
-            .font(.caption.bold())
-            .foregroundStyle(Color.white)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 2)
-            .background(Capsule().foregroundStyle(Color.green.gradient))
+        VStack {
+            Text("Launch Offer")
+                .font(.callout.bold())
+            Text("\(percent)% off the regular price")
+                .font(.caption.bold())
+        }
+        .foregroundStyle(Color.accent)
+        .padding(.horizontal, 24)
+        .padding(.vertical, 8)
+        .background(Capsule().foregroundStyle(Color.accent.gradient.opacity(0.15)))
     }
 }
 
-#Preview {
+#Preview("In Discount Window") {
+    let _ = UserDefaults.standard.set(Date.now.timeIntervalSince1970, forKey: "onboardingStartedAt")
     let _ = swinjectContainer.autoregister(SubscriptionAnalytics.self) { MockSubscriptionAnalytics() }
-
     ZStack {
-        Color.black.ignoresSafeArea()
+        OnboardingPaywallView(onComplete: {})
+            .environmentObject(SubscriptionManager(isForScreenshots: true))
+    }
+}
+
+#Preview("Out of Discount Window") {
+    let _ = UserDefaults.standard.set(0.0, forKey: "onboardingStartedAt")
+    let _ = swinjectContainer.autoregister(SubscriptionAnalytics.self) { MockSubscriptionAnalytics() }
+    ZStack {
         OnboardingPaywallView(onComplete: {})
             .environmentObject(SubscriptionManager(isForScreenshots: true))
     }

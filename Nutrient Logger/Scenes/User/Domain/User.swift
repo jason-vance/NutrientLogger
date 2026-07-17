@@ -66,6 +66,12 @@ struct User: Codable {
         return Date.now.timeIntervalSince(birthdate)
     }
 
+    /// Whether the user has supplied the personal details needed to personalize nutrient targets
+    /// (sex, birthdate, and height). Drives the "set up your profile" reminder and Profile tab badge.
+    public var isProfileComplete: Bool {
+        gender != .unknown && birthdate != nil && heightCm != nil
+    }
+
     public static let sample: User = .init(
         gender: .male,
         birthdate: .init(year: 1987, month: 6, day: 16),

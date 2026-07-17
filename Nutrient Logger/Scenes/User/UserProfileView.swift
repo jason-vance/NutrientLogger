@@ -46,6 +46,7 @@ struct UserProfileView: View {
 
     @AppStorage("preferredWeightUnit") private var preferredUnitRaw: String = BodyWeightUnit.lbs.rawValue
     @AppStorage("preferredHeightUnit") private var preferredHeightUnitRaw: String = HeightUnit.ftIn.rawValue
+    @AppStorage("profileSetupComplete") private var profileSetupComplete: Bool = false
 
     @AppStorage(NotificationSettings.dailyReminderEnabledKey)
     private var dailyReminderEnabled = NotificationSettings.defaultDailyReminderEnabled
@@ -87,12 +88,14 @@ struct UserProfileView: View {
         let loaded = userService.currentUser
         self.loadedUser = loaded
         self.user = loaded
+        profileSetupComplete = loaded.isProfileComplete
     }
 
     private func saveUser() {
         guard let user else { return }
         guard user != loadedUser else { return }
         loadedUser = user
+        profileSetupComplete = user.isProfileComplete
         Task {
             do {
                 try await userService.save(user: user)
@@ -156,31 +159,72 @@ struct UserProfileView: View {
     }
 
     @ViewBuilder private func ProfileCard() -> some View {
-        HStack(spacing: .spacingDefault) {
-            Image(user?.gender == .female ? "profile_female" : "profile_male")
-                .renderingMode(.template)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 64, height: 64)
-                .foregroundStyle(Color.primary)
-                .clipShape(Circle())
-            VStack(alignment: .leading, spacing: 4) {
-                Text(ageGenderHeightSummary)
-                    .font(.headline)
-                NavigationLink {
-                    EditProfileView(user: $user)
-                } label: {
-                    HStack(spacing: 2) {
-                        Text("Edit Profile")
-                        Image(systemName: "chevron.right")
+        if user?.isProfileComplete == true {
+            HStack(spacing: .spacingDefault) {
+                Image(user?.gender == .female ? "profile_female" : "profile_male")
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 64, height: 64)
+                    .foregroundStyle(Color.primary)
+                    .clipShape(Circle())
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(ageGenderHeightSummary)
+                        .font(.headline)
+                    NavigationLink {
+                        EditProfileView(user: $user)
+                    } label: {
+                        HStack(spacing: 2) {
+                            Text("Edit Profile")
+                            Image(systemName: "chevron.right")
+                        }
+                        .font(.caption)
                     }
-                    .font(.caption)
                 }
+                Spacer()
             }
-            Spacer()
+            .padding()
+            .inCard(backgroundColor: Color.gray)
+        } else {
+            SetUpProfilePrompt()
         }
-        .padding()
-        .inCard(backgroundColor: Color.gray)
+    }
+
+    @ViewBuilder private func SetUpProfilePrompt() -> some View {
+        NavigationLink {
+            EditProfileView(user: $user)
+        } label: {
+            HStack(spacing: .spacingDefault) {
+                ZStack {
+                    Circle()
+                        .fill(Color.accentColor.opacity(0.15))
+                        .frame(width: 64, height: 64)
+                    Image(systemName: "person.crop.circle.badge.plus")
+                        .font(.system(size: 28))
+                        .foregroundStyle(Color.accentColor)
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Set up your profile")
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    Text("Personalize your nutrient targets in under a minute")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(Color.accentColor)
+            }
+            .padding()
+            .inCard(backgroundColor: Color.gray)
+            .overlay(
+                RoundedRectangle(cornerRadius: .cornerRadiusListRow, style: .continuous)
+                    .stroke(Color.accentColor, lineWidth: 1.5)
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Subscription Card

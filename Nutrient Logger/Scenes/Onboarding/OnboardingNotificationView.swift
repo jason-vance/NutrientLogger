@@ -42,11 +42,13 @@ struct OnboardingNotificationView: View {
             }
             .padding(.bottom, 48)
 
-            Text("Stay on Track")
+            Text("Do you want a gentle reminder?")
                 .font(.largeTitle.bold())
+                .multilineTextAlignment(.center)
                 .foregroundStyle(.primary)
+                .padding(.horizontal, 32)
 
-            Text("Get a gentle daily reminder to log your meals and a heads up before you lose a streak.")
+            Text("A gentle daily nudge to log your meals, plus a heads up before you lose a streak. No spam, ever.")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
@@ -55,8 +57,15 @@ struct OnboardingNotificationView: View {
 
             Spacer()
 
+            OnboardingReviewQuote(
+                quote: "I love this app, very user friendly and thorough!",
+                author: "Kathrynnn G"
+            )
+            .padding(.horizontal, 24)
+            .padding(.bottom, 24)
+
             Button(action: requestPermission) {
-                Text("Enable Notifications")
+                Text("Yes, Please")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()

@@ -137,7 +137,12 @@ struct MarketingView: View {
                     if subscriptionManager.isLoading {
                         LoadingView()
                     }
-                    
+
+                    Text("Made by a solo developer, not a big company.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.bottom, 4)
+
                     ForEach(displayProducts, id: \.self) { product in
                         SubscribeButton(product: product)
                     }
@@ -213,8 +218,8 @@ struct MarketingView: View {
         HStack {
             Text(
                 contextualLossHeadline == nil
-                    ? "Track every vitamin, mineral, and amino acid — completely offline. Your data never leaves your device."
-                    : "Track every vitamin, mineral, and amino acid — completely offline. Unlock Premium to get this and everything else Nutrient Logger offers."
+                    ? "Track every vitamin, mineral, and amino acid. Completely offline! Your data never leaves your device."
+                    : "Track every vitamin, mineral, and amino acid. Completely offline! Unlock Premium to get this and everything else Nutrient Logger offers."
             )
                 .foregroundStyle(.secondary)
             Spacer()

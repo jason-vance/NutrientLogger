@@ -12,9 +12,6 @@ struct OnboardingView: View {
 
     let onComplete: () -> Void
 
-    @Environment(\.modelContext) private var modelContext
-
-    @Inject private var userService: UserService
     @Inject private var engagementAnalytics: EngagementAnalytics
 
     @AppStorage("hasStartedOnboarding") private var hasStartedOnboarding: Bool = false
@@ -23,9 +20,10 @@ struct OnboardingView: View {
     @AppStorage("hasPromptedForNotifications") private var hasPromptedForNotifications: Bool = false
 
     @State private var step: Int = 0
+    @State private var navigatingBackward = false
 
-    private static let totalSteps = 5
-    private static let stepNames = ["hero", "goal", "profile", "notification", "paywall"]
+    private static let totalSteps = 3
+    private static let stepNames = ["hero", "notification", "paywall"]
 
     private func trackStepViewed(_ step: Int) {
         guard Self.stepNames.indices.contains(step) else { return }
@@ -33,20 +31,23 @@ struct OnboardingView: View {
     }
 
     private func advance() {
+        navigatingBackward = false
         withAnimation(.easeInOut(duration: 0.3)) {
             step += 1
         }
     }
 
-    private func saveAndComplete(user: User, weightKg: Double?) {
-        Task {
-            try? await userService.save(user: user)
-            if let kg = weightKg {
-                let entry = WeightEntry(date: .today, weightKg: kg)
-                await MainActor.run { modelContext.insert(entry) }
-            }
-            await MainActor.run { advance() }
+    private func goBack() {
+        navigatingBackward = true
+        withAnimation(.easeInOut(duration: 0.3)) {
+            step -= 1
         }
+    }
+
+    private var stepTransition: AnyTransition {
+        navigatingBackward
+            ? .asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing))
+            : .asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading))
     }
 
     private func finishOnboarding() {
@@ -61,9 +62,25 @@ struct OnboardingView: View {
             Color(.systemBackground).ignoresSafeArea()
 
             VStack(spacing: 0) {
-                ProgressDots(step: step)
-                    .padding(.top, 16)
-                    .padding(.bottom, 8)
+                ZStack {
+                    ProgressDots(step: step)
+
+                    HStack {
+                        if step > 0 {
+                            Button(action: goBack) {
+                                Image(systemName: "chevron.left")
+                                    .font(.body.weight(.semibold))
+                                    .foregroundStyle(.primary)
+                                    .padding(8)
+                            }
+                            .transition(.opacity)
+                        }
+                        Spacer()
+                    }
+                }
+                .padding(.top, 16)
+                .padding(.bottom, 8)
+                .padding(.horizontal, 8)
 
                 stepContent
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -84,19 +101,13 @@ struct OnboardingView: View {
     @ViewBuilder private var stepContent: some View {
         if step == 0 {
             OnboardingHeroView(onContinue: advance)
-                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+                .transition(stepTransition)
         } else if step == 1 {
-            OnboardingGoalView(onContinue: advance)
-                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-        } else if step == 2 {
-            OnboardingProfileView(onComplete: saveAndComplete)
-                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-        } else if step == 3 {
             OnboardingNotificationView(onContinue: advance)
-                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+                .transition(stepTransition)
         } else {
             OnboardingPaywallView(onComplete: finishOnboarding)
-                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+                .transition(stepTransition)
         }
     }
 
@@ -113,7 +124,6 @@ struct OnboardingView: View {
 }
 
 #Preview {
-    let _ = swinjectContainer.autoregister(UserService.self) { MockUserService(currentUser: .sample) }
     let _ = swinjectContainer.autoregister(EngagementAnalytics.self) { MockEngagementAnalytics() }
     let _ = swinjectContainer.autoregister(SubscriptionAnalytics.self) { MockSubscriptionAnalytics() }
 

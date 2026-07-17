@@ -18,6 +18,7 @@ struct ContentView: View {
     @EnvironmentObject private var dataController: DataController
 
     @Inject private var engagementAnalytics: EngagementAnalytics
+    @Inject private var userService: UserService
 
     @Binding var pendingDeepLink: DeepLink?
     @State private var selectedTab: AppTab = .dashboard
@@ -28,6 +29,7 @@ struct ContentView: View {
     @AppStorage("hasLaunchedAppBefore") private var hasLaunchedAppBefore: Bool = false
     @AppStorage("hasPromptedForNotifications") private var hasPromptedForNotifications: Bool = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
+    @AppStorage("profileSetupComplete") private var profileSetupComplete: Bool = false
 
     private static let bodyTabIcons = [
         "figure.run",
@@ -140,6 +142,10 @@ struct ContentView: View {
                     UserProfileView()
                 }
             }
+            .badge(profileSetupComplete ? 0 : 1)
+        }
+        .onAppear {
+            profileSetupComplete = userService.currentUser.isProfileComplete
         }
         .onChange(of: selectedTab, initial: true) { _, tab in
             let name: String = switch tab {
