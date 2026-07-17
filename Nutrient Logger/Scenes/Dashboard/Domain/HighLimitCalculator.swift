@@ -8,26 +8,24 @@
 import Foundation
 
 struct HighLimitResult: Equatable {
-    let daysExceeded: Int
-    let peakAmount: Double
-    let peakPercentageOfLimit: Double
+    let averageAmount: Double
+    let percentageOfLimit: Double
 }
 
 enum HighLimitCalculator {
 
-    /// Evaluates one nutrient's daily intake amounts against its upper limit. Returns nil when
-    /// there's no meaningful upper limit to check against (no RDI data, or the "no limit"
-    /// sentinel), or when no day in the range exceeded it.
-    static func evaluate(dailyAmounts: [Double], upperLimit: Double?) -> HighLimitResult? {
+    /// Evaluates a nutrient's average daily intake against its upper limit. Averaging mirrors the
+    /// "running low" deficiency signal, so a single spike day no longer flags a nutrient as high;
+    /// the average across days with data has to clear the limit. Returns nil when there's no
+    /// meaningful upper limit to check against (no RDI data, or the "no limit" sentinel), or when
+    /// the average is at or below the limit.
+    static func evaluate(averageAmount: Double, upperLimit: Double?) -> HighLimitResult? {
         guard let upperLimit, upperLimit > 0, upperLimit < .greatestFiniteMagnitude else { return nil }
-
-        let exceededDays = dailyAmounts.filter { $0 > upperLimit }
-        guard let peak = exceededDays.max() else { return nil }
+        guard averageAmount > upperLimit else { return nil }
 
         return HighLimitResult(
-            daysExceeded: exceededDays.count,
-            peakAmount: peak,
-            peakPercentageOfLimit: peak / upperLimit
+            averageAmount: averageAmount,
+            percentageOfLimit: averageAmount / upperLimit
         )
     }
 }

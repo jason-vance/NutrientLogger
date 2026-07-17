@@ -43,8 +43,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
     struct HighNutrient: Identifiable {
         let id: String
         let name: String
-        let daysExceeded: Int
-        let peakPercentageOfLimit: Double
+        let percentageOfLimit: Double
         let nutrient: Nutrient
     }
 
@@ -64,8 +63,6 @@ struct DashboardWeeklyNutrientWatchSection: View {
         let user = self.user
         let rdiLibrary = self.rdiLibrary
         let remoteDatabase = self.remoteDatabase
-        let startDate = date.adding(days: -(Self.windowDays - 1))
-        let endDate = date
 
         Task {
             deficiencies = Self.computeDeficientNutrients(
@@ -76,8 +73,6 @@ struct DashboardWeeklyNutrientWatchSection: View {
             )
             highNutrients = Self.computeHighNutrients(
                 foods: foods,
-                startDate: startDate,
-                endDate: endDate,
                 user: user,
                 rdiLibrary: rdiLibrary,
                 remoteDatabase: remoteDatabase
@@ -160,20 +155,17 @@ struct DashboardWeeklyNutrientWatchSection: View {
     // (called from a Task) rather than as a view body computed property.
     private static func computeHighNutrients(
         foods: [ConsumedFood],
-        startDate: SimpleDate,
-        endDate: SimpleDate,
         user: User,
         rdiLibrary: NutrientRdiLibrary,
         remoteDatabase: RemoteDatabase
     ) -> [HighNutrient] {
         let foodsByDate = Dictionary(grouping: foods) { $0.dateLogged }
+        let daysWithData = foodsByDate.count
+        guard daysWithData > 0 else { return [] }
 
-        var dailyAmountsByNutrient: [String: [Double]] = [:]
-        var nutrientByNutrientId: [String: Nutrient] = [:]
+        var totalsByNutrient: [String: (total: Double, nutrient: Nutrient)] = [:]
 
-        var current = startDate
-        while current <= endDate {
-            let dayFoods = foodsByDate[current] ?? []
+        for (_, dayFoods) in foodsByDate {
             let foodItems: [FoodItem] = dayFoods.compactMap { consumedFood in
                 do {
                     var food = try remoteDatabase.getFood(String(consumedFood.fdcId))
@@ -189,14 +181,17 @@ struct DashboardWeeklyNutrientWatchSection: View {
             for nutrientId in trackedNutrientIds {
                 let pairs = dayAggregator.nutrientsByNutrientNumber[nutrientId] ?? []
                 let amount = pairs.reduce(into: 0.0) { $0 += $1.nutrient.amount }
-                dailyAmountsByNutrient[nutrientId, default: []].append(amount)
 
-                if nutrientByNutrientId[nutrientId] == nil, let nutrient = pairs.first?.nutrient {
-                    nutrientByNutrientId[nutrientId] = nutrient
+                if var existing = totalsByNutrient[nutrientId] {
+                    existing.total += amount
+                    totalsByNutrient[nutrientId] = existing
+                } else {
+                    let nutrient = pairs.first?.nutrient
+                        ?? remoteDatabase.getNutrient(withId: nutrientId)
+                        ?? Nutrient(fdcNumber: nutrientId, name: "Unknown", unitName: "")
+                    totalsByNutrient[nutrientId] = (total: amount, nutrient: nutrient)
                 }
             }
-
-            current = current.adding(days: 1)
         }
 
         return trackedNutrientIds.compactMap { nutrientId -> HighNutrient? in
@@ -206,32 +201,29 @@ struct DashboardWeeklyNutrientWatchSection: View {
                 rdiLibrary: rdiLibrary
             ) else { return nil }
 
-            let nutrient = nutrientByNutrientId[nutrientId]
-                ?? remoteDatabase.getNutrient(withId: nutrientId)
-                ?? Nutrient(fdcNumber: nutrientId, name: "Unknown", unitName: "")
+            guard let entry = totalsByNutrient[nutrientId] else { return nil }
+            let averageAmount = entry.total / Double(daysWithData)
 
-            let foodsUnit = WeightUnit.unitFrom(nutrient)
+            let foodsUnit = WeightUnit.unitFrom(entry.nutrient)
             let convertedRdi = (foodsUnit == rdi.unit) ? rdi : rdi.convertedTo(foodsUnit)
 
-            let dailyAmounts = dailyAmountsByNutrient[nutrientId] ?? []
             guard let result = HighLimitCalculator.evaluate(
-                dailyAmounts: dailyAmounts,
+                averageAmount: averageAmount,
                 upperLimit: convertedRdi.upperLimit
             ) else {
                 return nil
             }
 
-            let displayName = FdcNutrientGroupMapper.nutrientDisplayNames[nutrientId] ?? nutrient.name
+            let displayName = FdcNutrientGroupMapper.nutrientDisplayNames[nutrientId] ?? entry.nutrient.name
 
             return HighNutrient(
                 id: nutrientId,
                 name: displayName,
-                daysExceeded: result.daysExceeded,
-                peakPercentageOfLimit: result.peakPercentageOfLimit,
-                nutrient: nutrient
+                percentageOfLimit: result.percentageOfLimit,
+                nutrient: entry.nutrient
             )
         }
-        .sorted { $0.peakPercentageOfLimit > $1.peakPercentageOfLimit }
+        .sorted { $0.percentageOfLimit > $1.percentageOfLimit }
     }
 
     private func colorPalette(for nutrientId: String) -> ColorPalette {
@@ -345,7 +337,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
                                 colorPalette: colorPalette(for: high.id)
                             )
                         } label: {
-                            Chip(dotColor: .red, text: "\(high.name) · \(high.daysExceeded)d")
+                            Chip(dotColor: .red, text: high.name)
                         }
                     }
                 }

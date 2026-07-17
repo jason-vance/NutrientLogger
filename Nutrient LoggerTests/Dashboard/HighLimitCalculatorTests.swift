@@ -10,73 +10,65 @@ import Testing
 
 struct HighLimitCalculatorTests {
 
-    // MARK: - No qualifying day
+    // MARK: - Average at or below the limit
 
-    @Test func allDaysUnderLimitReturnsNil() {
-        let result = HighLimitCalculator.evaluate(dailyAmounts: [100, 150, 200], upperLimit: 300)
+    @Test func averageUnderLimitReturnsNil() {
+        let result = HighLimitCalculator.evaluate(averageAmount: 200, upperLimit: 300)
         #expect(result == nil)
     }
 
-    @Test func emptyDailyAmountsReturnsNil() {
-        let result = HighLimitCalculator.evaluate(dailyAmounts: [], upperLimit: 300)
-        #expect(result == nil)
-    }
-
-    @Test func exactlyAtLimitDoesNotCountAsExceeded() {
+    @Test func averageExactlyAtLimitReturnsNil() {
         // Only strictly greater-than should count, consistent with the dashed-bar threshold logic.
-        let result = HighLimitCalculator.evaluate(dailyAmounts: [300, 300], upperLimit: 300)
+        let result = HighLimitCalculator.evaluate(averageAmount: 300, upperLimit: 300)
+        #expect(result == nil)
+    }
+
+    @Test func zeroAverageReturnsNil() {
+        let result = HighLimitCalculator.evaluate(averageAmount: 0, upperLimit: 300)
         #expect(result == nil)
     }
 
     // MARK: - No meaningful limit data
 
     @Test func nilUpperLimitReturnsNil() {
-        let result = HighLimitCalculator.evaluate(dailyAmounts: [10_000], upperLimit: nil)
+        let result = HighLimitCalculator.evaluate(averageAmount: 10_000, upperLimit: nil)
         #expect(result == nil)
     }
 
     @Test func infiniteUpperLimitReturnsNil() {
-        let result = HighLimitCalculator.evaluate(dailyAmounts: [10_000], upperLimit: .greatestFiniteMagnitude)
+        let result = HighLimitCalculator.evaluate(averageAmount: 10_000, upperLimit: .greatestFiniteMagnitude)
         #expect(result == nil)
     }
 
     @Test func zeroUpperLimitReturnsNil() {
-        let result = HighLimitCalculator.evaluate(dailyAmounts: [10], upperLimit: 0)
+        let result = HighLimitCalculator.evaluate(averageAmount: 10, upperLimit: 0)
         #expect(result == nil)
     }
 
     @Test func negativeUpperLimitSentinelReturnsNil() {
         // Guards against the same "-greatestFiniteMagnitude as a sentinel" bug this release
         // fixed for Sodium's recommendedAmount.
-        let result = HighLimitCalculator.evaluate(dailyAmounts: [10], upperLimit: -Double.greatestFiniteMagnitude)
+        let result = HighLimitCalculator.evaluate(averageAmount: 10, upperLimit: -Double.greatestFiniteMagnitude)
         #expect(result == nil)
     }
 
-    // MARK: - Single day exceeded
+    // MARK: - Average over the limit
 
-    @Test func singleDayExceededCounts() {
-        let result = HighLimitCalculator.evaluate(dailyAmounts: [100, 150, 400], upperLimit: 300)
+    @Test func averageOverLimitIsFlagged() {
+        let result = HighLimitCalculator.evaluate(averageAmount: 400, upperLimit: 300)
 
         #expect(result != nil)
-        #expect(result?.daysExceeded == 1)
-        #expect(result?.peakAmount == 400)
-        #expect(abs((result?.peakPercentageOfLimit ?? 0) - (400.0 / 300.0)) < 0.0001)
+        #expect(result?.averageAmount == 400)
+        #expect(abs((result?.percentageOfLimit ?? 0) - (400.0 / 300.0)) < 0.0001)
     }
 
-    // MARK: - Multiple days exceeded, peak is the worst day
+    // MARK: - A single spike day no longer flags a nutrient once averaged down
 
-    @Test func multipleDaysExceededTracksPeakAmongExceededDays() {
-        let result = HighLimitCalculator.evaluate(dailyAmounts: [50, 350, 500, 320], upperLimit: 300)
-
-        #expect(result?.daysExceeded == 3)
-        #expect(result?.peakAmount == 500)
-    }
-
-    // MARK: - A day well under the limit doesn't dilute the exceeded-day count
-
-    @Test func daysUnderLimitAreExcludedFromCount() {
-        let result = HighLimitCalculator.evaluate(dailyAmounts: [0, 0, 0, 0, 0, 0, 301], upperLimit: 300)
-
-        #expect(result?.daysExceeded == 1)
+    @Test func singleSpikeThatAveragesUnderLimitReturnsNil() {
+        // 500 on one day but 50 on three others → average 162.5, under the 300 limit.
+        let dailyAmounts = [50.0, 50.0, 50.0, 500.0]
+        let average = dailyAmounts.reduce(0, +) / Double(dailyAmounts.count)
+        let result = HighLimitCalculator.evaluate(averageAmount: average, upperLimit: 300)
+        #expect(result == nil)
     }
 }
