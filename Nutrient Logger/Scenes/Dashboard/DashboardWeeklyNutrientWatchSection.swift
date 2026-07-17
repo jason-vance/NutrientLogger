@@ -7,12 +7,43 @@
 
 import SwiftUI
 
+/// The lookback window the weekly watch card uses to compute lows/highs/balances. User-configurable
+/// in Nutrition Settings; defaults to 7 days. Shared by the card and the settings screen.
+enum WeeklyWatchWindow {
+    static let appStorageKey = "weeklyWatch_windowDays"
+    static let defaultDays = 7
+    static let options = [1, 3, 7, 14, 30]
+
+    /// Card header, e.g. "Today" for 1 day, "This Week" for 7, otherwise "Last N Days".
+    static func title(forDays days: Int) -> String {
+        switch days {
+        case 1: return "Today"
+        case 7: return "This Week"
+        default: return "Last \(days) Days"
+        }
+    }
+
+    /// Trailing phrase for the locked-card summary, e.g. "today" / "this week" / "in the last 14 days".
+    static func summarySuffix(forDays days: Int) -> String {
+        switch days {
+        case 1: return "today"
+        case 7: return "this week"
+        default: return "in the last \(days) days"
+        }
+    }
+
+    /// Menu label for the picker, e.g. "1 day" / "7 days".
+    static func optionLabel(forDays days: Int) -> String {
+        days == 1 ? "1 day" : "\(days) days"
+    }
+}
+
 /// Combines the "running low" (deficiency), "over the upper limit" (high), and "out of balance"
-/// (ratio) weekly signals into a single card, since all three are the same "things to watch this
-/// week" concept and share the same 7-day window.
+/// (ratio) signals into a single card, since all three are the same "things to watch" concept and
+/// share the same lookback window (configurable; 7 days by default).
 struct DashboardWeeklyNutrientWatchSection: View {
 
-    private static let windowDays = 7
+    @AppStorage(WeeklyWatchWindow.appStorageKey) private var windowDays: Int = WeeklyWatchWindow.defaultDays
 
     @Inject private var rdiLibrary: NutrientRdiLibrary
     @Inject private var userService: UserService
@@ -57,7 +88,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
     }
 
     private var recentFoods: [ConsumedFood] {
-        let startDate = date.adding(days: -(Self.windowDays - 1))
+        let startDate = date.adding(days: -(windowDays - 1))
         return allConsumedFoods.filter { $0.dateLogged >= startDate && $0.dateLogged <= date }
     }
 
@@ -274,7 +305,8 @@ struct DashboardWeeklyNutrientWatchSection: View {
         if lowCount > 0 { parts.append("\(lowCount) running low") }
         if highCount > 0 { parts.append("\(highCount) over the limit") }
         if balanceCount > 0 { parts.append("\(balanceCount) out of balance") }
-        return parts.joined(separator: ", ") + " this week — unlock to see which"
+        let suffix = WeeklyWatchWindow.summarySuffix(forDays: windowDays)
+        return parts.joined(separator: ", ") + " \(suffix) — unlock to see which"
     }
 
     var body: some View {
@@ -297,6 +329,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
         .onChange(of: allConsumedFoods) { updateWeeklyNutrients() }
         .onChange(of: balanceHiddenRaw) { updateWeeklyNutrients() }
         .onChange(of: balanceCustomRaw) { updateWeeklyNutrients() }
+        .onChange(of: windowDays) { updateWeeklyNutrients() }
     }
 
     @ViewBuilder private func OnTrackCard() -> some View {
@@ -316,7 +349,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(.orange)
             VStack(alignment: .leading, spacing: 2) {
-                Text("This Week")
+                Text(WeeklyWatchWindow.title(forDays: windowDays))
                     .font(.subheadline.bold())
                 Text(summaryText(lowCount: lowCount, highCount: highCount, balanceCount: balanceCount))
                     .font(.caption)
@@ -345,7 +378,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
             HStack(spacing: 8) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundStyle(.orange)
-                Text("This Week")
+                Text(WeeklyWatchWindow.title(forDays: windowDays))
                     .font(.subheadline.bold())
                 Spacer()
             }

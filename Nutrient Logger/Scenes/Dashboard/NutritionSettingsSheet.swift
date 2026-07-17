@@ -22,6 +22,9 @@ struct NutritionSettingsSheet: View {
 
     @AppStorage(WaterUnit.appStorageKey) private var preferredWaterUnitRaw: String = WaterUnit.cups.rawValue
 
+    // Weekly watch card lookback window
+    @AppStorage(WeeklyWatchWindow.appStorageKey) private var watchWindowDays: Int = WeeklyWatchWindow.defaultDays
+
     // Vitamins
     @AppStorage("nutrientCustomize_vitamins_order") private var vitaminsOrderRaw: String = ""
     @AppStorage("nutrientCustomize_vitamins_hidden") private var vitaminsHiddenRaw: String = ""
@@ -121,6 +124,7 @@ struct NutritionSettingsSheet: View {
         NavigationStack {
             List {
                 GoalsSection()
+                WeeklyWatchSection()
                 NutrientGroupSection(
                     title: "Vitamins",
                     items: $vitamins,
@@ -291,6 +295,27 @@ struct NutritionSettingsSheet: View {
             }
         } header: {
             Text("Nutrition Goals")
+        }
+    }
+
+    // MARK: - Weekly Watch
+
+    @ViewBuilder private func WeeklyWatchSection() -> some View {
+        Section {
+            HStack {
+                Text("Look Back")
+                Spacer()
+                Picker("Look Back", selection: $watchWindowDays) {
+                    ForEach(WeeklyWatchWindow.options, id: \.self) { days in
+                        Text(WeeklyWatchWindow.optionLabel(forDays: days)).tag(days)
+                    }
+                }
+                .labelsHidden()
+            }
+        } header: {
+            Text("Weekly Watch")
+        } footer: {
+            Text("How many days back the dashboard's low, high, and out-of-balance nutrient warnings look when averaging your intake.")
         }
     }
 
