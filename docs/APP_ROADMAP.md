@@ -276,7 +276,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ---
 
-## v4.1.1 — "Tighten Up Again"
+## v4.2 — "Tighten Up a Bit More"
 
 ### Code
 
