@@ -11,13 +11,13 @@ Micronutrientes, 100% offline
 ## Keywords (96/100 chars)
 vitamina,mineral,deficiência,cronometer,myfitnesspal,calorias,keto,vegano,macros,nutrição,diário
 
-## Promotional Text (162/170 chars)
-v4.1: refeições mais organizadas com um cartão por refeição, e avisos de limite máximo para notar excesso de sódio tão fácil quanto falta de ferro. 7 dias grátis.
+## Promotional Text (148/170 chars)
+v4.2: o Nutrient Logger agora é 100% sem anúncios. Seus dados de comida e perfil nunca saem do seu aparelho, nem mesmo para análises. 7 dias grátis.
 
 ## Description
 O Nutrient Logger é o rastreador nutricional offline para quem quer saber o que realmente tem na sua comida — não só calorias e macros, mas todo o espectro de vitaminas, minerais e aminoácidos de que o seu corpo precisa.
 
-Diferente dos rastreadores na nuvem, o seu diário alimentar nunca sai do seu aparelho. E diferente dos apps focados em macros, cada registro detalha mais de 80 nutrientes para você identificar lacunas antes que virem deficiências.
+Diferente dos rastreadores na nuvem, o seu diário alimentar nunca sai do seu aparelho — sem conta, sem nuvem e sem anúncios. E diferente dos apps focados em macros, cada registro detalha mais de 80 nutrientes para você identificar lacunas antes que virem deficiências.
 
 Principais recursos:
 
@@ -65,19 +65,16 @@ O Nutrient Logger é perfeito para quem leva nutrição a sério — seja numa d
 
 * Termos de Uso da Apple: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.1)
-• Telas de refeições redesenhadas: um cartão por refeição, com todas as refeições sempre visíveis para ver seu dia de relance
-• Adicione alimentos direto a uma refeição — data e horário da refeição já vêm preenchidos
-• Novo alerta de limites máximos: o cartão "Alto esta semana" aponta nutrientes que você pode estar consumindo demais, ao lado dos que estão em falta
-• As barras de progresso e o anel de calorias agora mostram claramente quando você passa de uma meta ou limite
-• Corrigido o sódio que sempre mostrava 0% da meta diária
+## What's New (v4.2)
+• O Nutrient Logger agora é 100% sem anúncios
+• Seu resumo semanal de nutrientes agora destaca os Balanços de Nutrientes, e você escolhe quantos dias ele considera
 • Correções de bugs e polimento geral
 
 ## Screenshots
 1. Cada vitamina e mineral, não só as calorias
 2. Identifique deficiências antes que virem problemas
 3. Seus dados nunca saem do seu celular
-    100% offline. Sem conta, sem nuvem, sem anúncio no meio do registro
+    100% offline. Sem conta, sem nuvem, sem anúncios, nunca
 4. Crie um hábito que dura
     Lembretes diários e sequências fazem você voltar
 5. Cuide da saúde inteira, não só do prato

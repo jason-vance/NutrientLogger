@@ -11,13 +11,13 @@ Micronutriments hors ligne
 ## Keywords (99/100 chars)
 vitamine,minéraux,carence,cronometer,myfitnesspal,calories,céto,végan,macro,nutrition,journal,repas
 
-## Promotional Text (166/170 chars)
-v4.1 : nouvel écran repas avec une carte par repas, et des alertes de limite haute pour repérer l'excès de sodium aussi facilement qu'un manque de fer. Essai 7 jours.
+## Promotional Text (169/170 chars)
+v4.2 : Nutrient Logger est désormais 100 % sans publicité. Vos données d'alimentation et de profil ne quittent jamais l'appareil, pas même pour l'analyse. Essai 7 jours.
 
 ## Description
 Nutrient Logger est le tracker nutritionnel 100 % hors ligne pour celles et ceux qui veulent savoir ce que contient vraiment leur alimentation — pas seulement les calories et les macros, mais tout le spectre de vitamines, minéraux et acides aminés dont votre corps a besoin.
 
-Contrairement aux trackers basés sur le cloud, votre journal alimentaire ne quitte jamais votre appareil. Et contrairement aux apps centrées sur les macros, chaque entrée détaille plus de 80 nutriments pour repérer les manques avant qu'ils ne deviennent des carences.
+Contrairement aux trackers basés sur le cloud, votre journal alimentaire ne quitte jamais votre appareil — pas de compte, pas de cloud, pas de pub. Et contrairement aux apps centrées sur les macros, chaque entrée détaille plus de 80 nutriments pour repérer les manques avant qu'ils ne deviennent des carences.
 
 Fonctionnalités principales :
 
@@ -65,19 +65,16 @@ Nutrient Logger est parfait pour quiconque prend la nutrition au sérieux — r�
 
 * Conditions d'utilisation Apple : https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.1)
-• Écrans de repas repensés : une carte par repas, avec tous les créneaux toujours visibles pour voir votre journée d'un coup d'œil
-• Ajoutez un aliment directement à un repas — la date et le moment du repas sont préremplis pour vous
-• Nouvelle vigilance sur les limites hautes : une carte « En excès cette semaine » signale les nutriments que vous consommez peut-être trop, à côté de ceux qui vous manquent
-• Les barres de progression et l'anneau de calories montrent désormais clairement quand vous dépassez un objectif ou une limite
-• Correction du sodium qui affichait toujours 0 % de son objectif quotidien
+## What's New (v4.2)
+• Nutrient Logger est désormais 100 % sans publicité
+• Votre bilan hebdomadaire des nutriments met désormais en avant les Équilibres de nutriments, et vous choisissez sur combien de jours il porte
 • Corrections de bugs et améliorations diverses
 
 ## Screenshots
 1. Chaque vitamine et minéral, pas seulement les calories
 2. Repérez les carences avant qu'elles ne deviennent des problèmes
 3. Vos données ne quittent jamais votre téléphone
-    100 % hors ligne. Pas de compte, pas de cloud, pas de pub en pleine saisie
+    100 % hors ligne. Pas de compte, pas de cloud, pas de pub, jamais
 4. Construisez une habitude qui dure
     Rappels quotidiens et séries pour rester motivé
 5. Surveillez toute votre santé, pas seulement votre assiette

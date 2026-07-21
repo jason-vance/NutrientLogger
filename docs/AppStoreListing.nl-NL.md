@@ -11,13 +11,13 @@ Micronutriënten, 100% offline
 ## Keywords (99/100 chars)
 vitamine,mineralen,tekort,cronometer,myfitnesspal,calorieën,keto,veganistisch,macro,voeding,dagboek
 
-## Promotional Text (166/170 chars)
-v4.1: maaltijden overzichtelijker met één kaart per maaltijd, plus bovengrens-waarschuwingen: te veel natrium net zo snel spotten als te weinig ijzer. 7 dagen gratis.
+## Promotional Text (149/170 chars)
+v4.2: Nutrient Logger is nu 100% advertentievrij. Je voedings- en profielgegevens verlaten nooit je toestel, zelfs niet voor analyse. 7 dagen gratis.
 
 ## Description
 Nutrient Logger is de offline-first voedingstracker voor iedereen die wil weten wat er écht in hun eten zit — niet alleen calorieën en macro's, maar het volledige spectrum aan vitaminen, mineralen en aminozuren dat je lichaam nodig heeft.
 
-Anders dan cloudtrackers verlaat je voedingsdagboek nooit je toestel. En anders dan macro-gerichte apps splitst elke invoer 80+ voedingsstoffen uit, zodat je tekorten opmerkt voordat het echte gebreken worden.
+Anders dan cloudtrackers verlaat je voedingsdagboek nooit je toestel — geen account, geen cloud en geen advertenties. En anders dan macro-gerichte apps splitst elke invoer 80+ voedingsstoffen uit, zodat je tekorten opmerkt voordat het echte gebreken worden.
 
 Belangrijkste functies:
 
@@ -65,19 +65,16 @@ Nutrient Logger is perfect voor iedereen die voeding serieus neemt — of je nu 
 
 * Apple-gebruiksvoorwaarden: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.1)
-• Vernieuwde maaltijdschermen: één kaart per maaltijd, met alle maaltijden altijd zichtbaar zodat je je dag in één oogopslag ziet
-• Voeg eten rechtstreeks aan een maaltijd toe — datum en maaltijdmoment staan al voor je ingevuld
-• Nieuw: aandacht voor bovengrenzen — de kaart "Hoog deze week" markeert voedingsstoffen waar je mogelijk te veel van binnenkrijgt, naast de stoffen die je tekortkomt
-• Voortgangsbalken en de calorie-ring laten nu duidelijk zien wanneer je over een doel of grens heen gaat
-• Opgelost: natrium toonde altijd 0% van het dagdoel
+## What's New (v4.2)
+• Nutrient Logger is nu 100% advertentievrij
+• Je wekelijkse voedingscheck toont nu Voedingsbalansen, en je kiest zelf over hoeveel dagen die kijkt
 • Bugfixes en verfijningen
 
 ## Screenshots
 1. Elke vitamine en elk mineraal, niet alleen calorieën
 2. Ontdek tekorten voordat het problemen worden
 3. Je gegevens verlaten nooit je telefoon
-    100% offline. Geen account, geen cloud, geen advertenties tijdens het loggen
+    100% offline. Geen account, geen cloud, geen advertenties, nooit
 4. Bouw een gewoonte op die blijft
     Dagelijkse herinneringen en streaks houden je op koers
 5. Bewaak je hele gezondheid, niet alleen je bord

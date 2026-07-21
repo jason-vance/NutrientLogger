@@ -11,13 +11,13 @@ Mikronährstoffe, ganz offline
 ## Keywords (99/100 chars)
 vitamine,mineralstoffe,mangel,cronometer,myfitnesspal,kalorien,keto,vegan,makros,ernährung,tagebuch
 
-## Promotional Text (166/170 chars)
-v4.1: Mahlzeiten übersichtlicher mit einer Karte pro Mahlzeit, plus neue Obergrenzen-Warnungen – zu viel Natrium so leicht erkennen wie zu wenig Eisen. 7 Tage gratis.
+## Promotional Text (152/170 chars)
+v4.2: Nutrient Logger ist jetzt 100 % werbefrei. Deine Lebensmittel- und Profildaten verlassen nie dein Gerät, nicht einmal für Analysen. 7 Tage gratis.
 
 ## Description
 Nutrient Logger ist der Offline-First-Ernährungstracker für alle, die wissen wollen, was wirklich in ihrem Essen steckt — nicht nur Kalorien und Makros, sondern das volle Spektrum an Vitaminen, Mineralstoffen und Aminosäuren, die dein Körper braucht.
 
-Anders als Cloud-basierte Tracker verlässt dein Ernährungstagebuch nie dein Gerät. Und anders als Makro-fokussierte Apps schlüsselt jeder Eintrag über 80 Nährstoffe auf, damit du Lücken erkennst, bevor daraus ein Mangel wird.
+Anders als Cloud-basierte Tracker verlässt dein Ernährungstagebuch nie dein Gerät — kein Konto, keine Cloud, keine Werbung. Und anders als Makro-fokussierte Apps schlüsselt jeder Eintrag über 80 Nährstoffe auf, damit du Lücken erkennst, bevor daraus ein Mangel wird.
 
 Die wichtigsten Funktionen:
 
@@ -65,19 +65,16 @@ Nutrient Logger ist perfekt für alle, die Ernährung ernst nehmen — ob spezie
 
 * Apple-Nutzungsbedingungen: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.1)
-• Neu gestaltete Mahlzeiten-Ansicht: eine Karte pro Mahlzeit, alle Mahlzeiten immer sichtbar — dein Tag auf einen Blick
-• Lebensmittel direkt zu einer Mahlzeit hinzufügen — Datum und Mahlzeit sind schon vorausgefüllt
-• Neue Obergrenzen-Übersicht: die Karte „Diese Woche zu viel“ zeigt Nährstoffe, von denen du womöglich zu viel bekommst — direkt neben denen, die dir fehlen
-• Fortschrittsbalken und Kalorienring zeigen jetzt deutlich, wenn du ein Ziel oder eine Grenze überschreitest
-• Behoben: Natrium zeigte immer 0 % des Tagesziels an
+## What's New (v4.2)
+• Nutrient Logger ist jetzt 100 % werbefrei
+• Dein wöchentlicher Nährstoff-Check zeigt jetzt Nährstoff-Balancen, und du kannst wählen, wie viele Tage er zurückblickt
 • Fehlerbehebungen und Feinschliff
 
 ## Screenshots
 1. Jedes Vitamin, jeder Mineralstoff — nicht nur Kalorien
 2. Erkenne Mängel, bevor sie zum Problem werden
 3. Deine Daten verlassen nie dein Handy
-    100 % offline. Kein Konto, keine Cloud, keine Werbung beim Protokollieren
+    100 % offline. Kein Konto, keine Cloud, keine Werbung – nie
 4. Baue eine Gewohnheit auf, die bleibt
     Tägliche Erinnerungen und Serien halten dich dran
 5. Behalte deine ganze Gesundheit im Blick, nicht nur den Teller

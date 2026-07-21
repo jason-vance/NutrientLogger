@@ -11,13 +11,13 @@ Mikronäring, helt offline
 ## Keywords (99/100 chars)
 vitamin,mineral,brist,cronometer,myfitnesspal,kalorier,keto,vegan,makro,näring,kostdagbok,matdagbok
 
-## Promotional Text (167/170 chars)
-v4.1: tydligare måltider med ett kort per måltid, plus nya varningar för övre gränser – upptäck för mycket natrium lika lätt som för lite järn. Prova gratis i 7 dagar.
+## Promotional Text (143/170 chars)
+v4.2: Nutrient Logger är nu helt annonsfri. Dina mat- och profiluppgifter lämnar aldrig din enhet, inte ens för analys. Prova gratis i 7 dagar.
 
 ## Description
 Nutrient Logger är den offline-first-baserade näringstrackern för dig som vill veta vad din mat faktiskt innehåller — inte bara kalorier och makron, utan hela spektrumet av vitaminer, mineraler och aminosyror som kroppen behöver.
 
-Till skillnad från molnbaserade trackers lämnar din matdagbok aldrig din enhet. Och till skillnad från makrofokuserade appar bryter varje post ner 80+ näringsämnen så att du kan upptäcka luckor innan de blir brister.
+Till skillnad från molnbaserade trackers lämnar din matdagbok aldrig din enhet — inget konto, inget moln och inga annonser. Och till skillnad från makrofokuserade appar bryter varje post ner 80+ näringsämnen så att du kan upptäcka luckor innan de blir brister.
 
 Huvudfunktioner:
 
@@ -65,19 +65,16 @@ Nutrient Logger passar alla som tar näring på allvar — oavsett om du följer
 
 * Apples användarvillkor: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.1)
-• Omgjorda måltidsvyer: ett kort per måltid, med alla måltider alltid synliga så att du ser hela dagen i ett svep
-• Lägg till mat direkt i en måltid — datum och måltid är redan ifyllda åt dig
-• Ny koll på övre gränser: kortet "Högt denna vecka" flaggar näringsämnen du kan få i dig för mycket av, bredvid dem du får för lite av
-• Förloppsstaplar och kaloriringen visar nu tydligt när du passerat ett mål eller en gräns
-• Fixat: natrium visade alltid 0 % av dagsmålet
+## What's New (v4.2)
+• Nutrient Logger är nu helt annonsfri
+• Din veckovisa näringskoll lyfter nu fram Näringsbalanser, och du väljer själv hur många dagar den blickar tillbaka
 • Buggfixar och putsning
 
 ## Screenshots
 1. Varje vitamin och mineral, inte bara kalorier
 2. Upptäck brister innan de blir problem
 3. Din data lämnar aldrig din telefon
-    100 % offline. Inget konto, inget moln, inga annonser mitt i loggningen
+    100 % offline. Inget konto, inget moln, inga annonser, någonsin
 4. Bygg en vana som håller
     Dagliga påminnelser och sviter får dig att komma tillbaka
 5. Håll koll på hela din hälsa, inte bara tallriken
