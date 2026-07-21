@@ -17,36 +17,23 @@ struct PrivacyPolicyView: View {
                     .bold()
                     .multilineTextAlignment(.center)
                 Text("""
-    We take personal privacy very seriously. As a general rule we not collect your personal information unless you chose to provide that information to us. When you choose to provide us with your personal information, you are giving us your permission to use that information for the stated purposes listed in this privacy policy. If you choose not to provide us with that information, it might limit the features and services that you can use on this website.
+    Nutrient Logger does not require an account or sign-in, and does not operate any server that your food log is sent to or stored on. Everything you log - foods, meals, weight, goals - is stored locally in the app's data store on your device.
 
-    Generally, the information we request will be used to provide a website feature or service to you, such as commenting, support, or providing future content better tailored to your interests. A description of the intended use of that information, how that information is collected, security measures we take to protect that information, and how to grant or revoke consent for collection and use of that information will be fully described the ‘Privacy Notice’ section of this privacy policy.
+    We do not sell your personal information, and we do not share what you eat, your weight, or any other data you enter with advertisers or other third parties.
 
-    Some of the services on this website allow you to send us an email. We will use the information you provide, such as email address or phone number, only to respond to your inquiry. Keep in mind that email transmissions are not encrypted by default, so we suggest you do not send sensitive information such as Social Security numbers, credit card numbers, or bank account information via such contact forms.
+    Here is what does leave your device, and why:
 
-    If such information is required, it will be via a web page that clearly states the page and its transmission of information is secure and encrypted. All electronic messages received from visitors are deleted when no longer needed.
+    (1) Anonymous product analytics (Firebase Analytics). We log which screens and features are used - for example, that a food was logged, a barcode was scanned, or a premium feature was tapped - so we know what to improve. These events do not include the name of any food you ate, your weight, or other personal details, and are not linked to your identity.
 
-    We take the security of your personal information very seriously. We take many precautions to ensure that the information we collect is secure and inaccessible by anyone outside of our organization. These precautions include advanced access controls to limit access to that information to only internal personnel who require access to that information. We also use numerous security technologies to protect all data stored on our servers and related systems. Our security measures are regularly upgraded and tested to ensure they are effective.
+    (2) Barcode lookups (Open Food Facts). When you scan a packaged food's barcode, the barcode number is sent to the Open Food Facts public database to retrieve its nutrition information. No other information about you is sent with that request.
 
-    We take the following specific steps to protect your information:
+    (3) Ads (AdMob), for users on the free tier. Nutrient Logger shows ads from Google's AdMob network on the Dashboard and Search screens only - never while you're actively logging a food. We do not request permission to track you across other apps or websites (no App Tracking Transparency prompt), so ads are not personalized based on your activity elsewhere. Subscribing to Premium removes ads entirely.
 
-    (1) Use internal access controls so only limited personnel have access to your information.
-    (2) Anyone with access to user information is trained on all relevant security and compliance policies.
-    (3) Servers that store visitor information are regularly backed up to protect against loss.
-    (4) All information is secured through modern security technologies like secure socket layer (SSL), encryption, firewalls, and secure passwords.
+    (4) Apple Health, only if you turn it on. If you enable Health sync, your calorie, macro, and water data is written to Apple Health, and weight data can be imported from Health. This stays within Apple's Health system on your device and is governed by Apple's own Health privacy protections, not sent to us.
 
-    All access safeguards described above are in place to prevent unauthorized access by outsiders to information stored on or transmitted by our systems.
+    You can request details about what analytics data has been collected, or ask us to stop collecting it, by contacting us via the feedback option in the app.
 
-    You can do the following at any time by contacting us via the contact form available on our website:
-
-    (1) Ask for a list of personal information we have about you, if any.
-    (2) Request a change, correction, or deletion of your personal information.
-    (3) Request that we avoid collecting anything in the future (opt-out).
-
-    If you do not wish to have cookies stored on your machine, you have the option to turn cookies off in your browser. However, keep in mind that turning off cookies may impact how this website functions. Disabling browser cookies will also impact how other websites you visit store browser cookies as well.
-
-    Whenever we collect any sensitive information (such as social security numbers or credit card information), the information is encrypted and securely transmitted. You are able to confirm this by looking for the ‘lock’ icon in the browser address bar, and also confirm that the URL link starts with ‘https.’
-
-    If you believe at any point that we are not following this privacy policy as stated, please contact us immediately via the contact form available on our website.
+    If you believe at any point that we are not following this privacy policy as stated, please contact us via the feedback option in the app.
     """
                 )
             }

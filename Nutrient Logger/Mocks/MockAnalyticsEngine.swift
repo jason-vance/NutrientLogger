@@ -14,9 +14,7 @@ class MockAnalyticsEngine: AnalyticsEngine {
     var eventSearch: String { "eventSearch" }
     
     var parameterSearchTerm: String { "parameterSearchTerm" }
-    
-    var parameterValue: String { "parameterValue" }
-    
+
     func log(event: String) {
         loggedEvents.append(("\(event)", [:]))
         print("[Analytics] \(event)")

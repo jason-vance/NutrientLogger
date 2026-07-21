@@ -11,7 +11,6 @@ import UIKit
 protocol AnalyticsEngine {
     var eventSearch: String { get }
     var parameterSearchTerm: String { get }
-    var parameterValue: String { get }
 
     func log(event: String)
     func log(event: String, parameters: [String:Any])
@@ -134,13 +133,6 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     private let eventFoodLogFailed = "food_log_failed"
     private let eventFoodLogged = "food_logged"
-    private let parameterFoodFdcId = "food_fdc_id"
-    private let parameterFoodFdcType = "food_fdc_type"
-    private let parameterFoodName = "food_name"
-    private let parameterFoodAmount = "food_amount"
-    private let parameterFoodPortionName = "food_portion_name"
-    private let parameterFoodGramWeight = "food_gram_weight"
-    private let parameterFoodDateLogged = "food_date_logged"
 
     private let eventUnableToLeaveFeedback = "unable_to_leave_feedback"
     private let eventFeedbackLeft = "feedback_left"
@@ -187,16 +179,6 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
         analytics = analyticsEngine
     }
 
-    private func addFoodToDictionary(_ food: FoodItem, _ dict: inout [String:Any]) {
-        dict[parameterFoodFdcId] = food.fdcId
-        dict[parameterFoodFdcType] = food.fdcType
-        dict[parameterFoodName] = food.name
-        dict[parameterFoodAmount] = food.amount
-        dict[parameterFoodPortionName] = food.portionName
-        dict[parameterFoodGramWeight] = food.gramWeight
-        dict[parameterFoodDateLogged] = food.dateLogged
-    }
-
     private func addExceptionToDictionary(_ e: Error, _ dict: inout [String:Any]) {
         let msg = e.localizedDescription.prefix(maxLength)
         dict[parameterErrorMessage] = msg
@@ -207,9 +189,7 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     }
 
     public func foodLogged(_ food: FoodItem) {
-        var dict = [String:Any]()
-        addFoodToDictionary(food, &dict)
-        analytics.log(event: eventFoodLogged, parameters: dict)
+        analytics.log(event: eventFoodLogged)
         recordTimeToFirstLogIfNeeded()
     }
 
@@ -235,9 +215,7 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     }
 
     public func foodLogFailed(_ food: FoodItem) {
-        var dict = [String:Any]()
-        addFoodToDictionary(food, &dict)
-        analytics.log(event: eventFoodLogFailed, parameters: dict)
+        analytics.log(event: eventFoodLogFailed)
     }
 
     public func unableToLeaveFeedback() {
@@ -308,15 +286,11 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     }
 
     public func foodAddedToMeal(_ food: FoodItem) {
-        var dict = [String:Any]()
-        addFoodToDictionary(food, &dict)
-        analytics.log(event: eventFoodAddedToMeal, parameters: dict)
+        analytics.log(event: eventFoodAddedToMeal)
     }
 
     public func addFoodToMealFailed(_ food: FoodItem) {
-        var dict = [String:Any]()
-        addFoodToDictionary(food, &dict)
-        analytics.log(event: eventAddFoodtoMealFailed, parameters: dict)
+        analytics.log(event: eventAddFoodtoMealFailed)
     }
 
     public func mealRenamingFailed(_ e: Error) {
@@ -386,11 +360,11 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     }
 
     public func userSetGender(_ gender: Gender) {
-        analytics.log(event: eventUserSetGender, parameters: [ analytics.parameterValue: gender.rawValue ])
+        analytics.log(event: eventUserSetGender)
     }
 
     public func userSetBirthdate(_ birthdate: Date) {
-        analytics.log(event: eventUserSetBirthdate, parameters: [ analytics.parameterValue: birthdate ])
+        analytics.log(event: eventUserSetBirthdate)
     }
 
     // MARK: - Subscription Funnel

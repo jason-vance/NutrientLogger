@@ -13,9 +13,7 @@ class FirebaseAnalytics: AnalyticsEngine {
     public var eventSearch: String { AnalyticsEventSearch }
     
     public var parameterSearchTerm: String { AnalyticsParameterSearchTerm }
-    
-    public var parameterValue: String { AnalyticsParameterValue }
-    
+
     public func log(event: String) {
         Analytics.logEvent(event, parameters: nil)
     }
