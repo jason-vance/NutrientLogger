@@ -332,6 +332,5 @@ private struct ConsumedMealCard: View {
         ConsumedMealsView(date: .today)
     }
     .modelContainer(modelContainer)
-    .environmentObject(AdProviderFactory.forDev)
     .environmentObject(CustomFoodDatabase())
 }

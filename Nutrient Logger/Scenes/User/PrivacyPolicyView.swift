@@ -27,9 +27,9 @@ struct PrivacyPolicyView: View {
 
     (2) Barcode lookups (Open Food Facts). When you scan a packaged food's barcode, the barcode number is sent to the Open Food Facts public database to retrieve its nutrition information. No other information about you is sent with that request.
 
-    (3) Ads (AdMob), for users on the free tier. Nutrient Logger shows ads from Google's AdMob network on the Dashboard and Search screens only - never while you're actively logging a food. We do not request permission to track you across other apps or websites (no App Tracking Transparency prompt), so ads are not personalized based on your activity elsewhere. Subscribing to Premium removes ads entirely.
+    (3) Apple Health, only if you turn it on. If you enable Health sync, your calorie, macro, and water data is written to Apple Health, and weight data can be imported from Health. This stays within Apple's Health system on your device and is governed by Apple's own Health privacy protections, not sent to us.
 
-    (4) Apple Health, only if you turn it on. If you enable Health sync, your calorie, macro, and water data is written to Apple Health, and weight data can be imported from Health. This stays within Apple's Health system on your device and is governed by Apple's own Health privacy protections, not sent to us.
+    Nutrient Logger does not show ads. Free-tier users occasionally see a prompt suggesting Premium in a handful of screens throughout the app. It's not served by any ad network, and no information about you is sent anywhere to show it.
 
     You can request details about what analytics data has been collected, or ask us to stop collecting it, by contacting us via the feedback option in the app.
 

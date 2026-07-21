@@ -31,10 +31,7 @@ struct WeightTrackingView: View {
 
     @Environment(\.modelContext) private var modelContext
 
-    @EnvironmentObject private var adProviderFactory: AdProviderFactory
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
-    @State private var adProvider: AdProvider?
-    @State private var ad: Ad?
 
     @Inject private var engagementAnalytics: EngagementAnalytics
     @Inject private var userService: UserService
@@ -322,7 +319,7 @@ struct WeightTrackingView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 2 * .spacingDefault) {
-                NativeAdListRow(ad: $ad, size: .small)
+                PremiumCTARow(trigger: .weightGoal, size: .small)
                 StreakCardView(count: streakCount, unit: "Week", milestones: Self.streakMilestones, onTap: { showStreakStats = true })
                 CurrentValues()
                 let chartMetrics = visibleMetrics.filter(\.hasChart)
@@ -361,7 +358,6 @@ struct WeightTrackingView: View {
                 milestones: Self.streakMilestones
             )
         }
-        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
     }
 
     @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {

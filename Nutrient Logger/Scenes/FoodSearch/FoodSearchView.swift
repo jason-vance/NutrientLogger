@@ -129,10 +129,6 @@ struct FoodSearchView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.isSearching) private var isSearching
     
-    @EnvironmentObject private var adProviderFactory: AdProviderFactory
-    @State private var adProvider: AdProvider?
-    @State private var ad: Ad?
-
     @StateObject private var reviewPrompter = ReviewPrompter()
     @State private var searchText: String = ""
     @State private var hasSearched: Bool = false
@@ -451,7 +447,7 @@ struct FoodSearchView: View {
     
     var body: some View {
         List {
-            NativeAdListRow(ad: $ad, size: .medium)
+            PremiumCTARow(trigger: .smartPaywall, size: .medium)
             if searchResults.isEmpty && hasSearched && !isLoading {
                 ContentUnavailableView(
                     "\"\(searchText)\"",
@@ -484,7 +480,6 @@ struct FoodSearchView: View {
             }
         }
         .listDefaultModifiers()
-        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .animation(.snappy, value: searchText)
         .animation(.snappy, value: searchResults)
         .searchable(
@@ -795,7 +790,6 @@ struct FoodSearchView: View {
     NavigationStack {
         FoodSearchView(onFoodSaved: FoodSaver.mock.saveFoodItem)
     }
-    .environmentObject(AdProviderFactory.forDev)
     .environmentObject(CustomFoodDatabase())
 }
 

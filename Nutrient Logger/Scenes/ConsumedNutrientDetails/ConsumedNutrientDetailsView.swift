@@ -19,10 +19,6 @@ struct ConsumedNutrientDetailsView: View {
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.colorScheme) private var colorScheme
     
-    @EnvironmentObject private var adProviderFactory: AdProviderFactory
-    @State private var adProvider: AdProvider?
-    @State private var ad: Ad?
-    
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
 
     @Inject private var nutrientRdiLibrary: NutrientRdiLibrary
@@ -137,7 +133,7 @@ struct ConsumedNutrientDetailsView: View {
     
     var body: some View {
         List {
-            NativeAdListRow(ad: $ad, size: .small)
+            PremiumCTARow(trigger: .trendCharts, size: .small)
             AmountRow()
             RecommendedAmountRow()
             UpperLimitRow()
@@ -146,7 +142,6 @@ struct ConsumedNutrientDetailsView: View {
             FoodsSection()
         }
         .listDefaultModifiers()
-        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
@@ -373,6 +368,5 @@ struct ConsumedNutrientDetailsView: View {
             nutrientFoodPairs: nutrientFoodPairs
         )
     }
-    .environmentObject(AdProviderFactory.forDev)
     .environmentObject(SubscriptionManager(isForScreenshots: true))
 }

@@ -72,26 +72,4 @@ class MockNutrientLoggerAnalytics: NutrientLoggerAnalytics {
     
     func couldntAccessNutrientLibrary() {
     }
-    
-    func userClickedRemoveAds() {
-    }
-    
-    func genericLoadIapException(_ error: any Error) {
-    }
-    
-    func noIapProductsFound(_ error: any Error) {
-    }
-    
-    func genericIapPurchaseException(_ error: any Error) {
-
-    }
-    
-    func genericIapRestoreException(_ error: any Error) {
-    }
-    
-    func removeAdsPurchased() {
-    }
-    
-    func removeAdsRestored() {
-    }
 }

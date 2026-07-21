@@ -13,10 +13,6 @@ struct NutrientLibraryDetailView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.modelContext) var modelContext
     
-    @EnvironmentObject private var adProviderFactory: AdProviderFactory
-    @State private var adProvider: AdProvider?
-    @State private var ad: Ad?
-
     let nutrient: Nutrient
     
     @Inject private var remoteDatabase: RemoteDatabase
@@ -51,7 +47,7 @@ struct NutrientLibraryDetailView: View {
     
     var body: some View {
         List {
-            NativeAdListRow(ad: $ad, size: .medium)
+            PremiumCTARow(trigger: .smartPaywall, size: .medium)
             Section(header: Text("Foods containing \(nutrient.name)")) {
                 ForEach(pairs) { pair in
                     FoodRow(pair)
@@ -61,7 +57,6 @@ struct NutrientLibraryDetailView: View {
         .listDefaultModifiers()
         .navigationBarTitleDisplayMode(.inline)
         .animation(.snappy, value: pairs)
-        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
         .task { await fetchFoodItems() }
@@ -144,5 +139,4 @@ struct NutrientLibraryDetailView: View {
             unitName: "g"
         ))
     }
-    .environmentObject(AdProviderFactory.forDev)
 }

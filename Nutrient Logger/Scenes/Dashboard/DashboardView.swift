@@ -16,11 +16,8 @@ struct DashboardView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.modelContext) private var modelContext
 
-    @EnvironmentObject private var adProviderFactory: AdProviderFactory
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
     @EnvironmentObject private var dataController: DataController
-    @State private var adProvider: AdProvider?
-    @State private var ad: Ad?
     @State private var showSearch: Bool = false
 
     @Inject private var remoteDatabase: RemoteDatabase
@@ -171,7 +168,7 @@ struct DashboardView: View {
     var body: some View {
         ScrollView {
             VStack {
-                NativeAdListRow(ad: $ad, size: .small)
+                PremiumCTARow(trigger: .smartPaywall, size: .small)
                     .padding(.horizontal)
                 if isInDiscountWindow && !subscriptionManager.isSubscribed {
                     LaunchDiscountBanner()
@@ -202,7 +199,6 @@ struct DashboardView: View {
                 }
             })
         }
-        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .fullScreenCover(isPresented: $showAutoMarketingView) {
             MarketingView(trigger: .smartPaywall)
         }
@@ -339,6 +335,5 @@ struct DashboardView: View {
     NavigationStack {
         DashboardView()
     }
-    .environmentObject(AdProviderFactory.forDev)
     .environmentObject(SubscriptionManager(isForScreenshots: true))
 }

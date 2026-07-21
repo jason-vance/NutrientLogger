@@ -39,7 +39,6 @@ struct Nutrient_LoggerApp: App {
                 }
         }
         .modelContainer(DataController.shared.container)
-        .environmentObject(AdProviderFactory.forProd)
         .environmentObject(SubscriptionManager(isForScreenshots: DataController.isScreenshots))
         .environmentObject(DataController.shared)
         .environmentObject(CustomFoodDatabase.shared)

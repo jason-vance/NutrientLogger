@@ -284,6 +284,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 - [x] Add Open Food Facts attribution
 - [x] Out of proportion nutrients (electrolytes, others?) — "Nutrient Balances" on the weekly watch card, customizable + user-defined ratios
 - [x] Too high nutrients should be averaged like too low
+- [x] Remove ads. Replace with "go premium" style CTAs, tailored to the specific situation in which they are shown if applicable.
 
 ---
 

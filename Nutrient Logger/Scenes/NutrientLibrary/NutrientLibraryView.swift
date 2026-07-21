@@ -11,10 +11,6 @@ struct NutrientLibraryView: View {
     
     @Environment(\.presentationMode) private var presentationMode
     
-    @EnvironmentObject private var adProviderFactory: AdProviderFactory
-    @State private var adProvider: AdProvider?
-    @State private var ad: Ad?
-    
     @Inject private var remoteDatabase: RemoteDatabase
     
     @State private var searchText: String = ""
@@ -49,7 +45,7 @@ struct NutrientLibraryView: View {
     
     var body: some View {
         List {
-            NativeAdListRow(ad: $ad, size: .medium)
+            PremiumCTARow(trigger: .smartPaywall, size: .medium)
             Section {
                 ForEach(displayNutrients) { nutrient in
                     NutrientRow(nutrient)
@@ -63,7 +59,6 @@ struct NutrientLibraryView: View {
             }
         }
         .listDefaultModifiers()
-        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .searchable(
             text: $searchText,
             prompt: Text("Vitamin A, Protein, DHA...")
@@ -114,5 +109,4 @@ struct NutrientLibraryView: View {
     NavigationStack {
         NutrientLibraryView()
     }
-    .environmentObject(AdProviderFactory.forDev)
 }

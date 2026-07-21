@@ -11,10 +11,7 @@ struct CustomFoodsLibraryView: View {
 
     @Environment(\.presentationMode) private var presentationMode
 
-    @EnvironmentObject private var adProviderFactory: AdProviderFactory
     @EnvironmentObject private var customFoodDatabase: CustomFoodDatabase
-    @State private var adProvider: AdProvider?
-    @State private var ad: Ad?
 
     private var displayFoods: [CustomFood] {
         customFoodDatabase.foods.sorted { $0.name < $1.name }
@@ -28,7 +25,7 @@ struct CustomFoodsLibraryView: View {
 
     var body: some View {
         List {
-            NativeAdListRow(ad: $ad, size: .medium)
+            PremiumCTARow(trigger: .smartPaywall, size: .medium)
             if displayFoods.isEmpty {
                 ContentUnavailableView(
                     "No Custom Foods... Yet!",
@@ -53,7 +50,6 @@ struct CustomFoodsLibraryView: View {
             SpaceForFab()
         }
         .listDefaultModifiers()
-        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .animation(.snappy, value: customFoodDatabase.foods)
         .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
@@ -105,6 +101,5 @@ struct CustomFoodsLibraryView: View {
     NavigationStack {
         CustomFoodsLibraryView()
     }
-    .environmentObject(AdProviderFactory.forDev)
     .environmentObject(CustomFoodDatabase())
 }

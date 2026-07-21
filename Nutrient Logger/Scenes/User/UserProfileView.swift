@@ -15,10 +15,7 @@ struct UserProfileView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.requestReview) private var requestReview
 
-    @EnvironmentObject private var adProviderFactory: AdProviderFactory
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
-    @State private var adProvider: AdProvider?
-    @State private var ad: Ad?
 
     @Inject private var userService: UserService
     @Inject private var engagementAnalytics: EngagementAnalytics
@@ -118,7 +115,7 @@ struct UserProfileView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 2 * .spacingDefault) {
-                NativeAdListRow(ad: $ad, size: .small)
+                PremiumCTARow(trigger: .profileUpsell, size: .small)
                 ProfileCard()
                 SubscriptionCard()
                 AchievementsCard()
@@ -134,7 +131,6 @@ struct UserProfileView: View {
         .navigationBarTitle("Profile")
         .onAppear { fetchUser() }
         .onChange(of: user) { saveUser() }
-        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .fullScreenCover(isPresented: $showMarketingView) {
             MarketingView(trigger: marketingTrigger)
         }
@@ -590,6 +586,5 @@ struct UserProfileView: View {
     NavigationStack {
         UserProfileView()
     }
-    .environmentObject(AdProviderFactory.forDev)
     .environmentObject(SubscriptionManager(isForScreenshots: true))
 }

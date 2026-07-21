@@ -33,10 +33,6 @@ struct FoodDetailsView: View {
     @EnvironmentObject private var dataController: DataController
     @EnvironmentObject private var customFoodDatabase: CustomFoodDatabase
     
-    @EnvironmentObject private var adProviderFactory: AdProviderFactory
-    @State private var adProvider: AdProvider?
-    @State private var ad: Ad?
-
     @State private var prototypeFood: FoodItem?
     @State private var food: FoodItem?
     
@@ -248,7 +244,7 @@ struct FoodDetailsView: View {
     
     var body: some View {
         List {
-            NativeAdListRow(ad: $ad, size: .small)
+            PremiumCTARow(trigger: .smartPaywall, size: .small)
             FoodName()
             LogDetailsCard()
 
@@ -269,7 +265,6 @@ struct FoodDetailsView: View {
         }
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
         .listDefaultModifiers()
-        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .environment(\.defaultMinListRowHeight, 1)
         .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
@@ -515,6 +510,5 @@ struct FoodDetailsView: View {
             onFoodSaved: { _, _ in }
         )
     }
-    .environmentObject(AdProviderFactory.forDev)
     .environmentObject(CustomFoodDatabase())
 }

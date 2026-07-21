@@ -23,7 +23,6 @@ enum PaywallTrigger: String {
     case smartPaywall = "smart_paywall"
     case deepLink = "deep_link"
     case micronutrientGoals = "micronutrient_goals"
-    case removeAds = "remove_ads"
     case trendCharts = "trend_charts"
     case healthSync = "health_sync"
     case weightGoal = "weight_goal"
@@ -119,13 +118,6 @@ protocol NutrientLoggerAnalytics {
     func errorDeletingFood(_ error: Error)
     func errorLoadingFoodPortions(_ error: Error)
     func couldntAccessNutrientLibrary()
-    func userClickedRemoveAds()
-    func genericLoadIapException(_ error: Error)
-    func noIapProductsFound(_ error: Error)
-    func genericIapPurchaseException(_ error: Error)
-    func genericIapRestoreException(_ error: Error)
-    func removeAdsPurchased()
-    func removeAdsRestored()
 }
 
 class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMealsAnalytics, UserMealAnalytics, ConsumedFoodSaverAnalytics, SubscriptionAnalytics, EngagementAnalytics, PremiumAnalytics {
@@ -161,14 +153,6 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     private let eventMealDeletingFailed = "event_meal_deleting_failed"
     private let eventFoodDeletedFromMeal = "event_food_deleted_from_meal"
     private let eventDeletingFoodFromMealFailed = "event_deleting_food_from_meal_failed"
-
-    private let eventUserClickedRemoveAds = "event_user_clicked_remove_ads"
-    private let eventGenericLoadIapException = "event_generic_load_iap_exception"
-    private let eventNoIapProductsFound = "event_no_iap_products_found"
-    private let eventGenericIapPurchaseException = "event_generic_iap_purchase_exception"
-    private let eventGenericIapRestoreException = "event_generic_iap_restore_exception"
-    private let eventRemoveAdsPurchased = "event_remove_ads_purchased"
-    private let eventRemoveAdsRestored = "event_remove_ads_restored"
 
     private let eventUserSetGender = "event_user_set_gender"
     private let eventUserSetBirthdate = "event_user_set_birthdate"
@@ -321,42 +305,6 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
         var dict = [String:Any]()
         addExceptionToDictionary(e, &dict)
         analytics.log(event: eventDeletingFoodFromMealFailed, parameters: dict)
-    }
-
-    public func userClickedRemoveAds() {
-        analytics.log(event: eventUserClickedRemoveAds)
-    }
-
-    public func genericLoadIapException(_ e: Error) {
-        var dict = [String:Any]()
-        addExceptionToDictionary(e, &dict)
-        analytics.log(event: eventGenericLoadIapException, parameters: dict)
-    }
-
-    public func noIapProductsFound(_ e: Error) {
-        var dict = [String:Any]()
-        addExceptionToDictionary(e, &dict)
-        analytics.log(event: eventNoIapProductsFound, parameters: dict)
-    }
-
-    public func genericIapPurchaseException(_ e: Error) {
-        var dict = [String:Any]()
-        addExceptionToDictionary(e, &dict)
-        analytics.log(event: eventGenericIapPurchaseException, parameters: dict)
-    }
-
-    public func genericIapRestoreException(_ e: Error) {
-        var dict = [String:Any]()
-        addExceptionToDictionary(e, &dict)
-        analytics.log(event: eventGenericIapRestoreException, parameters: dict)
-    }
-
-    public func removeAdsPurchased() {
-        analytics.log(event: eventRemoveAdsPurchased)
-    }
-
-    public func removeAdsRestored() {
-        analytics.log(event: eventRemoveAdsRestored)
     }
 
     public func userSetGender(_ gender: Gender) {

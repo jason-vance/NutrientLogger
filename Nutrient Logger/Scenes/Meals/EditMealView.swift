@@ -14,10 +14,6 @@ struct EditMealView: View {
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.modelContext) private var modelContext
     
-    @EnvironmentObject private var adProviderFactory: AdProviderFactory
-    @State private var adProvider: AdProvider?
-    @State private var ad: Ad?
-
     @Inject var analytics: UserMealsAnalytics
     
     private let meal: Meal?
@@ -79,7 +75,7 @@ struct EditMealView: View {
     
     var body: some View {
         List {
-            NativeAdListRow(ad: $ad, size: .small)
+            PremiumCTARow(trigger: .smartPaywall, size: .small)
             NameField()
             FoodsSection()
         }
@@ -104,7 +100,6 @@ struct EditMealView: View {
             }
         }
         .onAppear { prepopulateMeal() }
-        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .confirmationDialog(
             "Discard Changes?\n\nAre you sure you want to leave? Any unsaved changes will be lost.",
             isPresented: $showDiscardDialog,
@@ -214,5 +209,4 @@ struct EditMealView: View {
     NavigationStack {
         EditMealView()
     }
-    .environmentObject(AdProviderFactory.forDev)
 }

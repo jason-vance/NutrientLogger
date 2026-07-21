@@ -14,10 +14,6 @@ struct LogMealView: View {
     @Environment(\.modelContext) private var modelContext
     
     @EnvironmentObject private var dataController: DataController
-    
-    @EnvironmentObject private var adProviderFactory: AdProviderFactory
-    @State private var adProvider: AdProvider?
-    @State private var ad: Ad?
 
     let meal: Meal
     
@@ -171,7 +167,7 @@ struct LogMealView: View {
     
     var body: some View {
         List {
-            NativeAdListRow(ad: $ad, size: .small)
+            PremiumCTARow(trigger: .smartPaywall, size: .small)
             MealName()
             DateField()
             MealTimeField()
@@ -190,7 +186,6 @@ struct LogMealView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
         .onChange(of: portionAmountValue) { applyPortions() }
-        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .alert(alertMessage, isPresented: $showAlert) { }
         .onAppear { fetchRemoteFoodsAndPortions() }
     }
@@ -334,5 +329,4 @@ struct LogMealView: View {
     NavigationStack {
         LogMealView(meal: .sample)
     }
-    .environmentObject(AdProviderFactory.forDev)
 }

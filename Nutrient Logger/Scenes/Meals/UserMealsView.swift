@@ -14,10 +14,6 @@ struct UserMealsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.presentationMode) private var presentationMode
     
-    @EnvironmentObject private var adProviderFactory: AdProviderFactory
-    @State private var adProvider: AdProvider?
-    @State private var ad: Ad?
-
     @Inject private var analytics: UserMealsAnalytics
 
     @State private var isLoading: Bool = true
@@ -39,7 +35,7 @@ struct UserMealsView: View {
     
     var body: some View {
         List {
-            NativeAdListRow(ad: $ad, size: .medium)
+            PremiumCTARow(trigger: .smartPaywall, size: .medium)
             if meals.isEmpty {
                 ContentUnavailableView(
                     "No Meals... Yet!",
@@ -64,7 +60,6 @@ struct UserMealsView: View {
             SpaceForFab()
         }
         .listDefaultModifiers()
-        .adContainer(factory: adProviderFactory, adProvider: $adProvider, ad: $ad)
         .animation(.snappy, value: meals)
         .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
@@ -118,5 +113,4 @@ struct UserMealsView: View {
     NavigationStack {
         UserMealsView()
     }
-    .environmentObject(AdProviderFactory.forDev)
 }
