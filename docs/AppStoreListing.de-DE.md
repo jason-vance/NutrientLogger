@@ -74,7 +74,7 @@ Nutrient Logger ist perfekt für alle, die Ernährung ernst nehmen — ob spezie
 1. Jedes Vitamin, jeder Mineralstoff — nicht nur Kalorien
 2. Erkenne Mängel, bevor sie zum Problem werden
 3. Deine Daten verlassen nie dein Handy
-    100 % offline. Kein Konto, keine Cloud, keine Werbung – nie
+    100 % offline. Kein Konto, keine Cloud, keine Werbung - nie
 4. Baue eine Gewohnheit auf, die bleibt
     Tägliche Erinnerungen und Serien halten dich dran
 5. Behalte deine ganze Gesundheit im Blick, nicht nur den Teller
