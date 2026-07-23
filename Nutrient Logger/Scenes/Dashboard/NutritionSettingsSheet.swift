@@ -28,18 +28,22 @@ struct NutritionSettingsSheet: View {
     // Vitamins
     @AppStorage("nutrientCustomize_vitamins_order") private var vitaminsOrderRaw: String = ""
     @AppStorage("nutrientCustomize_vitamins_hidden") private var vitaminsHiddenRaw: String = ""
+    @AppStorage(CustomizableNutrientGroup.vitamins.visibleCountStorageKey) private var vitaminsVisibleCount: Int = CustomizableNutrientGroup.defaultVisibleCount
 
     // Minerals
     @AppStorage("nutrientCustomize_minerals_order") private var mineralsOrderRaw: String = ""
     @AppStorage("nutrientCustomize_minerals_hidden") private var mineralsHiddenRaw: String = ""
+    @AppStorage(CustomizableNutrientGroup.minerals.visibleCountStorageKey) private var mineralsVisibleCount: Int = CustomizableNutrientGroup.defaultVisibleCount
 
     // Lipids
     @AppStorage("nutrientCustomize_lipids_order") private var lipidsOrderRaw: String = ""
     @AppStorage("nutrientCustomize_lipids_hidden") private var lipidsHiddenRaw: String = ""
+    @AppStorage(CustomizableNutrientGroup.lipids.visibleCountStorageKey) private var lipidsVisibleCount: Int = CustomizableNutrientGroup.defaultVisibleCount
 
     // Amino Acids
     @AppStorage("nutrientCustomize_aminoAcids_order") private var aminoAcidsOrderRaw: String = ""
     @AppStorage("nutrientCustomize_aminoAcids_hidden") private var aminoAcidsHiddenRaw: String = ""
+    @AppStorage(CustomizableNutrientGroup.aminoAcids.visibleCountStorageKey) private var aminoAcidsVisibleCount: Int = CustomizableNutrientGroup.defaultVisibleCount
 
     @State private var showMicronutrientGoals = false
     @State private var showNutrientBalances = false
@@ -129,6 +133,7 @@ struct NutritionSettingsSheet: View {
                     title: "Vitamins",
                     items: $vitamins,
                     hiddenRaw: $vitaminsHiddenRaw,
+                    visibleCount: $vitaminsVisibleCount,
                     onMove: { from, to in
                         vitamins.move(fromOffsets: from, toOffset: to)
                         vitaminsOrderRaw = vitamins.joined(separator: ",")
@@ -138,6 +143,7 @@ struct NutritionSettingsSheet: View {
                     title: "Minerals",
                     items: $minerals,
                     hiddenRaw: $mineralsHiddenRaw,
+                    visibleCount: $mineralsVisibleCount,
                     onMove: { from, to in
                         minerals.move(fromOffsets: from, toOffset: to)
                         mineralsOrderRaw = minerals.joined(separator: ",")
@@ -147,6 +153,7 @@ struct NutritionSettingsSheet: View {
                     title: "Lipids",
                     items: $lipids,
                     hiddenRaw: $lipidsHiddenRaw,
+                    visibleCount: $lipidsVisibleCount,
                     onMove: { from, to in
                         lipids.move(fromOffsets: from, toOffset: to)
                         lipidsOrderRaw = lipids.joined(separator: ",")
@@ -156,6 +163,7 @@ struct NutritionSettingsSheet: View {
                     title: "Amino Acids",
                     items: $aminoAcids,
                     hiddenRaw: $aminoAcidsHiddenRaw,
+                    visibleCount: $aminoAcidsVisibleCount,
                     onMove: { from, to in
                         aminoAcids.move(fromOffsets: from, toOffset: to)
                         aminoAcidsOrderRaw = aminoAcids.joined(separator: ",")
@@ -398,9 +406,22 @@ struct NutritionSettingsSheet: View {
         title: String,
         items: Binding<[String]>,
         hiddenRaw: Binding<String>,
+        visibleCount: Binding<Int>,
         onMove: @escaping (IndexSet, Int) -> Void
     ) -> some View {
         Section {
+            Stepper(
+                value: visibleCount,
+                in: 1...max(CustomizableNutrientGroup.defaultVisibleCount, items.wrappedValue.count)
+            ) {
+                HStack {
+                    Text("Show before \u{201C}More\u{201D}")
+                    Spacer()
+                    Text("\(visibleCount.wrappedValue)")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .moveDisabled(true)
             ForEach(items.wrappedValue, id: \.self) { nutrientId in
                 HStack {
                     Toggle("", isOn: enabledBinding(for: nutrientId, hiddenRaw: hiddenRaw))
