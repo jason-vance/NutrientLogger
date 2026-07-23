@@ -55,6 +55,7 @@ enum NotificationPermissionResult: String {
 protocol EngagementAnalytics {
     func screenViewed(screenName: String)
     func onboardingStepViewed(stepName: String, stepIndex: Int)
+    func onboardingPersonalizationSelected(diet: String, concern: String)
     func onboardingCompleted()
     func customFoodCreated()
     func customFoodEdited()
@@ -392,14 +393,24 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     }
 
     private let eventOnboardingStepViewed = "onboarding_step_viewed"
+    private let eventOnboardingPersonalizationSelected = "onboarding_personalization_selected"
     private let eventOnboardingCompleted = "onboarding_completed"
     private let parameterStepName = "step_name"
     private let parameterStepIndex = "step_index"
+    private let parameterDiet = "diet"
+    private let parameterConcern = "concern"
 
     public func onboardingStepViewed(stepName: String, stepIndex: Int) {
         analytics.log(event: eventOnboardingStepViewed, parameters: [
             parameterStepName: stepName,
             parameterStepIndex: stepIndex,
+        ])
+    }
+
+    public func onboardingPersonalizationSelected(diet: String, concern: String) {
+        analytics.log(event: eventOnboardingPersonalizationSelected, parameters: [
+            parameterDiet: diet,
+            parameterConcern: concern,
         ])
     }
 
