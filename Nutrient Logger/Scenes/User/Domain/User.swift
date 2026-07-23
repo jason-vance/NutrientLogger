@@ -20,10 +20,16 @@ struct User: Codable {
     public var waterGoalGrams: Double? = nil
     public var micronutrientGoals: [String: Double] = [:]
 
+    /// The diet and focus the user picked during onboarding personalization. Persisted for reuse
+    /// (deficiency insights, future diet "modes") beyond the one-time nutrient reordering they drive.
+    public var dietPreset: NutritionDietPreset? = nil
+    public var nutritionConcern: NutritionConcern? = nil
+
     enum CodingKeys: String, CodingKey {
         case gender, birthdate, heightCm
         case calorieGoal, carbsGoalGrams, fatGoalGrams, proteinGoalGrams, waterGoalGrams
         case micronutrientGoals
+        case dietPreset, nutritionConcern
     }
 
     init(
@@ -35,7 +41,9 @@ struct User: Codable {
         fatGoalGrams: Double? = nil,
         proteinGoalGrams: Double? = nil,
         waterGoalGrams: Double? = nil,
-        micronutrientGoals: [String: Double] = [:]
+        micronutrientGoals: [String: Double] = [:],
+        dietPreset: NutritionDietPreset? = nil,
+        nutritionConcern: NutritionConcern? = nil
     ) {
         self.gender = gender
         self.birthdate = birthdate
@@ -46,6 +54,8 @@ struct User: Codable {
         self.proteinGoalGrams = proteinGoalGrams
         self.waterGoalGrams = waterGoalGrams
         self.micronutrientGoals = micronutrientGoals
+        self.dietPreset = dietPreset
+        self.nutritionConcern = nutritionConcern
     }
 
     init(from decoder: Decoder) throws {
@@ -59,6 +69,8 @@ struct User: Codable {
         proteinGoalGrams = try container.decodeIfPresent(Double.self, forKey: .proteinGoalGrams)
         waterGoalGrams = try container.decodeIfPresent(Double.self, forKey: .waterGoalGrams)
         micronutrientGoals = try container.decodeIfPresent([String: Double].self, forKey: .micronutrientGoals) ?? [:]
+        dietPreset = try container.decodeIfPresent(NutritionDietPreset.self, forKey: .dietPreset)
+        nutritionConcern = try container.decodeIfPresent(NutritionConcern.self, forKey: .nutritionConcern)
     }
 
     public func getUserAge() -> TimeInterval? {

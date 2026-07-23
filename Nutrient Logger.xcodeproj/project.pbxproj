@@ -198,6 +198,7 @@
 				Scenes/NutrientTrends/NutrientTrendDataProvider.swift,
 				Scenes/Onboarding/Domain/NutritionConcern.swift,
 				Scenes/Onboarding/Domain/NutritionDietPreset.swift,
+				Scenes/Onboarding/Domain/NutritionPersonalizationApplier.swift,
 				Scenes/Onboarding/Domain/NutritionPersonalizationPlan.swift,
 				Scenes/User/Domain/Gender.swift,
 				Scenes/User/Domain/NutrientGoalDefaults.swift,
