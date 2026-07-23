@@ -41,11 +41,17 @@ class BundledFdcDatabase: RemoteDatabase {
 
     private static func transferDbFileIfNecessary(_ dbName: String) async throws {
         _ = try await Task.init(priority: .userInitiated) {
-            let toURL = BundledFdcDatabase.dbDir.appendingPathComponent(dbName)
+            let dir = BundledFdcDatabase.dbDir
+            let toURL = dir.appendingPathComponent(dbName)
             if (FileManager().fileExists(atPath: toURL.path)) {
                 return
             }
-            
+
+            // On a fresh install the Application Support directory doesn't exist yet, and
+            // copyItem won't create intermediate directories — so create it first. Without this
+            // the copy fails with a misleading "file doesn't exist" (ENOENT on the destination).
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+
             let fromURL = Bundle.main.url(forResource: dbName, withExtension: nil)
             try FileManager().copyItem(at: fromURL!, to: toURL)
         }.value
