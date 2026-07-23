@@ -48,6 +48,8 @@ struct DashboardMineralsSection: View {
 
     let aggregator: NutrientDataAggregator
 
+    var userOverride: User?
+
     private var effectiveOrder: [String] {
         if orderRaw.isEmpty { return Self.orderedWhitelist }
         return orderRaw.split(separator: ",").map(String.init)
@@ -65,7 +67,8 @@ struct DashboardMineralsSection: View {
             groupKey: mineralsKey,
             headerText: "Minerals",
             aggregator: aggregator,
-            previewCount: visibleCount
+            previewCount: visibleCount,
+            userOverride: userOverride
         )
     }
 }

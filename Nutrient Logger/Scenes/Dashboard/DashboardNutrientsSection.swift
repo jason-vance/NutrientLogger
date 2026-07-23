@@ -25,6 +25,11 @@ struct DashboardNutrientsSection: View {
     /// nutrient stays visible above the fold.
     var previewCount: Int = 3
 
+    /// When set, RDIs/percentages resolve against this user instead of the signed-in one. Used only
+    /// by the onboarding demo dashboard so it can show percentages against a reference adult without
+    /// touching (or requiring) the real user's profile.
+    var userOverride: User?
+
     @State private var showAll: Bool = false
 
     private var otherNutrientIds: [String] {
@@ -54,7 +59,7 @@ struct DashboardNutrientsSection: View {
         ColorPaletteService.getColorPaletteFor(number: groupKey)
     }
 
-    private var user: User { userService.currentUser }
+    private var user: User { userOverride ?? userService.currentUser }
 
     private var hasAny: Bool {
         !orderedWhitelist.isEmpty || !otherNutrientIds.isEmpty

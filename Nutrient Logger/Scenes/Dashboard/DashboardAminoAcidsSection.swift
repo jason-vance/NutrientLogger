@@ -44,6 +44,8 @@ struct DashboardAminoAcidsSection: View {
 
     let aggregator: NutrientDataAggregator
 
+    var userOverride: User?
+
     private var effectiveOrder: [String] {
         if orderRaw.isEmpty { return Self.orderedWhitelist }
         return orderRaw.split(separator: ",").map(String.init)
@@ -60,7 +62,8 @@ struct DashboardAminoAcidsSection: View {
             groupKey: aminoAcidsKey,
             headerText: "Amino Acids",
             aggregator: aggregator,
-            previewCount: visibleCount
+            previewCount: visibleCount,
+            userOverride: userOverride
         )
     }
 }
