@@ -20,9 +20,12 @@ struct DashboardNutrientsSection: View {
     let headerText: String
     let aggregator: NutrientDataAggregator
 
-    @State private var showAll: Bool = false
+    /// How many nutrients to show before the "More" button. Defaults to 3, but the nutrition-tab
+    /// customization (and onboarding personalization) can raise it per group so that every promoted
+    /// nutrient stays visible above the fold.
+    var previewCount: Int = 3
 
-    private static let previewCount = 3
+    @State private var showAll: Bool = false
 
     private var otherNutrientIds: [String] {
         guard let group = aggregator.nutrientGroups
@@ -44,7 +47,7 @@ struct DashboardNutrientsSection: View {
         if showAll {
             return allNutrientIds
         }
-        return Array(allNutrientIds.prefix(Self.previewCount))
+        return Array(allNutrientIds.prefix(previewCount))
     }
 
     private var colorPalette: ColorPalette {
@@ -80,7 +83,7 @@ struct DashboardNutrientsSection: View {
                 }
                 CompactNutrientRow(nutrientId)
             }
-            if allNutrientIds.count > Self.previewCount {
+            if allNutrientIds.count > previewCount {
                 Divider()
                     .padding(.leading, 16)
                 MoreButton()

@@ -100,6 +100,7 @@ struct DashboardLipidsSection: View {
 
     @AppStorage("nutrientCustomize_lipids_order") private var orderRaw: String = ""
     @AppStorage("nutrientCustomize_lipids_hidden") private var hiddenRaw: String = ""
+    @AppStorage("nutrientCustomize_lipids_visibleCount") private var visibleCount: Int = 3
 
     let aggregator: NutrientDataAggregator
 
@@ -118,7 +119,8 @@ struct DashboardLipidsSection: View {
             orderedWhitelist: effectiveOrder.filter { !hiddenSet.contains($0) },
             groupKey: lipidsKey,
             headerText: "Lipids",
-            aggregator: aggregator
+            aggregator: aggregator,
+            previewCount: visibleCount
         )
     }
 }

@@ -38,6 +38,7 @@ struct DashboardAminoAcidsSection: View {
 
     @AppStorage("nutrientCustomize_aminoAcids_order") private var orderRaw: String = ""
     @AppStorage("nutrientCustomize_aminoAcids_hidden") private var hiddenRaw: String = ""
+    @AppStorage("nutrientCustomize_aminoAcids_visibleCount") private var visibleCount: Int = 3
 
     let aminoAcidsKey = FdcNutrientGroupMapper.GroupNumber_AminoAcids
 
@@ -58,7 +59,8 @@ struct DashboardAminoAcidsSection: View {
             orderedWhitelist: effectiveOrder.filter { !hiddenSet.contains($0) },
             groupKey: aminoAcidsKey,
             headerText: "Amino Acids",
-            aggregator: aggregator
+            aggregator: aggregator,
+            previewCount: visibleCount
         )
     }
 }

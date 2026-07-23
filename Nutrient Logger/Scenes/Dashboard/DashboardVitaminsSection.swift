@@ -84,6 +84,7 @@ struct DashboardVitaminsSection: View {
 
     @AppStorage("nutrientCustomize_vitamins_order") private var orderRaw: String = ""
     @AppStorage("nutrientCustomize_vitamins_hidden") private var hiddenRaw: String = ""
+    @AppStorage("nutrientCustomize_vitamins_visibleCount") private var visibleCount: Int = 3
 
     let aggregator: NutrientDataAggregator
 
@@ -102,7 +103,8 @@ struct DashboardVitaminsSection: View {
             orderedWhitelist: effectiveOrder.filter { !hiddenSet.contains($0) },
             groupKey: vitaminsKey,
             headerText: "Vitamins",
-            aggregator: aggregator
+            aggregator: aggregator,
+            previewCount: visibleCount
         )
     }
 }
