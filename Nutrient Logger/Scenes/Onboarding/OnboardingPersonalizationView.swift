@@ -13,7 +13,7 @@ import SwinjectAutoregistration
 /// default to a neutral option, so a user can continue without changing anything.
 struct OnboardingPersonalizationView: View {
 
-    let onContinue: () -> Void
+    let onContinue: (NutritionDietPreset) -> Void
 
     @Inject private var engagementAnalytics: EngagementAnalytics
     @Inject private var userService: UserService
@@ -31,7 +31,7 @@ struct OnboardingPersonalizationView: View {
         user.nutritionConcern = concern
         Task { try? await userService.save(user: user) }
 
-        onContinue()
+        onContinue(diet)
     }
 
     var body: some View {
@@ -151,6 +151,6 @@ struct OnboardingPersonalizationView: View {
 
     ZStack {
         Color(.systemBackground).ignoresSafeArea()
-        OnboardingPersonalizationView(onContinue: {})
+        OnboardingPersonalizationView(onContinue: { _ in })
     }
 }
