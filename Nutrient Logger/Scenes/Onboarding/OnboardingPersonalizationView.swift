@@ -13,16 +13,16 @@ import SwinjectAutoregistration
 /// default to a neutral option, so a user can continue without changing anything.
 struct OnboardingPersonalizationView: View {
 
-    let onContinue: (NutritionDietPreset) -> Void
+    // Owned by OnboardingView so the selection survives going back and forth between steps.
+    @Binding var diet: NutritionDietPreset
+    @Binding var concern: NutritionConcern
+    let onContinue: () -> Void
 
     @Inject private var engagementAnalytics: EngagementAnalytics
     @Inject private var userService: UserService
 
-    @State private var diet: NutritionDietPreset = .default
-    @State private var concern: NutritionConcern = .default
-
     private func continueAction() {
-        NutritionPersonalizationApplier.standard().apply(diet: diet, concern: concern)
+        NutritionPersonalizationApplier.standard().apply(diet: diet, concern: concern, replacingExisting: true)
         engagementAnalytics.onboardingPersonalizationSelected(diet: diet.rawValue, concern: concern.rawValue)
 
         // Persist the answers for later reuse; fire-and-forget so the flow stays snappy.
@@ -31,7 +31,7 @@ struct OnboardingPersonalizationView: View {
         user.nutritionConcern = concern
         Task { try? await userService.save(user: user) }
 
-        onContinue(diet)
+        onContinue()
     }
 
     var body: some View {
@@ -151,6 +151,6 @@ struct OnboardingPersonalizationView: View {
 
     ZStack {
         Color(.systemBackground).ignoresSafeArea()
-        OnboardingPersonalizationView(onContinue: { _ in })
+        OnboardingPersonalizationView(diet: .constant(.default), concern: .constant(.default), onContinue: {})
     }
 }

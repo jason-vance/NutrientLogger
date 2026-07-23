@@ -22,6 +22,7 @@ struct OnboardingView: View {
     @State private var step: Int = 0
     @State private var navigatingBackward = false
     @State private var selectedDiet: NutritionDietPreset = .default
+    @State private var selectedConcern: NutritionConcern = .default
 
     private static let totalSteps = 5
     private static let stepNames = ["hero", "personalization", "demo", "notification", "paywall"]
@@ -104,10 +105,11 @@ struct OnboardingView: View {
             OnboardingHeroView(onContinue: advance)
                 .transition(stepTransition)
         } else if step == 1 {
-            OnboardingPersonalizationView(onContinue: { diet in
-                selectedDiet = diet
-                advance()
-            })
+            OnboardingPersonalizationView(
+                diet: $selectedDiet,
+                concern: $selectedConcern,
+                onContinue: advance
+            )
             .transition(stepTransition)
         } else if step == 2 {
             OnboardingDemoDashboardView(diet: selectedDiet, onContinue: advance)
