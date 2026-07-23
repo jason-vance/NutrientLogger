@@ -30,10 +30,10 @@ struct DashboardNutrientSections: View {
     var body: some View {
         VStack(spacing: 2 * .spacingDefault) {
             DashboardMacrosSection(date: date, aggregator: aggregator)
+            MealsSection()
             DashboardWeeklyNutrientWatchSection(allConsumedFoods: allConsumedFoods, date: date)
             DashboardVitaminsSection(aggregator: aggregator)
             DashboardMineralsSection(aggregator: aggregator)
-            MealsSection()
             DashboardCarbsSection(aggregator: aggregator)
             DashboardLipidsSection(aggregator: aggregator)
             DashboardAminoAcidsSection(aggregator: aggregator)
