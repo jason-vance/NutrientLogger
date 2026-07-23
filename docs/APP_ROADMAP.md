@@ -288,6 +288,37 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ---
 
+## v4.3 — "Onboarding personalization and value showcase"
+**Theme:** Make the app *demonstrate* its micronutrient value during onboarding instead of just asserting it, and personalize that value to the user so the payoff feels like it's about them. The paywall should never be the first payoff.
+
+**Design principle — diet presets promote *gap* nutrients:** each diet/concern answer surfaces the nutrients that are *hard to maintain* on that diet (plant-based → B12/iron/zinc, keto → electrolytes, carnivore → Vitamin C/folate/manganese), not the ones it's already rich in. It's expected — and desirable — that a promoted "gap" nutrient reads near 0% at first; that low number *is* the value demonstration. Keep this rule when adding future presets or a diet "mode."
+
+### Code
+
+- [x] **Add personalization to onboarding** — new step 2 of 4 (hero → personalization → notification → paywall). Two menu questions (diet + main focus), both defaulting to a neutral option, each with a live reflect-back line. On continue: unions the two answers' promoted nutrients per group, reorders them to the top of the Nutrition tab, raises each affected group's visible count to `max(3, promotedCount)` so nothing hides under "More", stores both answers on `User`, and logs `onboarding_personalization_selected`. Groups the user already customized are never clobbered. Visible count is also adjustable afterward via a per-group stepper in Nutrition Settings.
+  - Domain: `CustomizableNutrientGroup`, `NutritionDietPreset`, `NutritionConcern`, `NutritionPersonalizationPlan` (pure, unit-tested), `NutritionPersonalizationApplier` (unit-tested).
+- [ ] **Add demo dashboard to onboarding** — a pre-populated sample day shown after personalization (before the paywall) so the user sees the end-state they're working toward.
+  - Seed a realistic day of foods **matching the selected diet** — carnivore → steak/eggs, not a kale smoothie; vegan → tofu/oats/lentils; keto → salmon/avocado; pescatarian → fish; balanced → a mixed day. Reuse the existing `ScreenshotDataSeeder`/`RemoteDatabaseForScreenshots` seeding pattern.
+  - Reuse the real dashboard section views (`DashboardNutrientsSection`, calorie ring, macro bars) with a mock aggregator so it looks exactly like the live app, not a bespoke mockup.
+  - Highlight the **promoted gap nutrients** the personalization step just chose — a couple rendered low/red — so the "aha" lands: "this is what logging will show you."
+  - Keep it read-only (or a single "log your first food" CTA that deep-links into search); don't build a second interactive dashboard.
+- [ ] **Let existing/returning users personalize too** — onboarding only runs once, so users who installed before v4.3 never get asked. Add an entry point (Nutrition Settings and/or Profile) to set or change diet & focus later and re-apply the ordering. Uses the already-persisted `User.dietPreset` / `User.nutritionConcern` fields; reuse `NutritionPersonalizationApplier` (respect the don't-clobber guard, or offer an explicit "reset to suggested order").
+- [ ] **(Consider) additional value-showcase moments** — evaluate against the demo dashboard; ship whichever tests best, don't stack all of them:
+  - *Pick-a-food instant breakdown* — one tap on a familiar food reveals a breakdown 10× richer than macro-only apps. Strongest standalone "aha" from the brainstorm; could replace or precede the demo dashboard.
+  - *Contrast screen* — "Most trackers show 4 numbers. We show 30+." A static side-by-side; cheap, no personalization needed.
+
+### App Store Connect
+- No product changes needed.
+
+### Store Listing
+- New onboarding screenshots (personalization step + diet-relevant demo dashboard).
+- **What's New:** "New: a personalized setup that tunes your dashboard to your diet and goals from day one."
+
+### Analytics
+- Extend the onboarding funnel: personalization step completion, diet/concern selection distribution, demo-dashboard viewed, and drop-off between personalization → demo → paywall. Feeds the backlog "onboarding funnel tracking on Google Analytics" item.
+
+---
+
 ## Backlog (v4.x and beyond)
 
 These are worth tracking but don't have a clear version slot yet:
