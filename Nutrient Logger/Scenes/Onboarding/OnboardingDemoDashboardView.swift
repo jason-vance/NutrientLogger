@@ -29,18 +29,39 @@ struct OnboardingDemoDashboardView: View {
     )
 
     @State private var foods: [FoodItem]?
+    @State private var meals: [DashboardMealList.Meal] = []
 
     private func loadFoods() {
         Task {
-            let loaded: [FoodItem] = diet.demoDay.compactMap { demo in
-                do {
-                    let food = try remoteDatabase.getFood(String(demo.fdcId))
-                    return try food?.applyingPortion(Portion(amount: 1, gramWeight: demo.gramWeight))
-                } catch {
-                    return nil
-                }
+            var loadedFoods: [FoodItem] = []
+            var consumed: [ConsumedFood] = []
+
+            for demo in diet.demoDay {
+                let portion = Portion(amount: 1, gramWeight: demo.gramWeight)
+                guard let base = try? remoteDatabase.getFood(String(demo.fdcId)),
+                      var food = try? base.applyingPortion(portion) else { continue }
+                food.mealTime = demo.mealTime
+                food.dateLogged = .today
+                loadedFoods.append(food)
+                // In-memory only (never inserted into a SwiftData context) — just to drive the
+                // existing DashboardMealList / DashboardMealRow meal UI.
+                consumed.append(ConsumedFood(
+                    fdcId: demo.fdcId,
+                    name: food.name,
+                    portionAmount: portion.amount,
+                    portionGramWeight: portion.gramWeight,
+                    portionName: portion.name,
+                    dateLogged: .today,
+                    mealTime: demo.mealTime
+                ))
             }
-            await MainActor.run { foods = loaded }
+
+            // Only meals that actually have food — a sample day shouldn't show empty snack rows.
+            let mealList = DashboardMealList.from(consumed).filter { !$0.foods.isEmpty }
+            await MainActor.run {
+                foods = loadedFoods
+                meals = mealList
+            }
         }
     }
 
@@ -98,6 +119,7 @@ struct OnboardingDemoDashboardView: View {
         ScrollView {
             VStack(spacing: 2 * .spacingDefault) {
                 DashboardMacrosSection(date: .today, aggregator: aggregator)
+                MealsSection()
                 DashboardVitaminsSection(aggregator: aggregator, userOverride: Self.referenceUser)
                 DashboardMineralsSection(aggregator: aggregator, userOverride: Self.referenceUser)
                 DashboardLipidsSection(aggregator: aggregator, userOverride: Self.referenceUser)
@@ -116,6 +138,29 @@ struct OnboardingDemoDashboardView: View {
                 endPoint: .init(x: 0.5, y: 0.04)
             )
         )
+    }
+
+    // Mirrors the Meals section on the real dashboard so the sample day's foods are visible,
+    // grouped by meal, using the same DashboardMealRow.
+    @ViewBuilder private func MealsSection() -> some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("Meals")
+                    .listSectionHeader()
+                Spacer()
+            }
+            VStack(spacing: 0) {
+                ForEach(Array(meals.enumerated()), id: \.element.id) { index, meal in
+                    if index > 0 {
+                        Divider()
+                            .padding(.leading, 16)
+                    }
+                    DashboardMealRow(meal: meal, date: .today)
+                }
+            }
+            .padding(.vertical, 4)
+            .inCard(backgroundColor: .gray)
+        }
     }
 }
 
