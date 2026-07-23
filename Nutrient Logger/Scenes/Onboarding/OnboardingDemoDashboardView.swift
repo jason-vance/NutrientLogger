@@ -30,6 +30,7 @@ struct OnboardingDemoDashboardView: View {
 
     @State private var foods: [FoodItem]?
     @State private var meals: [DashboardMealList.Meal] = []
+    @State private var consumedFoods: [ConsumedFood] = []
 
     private func loadFoods() {
         Task {
@@ -61,6 +62,7 @@ struct OnboardingDemoDashboardView: View {
             await MainActor.run {
                 foods = loadedFoods
                 meals = mealList
+                consumedFoods = consumed
             }
         }
     }
@@ -120,6 +122,11 @@ struct OnboardingDemoDashboardView: View {
             VStack(spacing: 2 * .spacingDefault) {
                 DashboardMacrosSection(date: .today, aggregator: aggregator)
                 MealsSection()
+                DashboardWeeklyNutrientWatchSection(
+                    allConsumedFoods: consumedFoods,
+                    date: .today,
+                    userOverride: Self.referenceUser
+                )
                 DashboardVitaminsSection(aggregator: aggregator, userOverride: Self.referenceUser)
                 DashboardMineralsSection(aggregator: aggregator, userOverride: Self.referenceUser)
                 DashboardLipidsSection(aggregator: aggregator, userOverride: Self.referenceUser)
@@ -127,8 +134,6 @@ struct OnboardingDemoDashboardView: View {
             }
             .padding(.horizontal)
             .padding(.bottom, 8)
-            // Read-only: the rows deep-link into detail views that don't belong mid-onboarding.
-            .allowsHitTesting(false)
         }
         .mask(
             // Fade the top edge so content scrolls away cleanly under the header.
@@ -160,6 +165,7 @@ struct OnboardingDemoDashboardView: View {
             }
             .padding(.vertical, 4)
             .inCard(backgroundColor: .gray)
+            .padding(.top, .spacingDefault)
         }
     }
 }

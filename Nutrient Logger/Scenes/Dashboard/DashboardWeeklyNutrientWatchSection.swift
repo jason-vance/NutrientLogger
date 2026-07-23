@@ -64,7 +64,11 @@ struct DashboardWeeklyNutrientWatchSection: View {
     let allConsumedFoods: [ConsumedFood]
     let date: SimpleDate
 
-    private var user: User { userService.currentUser }
+    /// When set, lows/highs resolve against this user instead of the signed-in one. Used only by the
+    /// onboarding demo dashboard so it can show a reference-adult watch card without a real profile.
+    var userOverride: User?
+
+    private var user: User { userOverride ?? userService.currentUser }
 
     private var effectiveRatios: [NutrientRatio] {
         NutrientBalanceSettings.effectiveRatios(hiddenRaw: balanceHiddenRaw, customRaw: balanceCustomRaw)
