@@ -101,7 +101,7 @@ struct OnboardingDemoDashboardView: View {
             }
 
             Button(action: onContinue) {
-                Text("Continue")
+                Text("Love it — let's go!")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()

@@ -88,7 +88,7 @@ struct OnboardingPersonalizationView: View {
             }
 
             Button(action: continueAction) {
-                Text("Continue")
+                Text("Let's see it in action")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
