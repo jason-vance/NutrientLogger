@@ -47,6 +47,7 @@ struct NutritionSettingsSheet: View {
 
     @State private var showMicronutrientGoals = false
     @State private var showNutrientBalances = false
+    @State private var showPersonalization = false
 
     @State private var vitamins: [String] = []
     @State private var minerals: [String] = []
@@ -127,6 +128,7 @@ struct NutritionSettingsSheet: View {
     var body: some View {
         NavigationStack {
             List {
+                PersonalizeSection()
                 GoalsSection()
                 WeeklyWatchSection()
                 NutrientGroupSection(
@@ -178,6 +180,9 @@ struct NutritionSettingsSheet: View {
             .navigationDestination(isPresented: $showNutrientBalances) {
                 NutrientBalanceSettingsView()
             }
+            .navigationDestination(isPresented: $showPersonalization) {
+                NutritionPersonalizationSettingsView()
+            }
             .navigationTitle("Nutrition Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -195,6 +200,35 @@ struct NutritionSettingsSheet: View {
                 aminoAcids = effectiveOrder(raw: aminoAcidsOrderRaw, default: DashboardAminoAcidsSection.orderedWhitelist)
             }
             .onChange(of: user) { saveUser() }
+        }
+    }
+
+    // MARK: - Personalize
+
+    @ViewBuilder private func PersonalizeSection() -> some View {
+        Section {
+            Button {
+                showPersonalization = true
+            } label: {
+                VStack {
+                    HStack {
+                        Text("Diet & Focus")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    HStack {
+                        Text("Tell us your diet and main focus to put the nutrients that matter most at the top")
+                        Spacer()
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+                .foregroundStyle(Color.primary)
+            }
+        } header: {
+            Text("Personalize")
         }
     }
 

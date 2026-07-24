@@ -27,6 +27,7 @@ class MockEngagementAnalytics: EngagementAnalytics {
     func screenViewed(screenName: String) {}
     func onboardingStepViewed(stepName: String, stepIndex: Int) {}
     func onboardingPersonalizationSelected(diet: String, concern: String) {}
+    func settingsPersonalizationUpdated(diet: String, concern: String) {}
     func onboardingCompleted() {}
     func customFoodCreated() {}
     func customFoodEdited() {}

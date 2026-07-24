@@ -56,6 +56,7 @@ protocol EngagementAnalytics {
     func screenViewed(screenName: String)
     func onboardingStepViewed(stepName: String, stepIndex: Int)
     func onboardingPersonalizationSelected(diet: String, concern: String)
+    func settingsPersonalizationUpdated(diet: String, concern: String)
     func onboardingCompleted()
     func customFoodCreated()
     func customFoodEdited()
@@ -394,6 +395,7 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     private let eventOnboardingStepViewed = "onboarding_step_viewed"
     private let eventOnboardingPersonalizationSelected = "onboarding_personalization_selected"
+    private let eventSettingsPersonalizationUpdated = "settings_personalization_updated"
     private let eventOnboardingCompleted = "onboarding_completed"
     private let parameterStepName = "step_name"
     private let parameterStepIndex = "step_index"
@@ -409,6 +411,13 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     public func onboardingPersonalizationSelected(diet: String, concern: String) {
         analytics.log(event: eventOnboardingPersonalizationSelected, parameters: [
+            parameterDiet: diet,
+            parameterConcern: concern,
+        ])
+    }
+
+    public func settingsPersonalizationUpdated(diet: String, concern: String) {
+        analytics.log(event: eventSettingsPersonalizationUpdated, parameters: [
             parameterDiet: diet,
             parameterConcern: concern,
         ])
