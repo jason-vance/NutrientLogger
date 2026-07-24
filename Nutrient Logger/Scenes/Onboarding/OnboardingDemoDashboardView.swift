@@ -121,12 +121,12 @@ struct OnboardingDemoDashboardView: View {
         ScrollView {
             VStack(spacing: 2 * .spacingDefault) {
                 DashboardMacrosSection(date: .today, aggregator: aggregator)
-                MealsSection()
                 DashboardWeeklyNutrientWatchSection(
                     allConsumedFoods: consumedFoods,
                     date: .today,
                     userOverride: Self.referenceUser
                 )
+                MealsSection()
                 DashboardVitaminsSection(aggregator: aggregator, userOverride: Self.referenceUser)
                 DashboardMineralsSection(aggregator: aggregator, userOverride: Self.referenceUser)
                 DashboardLipidsSection(aggregator: aggregator, userOverride: Self.referenceUser)
