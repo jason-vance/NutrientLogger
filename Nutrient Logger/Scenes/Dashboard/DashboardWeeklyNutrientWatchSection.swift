@@ -68,6 +68,10 @@ struct DashboardWeeklyNutrientWatchSection: View {
     /// onboarding demo dashboard so it can show a reference-adult watch card without a real profile.
     var userOverride: User?
 
+    /// When true, the full (unlocked) card renders regardless of subscription status. Used only by
+    /// the onboarding demo so the sample day shows the actual lows/highs instead of the locked teaser.
+    var forceUnlocked: Bool = false
+
     private var user: User { userOverride ?? userService.currentUser }
 
     private var effectiveRatios: [NutrientRatio] {
@@ -318,7 +322,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
             if !recentFoods.isEmpty {
                 if !hasAnyWatchItems {
                     OnTrackCard()
-                } else if subscriptionManager.isSubscribed {
+                } else if subscriptionManager.isSubscribed || forceUnlocked {
                     WeeklyWatchCard()
                 } else {
                     LockedWeeklyWatchCard(

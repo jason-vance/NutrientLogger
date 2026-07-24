@@ -101,7 +101,7 @@ struct OnboardingDemoDashboardView: View {
             }
 
             Button(action: onContinue) {
-                Text("Love it — let's go!")
+                Text("Love it - let's go!")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -124,7 +124,8 @@ struct OnboardingDemoDashboardView: View {
                 DashboardWeeklyNutrientWatchSection(
                     allConsumedFoods: consumedFoods,
                     date: .today,
-                    userOverride: Self.referenceUser
+                    userOverride: Self.referenceUser,
+                    forceUnlocked: true
                 )
                 MealsSection()
                 DashboardVitaminsSection(aggregator: aggregator, userOverride: Self.referenceUser)
