@@ -13,8 +13,8 @@ Micronutrients, Fully Offline
 ## Keywords (100/100 chars)
 vitamin,mineral,deficiency,cronometer,myfitnesspal,vitacost,carnivore,keto,vegan,macro,usda,diet,log
 
-## Promotional Text (139/170 chars)
-v4.2: Nutrient Logger is now 100% ad-free. Your food and profile details never leave your device, not even for analytics. 7-day free trial.
+## Promotional Text (155/170 chars)
+v4.3: Tell us your diet and what you're focused on, and your Nutrition tab puts the nutrients you're most likely to miss up top. Still ad-free and offline.
 
 ## Description
 Nutrient Logger is the offline-first nutrition tracker for people who want to know what's actually in their food - not just calories and macros, but the full spectrum of vitamins, minerals, and amino acids your body needs.
@@ -23,8 +23,11 @@ Unlike cloud-based trackers, your food log never leaves your device - no account
 
 Key Features:
 
+* Personalized From Day One
+Tell us how you eat - balanced, plant-based, keto or low-carb, carnivore, or pescatarian - and what you care about most, from energy to bone and joint health. Nutrient Logger moves the nutrients you're most likely to run low on to the top of your Nutrition tab, so the gaps that matter to you are the first thing you see. Change your answers anytime in settings.
+
 * Detailed Nutrient Breakdown
-See your daily intake of both macro and micronutrients, from protein and fiber to magnesium and vitamin B12. Choose which nutrients matter to you and reorder them to build a Nutrition tab that fits your goals.
+See your daily intake of both macro and micronutrients, from protein and fiber to magnesium and vitamin B12. Choose which nutrients matter to you, reorder them, and set how many each group shows at a glance to build a Nutrition tab that fits your goals.
 
 * Barcode Scanner
 Scan any packaged food to instantly pull in its nutrition data. If we don't recognize a barcode, you can search manually or add it as a custom food - nothing stops you from logging.
@@ -67,27 +70,34 @@ Nutrient Logger is perfect for anyone serious about nutrition-whether you’re o
 
 * Apple Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.2)
-• Nutrient Logger is now 100% ad-free
-• Your weekly nutrient watch now highlights Nutrient Balances, and you can choose how many days it looks back
-• Bug fixes and polish throughout
+## What's New (v4.3)
+• New: a personalized setup that tunes your dashboard to your diet and goals from day one
+• See a sample day during setup, so you know what your dashboard will look like before you log anything
+• Already using the app? Set your diet and focus anytime from Nutrition Settings
+• Choose how many nutrients each group shows before "More"
+• Your meals and weekly nutrient watch now sit higher on the dashboard
+• Fixed a crash that could happen on the very first launch
 
 ## Screenshots
 1. Every vitamin and mineral, not just calories
-2. Spot Deficiencies Before They Become Problems
-3. Your Data Never Leaves Your Phone
+2. Tuned to How You Eat
+    Pick your diet and focus - your top nutrients come first
+3. Spot Deficiencies Before They Become Problems
+4. Your Data Never Leaves Your Phone
     100% offline. No account, no cloud, no ads - ever
-4. Build a Habit That Sticks
+5. Build a Habit That Sticks
     Daily reminders and streaks keep you coming back
-5. Watch Your Whole Health, Not Just Your Plate
+6. Watch Your Whole Health, Not Just Your Plate
     Track weight and body fat alongside nutrition
-6. Goals Built for Your Body
+7. Goals Built for Your Body
     Personalized targets by age, sex, and activity - or set your own
-7. Everything in One Place
+8. Everything in One Place
     Syncs automatically with Apple Health
-8. Your Go-To Meals, One Tap Away
+9. Your Go-To Meals, One Tap Away
     Save what you eat often, log it in seconds next time
-9. Log Anything in Seconds
+10. Log Anything in Seconds
     Scan a barcode, search thousands of foods, or add your own
-10. Understand Why It Matters
+
+Cut for v4.3 (10-screenshot limit), re-add if a slot frees up:
+- Understand Why It Matters
     Quick, clear explanations for every nutrient you track
