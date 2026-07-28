@@ -11,8 +11,8 @@ Mikronäring, helt offline
 ## Keywords (99/100 chars)
 vitamin,mineral,brist,cronometer,myfitnesspal,kalorier,keto,vegan,makro,näring,kostdagbok,matdagbok
 
-## Promotional Text (143/170 chars)
-v4.2: Nutrient Logger är nu helt annonsfri. Dina mat- och profiluppgifter lämnar aldrig din enhet, inte ens för analys. Prova gratis i 7 dagar.
+## Promotional Text (151/170 chars)
+v4.3: berätta hur du äter och vad du fokuserar på — din Näring-flik lägger de näringsämnen du lättast missar överst. Fortfarande annonsfri och offline.
 
 ## Description
 Nutrient Logger är den offline-first-baserade näringstrackern för dig som vill veta vad din mat faktiskt innehåller — inte bara kalorier och makron, utan hela spektrumet av vitaminer, mineraler och aminosyror som kroppen behöver.
@@ -21,8 +21,11 @@ Till skillnad från molnbaserade trackers lämnar din matdagbok aldrig din enhet
 
 Huvudfunktioner:
 
+* Personlig från dag ett
+Berätta hur du äter — balanserat, växtbaserat, keto eller lågkolhydrat, carnivore eller pescetariskt — och vad du bryr dig mest om, från energi till skelett och leder. Nutrient Logger lyfter de näringsämnen du lättast får för lite av till toppen av din Näring-flik, så att det som betyder något för dig är det första du ser. Du kan ändra dina svar när som helst i inställningarna.
+
 * Detaljerad näringsanalys
-Se ditt dagliga intag av både makro- och mikronäringsämnen, från protein och fibrer till magnesium och vitamin B12. Välj vilka näringsämnen som är viktiga för dig och ordna om dem för en Näring-flik som passar dina mål.
+Se ditt dagliga intag av både makro- och mikronäringsämnen, från protein och fibrer till magnesium och vitamin B12. Välj vilka näringsämnen som är viktiga för dig, ordna om dem och bestäm hur många varje grupp visar direkt — för en Näring-flik som passar dina mål.
 
 * Streckkodsskanner
 Skanna vilken förpackad vara som helst och hämta näringsdata direkt. Känner vi inte igen en streckkod kan du söka manuellt eller lägga till den som egen vara — inget hindrar dig från att logga.
@@ -65,27 +68,34 @@ Nutrient Logger passar alla som tar näring på allvar — oavsett om du följer
 
 * Apples användarvillkor: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.2)
-• Nutrient Logger är nu helt annonsfri
-• Din veckovisa näringskoll lyfter nu fram Näringsbalanser, och du väljer själv hur många dagar den blickar tillbaka
-• Buggfixar och putsning
+## What's New (v4.3)
+• Nytt: en personlig start som anpassar din översikt efter hur du äter och vad du vill uppnå, redan från dag ett
+• Se en exempeldag redan under introduktionen — du vet hur din översikt kommer att se ut innan du loggat något
+• Använder du appen redan? Ställ in kost och fokus när som helst i Näringsinställningarna
+• Välj hur många näringsämnen varje grupp visar innan "Mer"
+• Dina måltider och din veckovisa näringskoll ligger nu högre upp i översikten
+• Åtgärdade en krasch som kunde inträffa vid allra första starten
 
 ## Screenshots
 1. Varje vitamin och mineral, inte bara kalorier
-2. Upptäck brister innan de blir problem
-3. Din data lämnar aldrig din telefon
+2. Anpassad efter hur du äter
+    Välj kost och fokus - dina viktigaste näringsämnen hamnar överst
+3. Upptäck brister innan de blir problem
+4. Din data lämnar aldrig din telefon
     100 % offline. Inget konto, inget moln, inga annonser, någonsin
-4. Bygg en vana som håller
+5. Bygg en vana som håller
     Dagliga påminnelser och sviter får dig att komma tillbaka
-5. Håll koll på hela din hälsa, inte bara tallriken
+6. Håll koll på hela din hälsa, inte bara tallriken
     Följ vikt och kroppsfett vid sidan av näringen
-6. Mål byggda för din kropp
+7. Mål byggda för din kropp
     Personliga värden efter ålder, kön och aktivitet - eller sätt egna
-7. Allt på ett ställe
+8. Allt på ett ställe
     Synkar automatiskt med Apple Hälsa
-8. Dina vanligaste måltider, ett tryck bort
+9. Dina vanligaste måltider, ett tryck bort
     Spara det du ofta äter och logga det på sekunder nästa gång
-9. Logga vad som helst på sekunder
+10. Logga vad som helst på sekunder
     Skanna en streckkod, sök bland tusentals livsmedel eller lägg till egna
-10. Förstå varför det spelar roll
+
+Cut for v4.3 (10-screenshot limit), re-add if a slot frees up:
+- Förstå varför det spelar roll
     Snabba, tydliga förklaringar av varje näringsämne du följer

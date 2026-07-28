@@ -11,8 +11,8 @@ Micronutrienti, 100% offline
 ## Keywords (99/100 chars)
 vitamine,minerali,carenza,cronometer,myfitnesspal,calorie,keto,vegano,macro,nutrizione,diario,dieta
 
-## Promotional Text (160/170 chars)
-v4.2: Nutrient Logger ora è 100% senza pubblicità. I tuoi dati su cibo e profilo non lasciano mai il dispositivo, nemmeno per le analisi. Prova gratis 7 giorni.
+## Promotional Text (159/170 chars)
+v4.3: dicci come mangi e a cosa tieni di più, e la tua scheda Nutrizione mette in cima i nutrienti che rischi di trascurare. Sempre senza pubblicità e offline.
 
 ## Description
 Nutrient Logger è il tracker nutrizionale offline-first per chi vuole sapere cosa c'è davvero nel proprio cibo — non solo calorie e macro, ma l'intero spettro di vitamine, minerali e amminoacidi di cui il tuo corpo ha bisogno.
@@ -21,8 +21,11 @@ A differenza dei tracker basati sul cloud, il tuo diario alimentare non lascia m
 
 Funzionalità principali:
 
+* Personalizzata fin dal primo giorno
+Dicci come mangi — equilibrato, vegetale, keto o low-carb, carnivoro o pescetariano — e cosa ti sta più a cuore, dall'energia a ossa e articolazioni. Nutrient Logger porta in cima alla tua scheda Nutrizione i nutrienti che rischi di più di trascurare. Puoi cambiare le risposte quando vuoi dalle impostazioni.
+
 * Analisi nutrizionale dettagliata
-Guarda il tuo apporto giornaliero di macro e micronutrienti, dalle proteine e fibre fino a magnesio e vitamina B12. Scegli i nutrienti che contano per te e riordinali per costruire una scheda Nutrizione su misura dei tuoi obiettivi.
+Guarda il tuo apporto giornaliero di macro e micronutrienti, dalle proteine e fibre fino a magnesio e vitamina B12. Scegli i nutrienti che contano per te, riordinali e decidi quanti ne mostra ogni gruppo a colpo d'occhio, per costruire una scheda Nutrizione su misura dei tuoi obiettivi.
 
 * Scanner di codici a barre
 Scansiona qualsiasi alimento confezionato per ottenere subito i suoi dati nutrizionali. Se un codice non viene riconosciuto, puoi cercare manualmente o aggiungerlo come alimento personalizzato — niente ti impedisce di registrare.
@@ -34,7 +37,7 @@ Cerca tra decine di migliaia di alimenti, ingredienti freschi e prodotti confezi
 Scansiona codici a barre, cerca nel database o aggiungi i tuoi alimenti — e salva i pasti abituali per registrarli più in fretta la prossima volta.
 
 * Obiettivi personalizzati
-Imposta i tuoi obiettivi di calorie, macro e micronutrienti — o usa i valori giornalieri raccomandati in base a età e sesso. Segui i progressi e resta in equilibrio, con grafici di tendenza per calorie, macro e acqua oltre a ogni nutriente.
+Imposta i tuoi obiettivi di calorie, macro e micronutrienti — o usa i valori giornalieri raccomandati in base a età e sesso. Segui i progressi con grafici di tendenza per calorie, macro, acqua e ogni nutriente.
 
 * Monitoraggio dell'acqua
 Registra l'acqua con un tocco e guarda il tracker animato riempirsi verso il tuo obiettivo giornaliero. Osserva le tendenze di idratazione su 7 o 30 giorni (Premium).
@@ -46,7 +49,7 @@ Monitora peso, massa grassa, IMC e circonferenza vita — scegli cosa conta per 
 Costruisci una serie giornaliera di registrazioni e una serie settimanale di monitoraggio corporeo, con celebrazioni a ogni tappa. Guarda la tua serie più lunga, i giorni totali registrati e altro sul tuo profilo.
 
 * Grafici di tendenza dei nutrienti (Premium)
-Osserva come cambia il tuo apporto di qualsiasi nutriente su 7 o 30 giorni. Individua schemi, mantieni la costanza e confronta con il tuo obiettivo giornaliero.
+Osserva come cambia il tuo apporto di qualsiasi nutriente su 7 o 30 giorni. Individua schemi e confronta con il tuo obiettivo giornaliero.
 
 * Analisi settimanale delle carenze (Premium)
 Un riepilogo settimanale segnala i nutrienti di cui sei rimasto a corto, con gli alimenti che possono colmare il divario.
@@ -58,34 +61,41 @@ Scrivi automaticamente calorie, proteine, grassi, carboidrati e acqua in Apple S
 Esporta il tuo diario alimentare completo con i dati nutrizionali per qualsiasi periodo — ideale da condividere con medico o dietista.
 
 * Impara mentre registri
-Scopri cosa fa ogni nutriente per il tuo corpo e perché è importante per la tua salute.
+Scopri cosa fa ogni nutriente e perché è importante per la tua salute.
 
 Nutrient Logger è perfetto per chi prende sul serio la nutrizione — che tu segua una dieta specifica, gestisca una carenza o sia semplicemente curioso della tua salute. È ora di andare oltre le calorie e capire davvero il tuo cibo.
 
 
 * Termini d'uso Apple: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.2)
-• Nutrient Logger ora è 100% senza pubblicità
-• Il tuo controllo settimanale dei nutrienti ora evidenzia i Bilanci dei nutrienti, e puoi scegliere su quanti giorni guardare
-• Correzioni di bug e rifiniture
+## What's New (v4.3)
+• Novità: una configurazione personalizzata che adatta la tua dashboard alla tua alimentazione e ai tuoi obiettivi fin dal primo giorno
+• Guarda una giornata di esempio già durante la configurazione: sai come sarà la tua dashboard prima ancora di registrare qualcosa
+• Usi già l'app? Imposta alimentazione e priorità quando vuoi dalle Impostazioni Nutrizione
+• Scegli quanti nutrienti mostra ogni gruppo prima di «Altro»
+• I tuoi pasti e il controllo settimanale dei nutrienti ora stanno più in alto nella dashboard
+• Corretto un crash che poteva verificarsi al primissimo avvio
 
 ## Screenshots
 1. Ogni vitamina e minerale, non solo le calorie
-2. Individua le carenze prima che diventino problemi
-3. I tuoi dati non lasciano mai il telefono
+2. Su misura di come mangi
+    Scegli alimentazione e priorità - i tuoi nutrienti chiave vengono per primi
+3. Individua le carenze prima che diventino problemi
+4. I tuoi dati non lasciano mai il telefono
     100% offline. Nessun account, nessun cloud, nessuna pubblicità, mai
-4. Costruisci un'abitudine che dura
+5. Costruisci un'abitudine che dura
     Promemoria giornalieri e serie ti fanno tornare
-5. Tieni d'occhio tutta la tua salute, non solo il piatto
+6. Tieni d'occhio tutta la tua salute, non solo il piatto
     Monitora peso e massa grassa insieme alla nutrizione
-6. Obiettivi fatti per il tuo corpo
+7. Obiettivi fatti per il tuo corpo
     Valori personalizzati per età, sesso e attività - o imposta i tuoi
-7. Tutto in un unico posto
+8. Tutto in un unico posto
     Si sincronizza automaticamente con Apple Salute
-8. I tuoi pasti abituali, a portata di tocco
+9. I tuoi pasti abituali, a portata di tocco
     Salva quello che mangi spesso e registralo in pochi secondi
-9. Registra qualsiasi cosa in pochi secondi
+10. Registra qualsiasi cosa in pochi secondi
     Scansiona un codice a barre, cerca tra migliaia di alimenti o aggiungi i tuoi
-10. Capisci perché è importante
+
+Cut for v4.3 (10-screenshot limit), re-add if a slot frees up:
+- Capisci perché è importante
     Spiegazioni rapide e chiare per ogni nutriente che monitori

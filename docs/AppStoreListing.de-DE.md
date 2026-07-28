@@ -11,8 +11,8 @@ Mikronährstoffe, ganz offline
 ## Keywords (99/100 chars)
 vitamine,mineralstoffe,mangel,cronometer,myfitnesspal,kalorien,keto,vegan,makros,ernährung,tagebuch
 
-## Promotional Text (152/170 chars)
-v4.2: Nutrient Logger ist jetzt 100 % werbefrei. Deine Lebensmittel- und Profildaten verlassen nie dein Gerät, nicht einmal für Analysen. 7 Tage gratis.
+## Promotional Text (165/170 chars)
+v4.3: Sag uns, wie du isst und was dir wichtig ist — dein Ernährungs-Tab stellt die Nährstoffe nach oben, die dir am ehesten fehlen. Weiterhin werbefrei und offline.
 
 ## Description
 Nutrient Logger ist der Offline-First-Ernährungstracker für alle, die wissen wollen, was wirklich in ihrem Essen steckt — nicht nur Kalorien und Makros, sondern das volle Spektrum an Vitaminen, Mineralstoffen und Aminosäuren, die dein Körper braucht.
@@ -21,8 +21,11 @@ Anders als Cloud-basierte Tracker verlässt dein Ernährungstagebuch nie dein Ge
 
 Die wichtigsten Funktionen:
 
+* Von Anfang an persönlich
+Sag uns, wie du isst — ausgewogen, pflanzlich, Keto/Low-Carb, Carnivore oder pescetarisch — und was dir am wichtigsten ist, von Energie bis zu Knochen und Gelenken. Nutrient Logger stellt die Nährstoffe, bei denen du am ehesten Lücken hast, an den Anfang deines Ernährungs-Tabs. Jederzeit in den Einstellungen änderbar.
+
 * Detaillierte Nährstoffanalyse
-Sieh deine tägliche Zufuhr an Makro- und Mikronährstoffen, von Protein und Ballaststoffen bis Magnesium und Vitamin B12. Wähle die Nährstoffe, die dir wichtig sind, und ordne sie neu — für einen Ernährungs-Tab, der zu deinen Zielen passt.
+Sieh deine tägliche Zufuhr an Makro- und Mikronährstoffen, von Protein und Ballaststoffen bis Magnesium und Vitamin B12. Wähle die Nährstoffe, die dir wichtig sind, ordne sie neu und lege fest, wie viele pro Gruppe direkt sichtbar sind — für einen Ernährungs-Tab, der zu deinen Zielen passt.
 
 * Barcode-Scanner
 Scanne jedes verpackte Lebensmittel und erhalte sofort seine Nährwertdaten. Wird ein Barcode nicht erkannt, kannst du manuell suchen oder ein eigenes Lebensmittel anlegen — nichts hält dich vom Protokollieren ab.
@@ -34,7 +37,7 @@ Durchsuche zehntausende Lebensmittel, von frischen Zutaten bis zu verpackten Pro
 Barcodes scannen, in der Datenbank suchen oder eigene Lebensmittel anlegen — und speichere deine Lieblingsmahlzeiten, um sie beim nächsten Mal schneller zu protokollieren.
 
 * Persönliche Ziele
-Lege eigene Ziele für Kalorien, Makros und Mikronährstoffe fest — oder nutze empfohlene Tageswerte basierend auf Alter und Geschlecht. Verfolge deinen Fortschritt und bleib im Gleichgewicht, mit Trend-Diagrammen für Kalorien, Makros und Wasser sowie für jeden Nährstoff.
+Lege eigene Ziele für Kalorien, Makros und Mikronährstoffe fest — oder nutze empfohlene Tageswerte basierend auf Alter und Geschlecht. Verfolge deinen Fortschritt mit Trend-Diagrammen für Kalorien, Makros, Wasser und jeden Nährstoff.
 
 * Wasser-Tracking
 Protokolliere Wasser mit einem Tipp und sieh zu, wie sich der animierte Tracker Richtung Tagesziel füllt. Verfolge deine Hydrations-Trends über 7 oder 30 Tage (Premium).
@@ -58,34 +61,41 @@ Schreibe Kalorien, Protein, Fett, Kohlenhydrate und Wasser automatisch in Apple 
 Exportiere dein komplettes Ernährungstagebuch mit Nährstoffdaten für jeden Zeitraum — ideal für Arzt oder Ernährungsberatung.
 
 * Lerne beim Protokollieren
-Erfahre, was jeder Nährstoff für deinen Körper tut und warum er für deine Gesundheit wichtig ist.
+Erfahre, was jeder Nährstoff für deinen Körper tut und warum er wichtig ist.
 
 Nutrient Logger ist perfekt für alle, die Ernährung ernst nehmen — ob spezielle Diät, ein Mangel, den du im Blick behalten willst, oder einfach Neugier auf deine Gesundheit. Zeit, über Kalorien hinauszugehen und dein Essen wirklich zu verstehen.
 
 
 * Apple-Nutzungsbedingungen: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.2)
-• Nutrient Logger ist jetzt 100 % werbefrei
-• Dein wöchentlicher Nährstoff-Check zeigt jetzt Nährstoff-Balancen, und du kannst wählen, wie viele Tage er zurückblickt
-• Fehlerbehebungen und Feinschliff
+## What's New (v4.3)
+• Neu: eine persönliche Einrichtung, die dein Dashboard von Tag eins an auf deine Ernährung und deine Ziele abstimmt
+• Sieh schon bei der Einrichtung einen Beispieltag — so weißt du, wie dein Dashboard aussehen wird, bevor du überhaupt etwas protokollierst
+• Schon dabei? Ernährung und Schwerpunkt lassen sich jederzeit in den Ernährungs-Einstellungen festlegen
+• Wähle, wie viele Nährstoffe jede Gruppe vor „Mehr" anzeigt
+• Deine Mahlzeiten und der wöchentliche Nährstoff-Check sitzen jetzt weiter oben im Dashboard
+• Ein Absturz beim allerersten Start wurde behoben
 
 ## Screenshots
 1. Jedes Vitamin, jeder Mineralstoff — nicht nur Kalorien
-2. Erkenne Mängel, bevor sie zum Problem werden
-3. Deine Daten verlassen nie dein Handy
+2. Auf deine Ernährung abgestimmt
+    Wähle Ernährung und Schwerpunkt - deine wichtigsten Nährstoffe stehen oben
+3. Erkenne Mängel, bevor sie zum Problem werden
+4. Deine Daten verlassen nie dein Handy
     100 % offline. Kein Konto, keine Cloud, keine Werbung - nie
-4. Baue eine Gewohnheit auf, die bleibt
+5. Baue eine Gewohnheit auf, die bleibt
     Tägliche Erinnerungen und Serien halten dich dran
-5. Behalte deine ganze Gesundheit im Blick, nicht nur den Teller
+6. Behalte deine ganze Gesundheit im Blick, nicht nur den Teller
     Gewicht und Körperfett neben der Ernährung verfolgen
-6. Ziele, die zu deinem Körper passen
+7. Ziele, die zu deinem Körper passen
     Personalisierte Werte nach Alter, Geschlecht und Aktivität - oder eigene setzen
-7. Alles an einem Ort
+8. Alles an einem Ort
     Synchronisiert automatisch mit Apple Health
-8. Deine Lieblingsmahlzeiten, einen Tipp entfernt
+9. Deine Lieblingsmahlzeiten, einen Tipp entfernt
     Speichere, was du oft isst, und protokolliere es in Sekunden
-9. Protokolliere alles in Sekunden
+10. Protokolliere alles in Sekunden
     Barcode scannen, tausende Lebensmittel durchsuchen oder eigene anlegen
-10. Versteh, warum es wichtig ist
+
+Cut for v4.3 (10-screenshot limit), re-add if a slot frees up:
+- Versteh, warum es wichtig ist
     Kurze, klare Erklärungen zu jedem Nährstoff

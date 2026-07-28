@@ -11,8 +11,8 @@ Micronutrientes, 100% offline
 ## Keywords (96/100 chars)
 vitamina,mineral,deficiência,cronometer,myfitnesspal,calorias,keto,vegano,macros,nutrição,diário
 
-## Promotional Text (148/170 chars)
-v4.2: o Nutrient Logger agora é 100% sem anúncios. Seus dados de comida e perfil nunca saem do seu aparelho, nem mesmo para análises. 7 dias grátis.
+## Promotional Text (151/170 chars)
+v4.3: diga como você come e o que te preocupa, e sua aba de Nutrição coloca no topo os nutrientes que costumam faltar. Continua sem anúncios e offline.
 
 ## Description
 O Nutrient Logger é o rastreador nutricional offline para quem quer saber o que realmente tem na sua comida — não só calorias e macros, mas todo o espectro de vitaminas, minerais e aminoácidos de que o seu corpo precisa.
@@ -21,8 +21,11 @@ Diferente dos rastreadores na nuvem, o seu diário alimentar nunca sai do seu ap
 
 Principais recursos:
 
+* Personalizado desde o primeiro dia
+Diga como você come — equilibrado, à base de plantas, keto ou low-carb, carnívoro ou pescetariano — e o que mais importa para você, da energia a ossos e articulações. O Nutrient Logger leva para o topo da sua aba de Nutrição os nutrientes que você tem mais chance de deixar faltando. Dá para mudar suas respostas quando quiser nos ajustes.
+
 * Análise nutricional detalhada
-Veja sua ingestão diária de macro e micronutrientes, de proteína e fibras a magnésio e vitamina B12. Escolha os nutrientes que importam para você e reordene-os para montar uma aba de Nutrição do jeito dos seus objetivos.
+Veja sua ingestão diária de macro e micronutrientes, de proteína e fibras a magnésio e vitamina B12. Escolha os nutrientes que importam para você, reordene-os e defina quantos cada grupo mostra de cara, montando uma aba de Nutrição do jeito dos seus objetivos.
 
 * Leitor de código de barras
 Escaneie qualquer alimento embalado para obter na hora os dados nutricionais. Se não reconhecermos um código, você pode buscar manualmente ou adicionar como alimento personalizado — nada impede o seu registro.
@@ -34,7 +37,7 @@ Pesquise entre dezenas de milhares de alimentos, de ingredientes in natura a pro
 Escaneie códigos de barras, pesquise no banco de dados ou adicione seus próprios alimentos — e salve suas refeições de sempre para registrar mais rápido na próxima vez.
 
 * Metas personalizadas
-Defina suas próprias metas de calorias, macros e micronutrientes — ou use os valores diários recomendados de acordo com idade e sexo. Acompanhe seu progresso e mantenha o equilíbrio, com gráficos de tendência para calorias, macros e água, além de cada nutriente.
+Defina suas próprias metas de calorias, macros e micronutrientes — ou use os valores diários recomendados de acordo com idade e sexo. Acompanhe seu progresso com gráficos de tendência para calorias, macros, água e cada nutriente.
 
 * Controle de água
 Registre água com um toque e veja o indicador animado encher rumo à sua meta diária. Acompanhe suas tendências de hidratação em 7 ou 30 dias (Premium).
@@ -46,7 +49,7 @@ Acompanhe peso, gordura corporal, IMC e circunferência da cintura — escolha o
 Construa uma sequência diária de registro e uma sequência semanal de acompanhamento corporal, com comemorações a cada marco. Veja sua maior sequência, total de dias registrados e mais no seu perfil.
 
 * Gráficos de tendência de nutrientes (Premium)
-Veja como a sua ingestão de qualquer nutriente muda em 7 ou 30 dias. Identifique padrões, mantenha a consistência e compare com a sua meta diária.
+Veja como a sua ingestão de qualquer nutriente muda em 7 ou 30 dias. Identifique padrões e compare com a sua meta diária.
 
 * Resumo semanal de deficiências (Premium)
 Um resumo semanal aponta os nutrientes que andaram em falta, com alimentos que ajudariam a fechar a conta.
@@ -65,27 +68,34 @@ O Nutrient Logger é perfeito para quem leva nutrição a sério — seja numa d
 
 * Termos de Uso da Apple: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.2)
-• O Nutrient Logger agora é 100% sem anúncios
-• Seu resumo semanal de nutrientes agora destaca os Balanços de Nutrientes, e você escolhe quantos dias ele considera
-• Correções de bugs e polimento geral
+## What's New (v4.3)
+• Novidade: uma configuração personalizada que ajusta seu painel à sua alimentação e às suas metas desde o primeiro dia
+• Veja um dia de exemplo durante a configuração e saiba como seu painel vai ficar antes mesmo de registrar qualquer coisa
+• Já usa o app? Defina sua alimentação e seu foco quando quiser nos Ajustes de Nutrição
+• Escolha quantos nutrientes cada grupo mostra antes de "Mais"
+• Suas refeições e o resumo semanal de nutrientes agora aparecem mais acima no painel
+• Corrigido um travamento que podia acontecer logo na primeira abertura
 
 ## Screenshots
 1. Cada vitamina e mineral, não só as calorias
-2. Identifique deficiências antes que virem problemas
-3. Seus dados nunca saem do seu celular
+2. Ajustado ao seu jeito de comer
+    Escolha sua alimentação e seu foco - seus nutrientes principais vêm primeiro
+3. Identifique deficiências antes que virem problemas
+4. Seus dados nunca saem do seu celular
     100% offline. Sem conta, sem nuvem, sem anúncios, nunca
-4. Crie um hábito que dura
+5. Crie um hábito que dura
     Lembretes diários e sequências fazem você voltar
-5. Cuide da saúde inteira, não só do prato
+6. Cuide da saúde inteira, não só do prato
     Acompanhe peso e gordura corporal junto com a nutrição
-6. Metas feitas para o seu corpo
+7. Metas feitas para o seu corpo
     Valores personalizados por idade, sexo e atividade - ou defina os seus
-7. Tudo em um só lugar
+8. Tudo em um só lugar
     Sincroniza automaticamente com o app Saúde
-8. Suas refeições de sempre, a um toque
+9. Suas refeições de sempre, a um toque
     Salve o que você come com frequência e registre em segundos
-9. Registre qualquer coisa em segundos
+10. Registre qualquer coisa em segundos
     Escaneie um código de barras, pesquise milhares de alimentos ou adicione os seus
-10. Entenda por que importa
+
+Cut for v4.3 (10-screenshot limit), re-add if a slot frees up:
+- Entenda por que importa
     Explicações rápidas e claras de cada nutriente acompanhado
