@@ -19,6 +19,9 @@ struct User: Codable {
     public var proteinGoalGrams: Double? = nil
     public var waterGoalGrams: Double? = nil
     public var micronutrientGoals: [String: Double] = [:]
+    /// Custom upper limits, keyed by nutrient FDC number, in the same unit the RDI library
+    /// reports for that nutrient. Overrides the library's tolerable upper intake level.
+    public var micronutrientUpperLimits: [String: Double] = [:]
 
     /// The diet and focus the user picked during onboarding personalization. Persisted for reuse
     /// (deficiency insights, future diet "modes") beyond the one-time nutrient reordering they drive.
@@ -28,7 +31,7 @@ struct User: Codable {
     enum CodingKeys: String, CodingKey {
         case gender, birthdate, heightCm
         case calorieGoal, carbsGoalGrams, fatGoalGrams, proteinGoalGrams, waterGoalGrams
-        case micronutrientGoals
+        case micronutrientGoals, micronutrientUpperLimits
         case dietPreset, nutritionConcern
     }
 
@@ -42,6 +45,7 @@ struct User: Codable {
         proteinGoalGrams: Double? = nil,
         waterGoalGrams: Double? = nil,
         micronutrientGoals: [String: Double] = [:],
+        micronutrientUpperLimits: [String: Double] = [:],
         dietPreset: NutritionDietPreset? = nil,
         nutritionConcern: NutritionConcern? = nil
     ) {
@@ -54,6 +58,7 @@ struct User: Codable {
         self.proteinGoalGrams = proteinGoalGrams
         self.waterGoalGrams = waterGoalGrams
         self.micronutrientGoals = micronutrientGoals
+        self.micronutrientUpperLimits = micronutrientUpperLimits
         self.dietPreset = dietPreset
         self.nutritionConcern = nutritionConcern
     }
@@ -69,6 +74,7 @@ struct User: Codable {
         proteinGoalGrams = try container.decodeIfPresent(Double.self, forKey: .proteinGoalGrams)
         waterGoalGrams = try container.decodeIfPresent(Double.self, forKey: .waterGoalGrams)
         micronutrientGoals = try container.decodeIfPresent([String: Double].self, forKey: .micronutrientGoals) ?? [:]
+        micronutrientUpperLimits = try container.decodeIfPresent([String: Double].self, forKey: .micronutrientUpperLimits) ?? [:]
         dietPreset = try container.decodeIfPresent(NutritionDietPreset.self, forKey: .dietPreset)
         nutritionConcern = try container.decodeIfPresent(NutritionConcern.self, forKey: .nutritionConcern)
     }

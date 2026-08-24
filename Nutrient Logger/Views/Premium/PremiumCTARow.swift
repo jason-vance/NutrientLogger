@@ -25,7 +25,7 @@ struct PremiumCTARow: View {
         case .weightGoal:
             return "Track weight & body fat goals"
         case .micronutrientGoals:
-            return "Set custom micronutrient goals"
+            return "Set custom micronutrient goals & limits"
         case .csvExport:
             return "Export your data to CSV"
         case .healthSync:

@@ -49,7 +49,7 @@ struct MarketingView: View {
         case .weightGoal:
             return "Don't miss out on weight & body fat goal tracking"
         case .micronutrientGoals:
-            return "Don't miss out on custom micronutrient goals"
+            return "Don't miss out on custom micronutrient goals & upper limits"
         case .csvExport:
             return "Don't miss out on exporting your data to CSV"
         case .weeklyNutrientWatch:

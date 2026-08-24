@@ -239,4 +239,122 @@ struct NutrientGoalTests {
         #expect(decoded.micronutrientGoals["301"] == 1500)
         #expect(decoded.micronutrientGoals["303"] == 20)
     }
+
+    // MARK: - Custom upper limits
+
+    @Test func effectiveRdiReturnsCustomUpperLimitWhenSet() {
+        var user = User.sample
+        let rdiLibrary = UsdaNutrientRdiLibrary.create()
+        let sodiumId = FdcNutrientGroupMapper.NutrientNumber_Sodium_Na
+
+        user.micronutrientUpperLimits[sodiumId] = 1500
+
+        let effective = NutrientGoalDefaults.effectiveRdi(
+            for: sodiumId,
+            user: user,
+            rdiLibrary: rdiLibrary
+        )
+
+        #expect(effective != nil)
+        #expect(effective!.upperLimit == 1500)
+    }
+
+    @Test func customUpperLimitAloneKeepsLibraryRecommendedAmount() {
+        var user = User.sample
+        let rdiLibrary = UsdaNutrientRdiLibrary.create()
+        let calciumId = FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca
+
+        let libraryRdi = rdiLibrary.getRdis(calciumId)?.getRdi(user)
+        user.micronutrientUpperLimits[calciumId] = 1800
+
+        let effective = NutrientGoalDefaults.effectiveRdi(
+            for: calciumId,
+            user: user,
+            rdiLibrary: rdiLibrary
+        )
+
+        #expect(effective!.recommendedAmount == libraryRdi!.recommendedAmount)
+        #expect(effective!.unit == libraryRdi!.unit)
+        #expect(effective!.upperLimit == 1800)
+    }
+
+    @Test func customGoalAndUpperLimitApplyTogether() {
+        var user = User.sample
+        let rdiLibrary = UsdaNutrientRdiLibrary.create()
+        let calciumId = FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca
+
+        user.micronutrientGoals[calciumId] = 1500
+        user.micronutrientUpperLimits[calciumId] = 1800
+
+        let effective = NutrientGoalDefaults.effectiveRdi(
+            for: calciumId,
+            user: user,
+            rdiLibrary: rdiLibrary
+        )
+
+        #expect(effective!.recommendedAmount == 1500)
+        #expect(effective!.upperLimit == 1800)
+    }
+
+    @Test func effectiveRdiReturnsNilForUnknownNutrientWithNoUpperLimit() {
+        let user = User.sample
+        let rdiLibrary = UsdaNutrientRdiLibrary.create()
+
+        let effective = NutrientGoalDefaults.effectiveRdi(
+            for: "99999",
+            user: user,
+            rdiLibrary: rdiLibrary
+        )
+
+        #expect(effective == nil)
+    }
+
+    @Test func defaultUpperLimitIsNilWhenLibraryHasNoLimit() {
+        let user = User.sample
+        let rdiLibrary = UsdaNutrientRdiLibrary.create()
+
+        let limit = NutrientGoalDefaults.defaultUpperLimit(
+            for: "99999",
+            user: user,
+            rdiLibrary: rdiLibrary
+        )
+
+        #expect(limit == nil)
+    }
+
+    @Test func defaultUpperLimitIgnoresTheUsersCustomLimit() {
+        var user = User.sample
+        let rdiLibrary = UsdaNutrientRdiLibrary.create()
+        let calciumId = FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca
+
+        let libraryLimit = rdiLibrary.getRdis(calciumId)?.getRdi(user)?.upperLimit
+        user.micronutrientUpperLimits[calciumId] = 1
+
+        let limit = NutrientGoalDefaults.defaultUpperLimit(
+            for: calciumId,
+            user: user,
+            rdiLibrary: rdiLibrary
+        )
+
+        #expect(limit == libraryLimit)
+    }
+
+    @Test func micronutrientUpperLimitsSurviveJsonRoundTrip() throws {
+        var user = User(gender: .male)
+        user.micronutrientUpperLimits["307"] = 1500
+
+        let data = try JSONEncoder().encode(user)
+        let decoded = try JSONDecoder().decode(User.self, from: data)
+
+        #expect(decoded.micronutrientUpperLimits["307"] == 1500)
+    }
+
+    @Test func decodingAUserSavedBeforeUpperLimitsExistedGivesAnEmptyMap() throws {
+        let json = Data(#"{"gender":"male","micronutrientGoals":{"301":1500}}"#.utf8)
+
+        let decoded = try JSONDecoder().decode(User.self, from: json)
+
+        #expect(decoded.micronutrientGoals["301"] == 1500)
+        #expect(decoded.micronutrientUpperLimits.isEmpty)
+    }
 }

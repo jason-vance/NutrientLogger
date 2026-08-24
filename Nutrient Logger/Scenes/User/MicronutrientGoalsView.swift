@@ -38,13 +38,15 @@ struct MicronutrientGoalsView: View {
     }
 
     private func expandSectionsWithGoals() {
-        guard let goals = user?.micronutrientGoals, !goals.isEmpty else { return }
-        let hasGoal: (String) -> Bool = { group in
-            fieldsForGroup(group).contains { goals[$0.fdcNumber] != nil }
+        guard let user else { return }
+        let customized = Set(user.micronutrientGoals.keys).union(user.micronutrientUpperLimits.keys)
+        guard !customized.isEmpty else { return }
+        let hasTarget: (String) -> Bool = { group in
+            fieldsForGroup(group).contains { customized.contains($0.fdcNumber) }
         }
-        if hasGoal("Fatty Acids") { showFattyAcids = true }
-        if hasGoal("Amino Acids") { showAminoAcids = true }
-        if CustomFood.otherFields.contains(where: { goals[$0.fdcNumber] != nil }) {
+        if hasTarget("Fatty Acids") { showFattyAcids = true }
+        if hasTarget("Amino Acids") { showAminoAcids = true }
+        if CustomFood.otherFields.contains(where: { customized.contains($0.fdcNumber) }) {
             showOther = true
         }
     }
@@ -85,7 +87,7 @@ struct MicronutrientGoalsView: View {
         }
         .scrollDismissesKeyboard(.immediately)
         .listDefaultModifiers()
-        .navigationTitle("Micronutrient Goals")
+        .navigationTitle("Micronutrient Targets")
         .onAppear { fetchUser() }
         .onChange(of: user) { saveUser() }
         .fullScreenCover(isPresented: $showMarketingView) {
@@ -94,24 +96,59 @@ struct MicronutrientGoalsView: View {
     }
 
     @ViewBuilder private func GoalRow(field: CustomFood.FormField) -> some View {
-        let rdi = rdiLibrary.getRdis(field.fdcNumber)?.getRdi(user ?? User())
-        let placeholder = rdi.map { "\($0.recommendedAmount.formatted(maxDigits: 0))" } ?? "0"
+        let currentUser = user ?? User()
+        let rdi = rdiLibrary.getRdis(field.fdcNumber)?.getRdi(currentUser)
+        let goalPlaceholder = rdi.map { "\($0.recommendedAmount.formatted(maxDigits: 0))" } ?? "0"
+        let limitPlaceholder = NutrientGoalDefaults
+            .defaultUpperLimit(for: field.fdcNumber, user: currentUser, rdiLibrary: rdiLibrary)
+            .map { "\($0.formatted(maxDigits: 0))" } ?? "None"
 
-        HStack {
-            Text(field.name)
-            Spacer()
-            TextField(placeholder, text: goalBinding(for: field.fdcNumber))
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(field.name)
+                Spacer()
+                Text(field.unit)
+                    .foregroundStyle(.secondary)
+                    .font(.footnote)
+            }
+            HStack(spacing: 8) {
+                TargetField(
+                    title: "Goal",
+                    placeholder: goalPlaceholder,
+                    text: goalBinding(for: field.fdcNumber)
+                )
+                TargetField(
+                    title: "Limit",
+                    placeholder: limitPlaceholder,
+                    text: upperLimitBinding(for: field.fdcNumber)
+                )
+            }
+        }
+        .listRowDefaultModifiers()
+    }
+
+    @ViewBuilder private func TargetField(
+        title: String,
+        placeholder: String,
+        text: Binding<String>
+    ) -> some View {
+        HStack(spacing: 6) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            TextField(placeholder, text: text)
                 .keyboardType(.numberPad)
                 .multilineTextAlignment(.trailing)
                 .bold()
                 .foregroundStyle(Color.accentColor)
-                .frame(maxWidth: 80)
                 .disabled(!subscriptionManager.isSubscribed)
-            Text(field.unit)
-                .foregroundStyle(.secondary)
-                .font(.footnote)
         }
-        .listRowDefaultModifiers()
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .foregroundStyle(Color.text.opacity(0.06))
+        }
     }
 
     private func goalBinding(for nutrientId: String) -> Binding<String> {
@@ -136,6 +173,28 @@ struct MicronutrientGoalsView: View {
         )
     }
 
+    private func upperLimitBinding(for nutrientId: String) -> Binding<String> {
+        Binding(
+            get: {
+                if let v = user?.micronutrientUpperLimits[nutrientId] {
+                    return "\(v.formatted(maxDigits: 0))"
+                }
+                return ""
+            },
+            set: { newValue in
+                let hadLimit = user?.micronutrientUpperLimits[nutrientId] != nil
+                if newValue.isEmpty {
+                    user?.micronutrientUpperLimits.removeValue(forKey: nutrientId)
+                } else if let d = Double(newValue) {
+                    user?.micronutrientUpperLimits[nutrientId] = d
+                    if !hadLimit {
+                        engagementAnalytics.goalSet(goalName: "micronutrient limit")
+                    }
+                }
+            }
+        )
+    }
+
     @ViewBuilder private func PremiumBanner() -> some View {
         Section {
             VStack(spacing: 8) {
@@ -146,7 +205,7 @@ struct MicronutrientGoalsView: View {
                         .font(.headline)
                     Spacer()
                 }
-                Text("Subscribe to set custom micronutrient targets for vitamins, minerals, and more.")
+                Text("Subscribe to set custom goals and upper limits for vitamins, minerals, and more.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Button {

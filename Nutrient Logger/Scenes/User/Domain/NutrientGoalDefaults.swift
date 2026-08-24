@@ -42,7 +42,10 @@ struct NutrientGoalDefaults {
 
         let baseRdi = rdiLibrary.getRdis(nutrientId)?.getRdi(user)
 
-        guard let customGoal = user.micronutrientGoals[nutrientId] else {
+        let customGoal = user.micronutrientGoals[nutrientId]
+        let customUpperLimit = user.micronutrientUpperLimits[nutrientId]
+
+        guard customGoal != nil || customUpperLimit != nil else {
             return baseRdi
         }
 
@@ -55,10 +58,22 @@ struct NutrientGoalDefaults {
             gender: .unknown,
             minAgeYears: 0,
             maxAgeYears: .greatestFiniteMagnitude,
-            recommendedAmount: customGoal,
-            upperLimit: baseRdi?.upperLimit ?? .greatestFiniteMagnitude,
+            recommendedAmount: customGoal ?? baseRdi?.recommendedAmount ?? 0,
+            upperLimit: customUpperLimit ?? baseRdi?.upperLimit ?? .greatestFiniteMagnitude,
             unit: unit
         )
+    }
+
+    /// The upper limit the RDI library would use for this nutrient, ignoring any custom
+    /// limit the user has set. Drives the placeholder in the limit editor.
+    static func defaultUpperLimit(
+        for nutrientId: String,
+        user: User,
+        rdiLibrary: NutrientRdiLibrary
+    ) -> Double? {
+        guard let upperLimit = rdiLibrary.getRdis(nutrientId)?.getRdi(user)?.upperLimit else { return nil }
+        guard upperLimit > 0, upperLimit < .greatestFiniteMagnitude else { return nil }
+        return upperLimit
     }
 
     private static func macroGoalRdi(for nutrientId: String, user: User) -> LifeStageNutrientRdi? {

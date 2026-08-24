@@ -282,7 +282,7 @@ struct NutritionSettingsSheet: View {
             } label: {
                 VStack {
                     HStack {
-                        Text("Micronutrient Goals")
+                        Text("Micronutrient Targets")
                         if !subscriptionManager.isSubscribed {
                             Text("PREMIUM")
                                 .font(.caption2.bold())
@@ -299,7 +299,7 @@ struct NutritionSettingsSheet: View {
                             .foregroundStyle(.secondary)
                     }
                     HStack {
-                        Text("Set custom targets for vitamins and minerals")
+                        Text("Set custom goals and upper limits for vitamins and minerals")
                         Spacer()
                     }
                     .font(.caption)
