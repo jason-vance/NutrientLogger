@@ -56,6 +56,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
     @State private var deficiencies: [DeficientNutrient] = []
     @State private var highNutrients: [HighNutrient] = []
     @State private var balances: [NutrientBalanceResult] = []
+    @State private var balanceContributions: [String: BalanceContributions] = [:]
     @State private var selectedBalance: NutrientBalanceResult?
 
     @AppStorage(NutrientBalanceSettings.hiddenKey) private var balanceHiddenRaw: String = ""
@@ -106,6 +107,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
             deficiencies = []
             highNutrients = []
             balances = []
+            balanceContributions = [:]
             return
         }
 
@@ -125,6 +127,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
             deficiencies = results.deficiencies
             highNutrients = results.highNutrients
             balances = results.balances
+            balanceContributions = results.balanceContributions
         }
     }
 
@@ -132,6 +135,8 @@ struct DashboardWeeklyNutrientWatchSection: View {
         var deficiencies: [DeficientNutrient] = []
         var highNutrients: [HighNutrient] = []
         var balances: [NutrientBalanceResult] = []
+        /// Keyed by balance id; only the balances that actually came back out of range.
+        var balanceContributions: [String: BalanceContributions] = [:]
     }
 
     // Hits the on-disk food database, so this must run off the main thread (called from a Task)
@@ -144,32 +149,53 @@ struct DashboardWeeklyNutrientWatchSection: View {
         rdiLibrary: NutrientRdiLibrary,
         remoteDatabase: RemoteDatabase
     ) -> WeeklyWatchResults {
-        let ratioIds = ratios.flatMap { $0.allNutrientIds }
+        let ratioIds = Set(ratios.flatMap { $0.allNutrientIds })
         let idsToAggregate = Set(trackedNutrientIds).union(ratioIds)
-        let (daysWithData, totals) = aggregateTotals(
+        let (daysWithData, totals, gramsByNutrientAndFood) = aggregateTotals(
             foods: foods,
             nutrientIds: idsToAggregate,
+            contributionNutrientIds: ratioIds,
             remoteDatabase: remoteDatabase
         )
         guard daysWithData > 0 else { return WeeklyWatchResults() }
 
+        let balances = computeBalances(totals: totals, ratios: ratios)
+        let ratiosById = Dictionary(uniqueKeysWithValues: ratios.map { ($0.id, $0) })
+
         return WeeklyWatchResults(
             deficiencies: computeDeficiencies(totals: totals, daysWithData: daysWithData, user: user, rdiLibrary: rdiLibrary),
             highNutrients: computeHighs(totals: totals, daysWithData: daysWithData, user: user, rdiLibrary: rdiLibrary),
-            balances: computeBalances(totals: totals, ratios: ratios)
+            balances: balances,
+            balanceContributions: balances.reduce(into: [:]) { result, balance in
+                guard let ratio = ratiosById[balance.id] else { return }
+                result[balance.id] = NutrientBalanceContributors.contributions(
+                    for: ratio,
+                    gramsByNutrientAndFood: gramsByNutrientAndFood
+                )
+            }
         )
     }
 
     /// Sums each nutrient's daily intake across the days that have logged food, keeping one
     /// representative `Nutrient` (for its unit/name) per id. Grouping by date means empty days
     /// don't count against the average, matching how deficiencies are measured.
+    ///
+    /// For the nutrients named in `contributionNutrientIds` it also keeps a per-food breakdown
+    /// (in grams, the unit balances are computed in) so the balance sheet can name the foods
+    /// driving each side of a ratio.
     private static func aggregateTotals(
         foods: [ConsumedFood],
         nutrientIds: Set<String>,
+        contributionNutrientIds: Set<String>,
         remoteDatabase: RemoteDatabase
-    ) -> (daysWithData: Int, totals: [String: (total: Double, nutrient: Nutrient)]) {
+    ) -> (
+        daysWithData: Int,
+        totals: [String: (total: Double, nutrient: Nutrient)],
+        gramsByNutrientAndFood: [String: [String: Double]]
+    ) {
         let foodsByDate = Dictionary(grouping: foods) { $0.dateLogged }
         var totals: [String: (total: Double, nutrient: Nutrient)] = [:]
+        var gramsByNutrientAndFood: [String: [String: Double]] = [:]
 
         for (_, dayFoods) in foodsByDate {
             let foodItems: [FoodItem] = dayFoods.compactMap { consumedFood in
@@ -188,6 +214,14 @@ struct DashboardWeeklyNutrientWatchSection: View {
                 let pairs = dayAggregator.nutrientsByNutrientNumber[nutrientId] ?? []
                 let amount = pairs.reduce(into: 0.0) { $0 += $1.nutrient.amount }
 
+                if contributionNutrientIds.contains(nutrientId) {
+                    for pair in pairs {
+                        let grams = WeightUnit.unitFrom(pair.nutrient).convertTo(.gram, pair.nutrient.amount)
+                        guard grams > 0 else { continue }
+                        gramsByNutrientAndFood[nutrientId, default: [:]][pair.food.name, default: 0] += grams
+                    }
+                }
+
                 if var existing = totals[nutrientId] {
                     existing.total += amount
                     totals[nutrientId] = existing
@@ -200,7 +234,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
             }
         }
 
-        return (foodsByDate.count, totals)
+        return (foodsByDate.count, totals, gramsByNutrientAndFood)
     }
 
     private static func computeDeficiencies(
@@ -390,7 +424,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
                     .font(.subheadline.bold())
                 Spacer()
             }
-            Text("Tap a nutrient for its trend, or a balance for what it means")
+            Text("Tap a nutrient for its trend, or a balance for the foods behind it")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -448,6 +482,9 @@ struct DashboardWeeklyNutrientWatchSection: View {
     }
 
     @ViewBuilder private func BalanceInfoSheet(_ balance: NutrientBalanceResult) -> some View {
+        let ratio = effectiveRatios.first { $0.id == balance.id }
+        let contributions = balanceContributions[balance.id] ?? .empty
+
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
@@ -467,6 +504,19 @@ struct DashboardWeeklyNutrientWatchSection: View {
                         .font(.body)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
+
+                    if let ratio, !contributions.isEmpty {
+                        ContributingFoods(
+                            label: ratio.numeratorLabel,
+                            foods: contributions.numerator,
+                            color: .purple
+                        )
+                        ContributingFoods(
+                            label: ratio.denominatorLabel,
+                            foods: contributions.denominator,
+                            color: .green
+                        )
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
@@ -480,7 +530,57 @@ struct DashboardWeeklyNutrientWatchSection: View {
                 }
             }
         }
-        .presentationDetents([.medium])
+        .presentationDetents([.medium, .large])
+    }
+
+    /// The foods behind one side of the balance, so the user can see *what* to eat more or less
+    /// of rather than only that the ratio is off.
+    @ViewBuilder private func ContributingFoods(
+        label: String,
+        foods: [NutrientContribution],
+        color: Color
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Top \(label) sources")
+                .font(.caption.bold())
+                .foregroundStyle(color)
+
+            if foods.isEmpty {
+                Text("Nothing logged \(WeeklyWatchWindow.summarySuffix(forDays: windowDays))")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                VStack(spacing: 6) {
+                    ForEach(foods) { food in
+                        ContributingFoodRow(food, color: color)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder private func ContributingFoodRow(_ food: NutrientContribution, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(food.foodName)
+                    .font(.caption)
+                    .lineLimit(2)
+                Spacer(minLength: 8)
+                Text(food.amountText)
+                    .font(.caption.bold())
+                Text(food.shareText)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .frame(width: 38, alignment: .trailing)
+            }
+            GeometryReader { geometry in
+                Capsule()
+                    .fill(color.opacity(0.6))
+                    .frame(width: max(2, geometry.size.width * food.share))
+            }
+            .frame(height: 4)
+        }
     }
 
     @ViewBuilder private func BalanceStat(title: String, value: String, color: Color) -> some View {

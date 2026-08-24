@@ -185,6 +185,7 @@
 				Scenes/Dashboard/Domain/GoalProgressBarLayout.swift,
 				Scenes/Dashboard/Domain/HighLimitCalculator.swift,
 				Scenes/Dashboard/Domain/NutrientBalanceCalculator.swift,
+				Scenes/Dashboard/Domain/NutrientBalanceContributors.swift,
 				Scenes/Dashboard/Domain/NutrientDataAggregator.swift,
 				Scenes/Dashboard/Domain/NutrientRatio.swift,
 				Scenes/Export/CsvExportService.swift,
