@@ -27,7 +27,7 @@ struct MicronutrientGoalsView: View {
     @State private var showOther: Bool = false
 
     private var fieldsForGroup: (String) -> [CustomFood.FormField] {
-        { group in CustomFood.formFields.filter { $0.group == group } }
+        { group in MicronutrientTargetFields.fields(forGroup: group) }
     }
 
     private func fetchUser() {
