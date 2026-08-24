@@ -12,6 +12,9 @@ struct DailyNutrientTotal: Identifiable {
     var id: SimpleDate { date }
     let date: SimpleDate
     let amount: Double
+    /// True when at least one food was logged on this day, even if it contains
+    /// none of the nutrient being charted.
+    let hasLoggedFoods: Bool
 }
 
 class NutrientTrendDataProvider {
@@ -35,7 +38,13 @@ class NutrientTrendDataProvider {
         while current <= endDate {
             let foods = foodsByDate[current] ?? []
             let amount = totalForNutrient(nutrientNumber, from: foods)
-            results.append(DailyNutrientTotal(date: current, amount: amount))
+            results.append(
+                DailyNutrientTotal(
+                    date: current,
+                    amount: amount,
+                    hasLoggedFoods: !foods.isEmpty
+                )
+            )
             current = current.adding(days: 1)
         }
         return results

@@ -49,17 +49,23 @@ struct WaterTrendView: View {
         )
     }
 
-    private var average: Double {
-        guard !dailyTotals.isEmpty else { return 0 }
-        return dailyTotals.reduce(0) { $0 + $1.amount } / Double(dailyTotals.count)
+    /// Summary stats only consider days with something logged, so that days the
+    /// user skipped logging don't drag the numbers down.
+    private var loggedDays: [DailyNutrientTotal] {
+        dailyTotals.filter(\.hasLoggedFoods)
     }
 
-    private var highestDay: DailyNutrientTotal? { dailyTotals.max(by: { $0.amount < $1.amount }) }
-    private var lowestDay: DailyNutrientTotal? { dailyTotals.min(by: { $0.amount < $1.amount }) }
+    private var average: Double {
+        guard !loggedDays.isEmpty else { return 0 }
+        return loggedDays.reduce(0) { $0 + $1.amount } / Double(loggedDays.count)
+    }
+
+    private var highestDay: DailyNutrientTotal? { loggedDays.max(by: { $0.amount < $1.amount }) }
+    private var lowestDay: DailyNutrientTotal? { loggedDays.min(by: { $0.amount < $1.amount }) }
 
     private var daysAtGoal: Int? {
         guard goalInUnit > 0 else { return nil }
-        return dailyTotals.filter { $0.amount >= goalInUnit }.count
+        return loggedDays.filter { $0.amount >= goalInUnit }.count
     }
 
     private func loadData() {
@@ -90,6 +96,7 @@ struct WaterTrendView: View {
         dailyTotals = WaterTrendDataProvider().dailyTotals(
             directWaterData: waterData,
             foodWaterGramsByDate: foodWaterGramsByDate,
+            daysWithLoggedFood: Set(foodWaterTotals.filter(\.hasLoggedFoods).map(\.date)),
             startDate: startDate,
             endDate: endDate,
             unit: waterUnit
@@ -162,32 +169,42 @@ struct WaterTrendView: View {
     @ViewBuilder private func SummarySection() -> some View {
         if !isLoading {
             Section {
-                SummaryRow(
-                    label: "Daily Average",
-                    value: "\(average.formatted(maxDigits: 1)) \(waterUnit.rawValue)"
-                )
-                if let daysAtGoal {
+                if loggedDays.isEmpty {
+                    Text("Nothing logged in this period.")
+                        .foregroundStyle(Color.text.opacity(0.5))
+                        .listRowDefaultModifiers()
+                } else {
                     SummaryRow(
-                        label: "Days at Goal",
-                        value: "\(daysAtGoal) of \(dailyTotals.count)"
+                        label: "Daily Average",
+                        value: "\(average.formatted(maxDigits: 1)) \(waterUnit.rawValue)"
                     )
-                }
-                if let highestDay {
-                    SummaryRow(
-                        label: "Highest Day",
-                        value: "\(highestDay.amount.formatted(maxDigits: 1)) \(waterUnit.rawValue)",
-                        detail: highestDay.date.formatted()
-                    )
-                }
-                if let lowestDay {
-                    SummaryRow(
-                        label: "Lowest Day",
-                        value: "\(lowestDay.amount.formatted(maxDigits: 1)) \(waterUnit.rawValue)",
-                        detail: lowestDay.date.formatted()
-                    )
+                    if let daysAtGoal {
+                        SummaryRow(
+                            label: "Days at Goal",
+                            value: "\(daysAtGoal) of \(loggedDays.count)"
+                        )
+                    }
+                    if let highestDay {
+                        SummaryRow(
+                            label: "Highest Day",
+                            value: "\(highestDay.amount.formatted(maxDigits: 1)) \(waterUnit.rawValue)",
+                            detail: highestDay.date.formatted()
+                        )
+                    }
+                    if let lowestDay {
+                        SummaryRow(
+                            label: "Lowest Day",
+                            value: "\(lowestDay.amount.formatted(maxDigits: 1)) \(waterUnit.rawValue)",
+                            detail: lowestDay.date.formatted()
+                        )
+                    }
                 }
             } header: {
                 Text("Summary")
+            } footer: {
+                if !loggedDays.isEmpty, loggedDays.count < dailyTotals.count {
+                    Text("Based on the \(loggedDays.count) days with something logged. Days with nothing logged are left out.")
+                }
             }
         }
     }

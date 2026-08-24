@@ -12,6 +12,7 @@ class WaterTrendDataProvider {
     func dailyTotals(
         directWaterData: [(date: SimpleDate, amountGrams: Double)],
         foodWaterGramsByDate: [SimpleDate: Double] = [:],
+        daysWithLoggedFood: Set<SimpleDate> = [],
         startDate: SimpleDate,
         endDate: SimpleDate,
         unit: WaterUnit
@@ -21,9 +22,16 @@ class WaterTrendDataProvider {
         var results: [DailyNutrientTotal] = []
         var current = startDate
         while current <= endDate {
-            let directGrams = (directByDate[current] ?? []).reduce(0) { $0 + $1.amountGrams }
+            let direct = directByDate[current] ?? []
+            let directGrams = direct.reduce(0) { $0 + $1.amountGrams }
             let foodGrams = foodWaterGramsByDate[current] ?? 0
-            results.append(DailyNutrientTotal(date: current, amount: unit.fromGrams(directGrams + foodGrams)))
+            results.append(
+                DailyNutrientTotal(
+                    date: current,
+                    amount: unit.fromGrams(directGrams + foodGrams),
+                    hasLoggedFoods: !direct.isEmpty || daysWithLoggedFood.contains(current)
+                )
+            )
             current = current.adding(days: 1)
         }
         return results

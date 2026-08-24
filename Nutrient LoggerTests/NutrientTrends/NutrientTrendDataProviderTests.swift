@@ -19,6 +19,18 @@ final class NutrientTrendDataProviderTests: XCTestCase {
         provider = NutrientTrendDataProvider(remoteDatabase: mockDatabase)
     }
 
+    private func makeConsumedFood(dateLogged: SimpleDate) -> ConsumedFood {
+        ConsumedFood(
+            fdcId: 1,
+            name: "Honey",
+            portionAmount: 1,
+            portionGramWeight: 100,
+            portionName: "cup",
+            dateLogged: dateLogged,
+            mealTime: .breakfast
+        )
+    }
+
     func testDateRangeSevenDays() {
         let today = SimpleDate(year: 2026, month: 6, day: 24)!
         let range = NutrientTrendDataProvider.dateRange(days: 7, endingOn: today)
@@ -65,6 +77,53 @@ final class NutrientTrendDataProviderTests: XCTestCase {
         for total in totals {
             XCTAssertEqual(total.amount, 0)
         }
+    }
+
+    func testEmptyDaysAreNotMarkedAsLogged() {
+        let start = SimpleDate(year: 2026, month: 6, day: 22)!
+        let end = SimpleDate(year: 2026, month: 6, day: 24)!
+
+        let totals = provider.dailyTotals(
+            for: FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca,
+            consumedFoods: [],
+            startDate: start,
+            endDate: end
+        )
+
+        XCTAssertTrue(totals.allSatisfy { !$0.hasLoggedFoods })
+    }
+
+    func testOnlyDaysWithFoodsAreMarkedAsLogged() {
+        let start = SimpleDate(year: 2026, month: 6, day: 22)!
+        let loggedDate = SimpleDate(year: 2026, month: 6, day: 23)!
+        let end = SimpleDate(year: 2026, month: 6, day: 24)!
+
+        let totals = provider.dailyTotals(
+            for: FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca,
+            consumedFoods: [makeConsumedFood(dateLogged: loggedDate)],
+            startDate: start,
+            endDate: end
+        )
+
+        XCTAssertEqual(totals.count, 3)
+        XCTAssertFalse(totals[0].hasLoggedFoods)
+        XCTAssertTrue(totals[1].hasLoggedFoods)
+        XCTAssertFalse(totals[2].hasLoggedFoods)
+    }
+
+    func testDayIsMarkedAsLoggedEvenWhenItHasNoneOfTheNutrient() {
+        let day = SimpleDate(year: 2026, month: 6, day: 22)!
+
+        let totals = provider.dailyTotals(
+            for: "an-unknown-nutrient-number",
+            consumedFoods: [makeConsumedFood(dateLogged: day)],
+            startDate: day,
+            endDate: day
+        )
+
+        XCTAssertEqual(totals.count, 1)
+        XCTAssertEqual(totals[0].amount, 0)
+        XCTAssertTrue(totals[0].hasLoggedFoods)
     }
 
     func testDateRangeCrossesMonthBoundary() {

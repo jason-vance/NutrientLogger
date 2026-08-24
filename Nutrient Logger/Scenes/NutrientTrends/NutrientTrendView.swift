@@ -54,24 +54,30 @@ struct NutrientTrendView: View {
         return rdi.convertedTo(foodsUnit)
     }
 
+    /// Summary stats only consider days that have food logged, so that days the
+    /// user skipped logging don't drag the numbers down.
+    private var loggedDays: [DailyNutrientTotal] {
+        dailyTotals.filter(\.hasLoggedFoods)
+    }
+
     private var average: Double {
-        guard !dailyTotals.isEmpty else { return 0 }
-        return dailyTotals.reduce(0) { $0 + $1.amount } / Double(dailyTotals.count)
+        guard !loggedDays.isEmpty else { return 0 }
+        return loggedDays.reduce(0) { $0 + $1.amount } / Double(loggedDays.count)
     }
 
     private var highestDay: DailyNutrientTotal? {
-        dailyTotals.max(by: { $0.amount < $1.amount })
+        loggedDays.max(by: { $0.amount < $1.amount })
     }
 
     private var lowestDay: DailyNutrientTotal? {
-        dailyTotals.min(by: { $0.amount < $1.amount })
+        loggedDays.min(by: { $0.amount < $1.amount })
     }
 
     private var daysAboveGoal: Int? {
         guard let rdi = chartRdi, rdi.recommendedAmount > 0, rdi.recommendedAmount < .greatestFiniteMagnitude else {
             return nil
         }
-        return dailyTotals.filter { $0.amount >= rdi.recommendedAmount }.count
+        return loggedDays.filter { $0.amount >= rdi.recommendedAmount }.count
     }
 
     private func loadData() {
@@ -167,32 +173,42 @@ struct NutrientTrendView: View {
     @ViewBuilder private func SummarySection() -> some View {
         if !isLoading {
             Section {
-                SummaryRow(
-                    label: "Daily Average",
-                    value: "\(average.formatted(maxDigits: 1))\(nutrient.unitName)"
-                )
-                if let daysAboveGoal {
+                if loggedDays.isEmpty {
+                    Text("No foods logged in this period.")
+                        .foregroundStyle(Color.text.opacity(0.5))
+                        .listRowDefaultModifiers()
+                } else {
                     SummaryRow(
-                        label: "Days at Goal",
-                        value: "\(daysAboveGoal) of \(dailyTotals.count)"
+                        label: "Daily Average",
+                        value: "\(average.formatted(maxDigits: 1))\(nutrient.unitName)"
                     )
-                }
-                if let highestDay {
-                    SummaryRow(
-                        label: "Highest Day",
-                        value: "\(highestDay.amount.formatted(maxDigits: 1))\(nutrient.unitName)",
-                        detail: highestDay.date.formatted()
-                    )
-                }
-                if let lowestDay {
-                    SummaryRow(
-                        label: "Lowest Day",
-                        value: "\(lowestDay.amount.formatted(maxDigits: 1))\(nutrient.unitName)",
-                        detail: lowestDay.date.formatted()
-                    )
+                    if let daysAboveGoal {
+                        SummaryRow(
+                            label: "Days at Goal",
+                            value: "\(daysAboveGoal) of \(loggedDays.count)"
+                        )
+                    }
+                    if let highestDay {
+                        SummaryRow(
+                            label: "Highest Day",
+                            value: "\(highestDay.amount.formatted(maxDigits: 1))\(nutrient.unitName)",
+                            detail: highestDay.date.formatted()
+                        )
+                    }
+                    if let lowestDay {
+                        SummaryRow(
+                            label: "Lowest Day",
+                            value: "\(lowestDay.amount.formatted(maxDigits: 1))\(nutrient.unitName)",
+                            detail: lowestDay.date.formatted()
+                        )
+                    }
                 }
             } header: {
                 Text("Summary")
+            } footer: {
+                if !loggedDays.isEmpty, loggedDays.count < dailyTotals.count {
+                    Text("Based on the \(loggedDays.count) days with logged food. Days without any logged food are left out.")
+                }
             }
         }
     }

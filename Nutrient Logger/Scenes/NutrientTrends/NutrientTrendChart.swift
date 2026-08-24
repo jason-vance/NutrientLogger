@@ -33,11 +33,6 @@ struct NutrientTrendChart: View {
         return max(dataMax, rdiMax) * 1.1
     }
 
-    private var average: Double {
-        guard !dailyTotals.isEmpty else { return 0 }
-        return dailyTotals.reduce(0) { $0 + $1.amount } / Double(dailyTotals.count)
-    }
-
     private var showDayLabels: Bool {
         dailyTotals.count <= 7
     }
