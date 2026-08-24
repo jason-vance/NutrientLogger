@@ -24,6 +24,7 @@ struct NutrientTrendView: View {
 
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) private var colorScheme
 
     @Inject private var remoteDatabase: RemoteDatabase
     @Inject private var rdiLibrary: NutrientRdiLibrary
@@ -33,6 +34,8 @@ struct NutrientTrendView: View {
     @State private var period: TrendPeriod = .sevenDay
     @State private var dailyTotals: [DailyNutrientTotal] = []
     @State private var isLoading: Bool = true
+    @State private var isExplanationLoaded: Bool = false
+    @State private var infoString: AttributedString = ""
 
     let nutrient: Nutrient
     let colorPalette: ColorPalette
@@ -80,6 +83,20 @@ struct NutrientTrendView: View {
         return loggedDays.filter { $0.amount >= rdi.recommendedAmount }.count
     }
 
+    private func loadExplanation() async {
+        guard NutrientExplanationMaker.canMakeFor(nutrient.fdcNumber) else {
+            isExplanationLoaded = false
+            return
+        }
+
+        do {
+            infoString = try await NutrientExplanationMaker.make(nutrient.fdcNumber, colorScheme: colorScheme)
+            isExplanationLoaded = true
+        } catch {
+            print("Failed to load explanation for \(nutrient.name): \(error)")
+        }
+    }
+
     private func loadData() {
         isLoading = true
 
@@ -121,6 +138,7 @@ struct NutrientTrendView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
         .onChange(of: period, initial: true) { loadData() }
+        .task { await loadExplanation() }
         .onAppear { engagementAnalytics.trendNutrientViewed(nutrientName: nutrient.name) }
     }
 
@@ -136,6 +154,23 @@ struct NutrientTrendView: View {
                 Image(systemName: "arrow.backward")
             }
         }
+        ToolbarItem(placement: .topBarTrailing) {
+            InfoButton()
+        }
+    }
+
+    @ViewBuilder private func InfoButton() -> some View {
+        NavigationLink {
+            NutrientInfoView(
+                nutrientName: nutrient.name,
+                infoString: infoString
+            )
+        } label: {
+            Image(systemName: "info.circle")
+        }
+        .disabled(!isExplanationLoaded)
+        .opacity(isExplanationLoaded ? 1 : 0)
+        .animation(.snappy, value: isExplanationLoaded)
     }
 
     @ViewBuilder private func PeriodPicker() -> some View {

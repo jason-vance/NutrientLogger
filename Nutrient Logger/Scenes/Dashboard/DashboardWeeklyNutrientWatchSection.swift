@@ -390,7 +390,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
                     .font(.subheadline.bold())
                 Spacer()
             }
-            Text("Tap an item for foods that would help, its trend, or what a balance means")
+            Text("Tap a nutrient for its trend, or a balance for what it means")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -399,7 +399,10 @@ struct DashboardWeeklyNutrientWatchSection: View {
                 FlowLayout(spacing: 6) {
                     ForEach(deficiencies) { deficiency in
                         NavigationLink {
-                            NutrientLibraryDetailView(nutrient: deficiency.nutrient)
+                            NutrientTrendView(
+                                nutrient: deficiency.nutrient,
+                                colorPalette: colorPalette(for: deficiency.id)
+                            )
                         } label: {
                             Chip(dotColor: deficiencyColor(for: deficiency.percentage), text: deficiency.name)
                         }
