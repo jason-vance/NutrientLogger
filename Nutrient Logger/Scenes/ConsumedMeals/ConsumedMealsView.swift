@@ -15,6 +15,9 @@ struct ConsumedMealsView: View {
     @EnvironmentObject private var dataController: DataController
 
     let date: SimpleDate
+    /// When set, the list jumps to this meal's card on appear, so tapping a meal on the
+    /// dashboard lands on that meal rather than at the top of the day.
+    var scrollToMealTime: MealTime? = nil
 
     @Query private var consumedFoods: [ConsumedFood]
 
@@ -40,19 +43,30 @@ struct ConsumedMealsView: View {
     }
 
     var body: some View {
-        List {
-            ForEach(meals) { meal in
-                ConsumedMealCard(
-                    meal: meal,
-                    date: date,
-                    onDeleteRequested: { mealPendingDelete = meal },
-                    onFoodTapped: { foodBeingEdited = $0 },
-                    onAddFoodTapped: { mealAddingFoodTo = meal }
-                )
-                .listRowDefaultModifiers()
+        ScrollViewReader { proxy in
+            List {
+                ForEach(meals) { meal in
+                    ConsumedMealCard(
+                        meal: meal,
+                        date: date,
+                        onDeleteRequested: { mealPendingDelete = meal },
+                        onFoodTapped: { foodBeingEdited = $0 },
+                        onAddFoodTapped: { mealAddingFoodTo = meal }
+                    )
+                    .listRowDefaultModifiers()
+                    .id(meal.mealTime)
+                }
+            }
+            .listDefaultModifiers()
+            .onAppear {
+                guard let scrollToMealTime else { return }
+                // The cards size themselves as their foods load, so scroll on the next runloop
+                // pass to land on the right offset instead of a stale one.
+                DispatchQueue.main.async {
+                    proxy.scrollTo(scrollToMealTime, anchor: .top)
+                }
             }
         }
-        .listDefaultModifiers()
         .navigationTitle("\(date.formatted())'s Meals")
         // These live on the List itself (not inside each row's view) so a single, stable
         // navigationDestination handles every meal card — attaching one per row/card is a known

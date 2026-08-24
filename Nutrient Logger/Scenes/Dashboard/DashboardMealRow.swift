@@ -56,7 +56,7 @@ struct DashboardMealRow: View {
 
     var body: some View {
         NavigationLink {
-            ConsumedMealsView(date: date)
+            ConsumedMealsView(date: date, scrollToMealTime: meal.mealTime)
         } label: {
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
