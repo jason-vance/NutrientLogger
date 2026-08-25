@@ -12,7 +12,7 @@ Micronutrientes, 100% offline
 vitamina,mineral,deficiência,cronometer,myfitnesspal,calorias,keto,vegano,macros,nutrição,diário
 
 ## Promotional Text (151/170 chars)
-v4.3: diga como você come e o que te preocupa, e sua aba de Nutrição coloca no topo os nutrientes que costumam faltar. Continua sem anúncios e offline.
+v4.4: defina seus próprios limites máximos, não só metas — segure o sódio onde quiser. E se uma proporção sai do eixo, veja os alimentos por trás dela.
 
 ## Description
 O Nutrient Logger é o rastreador nutricional offline para quem quer saber o que realmente tem na sua comida — não só calorias e macros, mas todo o espectro de vitaminas, minerais e aminoácidos de que o seu corpo precisa.
@@ -25,34 +25,34 @@ Principais recursos:
 Diga como você come — equilibrado, à base de plantas, keto ou low-carb, carnívoro ou pescetariano — e o que mais importa para você, da energia a ossos e articulações. O Nutrient Logger leva para o topo da sua aba de Nutrição os nutrientes que você tem mais chance de deixar faltando. Dá para mudar suas respostas quando quiser nos ajustes.
 
 * Análise nutricional detalhada
-Veja sua ingestão diária de macro e micronutrientes, de proteína e fibras a magnésio e vitamina B12. Escolha os nutrientes que importam para você, reordene-os e defina quantos cada grupo mostra de cara, montando uma aba de Nutrição do jeito dos seus objetivos.
+Veja sua ingestão diária de macro e micronutrientes, de proteína e fibras a magnésio e vitamina B12. Escolha os nutrientes que importam para você, reordene-os e defina quantos cada grupo mostra, montando uma aba de Nutrição do seu jeito.
 
 * Leitor de código de barras
-Escaneie qualquer alimento embalado para obter na hora os dados nutricionais. Se não reconhecermos um código, você pode buscar manualmente ou adicionar como alimento personalizado — nada impede o seu registro.
+Escaneie qualquer alimento embalado para obter na hora os dados nutricionais. Código não reconhecido? Busque manualmente ou adicione como alimento personalizado.
 
 * Banco de alimentos completo
-Pesquise entre dezenas de milhares de alimentos, de ingredientes in natura a produtos embalados, para registrar refeições com precisão. A busca inteligente entende o que você quer dizer e encontra o alimento certo na hora.
+Pesquise entre dezenas de milhares de alimentos, de ingredientes in natura a produtos embalados, para registrar refeições com precisão. A busca inteligente encontra o alimento certo na hora.
 
-* Registre qualquer coisa
-Escaneie códigos de barras, pesquise no banco de dados ou adicione seus próprios alimentos — e salve suas refeições de sempre para registrar mais rápido na próxima vez.
+* Refeições salvas
+Salve as refeições que você repete e registre-as de novo com um toque.
 
 * Metas personalizadas
-Defina suas próprias metas de calorias, macros e micronutrientes — ou use os valores diários recomendados de acordo com idade e sexo. Acompanhe seu progresso com gráficos de tendência para calorias, macros, água e cada nutriente.
+Defina suas próprias metas de calorias, macros e micronutrientes — e seus próprios limites máximos, para segurar o sódio, ou qualquer outro nutriente, exatamente onde quiser. Ou use os valores diários recomendados por idade e sexo, e acompanhe seu progresso com gráficos de tendência para calorias, macros, água e cada nutriente.
 
 * Controle de água
-Registre água com um toque e veja o indicador animado encher rumo à sua meta diária. Acompanhe suas tendências de hidratação em 7 ou 30 dias (Premium).
+Registre água com um toque e veja o indicador encher rumo à sua meta diária. Acompanhe suas tendências de hidratação em 7 ou 30 dias (Premium).
 
 * Medidas corporais e metas (Premium)
 Acompanhe peso, gordura corporal, IMC e circunferência da cintura — escolha o que importa para você. Defina uma meta com prazo e o Nutrient Logger calcula o ritmo necessário, projeta sua trajetória e define uma meta calórica baseada em BMR/TDEE.
 
 * Sequências e conquistas
-Construa uma sequência diária de registro e uma sequência semanal de acompanhamento corporal, com comemorações a cada marco. Veja sua maior sequência, total de dias registrados e mais no seu perfil.
+Construa uma sequência diária de registro e uma sequência semanal de acompanhamento corporal, com comemorações a cada marco.
 
 * Gráficos de tendência de nutrientes (Premium)
-Veja como a sua ingestão de qualquer nutriente muda em 7 ou 30 dias. Identifique padrões e compare com a sua meta diária.
+Veja como a sua ingestão de qualquer nutriente muda em 7 ou 30 dias. Identifique padrões e compare com a sua meta diária — as estatísticas contam só os dias que você registrou.
 
-* Resumo semanal de deficiências (Premium)
-Um resumo semanal aponta os nutrientes que andaram em falta, com alimentos que ajudariam a fechar a conta.
+* Acompanhamento semanal de nutrientes (Premium)
+Um resumo semanal aponta os nutrientes que andaram em falta, com alimentos que fechariam a conta. Ele também acompanha as proporções Ômega-6 : Ômega-3, Sódio : Potássio, Zinco : Cobre e Cálcio : Magnésio, e aponta os alimentos por trás da que sai do eixo.
 
 * Sincronização com o app Saúde (Premium)
 Grave automaticamente calorias, proteínas, gorduras, carboidratos e água no app Saúde da Apple. Importe seu peso do Saúde para manter tudo em um só lugar.
@@ -68,13 +68,14 @@ O Nutrient Logger é perfeito para quem leva nutrição a sério — seja numa d
 
 * Termos de Uso da Apple: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.3)
-• Novidade: uma configuração personalizada que ajusta seu painel à sua alimentação e às suas metas desde o primeiro dia
-• Veja um dia de exemplo durante a configuração e saiba como seu painel vai ficar antes mesmo de registrar qualquer coisa
-• Já usa o app? Defina sua alimentação e seu foco quando quiser nos Ajustes de Nutrição
-• Escolha quantos nutrientes cada grupo mostra antes de "Mais"
-• Suas refeições e o resumo semanal de nutrientes agora aparecem mais acima no painel
-• Corrigido um travamento que podia acontecer logo na primeira abertura
+## What's New (v4.4)
+• Defina seu próprio limite máximo para qualquer vitamina ou mineral, não só uma meta
+• O sódio agora aceita meta e limite — segure ele exatamente onde você quiser
+• Quando uma proporção de nutrientes sai do eixo, toque nela e veja os alimentos dos dois lados por trás disso
+• As estatísticas de tendência contam só os dias que você registrou: dias pulados não derrubam mais a sua média
+• Nutrientes baixos no resumo semanal agora abrem o gráfico de tendência, igual aos altos
+• Os gráficos de tendência ganharam um botão de informação que explica o nutriente
+• Tocar em uma refeição no painel leva direto até ela
 
 ## Screenshots
 1. Cada vitamina e mineral, não só as calorias
@@ -96,6 +97,6 @@ O Nutrient Logger é perfeito para quem leva nutrição a sério — seja numa d
 10. Registre qualquer coisa em segundos
     Escaneie um código de barras, pesquise milhares de alimentos ou adicione os seus
 
-Cut for v4.3 (10-screenshot limit), re-add if a slot frees up:
+Cut for v4.4 (10-screenshot limit), re-add if a slot frees up:
 - Entenda por que importa
     Explicações rápidas e claras de cada nutriente acompanhado

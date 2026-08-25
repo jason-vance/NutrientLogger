@@ -11,8 +11,8 @@ Micronutriments hors ligne
 ## Keywords (99/100 chars)
 vitamine,minéraux,carence,cronometer,myfitnesspal,calories,céto,végan,macro,nutrition,journal,repas
 
-## Promotional Text (153/170 chars)
-v4.3 : dites-nous comment vous mangez et ce qui vous préoccupe, et votre onglet Nutrition place en tête les nutriments qui vous manquent le plus souvent.
+## Promotional Text (156/170 chars)
+v4.4 : définissez vos propres limites, pas seulement des objectifs — plafonnez le sodium où vous voulez. Et si un ratio dérive, voyez les aliments derrière.
 
 ## Description
 Nutrient Logger est le tracker nutritionnel 100 % hors ligne pour qui veut savoir ce que contient vraiment son alimentation — pas seulement les calories et les macros, mais tout le spectre de vitamines, minéraux et acides aminés dont votre corps a besoin.
@@ -22,37 +22,37 @@ Contrairement aux trackers cloud, votre journal alimentaire ne quitte jamais vot
 Fonctionnalités principales :
 
 * Personnalisé dès le premier jour
-Dites-nous comment vous mangez — équilibré, végétal, céto, carnivore ou pescétarien — et ce qui compte le plus pour vous, de l'énergie aux os et articulations. Nutrient Logger remonte en haut de votre onglet Nutrition les nutriments qui risquent le plus de vous manquer. Modifiable à tout moment dans les réglages.
+Dites-nous comment vous mangez — équilibré, végétal, céto, carnivore ou pescétarien — et ce qui compte le plus pour vous, de l'énergie aux os et articulations. Nutrient Logger remonte en haut de votre onglet Nutrition les nutriments qui risquent le plus de vous manquer. Modifiable à tout moment.
 
 * Analyse nutritionnelle détaillée
-Visualisez votre apport quotidien en macro et micronutriments, des protéines et fibres au magnésium et à la vitamine B12. Choisissez les nutriments qui comptent, réorganisez-les et décidez combien chaque groupe affiche, pour un onglet Nutrition adapté à vos objectifs.
+Visualisez votre apport quotidien en macro et micronutriments, des protéines et fibres au magnésium et à la vitamine B12. Choisissez les nutriments qui comptent, réorganisez-les et décidez combien chaque groupe affiche.
 
 * Scanner de codes-barres
-Scannez n'importe quel aliment emballé pour récupérer instantanément ses données nutritionnelles. Code-barres non reconnu ? Cherchez manuellement ou créez un aliment personnalisé — rien ne vous empêche d'enregistrer.
+Scannez n'importe quel aliment emballé pour récupérer instantanément ses données nutritionnelles. Non reconnu ? Cherchez manuellement ou créez un aliment personnalisé.
 
 * Base alimentaire complète
-Cherchez parmi des dizaines de milliers d'aliments, ingrédients bruts comme produits emballés. La recherche intelligente comprend ce que vous voulez dire et trouve le bon aliment instantanément.
+Cherchez parmi des dizaines de milliers d'aliments, ingrédients bruts comme produits emballés. La recherche intelligente trouve le bon aliment instantanément.
 
-* Enregistrez tout
-Scannez un code-barres, cherchez dans la base ou créez vos aliments — et sauvegardez vos repas habituels pour les consigner plus vite.
+* Repas enregistrés
+Sauvegardez les repas que vous répétez et consignez-les d'un seul geste.
 
 * Objectifs personnalisés
-Définissez vos propres objectifs de calories, macros et micronutriments — ou utilisez les apports recommandés selon votre âge et votre sexe. Suivez vos progrès avec des courbes de tendance pour les calories, les macros, l'eau et chaque nutriment.
+Définissez vos propres objectifs de calories, macros et micronutriments — et vos propres limites hautes, pour plafonner le sodium, ou tout autre nutriment, exactement où vous voulez. Ou utilisez les apports recommandés selon votre âge et votre sexe, et suivez vos progrès avec des courbes de tendance pour les calories, les macros, l'eau et chaque nutriment.
 
 * Suivi de l'hydratation
-Enregistrez votre eau d'un geste et regardez le tracker animé se remplir vers votre objectif. Tendances d'hydratation sur 7 ou 30 jours (Premium).
+Enregistrez votre eau d'un geste et regardez le tracker se remplir vers votre objectif. Tendances d'hydratation sur 7 ou 30 jours (Premium).
 
 * Mesures corporelles et objectifs (Premium)
-Suivez poids, masse grasse, IMC et tour de taille — choisissez ce qui compte. Fixez un objectif et une échéance : Nutrient Logger calcule le rythme nécessaire, projette votre trajectoire et définit un objectif calorique basé sur votre métabolisme.
+Suivez poids, masse grasse, IMC et tour de taille — choisissez ce qui compte. Fixez un objectif et une échéance : Nutrient Logger calcule le rythme nécessaire et définit un objectif calorique basé sur votre métabolisme.
 
 * Séries et succès
-Construisez une série quotidienne d'enregistrement et une série hebdomadaire de suivi corporel, avec des célébrations à chaque palier. Votre plus longue série et votre total de jours enregistrés s'affichent sur votre profil.
+Construisez une série quotidienne d'enregistrement et une série hebdomadaire de suivi corporel, avec des célébrations à chaque palier.
 
 * Courbes de tendance des nutriments (Premium)
-Voyez comment votre apport de n'importe quel nutriment évolue sur 7 ou 30 jours. Repérez les tendances et comparez à votre objectif quotidien.
+Voyez comment votre apport de n'importe quel nutriment évolue sur 7 ou 30 jours. Repérez les tendances et comparez à votre objectif quotidien — les statistiques ne comptent que les jours réellement enregistrés.
 
-* Bilan hebdomadaire des carences (Premium)
-Un récapitulatif hebdomadaire signale les nutriments qui vous ont manqué, avec des aliments pour combler l'écart.
+* Bilan hebdomadaire des nutriments (Premium)
+Un récapitulatif hebdomadaire signale les nutriments qui vous ont manqué, avec des aliments pour combler l'écart. Il surveille aussi vos ratios Oméga-6 : Oméga-3, Sodium : Potassium, Zinc : Cuivre et Calcium : Magnésium, et nomme les aliments derrière celui qui dérive.
 
 * Synchronisation Apple Santé (Premium)
 Écrivez automatiquement vos calories, protéines, lipides, glucides et eau dans Apple Santé. Importez votre poids depuis Santé pour tout centraliser.
@@ -68,13 +68,14 @@ Nutrient Logger est parfait pour quiconque prend la nutrition au sérieux — r�
 
 * Conditions d'utilisation Apple : https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.3)
-• Nouveau : une configuration personnalisée qui adapte votre tableau de bord à votre alimentation et à vos objectifs dès le premier jour
-• Découvrez une journée type pendant la configuration : vous voyez à quoi ressemblera votre tableau de bord avant même d'enregistrer quoi que ce soit
-• Déjà utilisateur ? Définissez votre alimentation et votre priorité à tout moment dans les réglages Nutrition
-• Choisissez combien de nutriments chaque groupe affiche avant « Plus »
-• Vos repas et votre bilan hebdomadaire des nutriments sont désormais plus haut dans le tableau de bord
-• Correction d'un plantage possible au tout premier lancement
+## What's New (v4.4)
+• Définissez votre propre limite haute pour chaque vitamine et minéral, pas seulement un objectif
+• Le sodium peut désormais recevoir un objectif et une limite — plafonnez-le où vous voulez
+• Si un équilibre de nutriments dérive, touchez-le pour voir les aliments des deux côtés qui en sont la cause
+• Les statistiques de tendance ne comptent que les jours enregistrés : les jours sautés ne tirent plus votre moyenne vers le bas
+• Les nutriments faibles du bilan hebdomadaire ouvrent maintenant la courbe de tendance, comme les élevés
+• Les courbes de tendance ont un bouton d'info qui explique le nutriment
+• Toucher un repas sur le tableau de bord vous y amène directement
 
 ## Screenshots
 1. Chaque vitamine et minéral, pas seulement les calories
@@ -96,6 +97,6 @@ Nutrient Logger est parfait pour quiconque prend la nutrition au sérieux — r�
 10. Enregistrez tout en quelques secondes
     Scannez un code-barres, cherchez parmi des milliers d'aliments ou ajoutez les vôtres
 
-Cut for v4.3 (10-screenshot limit), re-add if a slot frees up:
+Cut for v4.4 (10-screenshot limit), re-add if a slot frees up:
 - Comprenez pourquoi c'est important
     Des explications simples et claires pour chaque nutriment suivi

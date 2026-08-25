@@ -11,8 +11,8 @@ Mikronäring, helt offline
 ## Keywords (99/100 chars)
 vitamin,mineral,brist,cronometer,myfitnesspal,kalorier,keto,vegan,makro,näring,kostdagbok,matdagbok
 
-## Promotional Text (151/170 chars)
-v4.3: berätta hur du äter och vad du fokuserar på — din Näring-flik lägger de näringsämnen du lättast missar överst. Fortfarande annonsfri och offline.
+## Promotional Text (155/170 chars)
+v4.4: sätt egna övre gränser, inte bara mål — håll natrium där du vill. Och när en kvot glider, se livsmedlen bakom den. Fortfarande annonsfri och offline.
 
 ## Description
 Nutrient Logger är den offline-first-baserade näringstrackern för dig som vill veta vad din mat faktiskt innehåller — inte bara kalorier och makron, utan hela spektrumet av vitaminer, mineraler och aminosyror som kroppen behöver.
@@ -37,7 +37,7 @@ Sök bland tiotusentals livsmedel, både råvaror och förpackade varor, och log
 Skanna streckkoder, sök i databasen eller lägg till egna varor — och spara dina vanligaste måltider för att logga snabbare nästa gång.
 
 * Personliga mål
-Sätt egna mål för kalorier, makron och mikronäringsämnen — eller använd rekommenderade dagsvärden utifrån ålder och kön. Följ dina framsteg och håll balansen, med trendkurvor för kalorier, makron och vatten utöver varje näringsämne.
+Sätt egna mål för kalorier, makron och mikronäringsämnen — och egna övre gränser, så att du kan hålla natrium, eller vilket annat näringsämne som helst, precis där du vill. Eller använd rekommenderade dagsvärden utifrån ålder och kön, och följ dina framsteg med trendkurvor för kalorier, makron och vatten utöver varje näringsämne.
 
 * Vattenkoll
 Logga vatten med ett tryck och se den animerade trackern fyllas mot ditt dagsmål. Se dina hydreringstrender över 7 eller 30 dagar (Premium).
@@ -49,10 +49,10 @@ Följ vikt, kroppsfett, BMI och midjemått — välj vad som är viktigt för di
 Bygg en daglig loggningssvit och en veckovis kroppssvit, med firanden vid varje milstolpe. Se din längsta svit, totalt loggade dagar och mer på din profil.
 
 * Trendkurvor för näringsämnen (Premium)
-Se hur ditt intag av vilket näringsämne som helst förändras över 7 eller 30 dagar. Upptäck mönster, håll koll på din konsekvens och jämför med ditt dagsmål.
+Se hur ditt intag av vilket näringsämne som helst förändras över 7 eller 30 dagar. Upptäck mönster och jämför med ditt dagsmål — statistiken räknar bara de dagar du faktiskt loggat.
 
-* Veckovisa bristinsikter (Premium)
-En veckosammanfattning flaggar de näringsämnen du fått för lite av, med livsmedel som kan täppa till luckan.
+* Veckovis näringskoll (Premium)
+En veckosammanfattning flaggar de näringsämnen du fått för lite av, med livsmedel som täpper till luckan. Den håller även koll på kvoterna Omega-6 : Omega-3, Natrium : Kalium, Zink : Koppar och Kalcium : Magnesium, och pekar ut livsmedlen bakom den som glider.
 
 * Apple Hälsa-synk (Premium)
 Skriv automatiskt dagens kalorier, protein, fett, kolhydrater och vatten till Apple Hälsa. Importera vikt från Hälsa så att allt finns på ett ställe.
@@ -68,13 +68,14 @@ Nutrient Logger passar alla som tar näring på allvar — oavsett om du följer
 
 * Apples användarvillkor: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.3)
-• Nytt: en personlig start som anpassar din översikt efter hur du äter och vad du vill uppnå, redan från dag ett
-• Se en exempeldag redan under introduktionen — du vet hur din översikt kommer att se ut innan du loggat något
-• Använder du appen redan? Ställ in kost och fokus när som helst i Näringsinställningarna
-• Välj hur många näringsämnen varje grupp visar innan "Mer"
-• Dina måltider och din veckovisa näringskoll ligger nu högre upp i översikten
-• Åtgärdade en krasch som kunde inträffa vid allra första starten
+## What's New (v4.4)
+• Sätt en egen övre gräns för vilket vitamin eller mineral som helst, inte bara ett mål
+• Natrium går nu att sätta både mål och gräns för — håll det precis där du vill
+• När en näringskvot glider, tryck på den och se livsmedlen på båda sidor som ligger bakom
+• Trendstatistiken räknar bara de dagar du loggat — överhoppade dagar drar inte längre ner snittet
+• Låga näringsämnen i veckokollen öppnar nu trendkurvan, precis som de höga
+• Trendkurvor har fått en infoknapp som förklarar näringsämnet
+• Tryck på en måltid på översikten så hoppar du direkt till den
 
 ## Screenshots
 1. Varje vitamin och mineral, inte bara kalorier
@@ -96,6 +97,6 @@ Nutrient Logger passar alla som tar näring på allvar — oavsett om du följer
 10. Logga vad som helst på sekunder
     Skanna en streckkod, sök bland tusentals livsmedel eller lägg till egna
 
-Cut for v4.3 (10-screenshot limit), re-add if a slot frees up:
+Cut for v4.4 (10-screenshot limit), re-add if a slot frees up:
 - Förstå varför det spelar roll
     Snabba, tydliga förklaringar av varje näringsämne du följer

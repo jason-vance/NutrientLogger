@@ -11,8 +11,8 @@ Micronutriënten, 100% offline
 ## Keywords (99/100 chars)
 vitamine,mineralen,tekort,cronometer,myfitnesspal,calorieën,keto,veganistisch,macro,voeding,dagboek
 
-## Promotional Text (164/170 chars)
-v4.3: vertel ons hoe je eet en waar je op let, dan zet je Voeding-tabblad de voedingsstoffen die je het snelst mist bovenaan. Nog steeds advertentievrij en offline.
+## Promotional Text (151/170 chars)
+v4.4: stel je eigen bovengrenzen in, niet alleen doelen — begrens natrium waar jij wilt. En loopt een verhouding scheef, zie dan de producten erachter.
 
 ## Description
 Nutrient Logger is de offline-first voedingstracker voor iedereen die wil weten wat er écht in hun eten zit — niet alleen calorieën en macro's, maar het volledige spectrum aan vitaminen, mineralen en aminozuren dat je lichaam nodig heeft.
@@ -28,31 +28,31 @@ Vertel ons hoe je eet — gevarieerd, plantaardig, keto of koolhydraatarm, carni
 Bekijk je dagelijkse inname van macro- en micronutriënten, van eiwit en vezels tot magnesium en vitamine B12. Kies welke voedingsstoffen voor jou tellen, zet ze in je eigen volgorde en bepaal hoeveel elke groep in één oogopslag toont, voor een Voeding-tabblad dat bij je doelen past.
 
 * Barcodescanner
-Scan elk verpakt product en haal direct de voedingswaarden binnen. Herkennen we een barcode niet, dan zoek je handmatig of voeg je het toe als eigen product — niets houdt je tegen om te loggen.
+Scan elk verpakt product en haal direct de voedingswaarden binnen. Barcode niet herkend? Zoek handmatig of voeg het toe als eigen product.
 
 * Uitgebreide voedingsdatabase
 Zoek in tienduizenden producten, van verse ingrediënten tot verpakte artikelen, en log je maaltijden nauwkeurig. De slimme zoekfunctie begrijpt wat je bedoelt en vindt meteen het juiste product.
 
-* Log alles
-Scan barcodes, zoek in de database of voeg je eigen producten toe — en bewaar je vaste maaltijden om ze de volgende keer sneller te loggen.
+* Bewaarde maaltijden
+Bewaar de maaltijden die je vaak eet en log ze de volgende keer met één tik.
 
 * Persoonlijke doelen
-Stel je eigen doelen in voor calorieën, macro's en micronutriënten — of gebruik aanbevolen dagwaarden op basis van leeftijd en geslacht. Volg je voortgang en blijf in balans, met trendgrafieken voor calorieën, macro's en water naast elke voedingsstof.
+Stel je eigen doelen in voor calorieën, macro's en micronutriënten — en je eigen bovengrenzen, om natrium, of elke andere voedingsstof, precies te begrenzen waar jij wilt. Of gebruik aanbevolen dagwaarden op basis van leeftijd en geslacht, en volg je voortgang met trendgrafieken voor calorieën, macro's en water naast elke voedingsstof.
 
 * Water bijhouden
-Log water met één tik en zie de geanimeerde tracker vollopen richting je dagdoel. Bekijk je hydratatietrends over 7 of 30 dagen (Premium).
+Log water met één tik en zie de tracker vollopen richting je dagdoel. Bekijk je hydratatietrends over 7 of 30 dagen (Premium).
 
 * Lichaamswaarden & doelen (Premium)
 Volg gewicht, vetpercentage, BMI en tailleomvang — kies wat voor jou telt. Stel een doel met deadline in en Nutrient Logger berekent het benodigde tempo, projecteert je koers en bepaalt een caloriedoel op basis van BMR/TDEE.
 
 * Streaks & prestaties
-Bouw een dagelijkse log-streak en een wekelijkse lichaams-streak op, met mijlpaalvieringen onderweg. Bekijk je langste streak, je totaal aantal gelogde dagen en meer op je profiel.
+Bouw een dagelijkse log-streak en een wekelijkse lichaams-streak op, met mijlpaalvieringen onderweg.
 
 * Trendgrafieken per voedingsstof (Premium)
-Zie hoe je inname van elke voedingsstof verandert over 7 of 30 dagen. Herken patronen, houd je consistentie bij en vergelijk met je dagdoel.
+Zie hoe je inname van elke voedingsstof verandert over 7 of 30 dagen. Herken patronen en vergelijk met je dagdoel — de statistieken tellen alleen de dagen die je echt hebt gelogd.
 
-* Wekelijkse tekort-inzichten (Premium)
-Een wekelijks overzicht markeert de voedingsstoffen waar je te weinig van binnenkreeg, met producten die het gat helpen dichten.
+* Wekelijkse voedingscheck (Premium)
+Een wekelijks overzicht markeert de voedingsstoffen waar je te weinig van binnenkreeg, met producten die het gat dichten. Het bewaakt ook je verhoudingen Omega-6 : Omega-3, Natrium : Kalium, Zink : Koper en Calcium : Magnesium, en noemt de producten achter de scheve.
 
 * Apple Gezondheid-synchronisatie (Premium)
 Schrijf je dagelijkse calorieën, eiwit, vet, koolhydraten en water automatisch naar Apple Gezondheid. Importeer je gewicht uit Gezondheid en houd alles op één plek.
@@ -68,13 +68,14 @@ Nutrient Logger is perfect voor iedereen die voeding serieus neemt — of je nu 
 
 * Apple-gebruiksvoorwaarden: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.3)
-• Nieuw: een persoonlijke setup die je dashboard vanaf dag één afstemt op hoe je eet en wat je wilt bereiken
-• Zie tijdens de setup een voorbeelddag, zodat je weet hoe je dashboard eruitziet voordat je iets logt
-• Gebruik je de app al? Stel je voedingsstijl en focus altijd in via de Voeding-instellingen
-• Kies hoeveel voedingsstoffen elke groep toont vóór "Meer"
-• Je maaltijden en je wekelijkse voedingscheck staan nu hoger op het dashboard
-• Een crash bij de allereerste start opgelost
+## What's New (v4.4)
+• Stel voor elke vitamine of mineraal je eigen bovengrens in, niet alleen een doel
+• Ook natrium kun je nu een doel en een grens geven — begrens het precies waar jij wilt
+• Loopt een voedingsbalans scheef, tik erop en zie de producten aan beide kanten die dat veroorzaken
+• Trendstatistieken tellen alleen de dagen die je hebt gelogd: overgeslagen dagen drukken je gemiddelde niet meer
+• Lage voedingsstoffen in het weekoverzicht openen nu de trendgrafiek, net als de hoge
+• Trendgrafieken hebben een infoknop die de voedingsstof uitlegt
+• Tik je op een maaltijd in het dashboard, dan spring je er direct naartoe
 
 ## Screenshots
 1. Elke vitamine en elk mineraal, niet alleen calorieën
@@ -96,6 +97,6 @@ Nutrient Logger is perfect voor iedereen die voeding serieus neemt — of je nu 
 10. Log alles in seconden
     Scan een barcode, zoek in duizenden producten of voeg je eigen toe
 
-Cut for v4.3 (10-screenshot limit), re-add if a slot frees up:
+Cut for v4.4 (10-screenshot limit), re-add if a slot frees up:
 - Begrijp waarom het ertoe doet
     Korte, heldere uitleg bij elke voedingsstof die je volgt

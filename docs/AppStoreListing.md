@@ -13,8 +13,8 @@ Micronutrients, Fully Offline
 ## Keywords (100/100 chars)
 vitamin,mineral,deficiency,cronometer,myfitnesspal,vitacost,carnivore,keto,vegan,macro,usda,diet,log
 
-## Promotional Text (155/170 chars)
-v4.3: Tell us your diet and what you're focused on, and your Nutrition tab puts the nutrients you're most likely to miss up top. Still ad-free and offline.
+## Promotional Text (165/170 chars)
+v4.4: Set your own upper limits, not just goals - cap sodium where you want it. And when a nutrient ratio drifts, see the foods behind it. Still ad-free and offline.
 
 ## Description
 Nutrient Logger is the offline-first nutrition tracker for people who want to know what's actually in their food - not just calories and macros, but the full spectrum of vitamins, minerals, and amino acids your body needs.
@@ -33,28 +33,28 @@ See your daily intake of both macro and micronutrients, from protein and fiber t
 Scan any packaged food to instantly pull in its nutrition data. If we don't recognize a barcode, you can search manually or add it as a custom food - nothing stops you from logging.
 
 * Extensive Food Database
-Search from tens of thousands of foods, including whole ingredients and packaged items, to log meals with precision. Smart search understands what you mean - type "whole milk" and find it instantly, even expand common shortcuts like "OJ" or "PB".
+Search from tens of thousands of foods, including whole ingredients and packaged items, to log meals with precision. Smart search understands what you mean - type "whole milk" and find it instantly, or shortcuts like "OJ" and "PB".
 
-* Log Anything
-Scan barcodes, search our database, or add your own - and save your go-to meals for faster logging next time.
+* Saved Meals
+Save the meals you eat often and log them again in a single tap.
 
 * Personalized Targets
-Set your own calorie, macro, and micronutrient goals - or use recommended daily values based on your age and sex. Track your progress and stay balanced, with trend charts for calories, macros, and water alongside every nutrient.
+Set your own calorie, macro, and micronutrient goals - and your own upper limits, so you can cap sodium, or any other nutrient, exactly where you want it. Or use recommended daily values based on your age and sex, and track your progress with trend charts for calories, macros, and water alongside every nutrient.
 
 * Water Tracking
-Log water with one tap and watch an animated tracker fill toward your daily goal. See your hydration trends over 7 or 30 days (Premium).
+Log water with one tap and watch the tracker fill toward your daily goal. See your hydration trends over 7 or 30 days (Premium).
 
 * Body Metrics & Goals (Premium)
-Track weight, body fat, BMI, and waist circumference - pick which ones matter to you. Set a goal and deadline and Nutrient Logger calculates the pace you need, projects your trajectory, and sets a BMR/TDEE-based calorie target to get you there.
+Track weight, body fat, BMI, and waist circumference - pick which ones matter. Set a goal and deadline and Nutrient Logger calculates the pace you need, projects your trajectory, and sets a BMR/TDEE-based calorie target to get you there.
 
 * Streaks & Achievements
-Build a daily logging streak and a weekly body-tracking streak, with milestone celebrations along the way. See your longest streak, total days logged, and more on your profile.
+Build a daily logging streak and a weekly body-tracking streak, with milestone celebrations along the way.
 
 * Nutrient Trend Charts (Premium)
-See how your intake of any nutrient changes over 7 or 30 days. Spot patterns, track consistency, and compare against your daily target.
+See how your intake of any nutrient changes over 7 or 30 days. Spot patterns, track consistency, and compare against your daily target - summary stats count only the days you actually logged.
 
-* Weekly Deficiency Insights (Premium)
-A weekly digest flags the nutrients you've been running low on, with foods that would help close the gap.
+* Weekly Nutrient Watch (Premium)
+A weekly digest flags the nutrients you've been running low on, with foods that would close the gap. It also tracks the pairs that only matter in ratio - Omega-6 : Omega-3, Sodium : Potassium, Zinc : Copper, Calcium : Magnesium - and when one drifts, names the foods on both sides driving it.
 
 * Apple Health Sync (Premium)
 Automatically write your daily calories, protein, fat, carbs, and water to Apple Health. Import weight data from Health to keep everything in one place.
@@ -70,13 +70,14 @@ Nutrient Logger is perfect for anyone serious about nutrition-whether you’re o
 
 * Apple Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
-## What's New (v4.3)
-• New: a personalized setup that tunes your dashboard to your diet and goals from day one
-• See a sample day during setup, so you know what your dashboard will look like before you log anything
-• Already using the app? Set your diet and focus anytime from Nutrition Settings
-• Choose how many nutrients each group shows before "More"
-• Your meals and weekly nutrient watch now sit higher on the dashboard
-• Fixed a crash that could happen on the very first launch
+## What's New (v4.4)
+• Set your own upper limit for any vitamin or mineral, not just a goal - Micronutrient Goals is now Micronutrient Targets
+• Sodium joins the minerals you can set a target for, so you can cap it where you want it
+• When a nutrient balance drifts, tap it to see the foods on both sides driving it
+• Trend stats now count only the days you logged, so skipped days no longer drag down your average
+• Low nutrients in the weekly watch now open the trend chart, matching the High ones
+• Trend charts gained an info button explaining what the nutrient does
+• Tapping a meal on the dashboard scrolls straight to that meal
 
 ## Screenshots
 1. Every vitamin and mineral, not just calories
@@ -98,6 +99,6 @@ Nutrient Logger is perfect for anyone serious about nutrition-whether you’re o
 10. Log Anything in Seconds
     Scan a barcode, search thousands of foods, or add your own
 
-Cut for v4.3 (10-screenshot limit), re-add if a slot frees up:
+Cut for v4.4 (10-screenshot limit), re-add if a slot frees up:
 - Understand Why It Matters
     Quick, clear explanations for every nutrient you track
