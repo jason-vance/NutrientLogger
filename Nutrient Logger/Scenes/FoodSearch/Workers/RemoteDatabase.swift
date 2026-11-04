@@ -10,6 +10,7 @@ import Foundation
 protocol RemoteDatabase {
     func search(_ query: String) throws -> [FdcSearchableFood]
     func searchSimilar(productName: String, brand: String?, limit: Int) throws -> [FdcSearchableFood]
+    func correctedQuery(for query: String) -> String?
     func getFood(_ foodId: String) throws -> FoodItem?
     func getPortions(_ food: FoodItem) throws -> [Portion]
     func getNutrient(withId: String) -> Nutrient?
@@ -19,6 +20,8 @@ protocol RemoteDatabase {
 }
 
 extension RemoteDatabase {
+    func correctedQuery(for query: String) -> String? { nil }
+
     func searchSimilar(productName: String, brand: String?, limit: Int) throws -> [FdcSearchableFood] {
         []
     }

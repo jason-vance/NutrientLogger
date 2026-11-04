@@ -52,13 +52,59 @@ public class FtsQueryGenerator {
     }
 
     static func tokenize(_ query: String) -> [String] {
-        let expanded = expandAbbreviations(query)
+        let expanded = expandAbbreviations(withoutQuantities(query))
         let tokens = withoutPunctuation(expanded)
             .split(separator: " ")
             .map { String($0) }
         let filtered = tokens.filter { !stopWords.contains($0.lowercased()) }
         let result = (filtered.isEmpty ? tokens : filtered).unique()
         return result
+    }
+
+    // Words that mean the same food but aren't spelled the way USDA names it.
+    // Only used as a fallback when the user's own words find nothing.
+    static let synonyms: [String: String] = [
+        "coke": "soft drink cola",
+        "soda": "soft drink",
+        "yoghurt": "yogurt",
+        "yoghurts": "yogurt",
+        "aubergine": "eggplant",
+        "courgette": "zucchini",
+        "prawn": "shrimp",
+        "prawns": "shrimp",
+        "porridge": "oatmeal",
+        "crisps": "chips",
+        "garbanzo": "chickpeas",
+        "coriander": "cilantro",
+        "capsicum": "pepper",
+    ]
+
+    private static let quantityUnits: Set<String> = [
+        "cup", "cups", "c", "tbsp", "tablespoon", "tablespoons", "tsp", "teaspoon", "teaspoons",
+        "oz", "ounce", "ounces", "g", "gram", "grams", "lb", "lbs", "pound", "pounds", "ml",
+        "slice", "slices", "piece", "pieces", "serving", "servings", "scoop", "scoops",
+        "large", "medium", "small", "x",
+    ]
+
+    // "2 eggs", "1 cup rice", "100g chicken" -> drop the amount so it doesn't have to match
+    // the food's name. A number keeps its place when it's part of the name, like "2% milk".
+    static func withoutQuantities(_ query: String) -> String {
+        let tokens = query.split(separator: " ").map(String.init)
+        var kept: [String] = []
+        var afterNumber = false
+        for token in tokens {
+            let lower = token.lowercased()
+            if lower.wholeMatch(of: #/\d+([./]\d+)?(g|oz|ml|x)?/#) != nil {
+                afterNumber = true
+                continue
+            }
+            if afterNumber && quantityUnits.contains(lower) {
+                continue
+            }
+            afterNumber = false
+            kept.append(token)
+        }
+        return kept.isEmpty ? query : kept.joined(separator: " ")
     }
 
     static func expandAbbreviations(_ query: String) -> String {
@@ -98,6 +144,10 @@ public class FtsQueryGenerator {
             stemmed = String(token.dropLast(2))
         } else if lower.hasSuffix("s") && !lower.hasSuffix("ss") && token.count > 2 {
             stemmed = String(token.dropLast(1))
+        } else if lower.hasSuffix("y") && token.count > 3,
+                  let beforeY = lower.dropLast().last, !"aeiou".contains(beforeY) {
+            // "strawberry" -> "strawberri", so the prefix also matches "Strawberries"
+            stemmed = String(token.dropLast(1)) + "i"
         } else {
             stemmed = nil
         }

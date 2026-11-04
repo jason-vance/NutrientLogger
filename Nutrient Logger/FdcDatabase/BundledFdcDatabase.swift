@@ -194,44 +194,42 @@ class BundledFdcDatabase: RemoteDatabase {
         foods = foods.filter { seen.insert($0.fdcId).inserted }
 
         let tokens = FtsQueryGenerator.tokenize(query)
-        return BundledFdcDatabase.rankByTokenPosition(foods, tokens: tokens)
+        return FoodSearchRanker.rank(foods, tokens: tokens)
     }
 
-    static func rankByTokenPosition(
-        _ foods: [FdcSearchableFood],
-        tokens: [String]
-    ) -> [FdcSearchableFood] {
-        let lowerTokens = tokens.map { $0.lowercased() }
+    // Built on first use from every food name, so typos can be matched to real words.
+    private var spellCorrector: SearchSpellCorrector?
+    private let spellCorrectorLock = NSLock()
 
-        return foods
-            .map { food in (food, positionScore(food.description, tokens: lowerTokens)) }
-            .sorted { $0.1 < $1.1 }
-            .map(\.0)
+    private func getSpellCorrector() throws -> SearchSpellCorrector {
+        spellCorrectorLock.lock()
+        defer { spellCorrectorLock.unlock() }
+        if let spellCorrector { return spellCorrector }
+        let names = try legacyData.allFoodNames() + surveyData.allFoodNames()
+        let corrector = SearchSpellCorrector(foodNames: names)
+        spellCorrector = corrector
+        return corrector
     }
 
-    // Lower score = better match. Each token contributes the index of the
-    // comma-separated part where it first appears as a word prefix.
-    // Unmatched tokens get a penalty of (partCount).
-    private static func positionScore(_ description: String, tokens: [String]) -> Int {
-        let parts = description.split(separator: ",").map {
-            $0.trimmingCharacters(in: .whitespaces).lowercased()
-        }
-
-        var score = 0
-        for token in tokens {
-            var bestIndex = parts.count
-            for (i, part) in parts.enumerated() {
-                let words = part.split(separator: " ")
-                if words.contains(where: { $0.hasPrefix(token) }) {
-                    bestIndex = i
-                    break
-                }
+    // A rewritten query for when the user's words find nothing: synonyms ("coke" -> "soft drink cola")
+    // and typo fixes ("brocoli" -> "broccoli"). Nil when there's nothing to change.
+    public func correctedQuery(for query: String) -> String? {
+        guard let corrector = try? getSpellCorrector() else { return nil }
+        var changed = false
+        let rewritten = FtsQueryGenerator.tokenize(query).map { token -> String in
+            if let synonym = FtsQueryGenerator.synonyms[token.lowercased()] {
+                changed = true
+                return synonym
             }
-            score += bestIndex
+            if let fixed = corrector.correct(token) {
+                changed = true
+                return fixed
+            }
+            return token
         }
-        return score
+        return changed ? rewritten.joined(separator: " ") : nil
     }
-    
+
     public func searchSimilar(productName: String, brand: String?, limit: Int) throws -> [FdcSearchableFood] {
         let cleaned = FtsQueryGenerator.cleanProductName(productName, brand: brand)
         let orQuery = FtsQueryGenerator.generateOrFrom(cleaned)
@@ -245,7 +243,7 @@ class BundledFdcDatabase: RemoteDatabase {
         foods = foods.filter { seen.insert($0.fdcId).inserted }
 
         let tokens = FtsQueryGenerator.tokenize(cleaned)
-        let ranked = BundledFdcDatabase.rankByTokenPosition(foods, tokens: tokens)
+        let ranked = FoodSearchRanker.rank(foods, tokens: tokens)
         return Array(ranked.prefix(limit))
     }
 

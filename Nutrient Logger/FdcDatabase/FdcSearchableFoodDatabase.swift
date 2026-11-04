@@ -113,6 +113,10 @@ class FdcSearchableFoodDatabase {
         return results
     }
 
+    public func allFoodNames() throws -> [String] {
+        try db.prepare(Tables.food.select(Columns.description)).map { $0[Columns.description] }
+    }
+
     public func getFood(_ fdcId: Int) throws -> FdcFood? {
         if let foodRow = try db.pluck(Tables.food.filter(Columns.fdcId == fdcId)) {
             return FoodWrapper(foodRow).food

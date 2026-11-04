@@ -15,6 +15,7 @@ struct CreateCustomFoodView: View {
     @Inject private var engagementAnalytics: EngagementAnalytics
 
     let existingFood: CustomFood?
+    let onSaved: ((CustomFood) -> Void)?
 
     @State private var name: String = ""
     @State private var servingUnit: String = "serving"
@@ -32,10 +33,20 @@ struct CreateCustomFoodView: View {
     @State private var showAlert: Bool = false
     @State private var alertMessage: String = ""
 
+    @FocusState private var focusedField: String?
+    private static let nameField = "name"
+    private static let caloriesField = "208"
+
     private var isEditing: Bool { existingFood != nil }
 
-    init(existingFood: CustomFood? = nil) {
+    init(
+        existingFood: CustomFood? = nil,
+        initialName: String = "",
+        onSaved: ((CustomFood) -> Void)? = nil
+    ) {
         self.existingFood = existingFood
+        self.onSaved = onSaved
+        _name = State(initialValue: initialName)
     }
 
     // MARK: - Derived
@@ -112,6 +123,7 @@ struct CreateCustomFoodView: View {
         } else {
             engagementAnalytics.customFoodCreated()
         }
+        onSaved?(food)
         presentationMode.wrappedValue.dismiss()
     }
 
@@ -145,6 +157,12 @@ struct CreateCustomFoodView: View {
         .onAppear {
             if let food = existingFood { populate(from: food) }
             engagementAnalytics.screenViewed(screenName: isEditing ? "EditCustomFood" : "CreateCustomFood")
+        }
+        .task {
+            guard !isEditing else { return }
+            // Wait for the sheet to finish sliding up, or the keyboard won't appear.
+            try? await Task.sleep(for: .milliseconds(450))
+            focusedField = name.isEmpty ? Self.nameField : Self.caloriesField
         }
         .alert(alertMessage, isPresented: $showAlert) { }
         .sheet(isPresented: $showOtherPicker) {
@@ -182,6 +200,9 @@ struct CreateCustomFoodView: View {
                 Text("Name")
                 Spacer()
                 TextField("e.g. Homemade Granola", text: $name)
+                    .focused($focusedField, equals: Self.nameField)
+                    .submitLabel(.next)
+                    .onSubmit { focusedField = Self.caloriesField }
                     .multilineTextAlignment(.trailing)
                     .bold()
                     .foregroundStyle(Color.accentColor)
@@ -260,6 +281,7 @@ struct CreateCustomFoodView: View {
                 set: { nutrientTexts[field.fdcNumber] = $0 }
             ))
             .keyboardType(.decimalPad)
+            .focused($focusedField, equals: field.fdcNumber)
             .multilineTextAlignment(.trailing)
             .bold()
             .foregroundStyle(Color.accentColor)

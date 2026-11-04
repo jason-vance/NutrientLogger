@@ -36,6 +36,8 @@ class MockEngagementAnalytics: EngagementAnalytics {
     func streakMilestoneReached(days: Int) {}
     func notificationPermissionResult(_ result: NotificationPermissionResult) {}
     func searchReturnedNoResults(query: String) {}
+    func searchCorrected(query: String, correctedQuery: String) {}
+    func customFoodEntryOpened(source: String) {}
     func barcodeScanInitiated() {}
     func barcodeScanCompleted(found: Bool) {}
     func barcodeFallbackTaken(path: String) {}

@@ -63,6 +63,16 @@ struct FtsQueryGeneratorTests {
         expectGenerated("cherries", "(cherries* OR cherry*)")
     }
 
+    @Test func consonantYAlsoMatchesIesPlural() {
+        expectGenerated("strawberry", "(strawberry* OR strawberri*)")
+        expectGenerated("cherry", "(cherry* OR cherri*)")
+    }
+
+    @Test func vowelYAndShortYWordsNotStemmed() {
+        expectGenerated("turkey", "turkey*")
+        expectGenerated("soy", "soy*")
+    }
+
     @Test func stemSuffix_ves() {
         expectGenerated("loaves", "(loaves* OR loaf*)")
     }
@@ -115,6 +125,34 @@ struct FtsQueryGeneratorTests {
         expectGenerated("OJ", "orange* AND juice*")
         expectGenerated("pb toast", "peanut* AND butter* AND toast*")
         expectGenerated("evoo", "extra* AND virgin* AND olive* AND oil*")
+    }
+
+    // MARK: - Quantities
+
+    @Test func leadingQuantitiesRemoved() {
+        #expect(FtsQueryGenerator.withoutQuantities("2 eggs") == "eggs")
+        #expect(FtsQueryGenerator.withoutQuantities("1 cup rice") == "rice")
+        #expect(FtsQueryGenerator.withoutQuantities("100g chicken breast") == "chicken breast")
+        #expect(FtsQueryGenerator.withoutQuantities("1/2 cup oats") == "oats")
+        #expect(FtsQueryGenerator.withoutQuantities("2 large eggs") == "eggs")
+        #expect(FtsQueryGenerator.withoutQuantities("8 oz steak") == "steak")
+    }
+
+    @Test func numbersThatArePartOfTheNameKept() {
+        #expect(FtsQueryGenerator.withoutQuantities("2% milk") == "2% milk")
+    }
+
+    @Test func unitWordsWithoutANumberKept() {
+        #expect(FtsQueryGenerator.withoutQuantities("a cup of milk") == "a cup of milk")
+        #expect(FtsQueryGenerator.withoutQuantities("peanut butter cups") == "peanut butter cups")
+    }
+
+    @Test func queryThatIsOnlyAQuantityKept() {
+        #expect(FtsQueryGenerator.withoutQuantities("2") == "2")
+    }
+
+    @Test func quantitiesRemovedFromGeneratedQuery() {
+        expectGenerated("2 eggs", "(eggs* OR egg*)")
     }
 
     // MARK: - generateExactFrom

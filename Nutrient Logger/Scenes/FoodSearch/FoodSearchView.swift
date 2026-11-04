@@ -136,11 +136,12 @@ struct FoodSearchView: View {
     @State private var searchDebounceTask: Task<Void, Never>? = nil
     
     @State private var searchResults: [SearchResult] = []
-    @State private var showCreateCustomFood: Bool = false
+    @State private var correctedSearchText: String? = nil
+    @State private var newCustomFood: NewCustomFoodRequest? = nil
     @State private var foodBeingEdited: CustomFood? = nil
 
     @State private var showBarcodeScanner: Bool = false
-    @State private var scannedCustomFood: CustomFood? = nil
+    @State private var customFoodToLog: CustomFood? = nil
     @State private var barcodeProduct: OpenFoodFactsProduct? = nil
     @State private var showBarcodeNotFound: Bool = false
     @State private var isScanningBarcode: Bool = false
@@ -204,6 +205,7 @@ struct FoodSearchView: View {
         searchText = ""
         hasSearched = false
         searchResults = []
+        correctedSearchText = nil
         similarFoods = []
         selectedSimilarFoodId = nil
         fetchInitialSuggestions()
@@ -263,9 +265,10 @@ struct FoodSearchView: View {
         
         hasSearched = true
         searchResults = []
+        correctedSearchText = nil
         isLoading = true
         Task {
-            searchResults = await withTaskGroup(of: Array<SearchResult>.self) { group in
+            var results = await withTaskGroup(of: Array<SearchResult>.self) { group in
                 if searchFunction.shouldIncludeRecentlyLoggedFoods {
                     group.addTask { await self.searchRecentlyLoggedFoods(searchText) }
                 }
@@ -288,6 +291,19 @@ struct FoodSearchView: View {
                 }
                 return results
             }
+
+            // Nothing in the food database? Try again with typos fixed and synonyms swapped in.
+            if searchFunction.shouldIncludeFdcFoods,
+               !results.contains(where: \.isFdcFood),
+               let corrected = remoteDatabase.correctedQuery(for: searchText) {
+                let correctedResults = await searchForRemoteFoods(corrected)
+                if !correctedResults.isEmpty {
+                    results.append(contentsOf: correctedResults)
+                    correctedSearchText = corrected
+                    engagementAnalytics.searchCorrected(query: searchText, correctedQuery: corrected)
+                }
+            }
+            searchResults = results
 
             if searchResults.isEmpty {
                 engagementAnalytics.searchReturnedNoResults(query: searchText)
@@ -366,7 +382,7 @@ struct FoodSearchView: View {
         if let existing = customFoodDatabase.foods.first(where: { $0.barcode == barcode }) {
             engagementAnalytics.barcodeScanCompleted(found: true)
             showBarcodeScanner = false
-            scannedCustomFood = existing
+            customFoodToLog = existing
             return
         }
 
@@ -396,7 +412,13 @@ struct FoodSearchView: View {
         barcodeProduct = nil
         similarFoods = []
         showBarcodeScanner = false
-        scannedCustomFood = food
+        customFoodToLog = food
+    }
+
+    private func openCustomFoodEntry(source: String) {
+        let typed = searchText.trimmingCharacters(in: .whitespaces)
+        engagementAnalytics.customFoodEntryOpened(source: source)
+        newCustomFood = NewCustomFoodRequest(name: typed.prefix(1).uppercased() + typed.dropFirst())
     }
 
     private func promptForReview() {
@@ -456,12 +478,21 @@ struct FoodSearchView: View {
                 )
                 .listRowDefaultModifiers()
                 Button {
-                    showCreateCustomFood = true
+                    openCustomFoodEntry(source: "no_results")
                 } label: {
-                    Label("Create Custom Food", systemImage: "plus.circle")
+                    Label("Add \"\(searchText)\" Manually", systemImage: "plus.circle")
                 }
                 .listRowDefaultModifiers()
             } else {
+                if let correctedSearchText {
+                    Label {
+                        Text("Showing results for **\(correctedSearchText)**")
+                    } icon: {
+                        Image(systemName: "wand.and.stars")
+                    }
+                    .foregroundStyle(.secondary)
+                    .listRowDefaultModifiers()
+                }
                 ForEach(groupedSearchResults) { searchResultGroup in
                     if !searchResultGroup.results.isEmpty {
                         Section {
@@ -475,6 +506,16 @@ struct FoodSearchView: View {
                                 Spacer()
                             }
                         }
+                    }
+                }
+                if hasSearched && !isLoading {
+                    Section {
+                        Button {
+                            openCustomFoodEntry(source: "search_row")
+                        } label: {
+                            Label("Not here? Add \"\(searchText)\" manually", systemImage: "plus.circle")
+                        }
+                        .listRowDefaultModifiers()
                     }
                 }
             }
@@ -527,9 +568,12 @@ struct FoodSearchView: View {
             }
         }
         .reviewPromptAlert(prompter: reviewPrompter)
-        .sheet(isPresented: $showCreateCustomFood) {
+        .sheet(item: $newCustomFood) { request in
             NavigationStack {
-                CreateCustomFoodView()
+                CreateCustomFoodView(initialName: request.name) { food in
+                    // Go straight to logging what they just entered.
+                    customFoodToLog = food
+                }
             }
             .environmentObject(customFoodDatabase)
         }
@@ -579,13 +623,13 @@ struct FoodSearchView: View {
             }
             Button("Create Custom Food") {
                 engagementAnalytics.barcodeFallbackTaken(path: "custom_food")
-                showCreateCustomFood = true
+                newCustomFood = NewCustomFoodRequest(name: "")
             }
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("This barcode wasn't found in the database. You can search for the food manually or create a custom food entry.")
         }
-        .navigationDestination(item: $scannedCustomFood) { food in
+        .navigationDestination(item: $customFoodToLog) { food in
             FoodDetailsView(
                 mode: .customFood(food: food),
                 askForDateAndMealTime: askForDateAndMealTime,
@@ -628,7 +672,7 @@ struct FoodSearchView: View {
                     Image(systemName: "barcode.viewfinder")
                 }
                 Button {
-                    showCreateCustomFood = true
+                    openCustomFoodEntry(source: "toolbar")
                 } label: {
                     Image(systemName: "plus")
                 }
@@ -863,4 +907,11 @@ private struct BarcodeScannerSheet: View {
         }
         .animation(.easeInOut, value: barcodeProduct != nil)
     }
+}
+
+// Carries the prefilled name into the sheet. Using sheet(item:) means the sheet is built
+// with this value, rather than reading separate state that may not be set yet on first open.
+private struct NewCustomFoodRequest: Identifiable {
+    let id = UUID()
+    let name: String
 }

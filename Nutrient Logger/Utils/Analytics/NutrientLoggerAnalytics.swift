@@ -65,6 +65,8 @@ protocol EngagementAnalytics {
     func streakMilestoneReached(days: Int)
     func notificationPermissionResult(_ result: NotificationPermissionResult)
     func searchReturnedNoResults(query: String)
+    func searchCorrected(query: String, correctedQuery: String)
+    func customFoodEntryOpened(source: String)
     func barcodeScanInitiated()
     func barcodeScanCompleted(found: Bool)
     func barcodeFallbackTaken(path: String)
@@ -385,6 +387,10 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     private let eventStreakMilestoneReached = "streak_milestone_reached"
     private let eventNotificationPermissionResult = "notification_permission_result"
     private let eventSearchNoResults = "search_no_results"
+    private let eventSearchCorrected = "search_corrected"
+    private let eventCustomFoodEntryOpened = "custom_food_entry_opened"
+    private let parameterCorrectedQuery = "corrected_query"
+    private let parameterSource = "source"
     private let parameterGoalName = "goal_name"
     private let parameterStreakDays = "streak_days"
     private let parameterResult = "result"
@@ -453,6 +459,17 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     public func searchReturnedNoResults(query: String) {
         analytics.log(event: eventSearchNoResults, parameters: [analytics.parameterSearchTerm: query])
+    }
+
+    public func searchCorrected(query: String, correctedQuery: String) {
+        analytics.log(event: eventSearchCorrected, parameters: [
+            analytics.parameterSearchTerm: query,
+            parameterCorrectedQuery: correctedQuery,
+        ])
+    }
+
+    public func customFoodEntryOpened(source: String) {
+        analytics.log(event: eventCustomFoodEntryOpened, parameters: [parameterSource: source])
     }
 
     private let eventBarcodeScanInitiated = "barcode_scan_initiated"
