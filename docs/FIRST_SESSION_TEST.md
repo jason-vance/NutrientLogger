@@ -24,22 +24,28 @@ Use a real day if you can. If not, use this one. It mixes easy foods, a typo, a 
 
 | Step | Time (mm:ss) | Notes |
 | --- | --- | --- |
-| App open → onboarding finished | | |
-| Onboarding finished → first food logged | | |
-| First food → whole day logged | | |
-| **Total: open → full day logged** | | |
+| App open → onboarding finished | 0:50| |
+| Onboarding finished → first food logged | 0:40| I knew exactly where to go. Not sure if a brand new user would find it as fast as I can.|
+| First food → whole day logged | 3:00| I made a few mistakes and had to go back to the dashboard to correct it, like logging a food in the wrong meal. I also had the thought that maybe I was making more mistakes and couldn't check it easily. I'm wondering if a record of your food logging session would be useful. Like a shopping cart, but for foods logged this time during the search screen being open. And it could be used to make sure you logged all the foods you meant to and/or quickly fix mistakes in a just-logged-food|
+| **Total: open → full day logged** | 4:30| |
 
 For every food, also note:
 
 - Was the right food in the **top 3 results**?
+	The one that stuck out was "toast" which brought up a bunch french toast options.
 - How many taps from tapping search to the food being saved?
+	I count 11, excluding typing. Tap search, Tap search bar, Type food name, Tap food. Tap meal menu, Tap meal in menu, Tap portion menu, Tap portion in menu, Tap amount, Double tap amount to select all, Type number, tap checkmark.
 - Anything that made you or them stop and think.
+	Not really.
 
 ## What good looks like
 
 - Whole day logged in **under 5 minutes**, without help.
+	Yea
 - The right food in the top 3 for every everyday item above.
+	Yes
 - The homemade dish entered and logged in **under 60 seconds** using *Not here? Add "…" manually*.
+	Yes, although One might not necessarily know the nutrition facts off the top of their head.
 
 ## After the test
 
@@ -55,6 +61,6 @@ The new analytics events show how real users behave once this ships:
 
 ## Findings
 
-1.
-2.
-3.
+1. The uncertainty of logging many foods without going back to the dashboard to check. "I just logged 10 foods. Did I include the banana I had for breakfast?"
+2. Can we surface the most likely options as easily selectable pills (or stepper/slider for amount) when logging a food (date, meal, portion, amount)
+3. 

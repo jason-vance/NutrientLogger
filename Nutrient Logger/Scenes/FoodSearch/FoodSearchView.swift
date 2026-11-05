@@ -154,6 +154,21 @@ struct FoodSearchView: View {
     let initialMealTime: MealTime?
     let onFoodSaved: (FoodItem, Portion) throws -> Void
 
+    // The meal and date of the last food logged in this search, so logging a whole meal (or a
+    // whole day after the fact) doesn't mean re-picking them for every food.
+    @State private var sessionMealTime: MealTime? = nil
+    @State private var sessionDate: SimpleDate? = nil
+    @FocusState private var isSearchFocused: Bool
+
+    private var mealTimeForNextFood: MealTime? { sessionMealTime ?? initialMealTime }
+    private var dateForNextFood: SimpleDate { sessionDate ?? initialDate }
+
+    private func saveAndRemember(_ foodItem: FoodItem, _ portion: Portion) throws {
+        try onFoodSaved(foodItem, portion)
+        if let mealTime = foodItem.mealTime, mealTime != .none { sessionMealTime = mealTime }
+        if let date = foodItem.dateLogged { sessionDate = date }
+    }
+
     private var groupedSearchResults: [SearchResultsSection] {
         [
             .init(
@@ -528,6 +543,7 @@ struct FoodSearchView: View {
             placement: .navigationBarDrawer(displayMode: .always),
             prompt: Text("Foods, Meals, Nutrients...")
         )
+        .searchFocused($isSearchFocused)
         .onChange(of: searchText) {
             hasSearched = false
             searchDebounceTask?.cancel()
@@ -559,6 +575,11 @@ struct FoodSearchView: View {
             doSearch()
         }
         .onAppear { fetchInitialSuggestions() }
+        .onAppear {
+            // Ready to type on open and after each logged food (which clears the search).
+            guard searchText.isEmpty else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { isSearchFocused = true }
+        }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
         .overlay {
@@ -633,10 +654,10 @@ struct FoodSearchView: View {
             FoodDetailsView(
                 mode: .customFood(food: food),
                 askForDateAndMealTime: askForDateAndMealTime,
-                initialDate: initialDate,
-                initialMealTime: initialMealTime,
+                initialDate: dateForNextFood,
+                initialMealTime: mealTimeForNextFood,
                 onFoodSaved: { foodItem, portion in
-                    try onFoodSaved(foodItem, portion)
+                    try saveAndRemember(foodItem, portion)
                     resetViewState()
                 }
             )
@@ -645,10 +666,10 @@ struct FoodSearchView: View {
             FoodDetailsView(
                 mode: .searchResult(fdcId: fdcId),
                 askForDateAndMealTime: askForDateAndMealTime,
-                initialDate: initialDate,
-                initialMealTime: initialMealTime,
+                initialDate: dateForNextFood,
+                initialMealTime: mealTimeForNextFood,
                 onFoodSaved: { foodItem, portion in
-                    try onFoodSaved(foodItem, portion)
+                    try saveAndRemember(foodItem, portion)
                     resetViewState()
                 }
             )
@@ -726,9 +747,9 @@ struct FoodSearchView: View {
             FoodDetailsView(
                 mode: .searchResult(fdcId: food.fdcId),
                 askForDateAndMealTime: askForDateAndMealTime,
-                initialDate: initialDate,
-                initialMealTime: initialMealTime,
-                onFoodSaved: onFoodSaved
+                initialDate: dateForNextFood,
+                initialMealTime: mealTimeForNextFood,
+                onFoodSaved: { try saveAndRemember($0, $1) }
             )
         } label: {
             HStack {
@@ -744,10 +765,10 @@ struct FoodSearchView: View {
             FoodDetailsView(
                 mode: .searchResult(fdcId: food.fdcId),
                 askForDateAndMealTime: askForDateAndMealTime,
-                initialDate: initialDate,
-                initialMealTime: initialMealTime,
+                initialDate: dateForNextFood,
+                initialMealTime: mealTimeForNextFood,
                 onFoodSaved: { foodItem, portion in
-                    try onFoodSaved(foodItem, portion)
+                    try saveAndRemember(foodItem, portion)
                     resetViewState()
                 }
             )
@@ -789,10 +810,10 @@ struct FoodSearchView: View {
             FoodDetailsView(
                 mode: .customFood(food: food),
                 askForDateAndMealTime: askForDateAndMealTime,
-                initialDate: initialDate,
-                initialMealTime: initialMealTime,
+                initialDate: dateForNextFood,
+                initialMealTime: mealTimeForNextFood,
                 onFoodSaved: { foodItem, portion in
-                    try onFoodSaved(foodItem, portion)
+                    try saveAndRemember(foodItem, portion)
                     resetViewState()
                 }
             )

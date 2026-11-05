@@ -88,6 +88,7 @@
 				Domain/FirstDayRecap.swift,
 				Domain/FoodItem.swift,
 				Domain/FullLoggingDay.swift,
+				Domain/LogPortionDefaults.swift,
 				Domain/LoggingStreak.swift,
 				Domain/LoggingStreakStore.swift,
 				Domain/MealTime.swift,
