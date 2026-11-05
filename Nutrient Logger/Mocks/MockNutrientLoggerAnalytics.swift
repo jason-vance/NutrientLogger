@@ -38,6 +38,8 @@ class MockEngagementAnalytics: EngagementAnalytics {
     func searchReturnedNoResults(query: String) {}
     func searchCorrected(query: String, correctedQuery: String) {}
     func customFoodEntryOpened(source: String) {}
+    func firstDayRecapShown(lowCount: Int, unnamedCount: Int, isSubscribed: Bool, usedReferenceAge: Bool) {}
+    func firstDayRecapAction(action: String) {}
     func barcodeScanInitiated() {}
     func barcodeScanCompleted(found: Bool) {}
     func barcodeFallbackTaken(path: String) {}

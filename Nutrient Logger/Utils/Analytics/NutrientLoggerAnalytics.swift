@@ -29,6 +29,7 @@ enum PaywallTrigger: String {
     case profileUpsell = "profile_upsell"
     case csvExport = "csv_export"
     case weeklyNutrientWatch = "weekly_nutrient_watch"
+    case firstDayRecap = "first_day_recap"
 }
 
 protocol SubscriptionAnalytics {
@@ -67,6 +68,8 @@ protocol EngagementAnalytics {
     func searchReturnedNoResults(query: String)
     func searchCorrected(query: String, correctedQuery: String)
     func customFoodEntryOpened(source: String)
+    func firstDayRecapShown(lowCount: Int, unnamedCount: Int, isSubscribed: Bool, usedReferenceAge: Bool)
+    func firstDayRecapAction(action: String)
     func barcodeScanInitiated()
     func barcodeScanCompleted(found: Bool)
     func barcodeFallbackTaken(path: String)
@@ -470,6 +473,29 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     public func customFoodEntryOpened(source: String) {
         analytics.log(event: eventCustomFoodEntryOpened, parameters: [parameterSource: source])
+    }
+
+    private let eventFirstDayRecapShown = "first_day_recap_shown"
+    private let eventFirstDayRecapAction = "first_day_recap_action"
+    private let parameterLowCount = "low_count"
+    private let parameterUnnamedCount = "unnamed_count"
+    private let parameterIsSubscribed = "is_subscribed"
+    private let parameterUsedReferenceAge = "used_reference_age"
+    private let parameterAction = "action"
+
+    public func firstDayRecapShown(lowCount: Int, unnamedCount: Int, isSubscribed: Bool, usedReferenceAge: Bool) {
+        analytics.log(event: eventFirstDayRecapShown, parameters: [
+            parameterLowCount: lowCount,
+            parameterUnnamedCount: unnamedCount,
+            parameterIsSubscribed: isSubscribed,
+            parameterUsedReferenceAge: usedReferenceAge,
+        ])
+    }
+
+    /// The first thing the user did on the recap: "trial_started", "purchased", "all_plans",
+    /// "purchased_all_plans", "not_now" or "done" (subscribers).
+    public func firstDayRecapAction(action: String) {
+        analytics.log(event: eventFirstDayRecapAction, parameters: [parameterAction: action])
     }
 
     private let eventBarcodeScanInitiated = "barcode_scan_initiated"

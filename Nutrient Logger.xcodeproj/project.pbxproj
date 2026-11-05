@@ -85,6 +85,7 @@
 				Domain/CustomFoodDatabase.swift,
 				Domain/DailySummary.swift,
 				Domain/DeepLink.swift,
+				Domain/FirstDayRecap.swift,
 				Domain/FoodItem.swift,
 				Domain/FullLoggingDay.swift,
 				Domain/LoggingStreak.swift,

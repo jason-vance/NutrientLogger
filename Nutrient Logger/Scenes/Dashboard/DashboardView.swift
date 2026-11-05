@@ -32,8 +32,11 @@ struct DashboardView: View {
     @AppStorage("loggingStreakLastLoggedDate") private var loggingStreakLastLoggedDateRaw: Int = 0
     @AppStorage("loggingStreakLongestCount") private var loggingStreakLongestCount: Int = 0
     @AppStorage("lastAutoMarketingPromptDate") private var lastAutoMarketingPromptDateRaw: Int = 0
+    @AppStorage(FirstDayRecapTrigger.hasShownKey) private var hasShownFirstDayRecap: Bool = false
 
     @State private var showAutoMarketingView: Bool = false
+    @State private var firstDayRecap: FirstDayRecapRequest? = nil
+    @State private var isFirstDayRecapWaitingForSearchToClose: Bool = false
     @State private var showStreakStats: Bool = false
     @State private var showLaunchOfferPaywall: Bool = false
     @State private var showCustomizeNutrients: Bool = false
@@ -97,9 +100,35 @@ struct DashboardView: View {
         }
     }
 
+    /// Returns true when the first-day recap is due, in which case it stands in for the generic
+    /// paywall. While the user is still in search adding foods it waits until they come back here.
+    private func checkFirstDayRecap() -> Bool {
+        guard FirstDayRecapTrigger.shouldShow(
+            isFullLoggingDay: FullLoggingDay.isComplete(todaysFoods, on: .today),
+            hasShownBefore: hasShownFirstDayRecap
+        ) else { return false }
+
+        if showSearch {
+            isFirstDayRecapWaitingForSearchToClose = true
+        } else {
+            presentFirstDayRecap()
+        }
+        return true
+    }
+
+    private func presentFirstDayRecap() {
+        isFirstDayRecapWaitingForSearchToClose = false
+        hasShownFirstDayRecap = true
+        // Counts as this month's automatic paywall, so the generic one doesn't follow it.
+        lastAutoMarketingPromptDateRaw = Int(SimpleDate.today)
+        firstDayRecap = FirstDayRecapRequest(foods: todaysFoods)
+    }
+
     private func onTodaysFoodsChanged() {
         updateLoggingStreak()
-        checkAutoMarketingPrompt()
+        if !checkFirstDayRecap() {
+            checkAutoMarketingPrompt()
+        }
         NotificationCoordinator.reschedule(modelContext: modelContext)
     }
 
@@ -201,6 +230,19 @@ struct DashboardView: View {
         }
         .fullScreenCover(isPresented: $showAutoMarketingView) {
             MarketingView(trigger: .smartPaywall)
+        }
+        .onChange(of: showSearch) { _, isShowingSearch in
+            guard !isShowingSearch, isFirstDayRecapWaitingForSearchToClose else { return }
+            Task {
+                // Let the back navigation finish before presenting.
+                try? await Task.sleep(for: .milliseconds(600))
+                guard !showSearch else { return }  // went straight back into search
+                presentFirstDayRecap()
+            }
+        }
+        .sheet(item: $firstDayRecap) { request in
+            FirstDayRecapView(foods: request.foods)
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showDatePicker) {
             DatePicker(
@@ -323,6 +365,12 @@ struct DashboardView: View {
         )
     }
 
+}
+
+// Snapshot of the day's foods for the first-day recap, so the sheet is built with them.
+private struct FirstDayRecapRequest: Identifiable {
+    let id = UUID()
+    let foods: [ConsumedFood]
 }
 
 #Preview {

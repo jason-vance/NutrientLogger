@@ -50,6 +50,8 @@ The new analytics events show how real users behave once this ships:
 - `search_corrected`: a typo or synonym was fixed for the user (includes the original and corrected query).
 - `custom_food_entry_opened`: where manual entry was started from (`search_row`, `no_results` or `toolbar`).
 - `search_no_results`: searches that still found nothing. These are the gaps in the food database.
+- `first_day_recap_shown`: the user finished their first full day and saw their nutrient gaps.
+- `first_day_recap_action`: what they did next (`trial_started`, `all_plans`, `not_now`, …). Shown vs. `trial_started` is the trial conversion at the payoff moment.
 
 ## Findings
 

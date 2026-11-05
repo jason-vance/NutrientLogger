@@ -32,6 +32,8 @@ struct PremiumCTARow: View {
             return "Sync with Apple Health"
         case .weeklyNutrientWatch:
             return "Get weekly nutrient alerts"
+        case .firstDayRecap:
+            return "See every nutrient gap"
         }
     }
 

@@ -73,7 +73,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
     /// the onboarding demo so the sample day shows the actual lows/highs instead of the locked teaser.
     var forceUnlocked: Bool = false
 
-    private var user: User { userOverride ?? userService.currentUser }
+    private var user: User { userOverride ?? userService.currentUser.withReferenceAgeIfMissing }
 
     private var effectiveRatios: [NutrientRatio] {
         NutrientBalanceSettings.effectiveRatios(hiddenRaw: balanceHiddenRaw, customRaw: balanceCustomRaw)
@@ -131,7 +131,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
         }
     }
 
-    private struct WeeklyWatchResults {
+    struct WeeklyWatchResults {
         var deficiencies: [DeficientNutrient] = []
         var highNutrients: [HighNutrient] = []
         var balances: [NutrientBalanceResult] = []
@@ -141,8 +141,8 @@ struct DashboardWeeklyNutrientWatchSection: View {
 
     // Hits the on-disk food database, so this must run off the main thread (called from a Task)
     // rather than as a view body computed property. All three signals share one aggregation pass
-    // over the week's foods so the database is only read once.
-    private static func computeWeeklyWatch(
+    // over the week's foods so the database is only read once. Also used by the first-day recap.
+    static func computeWeeklyWatch(
         foods: [ConsumedFood],
         ratios: [NutrientRatio],
         user: User,
