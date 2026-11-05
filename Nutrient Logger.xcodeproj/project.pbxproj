@@ -92,7 +92,6 @@
 				Domain/LoggingStreakStore.swift,
 				Domain/LogPortionDefaults.swift,
 				Domain/MealTime.swift,
-				Domain/SearchSessionLog.swift,
 				Domain/Notifications/NotificationPlanner.swift,
 				Domain/Notifications/NotificationSettings.swift,
 				Domain/Nutrient.swift,
@@ -133,6 +132,7 @@
 				Domain/Rdi/SpecificNutrients/Water_RDIs.swift,
 				Domain/Rdi/SpecificNutrients/Zinc_RDIs.swift,
 				Domain/Rdi/UsdaNutrientRdiLibrary.swift,
+				Domain/SearchSessionLog.swift,
 				Domain/SimpleDate.swift,
 				Domain/WaterEntry.swift,
 				Domain/WaterUnit.swift,
@@ -759,6 +759,9 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Nutrient Logger";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Nutrient Logger uses your camera to scan barcodes on packaged foods for quick logging.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Nutrient Logger reads your weight and body fat percentage from Health to display in your weight tracking charts.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Nutrient Logger writes your daily nutrition intake, weight, and body fat percentage to Health so you can see your data alongside your other health metrics.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -769,7 +772,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.4;
+				MARKETING_VERSION = 4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jasonsapps.NutrientLogger;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -797,6 +800,9 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Nutrient Logger";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Nutrient Logger uses your camera to scan barcodes on packaged foods for quick logging.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Nutrient Logger reads your weight and body fat percentage from Health to display in your weight tracking charts.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Nutrient Logger writes your daily nutrition intake, weight, and body fat percentage to Health so you can see your data alongside your other health metrics.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -807,7 +813,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.4;
+				MARKETING_VERSION = 4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jasonsapps.NutrientLogger;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -916,7 +922,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 4.4;
+				MARKETING_VERSION = 4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jasonsapps.NutrientLogger.Nutrient-Logger-Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -948,7 +954,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 4.4;
+				MARKETING_VERSION = 4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jasonsapps.NutrientLogger.Nutrient-Logger-Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
