@@ -70,6 +70,8 @@ protocol EngagementAnalytics {
     func customFoodEntryOpened(source: String)
     func firstDayRecapShown(lowCount: Int, unnamedCount: Int, isSubscribed: Bool, usedReferenceAge: Bool)
     func firstDayRecapAction(action: String)
+    func searchLogOpened(foodCount: Int)
+    func searchLogFoodChanged(action: String)
     func barcodeScanInitiated()
     func barcodeScanCompleted(found: Bool)
     func barcodeFallbackTaken(path: String)
@@ -496,6 +498,19 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     /// "purchased_all_plans", "not_now" or "done" (subscribers).
     public func firstDayRecapAction(action: String) {
         analytics.log(event: eventFirstDayRecapAction, parameters: [parameterAction: action])
+    }
+
+    private let eventSearchLogOpened = "search_log_opened"
+    private let eventSearchLogFoodChanged = "search_log_food_changed"
+
+    /// The user opened the list of foods logged during this search.
+    public func searchLogOpened(foodCount: Int) {
+        analytics.log(event: eventSearchLogOpened, parameters: [parameterFoodCount: foodCount])
+    }
+
+    /// A food was fixed from that list: "edited" or "deleted".
+    public func searchLogFoodChanged(action: String) {
+        analytics.log(event: eventSearchLogFoodChanged, parameters: [parameterAction: action])
     }
 
     private let eventBarcodeScanInitiated = "barcode_scan_initiated"

@@ -58,6 +58,8 @@ The new analytics events show how real users behave once this ships:
 - `search_no_results`: searches that still found nothing. These are the gaps in the food database.
 - `first_day_recap_shown`: the user finished their first full day and saw their nutrient gaps.
 - `first_day_recap_action`: what they did next (`trial_started`, `all_plans`, `not_now`, …). Shown vs. `trial_started` is the trial conversion at the payoff moment.
+- `search_log_opened`: the user opened the list of foods logged during this search (`food_count`).
+- `search_log_food_changed`: a food was fixed from that list (`edited` or `deleted`). Often = mistakes being caught before they reach the dashboard.
 
 ## Findings
 

@@ -160,6 +160,9 @@ struct FoodSearchView: View {
     @State private var sessionDate: SimpleDate? = nil
     @FocusState private var isSearchFocused: Bool
 
+    /// When this search opened. Everything logged after it is listed in the bar at the bottom.
+    @State private var sessionStart: Date = .now
+
     private var mealTimeForNextFood: MealTime? { sessionMealTime ?? initialMealTime }
     private var dateForNextFood: SimpleDate { sessionDate ?? initialDate }
 
@@ -582,6 +585,12 @@ struct FoodSearchView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
+        .safeAreaInset(edge: .bottom) {
+            // Adding to a reusable meal doesn't log anything, so there's nothing to review.
+            if searchFunction == .defaultSearchFunction {
+                LoggedThisSearchBar(since: sessionStart)
+            }
+        }
         .overlay {
             if isLoading {
                 ProgressView()
