@@ -34,6 +34,7 @@ class MockEngagementAnalytics: EngagementAnalytics {
     func customFoodDeleted() {}
     func goalSet(goalName: String) {}
     func streakMilestoneReached(days: Int) {}
+    func reviewRequested(streakDays: Int) {}
     func notificationPermissionResult(_ result: NotificationPermissionResult) {}
     func searchReturnedNoResults(query: String) {}
     func searchCorrected(query: String, correctedQuery: String) {}

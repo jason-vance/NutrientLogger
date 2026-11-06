@@ -129,7 +129,6 @@ struct FoodSearchView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.isSearching) private var isSearching
     
-    @StateObject private var reviewPrompter = ReviewPrompter()
     @State private var searchText: String = ""
     @State private var hasSearched: Bool = false
     @State private var isLoading: Bool = false
@@ -336,8 +335,6 @@ struct FoodSearchView: View {
 
             isLoading = false
         }
-        
-        promptForReview()
     }
     
     private func searchRemoteNutrients(_ query: String) async -> [SearchResult] {
@@ -439,38 +436,6 @@ struct FoodSearchView: View {
         newCustomFood = NewCustomFoodRequest(name: typed.prefix(1).uppercased() + typed.dropFirst())
     }
 
-    private func promptForReview() {
-        if shouldPromptForReview() {
-            reviewPrompter.promptUserForReview()
-        }
-    }
-
-    private func shouldPromptForReview() -> Bool {
-        guard let earliestFood = {
-            var descriptor = FetchDescriptor<ConsumedFood>(
-                sortBy: [ .init(\.created, order: .forward) ]
-            )
-            descriptor.fetchLimit = 1
-            return try? modelContext.fetch(descriptor).first
-        }() else {
-            return false
-        }
-        
-        guard let mostRecentFood = {
-            var descriptor = FetchDescriptor<ConsumedFood>(
-                sortBy: [ .init(\.created, order: .reverse) ]
-            )
-            descriptor.fetchLimit = 1
-            return try? modelContext.fetch(descriptor).first
-        }() else {
-            return false
-        }
-        
-        let timeDiff = abs(mostRecentFood.created.distance(to: earliestFood.created))
-        let roughlyOneDay = TimeInterval.fromDays(0.5)
-        return timeDiff > roughlyOneDay
-    }
-    
     init(
         searchFunction: SearchFunction = .defaultSearchFunction,
         askForDateAndMealTime: Bool = true,
@@ -597,7 +562,6 @@ struct FoodSearchView: View {
                     .progressViewStyle(.circular)
             }
         }
-        .reviewPromptAlert(prompter: reviewPrompter)
         .sheet(item: $newCustomFood) { request in
             NavigationStack {
                 CreateCustomFoodView(initialName: request.name) { food in

@@ -15,6 +15,7 @@ struct DashboardView: View {
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.requestReview) private var requestReview
 
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
     @EnvironmentObject private var dataController: DataController
@@ -33,10 +34,13 @@ struct DashboardView: View {
     @AppStorage("loggingStreakLongestCount") private var loggingStreakLongestCount: Int = 0
     @AppStorage("lastAutoMarketingPromptDate") private var lastAutoMarketingPromptDateRaw: Int = 0
     @AppStorage(FirstDayRecapTrigger.hasShownKey) private var hasShownFirstDayRecap: Bool = false
+    @AppStorage(ReviewRequestTrigger.lastRequestedDateKey) private var lastReviewRequestDateRaw: Int = 0
+    @AppStorage(ReviewRequestTrigger.optedOutKey) private var hasOptedOutOfReviewRequests: Bool = false
 
     @State private var showAutoMarketingView: Bool = false
     @State private var firstDayRecap: FirstDayRecapRequest? = nil
     @State private var isFirstDayRecapWaitingForSearchToClose: Bool = false
+    @State private var isReviewRequestWaitingForSearchToClose: Bool = false
     @State private var showStreakStats: Bool = false
     @State private var showLaunchOfferPaywall: Bool = false
     @State private var showCustomizeNutrients: Bool = false
@@ -86,17 +90,52 @@ struct DashboardView: View {
         }
     }
 
-    private func checkAutoMarketingPrompt() {
+    /// Returns true when the paywall was shown.
+    private func checkAutoMarketingPrompt() -> Bool {
         let isFullDay = FullLoggingDay.isComplete(todaysFoods, on: .today)
         let lastShown = SimpleDate(rawValue: UInt32(lastAutoMarketingPromptDateRaw))
 
-        if AutoMarketingPromptTrigger.shouldShow(
+        guard AutoMarketingPromptTrigger.shouldShow(
             isFullLoggingDay: isFullDay,
             isSubscribed: subscriptionManager.isSubscribed,
             lastShownDate: lastShown
-        ) {
-            lastAutoMarketingPromptDateRaw = Int(SimpleDate.today)
-            showAutoMarketingView = true
+        ) else { return false }
+
+        lastAutoMarketingPromptDateRaw = Int(SimpleDate.today)
+        showAutoMarketingView = true
+        return true
+    }
+
+    /// Asks for an App Store rating after a full logged week (see `ReviewRequestTrigger`). Like the
+    /// first-day recap, it waits until the user is back from search.
+    private func checkReviewRequest() {
+        guard ReviewRequestTrigger.shouldRequest(
+            streakCount: loggingStreakCount,
+            isFullLoggingDay: FullLoggingDay.isComplete(todaysFoods, on: .today),
+            lastRequestedDate: SimpleDate(rawValue: UInt32(lastReviewRequestDateRaw)),
+            hasOptedOut: hasOptedOutOfReviewRequests
+        ) else { return }
+
+        // Marked now so logging another food before search closes doesn't queue a second request.
+        lastReviewRequestDateRaw = Int(SimpleDate.today)
+        if showSearch {
+            isReviewRequestWaitingForSearchToClose = true
+        } else {
+            presentReviewRequest()
+        }
+    }
+
+    private func presentReviewRequest() {
+        isReviewRequestWaitingForSearchToClose = false
+        Task {
+            // Let the dashboard settle so the prompt doesn't land mid-animation.
+            try? await Task.sleep(for: .milliseconds(600))
+            guard !showSearch else {
+                isReviewRequestWaitingForSearchToClose = true  // went straight back into search
+                return
+            }
+            engagementAnalytics.reviewRequested(streakDays: loggingStreakCount)
+            requestReview()
         }
     }
 
@@ -126,8 +165,8 @@ struct DashboardView: View {
 
     private func onTodaysFoodsChanged() {
         updateLoggingStreak()
-        if !checkFirstDayRecap() {
-            checkAutoMarketingPrompt()
+        if !checkFirstDayRecap() && !checkAutoMarketingPrompt() {
+            checkReviewRequest()
         }
         NotificationCoordinator.reschedule(modelContext: modelContext)
     }
@@ -232,7 +271,11 @@ struct DashboardView: View {
             MarketingView(trigger: .smartPaywall)
         }
         .onChange(of: showSearch) { _, isShowingSearch in
-            guard !isShowingSearch, isFirstDayRecapWaitingForSearchToClose else { return }
+            guard !isShowingSearch else { return }
+            if isReviewRequestWaitingForSearchToClose {
+                presentReviewRequest()
+            }
+            guard isFirstDayRecapWaitingForSearchToClose else { return }
             Task {
                 // Let the back navigation finish before presenting.
                 try? await Task.sleep(for: .milliseconds(600))

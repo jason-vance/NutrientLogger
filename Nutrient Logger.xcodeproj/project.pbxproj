@@ -132,6 +132,7 @@
 				Domain/Rdi/SpecificNutrients/Water_RDIs.swift,
 				Domain/Rdi/SpecificNutrients/Zinc_RDIs.swift,
 				Domain/Rdi/UsdaNutrientRdiLibrary.swift,
+				Domain/ReviewRequestTrigger.swift,
 				Domain/SearchSessionLog.swift,
 				Domain/SimpleDate.swift,
 				Domain/WaterEntry.swift,

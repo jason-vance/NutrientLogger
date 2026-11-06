@@ -64,6 +64,7 @@ protocol EngagementAnalytics {
     func customFoodDeleted()
     func goalSet(goalName: String)
     func streakMilestoneReached(days: Int)
+    func reviewRequested(streakDays: Int)
     func notificationPermissionResult(_ result: NotificationPermissionResult)
     func searchReturnedNoResults(query: String)
     func searchCorrected(query: String, correctedQuery: String)
@@ -390,6 +391,7 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     private let eventCustomFoodDeleted = "custom_food_deleted"
     private let eventGoalSet = "goal_set"
     private let eventStreakMilestoneReached = "streak_milestone_reached"
+    private let eventReviewRequested = "review_requested"
     private let eventNotificationPermissionResult = "notification_permission_result"
     private let eventSearchNoResults = "search_no_results"
     private let eventSearchCorrected = "search_corrected"
@@ -456,6 +458,11 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
 
     public func streakMilestoneReached(days: Int) {
         analytics.log(event: eventStreakMilestoneReached, parameters: [parameterStreakDays: days])
+    }
+
+    /// Apple's rating prompt was requested. Apple decides whether it actually appears.
+    public func reviewRequested(streakDays: Int) {
+        analytics.log(event: eventReviewRequested, parameters: [parameterStreakDays: streakDays])
     }
 
     public func notificationPermissionResult(_ result: NotificationPermissionResult) {

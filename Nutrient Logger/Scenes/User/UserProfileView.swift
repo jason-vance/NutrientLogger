@@ -13,7 +13,7 @@ import SwinjectAutoregistration
 struct UserProfileView: View {
 
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.requestReview) private var requestReview
+    @Environment(\.openURL) private var openURL
 
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
 
@@ -135,6 +135,7 @@ struct UserProfileView: View {
             MarketingView(trigger: marketingTrigger)
         }
         .manageSubscriptionsSheet(isPresented: $showManageSubscriptions)
+        .feedbackAlert(prompter: reviewPrompter)
     }
 
     // MARK: - Profile Card
@@ -545,7 +546,8 @@ struct UserProfileView: View {
                 NavigationLink("Data Sources") { DataSourcesView() }
             }
             HStack(spacing: 6) {
-                Button("Rate on App Store") { requestReview() }
+                // Apple's rating prompt can silently not appear, so a tap opens the review page instead.
+                Button("Rate on App Store") { openURL(URL(string: "https://apps.apple.com/app/id1536557332?action=write-review")!) }
                 Text(".")
                 Button("Support") { reviewPrompter.leaveFeedback() }
             }
