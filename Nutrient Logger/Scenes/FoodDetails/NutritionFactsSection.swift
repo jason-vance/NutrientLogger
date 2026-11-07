@@ -12,17 +12,19 @@ struct NutritionFactsSection: View {
     enum UIConsts {
         public static let lineWidth_Thin: CGFloat = 1
         public static let lineWidth_Regular: CGFloat = 2
-        public static let lineWidth_Thick: CGFloat = 6
-        public static let lineWidth_ExtraThick: CGFloat = 14
+        public static let lineWidth_Thick: CGFloat = 4
+        public static let lineWidth_ExtraThick: CGFloat = 8
         public static let margin: CGFloat = 8
 
         public static let fontSize_Name: CGFloat = 48
-        public static let fontSize_Calories: CGFloat = 38
-        public static let fontSize_Portion: CGFloat = 28
+        public static let fontSize_Calories: CGFloat = 32
+        public static let fontSize_Portion: CGFloat = 22
         public static let fontSize_Nutrient: CGFloat = 18
 
         public static var outlineMargin: CGFloat { margin }
-        public static var outlineWidth: CGFloat { lineWidth_Regular }
+        // The label sits in a card like the rest of the screen, so it has no box of its own. The
+        // side rectangles stay in the rows at zero width and act as padding.
+        public static var outlineWidth: CGFloat { 0 }
         public static var thinLineWidth: CGFloat { lineWidth_Thin }
 
         public static var textMargin: CGFloat { 2 * margin + outlineWidth }
@@ -60,6 +62,17 @@ struct NutritionFactsSection: View {
     
     var body: some View {
         Section(header: Text("Nutrition Facts")) {
+            VStack(spacing: 0) {
+                Label()
+            }
+            .padding(.vertical, UIConsts.margin)
+            .inCard(backgroundColor: Color.gray)
+            .listRowDefaultModifiers()
+        }
+    }
+
+    @ViewBuilder private func Label() -> some View {
+        Group {
             NutritionFactsCap(isTop: true)
             
             NutritionFactsPortion()
@@ -99,12 +112,10 @@ struct NutritionFactsSection: View {
         }
     }
     
+    /// Room above and below the label inside its card (it used to be the box's top and bottom edge).
     @ViewBuilder private func NutritionFactsCap(isTop: Bool) -> some View {
-        Rectangle()
-            .frame(height: 2)
-            .padding(.top, (isTop) ? UIConsts.outlineMargin : 0)
-            .padding(.bottom, (isTop) ? 0 : UIConsts.outlineMargin)
-            .nutritionFactsRow()
+        Color.clear
+            .frame(height: UIConsts.margin / 2)
     }
     
     @ViewBuilder private func NutritionFactsLine(_ width: CGFloat) -> some View {
