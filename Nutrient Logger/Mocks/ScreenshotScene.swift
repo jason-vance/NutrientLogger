@@ -12,6 +12,7 @@ import SwiftUI
 ///
 ///     -screenshots -screenshotScene firstDayRecap -screenshotDiet carnivore
 ///     -screenshots -screenshotScene personalize -screenshotDiet carnivore
+///     -screenshots -screenshotScene foodBreakdown -screenshotDiet carnivore
 ///     -screenshots -screenshotScene foodDetails
 ///     -screenshots -screenshotScene logMeal
 ///     -screenshots -screenshotScene customFood
@@ -33,6 +34,7 @@ import SwiftUI
 enum ScreenshotScene: String {
     case firstDayRecap
     case personalize
+    case foodBreakdown
     case foodDetails
     case logMeal
     case customFood

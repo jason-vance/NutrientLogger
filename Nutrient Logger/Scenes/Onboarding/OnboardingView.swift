@@ -24,8 +24,8 @@ struct OnboardingView: View {
     @State private var selectedDiet: NutritionDietPreset = .default
     @State private var selectedConcern: NutritionConcern = .default
 
-    private static let totalSteps = 5
-    private static let stepNames = ["hero", "personalization", "demo", "notification", "paywall"]
+    private static let totalSteps = 6
+    private static let stepNames = ["hero", "personalization", "food_breakdown", "demo", "notification", "paywall"]
 
     private func trackStepViewed(_ step: Int) {
         guard Self.stepNames.indices.contains(step) else { return }
@@ -112,9 +112,12 @@ struct OnboardingView: View {
             )
             .transition(stepTransition)
         } else if step == 2 {
-            OnboardingDemoDashboardView(diet: selectedDiet, onContinue: advance)
+            OnboardingFoodBreakdownView(diet: selectedDiet, onContinue: advance)
                 .transition(stepTransition)
         } else if step == 3 {
+            OnboardingDemoDashboardView(diet: selectedDiet, onContinue: advance)
+                .transition(stepTransition)
+        } else if step == 4 {
             OnboardingNotificationView(onContinue: advance)
                 .transition(stepTransition)
         } else {

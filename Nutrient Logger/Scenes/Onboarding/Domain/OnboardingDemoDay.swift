@@ -82,3 +82,51 @@ extension NutritionDietPreset {
         }
     }
 }
+
+/// A food offered on the onboarding "tap a food" step, with a short name and everyday serving.
+struct OnboardingBreakdownFood: Identifiable, Hashable {
+    let fdcId: Int
+    let gramWeight: Double
+    let name: String
+    let serving: String
+
+    var id: Int { fdcId }
+}
+
+extension NutritionDietPreset {
+
+    /// Four familiar foods that fit the diet, all from its demo day so their ids are known to be in
+    /// the bundled database.
+    var breakdownFoods: [OnboardingBreakdownFood] {
+        let eggs = OnboardingBreakdownFood(fdcId: 1100236, gramWeight: 150, name: "Eggs", serving: "3 scrambled")
+        let steak = OnboardingBreakdownFood(fdcId: 1098175, gramWeight: 227, name: "Steak", serving: "8 oz")
+        let groundBeef = OnboardingBreakdownFood(fdcId: 1098213, gramWeight: 170, name: "Ground beef", serving: "6 oz")
+        let salmon = OnboardingBreakdownFood(fdcId: 1098962, gramWeight: 170, name: "Salmon", serving: "6 oz")
+        let chicken = OnboardingBreakdownFood(fdcId: 1098445, gramWeight: 170, name: "Chicken breast", serving: "6 oz")
+        let broccoli = OnboardingBreakdownFood(fdcId: 1103172, gramWeight: 160, name: "Broccoli", serving: "1 cup")
+        let avocado = OnboardingBreakdownFood(fdcId: 1102652, gramWeight: 150, name: "Avocado", serving: "1 whole")
+        let cheddar = OnboardingBreakdownFood(fdcId: 1098007, gramWeight: 56, name: "Cheddar", serving: "2 oz")
+        let sweetPotato = OnboardingBreakdownFood(fdcId: 1103235, gramWeight: 200, name: "Sweet potato", serving: "1 medium")
+        let blueberries = OnboardingBreakdownFood(fdcId: 1102702, gramWeight: 150, name: "Blueberries", serving: "1 cup")
+        let oatmeal = OnboardingBreakdownFood(fdcId: 1101577, gramWeight: 234, name: "Oatmeal", serving: "1 cup")
+        let lentils = OnboardingBreakdownFood(fdcId: 1100438, gramWeight: 198, name: "Lentils", serving: "1 cup")
+        let kale = OnboardingBreakdownFood(fdcId: 1103116, gramWeight: 130, name: "Kale", serving: "1 cup cooked")
+        let almonds = OnboardingBreakdownFood(fdcId: 1100507, gramWeight: 28, name: "Almonds", serving: "1 oz")
+        let tuna = OnboardingBreakdownFood(fdcId: 1099030, gramWeight: 165, name: "Tuna", serving: "1 can")
+        let yogurt = OnboardingBreakdownFood(fdcId: 1097562, gramWeight: 200, name: "Greek yogurt", serving: "1 cup")
+
+        switch self {
+        case .balanced: return [eggs, chicken, salmon, broccoli]
+        case .plantBased: return [oatmeal, lentils, kale, almonds]
+        case .ketoLowCarb: return [eggs, avocado, salmon, cheddar]
+        case .carnivore: return [steak, eggs, salmon, groundBeef]
+        case .paleo: return [eggs, sweetPotato, chicken, blueberries]
+        case .pescatarian: return [salmon, tuna, yogurt, broccoli]
+        }
+    }
+
+    /// The vitamin and mineral gaps this diet usually has, for flagging what a food leaves out.
+    var micronutrientGaps: [String] {
+        (promotedNutrients[.vitamins] ?? []) + (promotedNutrients[.minerals] ?? [])
+    }
+}

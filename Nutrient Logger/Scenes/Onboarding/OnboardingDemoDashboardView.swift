@@ -23,7 +23,7 @@ struct OnboardingDemoDashboardView: View {
     /// A sexless ~30-year-old adult used only to resolve reference RDIs for the demo, so percentages
     /// show even though the onboarding user hasn't entered a profile yet. `.unknown` sex matches any
     /// life-stage entry (see `LifeStageNutrientRdi.matches`), so no sex is assumed. Never persisted.
-    private static let referenceUser = User(
+    static let referenceUser = User(
         gender: .unknown,
         birthdate: SimpleDate(year: 1995, month: 6, day: 15)
     )

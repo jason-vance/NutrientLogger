@@ -40,6 +40,7 @@ struct DashboardView: View {
     @State private var showAutoMarketingView: Bool = false
     @State private var firstDayRecap: FirstDayRecapRequest? = nil
     @State private var showScreenshotPersonalize = false
+    @State private var showScreenshotFoodBreakdown = false
     @State private var showScreenshotFoodDetails = false
     @State private var screenshotMeal: Meal?
     @State private var showScreenshotCustomFood = false
@@ -154,6 +155,7 @@ struct DashboardView: View {
         switch ScreenshotScene.current {
         case .firstDayRecap: firstDayRecap = FirstDayRecapRequest(foods: ScreenshotScene.demoDayFoods)
         case .personalize: showScreenshotPersonalize = true
+        case .foodBreakdown: showScreenshotFoodBreakdown = true
         case .foodDetails: showScreenshotFoodDetails = true
         case .logMeal: screenshotMeal = try? modelContext.fetch(FetchDescriptor<Meal>()).first
         case .customFood: showScreenshotCustomFood = true
@@ -336,6 +338,12 @@ struct DashboardView: View {
                 concern: .constant(.generalHealth),
                 onContinue: {}
             )
+        }
+        .fullScreenCover(isPresented: $showScreenshotFoodBreakdown) {
+            ZStack {
+                Color(.systemBackground).ignoresSafeArea()
+                OnboardingFoodBreakdownView(diet: ScreenshotScene.diet ?? .carnivore, onContinue: {})
+            }
         }
         .task { openScreenshotScene() }
         .navigationDestination(isPresented: $showScreenshotFoodDetails) {
