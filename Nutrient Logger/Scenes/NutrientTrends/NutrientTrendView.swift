@@ -154,8 +154,12 @@ struct NutrientTrendView: View {
                 Image(systemName: "arrow.backward")
             }
         }
-        ToolbarItem(placement: .topBarTrailing) {
-            InfoButton()
+        // Left out entirely when there's nothing to show: a hidden button still draws an empty
+        // glass circle in the iOS 26 toolbar.
+        if isExplanationLoaded {
+            ToolbarItem(placement: .topBarTrailing) {
+                InfoButton()
+            }
         }
     }
 
@@ -168,9 +172,6 @@ struct NutrientTrendView: View {
         } label: {
             Image(systemName: "info.circle")
         }
-        .disabled(!isExplanationLoaded)
-        .opacity(isExplanationLoaded ? 1 : 0)
-        .animation(.snappy, value: isExplanationLoaded)
     }
 
     @ViewBuilder private func PeriodPicker() -> some View {

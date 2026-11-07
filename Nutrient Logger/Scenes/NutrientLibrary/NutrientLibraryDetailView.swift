@@ -71,8 +71,12 @@ struct NutrientLibraryDetailView: View {
         ToolbarItem(placement: .topBarLeading) {
             BackButton()
         }
-        ToolbarItem(placement: .topBarTrailing) {
-            InfoButton()
+        // Left out entirely when there's nothing to show: a hidden button still draws an empty
+        // glass circle in the iOS 26 toolbar.
+        if isExplanationLoaded {
+            ToolbarItem(placement: .topBarTrailing) {
+                InfoButton()
+            }
         }
     }
     
@@ -93,9 +97,6 @@ struct NutrientLibraryDetailView: View {
         } label: {
             Image(systemName: showExplanation ? "x.circle" : "info.circle")
         }
-        .disabled(!isExplanationLoaded)
-        .opacity(isExplanationLoaded ? 1 : 0)
-        .animation(.snappy, value: isExplanationLoaded)
         .animation(.snappy, value: showExplanation)
     }
     
