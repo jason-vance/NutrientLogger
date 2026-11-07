@@ -44,7 +44,7 @@ Germany, Netherlands, Sweden, and Ireland are the top install markets. Localizin
 - [ ] After 30 days: check App Store Connect → Sources for impression/conversion lift per storefront
 
 ### 2. Nominate the app for Apple editorial featuring
-App Store Connect → "Promote Your App" nomination form. The pitch: **fully offline nutrition tracker — your health data never leaves your device**. This is exactly the privacy narrative Apple features. Free lottery ticket; re-enter for each seasonal moment.
+App Store Connect → "Promote Your App" nomination form. The pitch: **fully offline nutrition tracker — your food log never leaves your device**. This is exactly the privacy narrative Apple features. Free lottery ticket; re-enter for each seasonal moment.
 
 - [x] Write the nomination pitch (privacy/offline angle, indie story, v4.0 feature set) — see APPLE_FEATURING_NOMINATION.md
 - [ ] Submit nomination for New Year's resolutions window (submit by ~November 2026)

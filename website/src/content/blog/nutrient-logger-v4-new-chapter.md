@@ -44,4 +44,4 @@ If you've used Nutrient Logger before, this update should feel like the same app
 
 ---
 
-*[Nutrient Logger](https://apps.apple.com/app/nutrient-logger-food-tracker/id1536557332) tracks 80+ nutrients completely offline, and now tells you what to do about what it finds. Your data never leaves your device.*
+*[Nutrient Logger](https://apps.apple.com/app/nutrient-logger-food-tracker/id1536557332) tracks 80+ nutrients completely offline, and now tells you what to do about what it finds. Your food log never leaves your device.*

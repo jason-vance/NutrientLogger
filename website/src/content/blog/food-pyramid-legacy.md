@@ -50,4 +50,4 @@ You don't need a government-issued triangle to tell you which food group to eat 
 
 ---
 
-*[Nutrient Logger](https://apps.apple.com/app/nutrient-logger-food-tracker/id1536557332) tracks 80+ nutrients completely offline. Your data never leaves your device.*
+*[Nutrient Logger](https://apps.apple.com/app/nutrient-logger-food-tracker/id1536557332) tracks 80+ nutrients completely offline. Your food log never leaves your device.*

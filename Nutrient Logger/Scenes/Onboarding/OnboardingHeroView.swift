@@ -35,7 +35,7 @@ struct OnboardingHeroView: View {
                 .foregroundStyle(.primary)
                 .padding(.horizontal, 32)
 
-            Text("Completely offline. Your data never leaves your device.")
+            Text("Completely offline. Your food log never leaves your device.")
                 .font(.title3)
                 .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.7)

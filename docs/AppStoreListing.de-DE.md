@@ -82,7 +82,7 @@ Nutrient Logger ist perfekt für alle, die Ernährung ernst nehmen — ob spezie
 2. Auf deine Ernährung abgestimmt
     Wähle Ernährung und Schwerpunkt - deine wichtigsten Nährstoffe stehen oben
 3. Erkenne Mängel, bevor sie zum Problem werden
-4. Deine Daten verlassen nie dein Handy
+4. Dein Ernährungstagebuch verlässt nie dein Handy
     100 % offline. Kein Konto, keine Cloud, keine Werbung - nie
 5. Baue eine Gewohnheit auf, die bleibt
     Tägliche Erinnerungen und Serien halten dich dran

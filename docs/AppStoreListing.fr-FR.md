@@ -82,7 +82,7 @@ Nutrient Logger est parfait pour quiconque prend la nutrition au sérieux — r�
 2. Adapté à votre façon de manger
     Choisissez votre alimentation et votre priorité - vos nutriments clés en premier
 3. Repérez les carences avant qu'elles ne deviennent des problèmes
-4. Vos données ne quittent jamais votre téléphone
+4. Votre journal alimentaire ne quitte jamais votre téléphone
     100 % hors ligne. Pas de compte, pas de cloud, pas de pub, jamais
 5. Construisez une habitude qui dure
     Rappels quotidiens et séries pour rester motivé

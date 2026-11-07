@@ -58,7 +58,7 @@ Your positioning — offline, micronutrient-focused, no intrusive ads, privacy-r
 Unlock Nutrient Logger Premium
 
 Track every vitamin, mineral, and amino acid — completely offline. 
-Your data never leaves your device.
+Your food log never leaves your device.
 
 ✓ Unlimited food logging history
 ✓ Micronutrient trend charts (7-day, 30-day)

@@ -82,7 +82,7 @@ Nutrient Logger is perfect voor iedereen die voeding serieus neemt — of je nu 
 2. Afgestemd op hoe jij eet
     Kies je voedingsstijl en focus - jouw belangrijkste voedingsstoffen eerst
 3. Ontdek tekorten voordat het problemen worden
-4. Je gegevens verlaten nooit je telefoon
+4. Je eetdagboek verlaat nooit je telefoon
     100% offline. Geen account, geen cloud, geen advertenties, nooit
 5. Bouw een gewoonte op die blijft
     Dagelijkse herinneringen en streaks houden je op koers

@@ -82,7 +82,7 @@ O Nutrient Logger é perfeito para quem leva nutrição a sério — seja numa d
 2. Ajustado ao seu jeito de comer
     Escolha sua alimentação e seu foco - seus nutrientes principais vêm primeiro
 3. Identifique deficiências antes que virem problemas
-4. Seus dados nunca saem do seu celular
+4. Seu diário alimentar nunca sai do seu celular
     100% offline. Sem conta, sem nuvem, sem anúncios, nunca
 5. Crie um hábito que dura
     Lembretes diários e sequências fazem você voltar

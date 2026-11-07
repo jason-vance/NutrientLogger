@@ -82,7 +82,7 @@ Nutrient Logger passar alla som tar näring på allvar — oavsett om du följer
 2. Anpassad efter hur du äter
     Välj kost och fokus - dina viktigaste näringsämnen hamnar överst
 3. Upptäck brister innan de blir problem
-4. Din data lämnar aldrig din telefon
+4. Din matdagbok lämnar aldrig din telefon
     100 % offline. Inget konto, inget moln, inga annonser, någonsin
 5. Bygg en vana som håller
     Dagliga påminnelser och sviter får dig att komma tillbaka

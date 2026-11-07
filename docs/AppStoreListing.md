@@ -85,6 +85,12 @@ Nutrient Logger is perfect for anyone serious about nutrition-whether you’re o
 • Just logged a meal you'll eat again? Save it as a meal right from the search screen's logged list
 • Low on something? The nutrient watch and your first-day recap now name everyday foods that help, matched to your diet
 • After a full day of logging, a morning tip names yesterday's biggest gap and what to eat for it (turn it off in Profile)
+• A cleaner logging screen: pick the date, meal and portion with one tap, and the Add button reads back exactly what you're logging
+• The scan and add-food buttons stay on screen while you type a search
+• Adding a custom food: move between fields and save right from the keyboard
+• Pantothenic acid and manganese now show for thousands of everyday foods that used to read 0, and nutrients a food doesn't report are no longer called low
+• Made for iPhone Duo, folded or open
+• Fixed: a repeated meal's calories now show right away
 
 ## What's New (v4.4)
 • Set your own upper limit for any vitamin or mineral, not just a goal - Micronutrient Goals is now Micronutrient Targets
@@ -105,7 +111,7 @@ Run this as a treatment against the current set below, at 50% of traffic, for at
 2. Built for Carnivore, Keto and Paleo
     Pick your diet - its usual gaps come first
 3. Every Vitamin and Mineral, Not Just Calories
-4. Your Data Never Leaves Your Phone
+4. Your Food Log Never Leaves Your Phone
     100% offline. No account, no cloud, no ads - ever
 
 Then the current set from "Build a Habit That Sticks" onward.
@@ -127,7 +133,7 @@ Apple will require Duo screenshots from April 2027: 1398 × 2034 for the outer d
 2. Tuned to How You Eat
     Pick your diet and focus - your top nutrients come first
 3. Spot Deficiencies Before They Become Problems
-4. Your Data Never Leaves Your Phone
+4. Your Food Log Never Leaves Your Phone
     100% offline. No account, no cloud, no ads - ever
 5. Build a Habit That Sticks
     Daily reminders and streaks keep you coming back

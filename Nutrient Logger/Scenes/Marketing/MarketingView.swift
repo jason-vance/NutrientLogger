@@ -221,7 +221,7 @@ struct MarketingView: View {
         HStack {
             Text(
                 contextualLossHeadline == nil
-                    ? "Track every vitamin, mineral, and amino acid. Completely offline! Your data never leaves your device."
+                    ? "Track every vitamin, mineral, and amino acid. Completely offline! Your food log never leaves your device."
                     : "Track every vitamin, mineral, and amino acid. Completely offline! Unlock Premium to get this and everything else Nutrient Logger offers."
             )
                 .foregroundStyle(.secondary)

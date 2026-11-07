@@ -14,7 +14,7 @@ The website is a **discovery channel**, not a brand destination. At ~300 MAU, th
 A single-page static site. Deployable for free on GitHub Pages or Netlify.
 
 ### What it includes
-- **Hero section** — lead with the positioning from STRATEGY.md: "Track every vitamin, mineral, and amino acid — completely offline. Your data never leaves your device."
+- **Hero section** — lead with the positioning from STRATEGY.md: "Track every vitamin, mineral, and amino acid — completely offline. Your food log never leaves your device."
 - **Feature highlights** — barcode scanning, custom foods, 30+ nutrients, goal setting, streak tracking. Screenshots from the app.
 - **Competitor differentiation** — brief callout (not aggressive) of what makes this different: micronutrient depth, no intrusive ads, fully offline.
 - **App Store link** — prominent, above the fold and repeated at the bottom.

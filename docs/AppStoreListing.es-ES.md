@@ -82,7 +82,7 @@ Nutrient Logger es perfecto para cualquiera que se tome en serio la nutrición �
 2. Ajustado a cómo comes
     Elige tu dieta y tu enfoque - tus nutrientes clave van primero
 3. Detecta las deficiencias antes de que sean un problema
-4. Tus datos nunca salen de tu teléfono
+4. Tu registro de comidas nunca sale de tu teléfono
     100 % sin conexión. Sin cuenta, sin nube, sin anuncios nunca
 5. Construye un hábito que perdura
     Recordatorios diarios y rachas que te hacen volver
