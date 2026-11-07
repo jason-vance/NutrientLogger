@@ -22,6 +22,7 @@ public class FtsQueryGenerator {
         "oj": "orange juice",
         "pb": "peanut butter",
         "pbj": "peanut butter jelly",
+        "pb&j": "peanut butter jelly",
         "evoo": "extra virgin olive oil",
         "chx": "chicken",
         "broc": "broccoli",
@@ -88,6 +89,61 @@ public class FtsQueryGenerator {
         "omelettes": "omelet",
         "milkshake": "milk shake",
         "milkshakes": "milk shake",
+        "blt": "bacon lettuce tomato",
+        "cheesesteak": "steak sandwich",
+        "tater": "potato",
+        "veggie": "vegetable",
+        "veggies": "vegetables",
+        "ipa": "beer",
+        "skyr": "yogurt greek plain",
+        "carnitas": "pork shoulder cooked",
+        "tbone": "t bone steak",
+        // Cut words USDA leaves out of fish and meat names: "salmon fillet" -> salmon.
+        "fillet": "",
+        "fillets": "",
+        "filet": "",
+        "filets": "",
+    ]
+
+    // Whole searches USDA names differently. Keyed by the tokenized, lowercased query.
+    // Also only a fallback.
+    static let phraseSynonyms: [String: String] = [
+        "cold brew": "iced coffee brewed",
+        "string cheese": "mozzarella part skim",
+        "bone broth": "broth",
+        "buffalo wings": "chicken wing",
+        "buffalo wing": "chicken wing",
+        "new york strip": "beef top loin steak",
+        "ny strip": "beef top loin steak",
+        "carne asada": "beef steak",
+        "breakfast sandwich": "egg cheese",
+        "sea salt": "salt table",
+        "pink salt": "salt table",
+        "la croix": "carbonated water unsweetened",
+        "electrolyte drink": "sports drink",
+        "caramel macchiato": "coffee macchiato sweetened",
+        "pumpkin spice latte": "coffee latte flavored",
+        "psl": "coffee latte flavored",
+        "mct oil": "coconut oil",
+        "poke bowl": "tuna fresh raw",
+    ]
+
+    // Words for how food was served, dropped when followed by "of": "a bowl of cereal" -> cereal.
+    // "Can" stays, since it's what matches "canned" in "can of tuna".
+    private static let servingUnits: Set<String> = [
+        "bowl", "bowls", "glass", "glasses", "handful", "handfuls", "plate", "plates",
+        "mug", "mugs", "bottle", "bottles", "pinch", "dash", "splash", "bag", "bags", "packet",
+        "packets", "stick", "sticks", "box", "carton", "jar", "spoonful", "spoonfuls", "shot", "shots",
+        "pint", "pints", "bar", "bars", "cup", "cups", "slice", "slices", "piece", "pieces", "serving",
+        "servings", "scoop", "scoops", "tbsp", "tablespoon", "tablespoons", "tsp", "teaspoon",
+        "teaspoons", "oz", "ounce", "ounces", "g", "gram", "grams", "lb", "lbs", "pound", "pounds",
+    ]
+
+    // Spelled-out amounts, dropped like digits when a unit follows: "two slices of bacon" -> bacon.
+    // Not before a food, so "Five Guys" stays whole.
+    private static let numberWords: Set<String> = [
+        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "twelve",
+        "half", "couple", "few", "dozen",
     ]
 
     private static let quantityUnits: Set<String> = [
@@ -97,19 +153,29 @@ public class FtsQueryGenerator {
         "large", "medium", "small", "x",
     ]
 
-    // "2 eggs", "1 cup rice", "100g chicken" -> drop the amount so it doesn't have to match
-    // the food's name. A number keeps its place when it's part of the name, like "2% milk".
+    // "2 eggs", "1 cup rice", "100g chicken", "a bowl of cereal" -> drop the amount so it doesn't
+    // have to match the food's name. A number keeps its place when it's part of the name, like
+    // "2% milk", and "half and half" stays whole.
     static func withoutQuantities(_ query: String) -> String {
         let tokens = query.split(separator: " ").map(String.init)
         var kept: [String] = []
         var afterNumber = false
-        for token in tokens {
+        for (index, token) in tokens.enumerated() {
             let lower = token.lowercased()
+            let next = index + 1 < tokens.count ? tokens[index + 1].lowercased() : nil
             if lower.wholeMatch(of: #/\d+([./]\d+)?(g|oz|ml|x)?/#) != nil {
                 afterNumber = true
                 continue
             }
-            if afterNumber && quantityUnits.contains(lower) {
+            if numberWords.contains(lower), let next,
+               quantityUnits.contains(next) || servingUnits.contains(next) {
+                afterNumber = true
+                continue
+            }
+            if afterNumber && (quantityUnits.contains(lower) || servingUnits.contains(lower)) {
+                continue
+            }
+            if servingUnits.contains(lower) && next == "of" {
                 continue
             }
             afterNumber = false

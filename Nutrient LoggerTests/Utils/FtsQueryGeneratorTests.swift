@@ -115,7 +115,7 @@ struct FtsQueryGeneratorTests {
 
     @Test func stopWordsRemoved() {
         expectGenerated("chicken with rice", "chicken* AND rice*")
-        expectGenerated("a cup of milk", "cup* AND milk*")
+        expectGenerated("a cup of milk", "milk*")
         expectGenerated("bread and butter", "bread* AND butter*")
     }
 
@@ -149,8 +149,35 @@ struct FtsQueryGeneratorTests {
     }
 
     @Test func unitWordsWithoutANumberKept() {
-        #expect(FtsQueryGenerator.withoutQuantities("a cup of milk") == "a cup of milk")
         #expect(FtsQueryGenerator.withoutQuantities("peanut butter cups") == "peanut butter cups")
+        #expect(FtsQueryGenerator.withoutQuantities("granola bar") == "granola bar")
+    }
+
+    @Test func servingPhrasesRemoved() {
+        #expect(FtsQueryGenerator.tokenize("a cup of milk") == ["milk"])
+        #expect(FtsQueryGenerator.tokenize("a bowl of cereal") == ["cereal"])
+        #expect(FtsQueryGenerator.tokenize("glass of wine") == ["wine"])
+        #expect(FtsQueryGenerator.tokenize("a handful of almonds") == ["almonds"])
+        #expect(FtsQueryGenerator.tokenize("a slice of pizza") == ["pizza"])
+    }
+
+    @Test func spelledOutAmountsRemoved() {
+        #expect(FtsQueryGenerator.tokenize("two slices of bacon") == ["bacon"])
+        #expect(FtsQueryGenerator.tokenize("half cup oats") == ["oats"])
+        #expect(FtsQueryGenerator.tokenize("five guys burger") == ["five", "guys", "burger"])
+    }
+
+    @Test func halfAndHalfKept() {
+        #expect(FtsQueryGenerator.tokenize("half and half") == ["half"])
+        #expect(FtsQueryGenerator.withoutQuantities("half and half") == "half and half")
+    }
+
+    @Test func canStaysSoItMatchesCanned() {
+        #expect(FtsQueryGenerator.tokenize("can of tuna") == ["can", "tuna"])
+    }
+
+    @Test func pbAndJExpands() {
+        #expect(FtsQueryGenerator.tokenize("pb&j") == ["peanut", "butter", "jelly"])
     }
 
     @Test func queryThatIsOnlyAQuantityKept() {

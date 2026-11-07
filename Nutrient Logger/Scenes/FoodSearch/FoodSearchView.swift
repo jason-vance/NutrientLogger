@@ -136,6 +136,9 @@ struct FoodSearchView: View {
     
     @State private var searchResults: [SearchResult] = []
     @State private var correctedSearchText: String? = nil
+    /// One section per food when a search named several and none matched as a whole
+    /// ("bagel with cream cheese" -> Bagel, Cream cheese). Replaces the Foods section.
+    @State private var searchPartSections: [SearchResultsSection] = []
     @State private var newCustomFood: NewCustomFoodRequest? = nil
     @State private var foodBeingEdited: CustomFood? = nil
 
@@ -208,6 +211,7 @@ struct FoodSearchView: View {
                     $0.isUserMeal && searchFunction.shouldIncludeUserMeals
                 }
             ),
+        ] + (searchPartSections.isEmpty ? [
             .init(
                 name: "Foods",
                 symbol: "carrot",
@@ -215,7 +219,7 @@ struct FoodSearchView: View {
                     $0.isFdcFood && searchFunction.shouldIncludeFdcFoods
                 }
             ),
-        ]
+        ] : searchPartSections)
     }
     
     private func resetViewState() {
@@ -223,6 +227,7 @@ struct FoodSearchView: View {
         hasSearched = false
         searchResults = []
         correctedSearchText = nil
+        searchPartSections = []
         similarFoods = []
         selectedSimilarFoodId = nil
         fetchInitialSuggestions()
@@ -283,6 +288,7 @@ struct FoodSearchView: View {
         hasSearched = true
         searchResults = []
         correctedSearchText = nil
+        searchPartSections = []
         isLoading = true
         Task {
             var results = await withTaskGroup(of: Array<SearchResult>.self) { group in
@@ -320,6 +326,28 @@ struct FoodSearchView: View {
                     engagementAnalytics.searchCorrected(query: searchText, correctedQuery: corrected)
                 }
             }
+
+            // Still nothing? The search may name more than one food ("avocado toast"), or carry a
+            // word no food has ("starbucks latte"). Search each food it names on its own.
+            if searchFunction.shouldIncludeFdcFoods, !results.contains(where: \.isFdcFood) {
+                let parts = remoteDatabase.searchParts(for: searchText)
+                if parts.count == 1, let part = parts.first {
+                    let partResults = await searchForRemoteFoods(part.query)
+                    results.append(contentsOf: partResults)
+                    correctedSearchText = part.query
+                    engagementAnalytics.searchCorrected(query: searchText, correctedQuery: part.query)
+                } else if parts.count > 1 {
+                    var sections: [SearchResultsSection] = []
+                    for part in parts {
+                        let partResults = Array(await searchForRemoteFoods(part.query).prefix(Self.resultsPerPart))
+                        guard !partResults.isEmpty else { continue }
+                        sections.append(.init(name: part.name, symbol: "carrot", results: partResults))
+                        results.append(contentsOf: partResults.filter { !results.contains($0) })
+                    }
+                    searchPartSections = sections
+                    engagementAnalytics.searchSplit(query: searchText, parts: sections.map(\.name))
+                }
+            }
             searchResults = results
 
             if searchResults.isEmpty {
@@ -337,6 +365,9 @@ struct FoodSearchView: View {
         }
     }
     
+    /// Kept short so every part of a split search fits on screen without much scrolling.
+    private static let resultsPerPart = 6
+
     private func searchRemoteNutrients(_ query: String) async -> [SearchResult] {
         do {
             return try remoteDatabase
@@ -477,7 +508,15 @@ struct FoodSearchView: View {
                 }
                 .listRowDefaultModifiers()
             } else {
-                if let correctedSearchText {
+                if !searchPartSections.isEmpty {
+                    Label {
+                        Text("No single food matches **\(searchText)**. Log each part:")
+                    } icon: {
+                        Image(systemName: "square.split.2x1")
+                    }
+                    .foregroundStyle(.secondary)
+                    .listRowDefaultModifiers()
+                } else if let correctedSearchText {
                     Label {
                         Text("Showing results for **\(correctedSearchText)**")
                     } icon: {

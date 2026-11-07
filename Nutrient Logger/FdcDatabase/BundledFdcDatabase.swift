@@ -220,9 +220,13 @@ class BundledFdcDatabase: RemoteDatabase {
         return corrector
     }
 
-    // A rewritten query for when the user's words find nothing: synonyms ("coke" -> "soft drink cola")
-    // and typo fixes ("brocoli" -> "broccoli"). Nil when there's nothing to change.
+    // A rewritten query for when the user's words find nothing: synonyms ("coke" -> "soft drink cola",
+    // "cold brew" -> "iced coffee brewed") and typo fixes ("brocoli" -> "broccoli"). Nil when there's
+    // nothing to change.
     public func correctedQuery(for query: String) -> String? {
+        if let phrase = FtsQueryGenerator.phraseSynonyms[EverydayFoodNames.key(for: query)] {
+            return phrase
+        }
         guard let corrector = try? getSpellCorrector() else { return nil }
         var changed = false
         let rewritten = FtsQueryGenerator.tokenize(query).map { token -> String in
@@ -236,7 +240,23 @@ class BundledFdcDatabase: RemoteDatabase {
             }
             return token
         }
-        return changed ? rewritten.joined(separator: " ") : nil
+        let joined = rewritten.filter { !$0.isEmpty }.joined(separator: " ")
+        return changed && !joined.isEmpty ? joined : nil
+    }
+
+    // For a search that found nothing even after correction: the foods it names, each searched on
+    // its own ("bagel with cream cheese" -> bagel, cream cheese). See `SearchQuerySplitter`.
+    public func searchParts(for query: String) -> [SearchQueryPart] {
+        SearchQuerySplitter.parts(of: query) { [self] candidate in
+            if let count = try? unrankedSearch(candidate).count, count > 0 {
+                return (candidate, count)
+            }
+            if let corrected = correctedQuery(for: candidate),
+               let count = try? unrankedSearch(corrected).count, count > 0 {
+                return (corrected, count)
+            }
+            return nil
+        }
     }
 
     public func searchSimilar(productName: String, brand: String?, limit: Int) throws -> [FdcSearchableFood] {

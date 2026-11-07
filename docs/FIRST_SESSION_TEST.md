@@ -54,6 +54,7 @@ Write the three biggest sticking points at the bottom of this file. Those are ne
 The new analytics events show how real users behave once this ships:
 
 - `search_corrected`: a typo or synonym was fixed for the user (includes the original and corrected query).
+- `search_split`: nothing matched the whole search, so each food it names got its own section (`search_term`, `search_parts` like "Bagel | Cream cheese").
 - `custom_food_entry_opened`: where manual entry was started from (`search_row`, `no_results` or `toolbar`).
 - `search_no_results`: searches that still found nothing. These are the gaps in the food database.
 - `first_day_recap_shown`: the user finished their first full day and saw their nutrient gaps.

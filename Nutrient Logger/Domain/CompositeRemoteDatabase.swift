@@ -46,6 +46,10 @@ class CompositeRemoteDatabase: RemoteDatabase {
         fdc.correctedQuery(for: query)
     }
 
+    func searchParts(for query: String) -> [SearchQueryPart] {
+        fdc.searchParts(for: query)
+    }
+
     func getNutrient(withId id: String) -> Nutrient? {
         fdc.getNutrient(withId: id)
     }

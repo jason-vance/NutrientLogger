@@ -319,6 +319,22 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 ---
 
+## v4.5 — "First Session"
+**Theme:** The 90-day plan (Nov 2026): fix the first session, show the payoff early, speak to carnivore, keto and paleo eaters, and stop underpricing.
+
+### App Store Connect
+- [ ] **Raise prices** (pricing check, Nov 6 2026). Full prices sit below every comparable tracker (Carb Manager ~$40/yr, Cronometer Gold ~$50–60/yr, MacroFactor ~$72/yr, MyFitnessPal and Lose It ~$80/yr). The 24-hour launch price is what nearly everyone pays, and because the launch prices are separate products they renew at that price for good.
+  - [ ] Launch yearly (`nutrient.logger.premium.yearly`): $9.99 → $19.99
+  - [ ] Launch monthly (`nutrient.logger.premium.monthly`): $1.99 → $3.99
+  - [ ] Full yearly (`nutrient.logger.premium.yearly.full.price`): $29.99 → $39.99
+  - [ ] Full monthly (`nutrient.logger.premium.monthly.full.price`): $5.99 → $7.99
+  - [ ] Choose "keep current price for existing subscribers" on each change
+  - [ ] Note the change date, then compare the following 60 days of proceeds per download with the 60 days before. Too few purchases (~5/month) for an A/B test.
+  - No code change needed: paywalls read prices from StoreKit and compute the "% off" labels.
+- [ ] Run the gap-first screenshot test with product page optimization (see `AppStoreListing.md`)
+
+---
+
 ## Backlog (v4.x and beyond)
 
 These are worth tracking but don't have a clear version slot yet:

@@ -201,6 +201,7 @@
 				Scenes/FoodSearch/Workers/FoodSearchRanker.swift,
 				Scenes/FoodSearch/Workers/FtsQueryGenerator.swift,
 				Scenes/FoodSearch/Workers/RemoteDatabase.swift,
+				Scenes/FoodSearch/Workers/SearchQuerySplitter.swift,
 				Scenes/FoodSearch/Workers/SearchSpellCorrector.swift,
 				Scenes/Meals/Domain/Meal.swift,
 				Scenes/NutrientTrends/NutrientTrendDataProvider.swift,

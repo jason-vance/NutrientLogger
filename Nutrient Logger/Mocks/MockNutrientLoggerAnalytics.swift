@@ -38,6 +38,7 @@ class MockEngagementAnalytics: EngagementAnalytics {
     func notificationPermissionResult(_ result: NotificationPermissionResult) {}
     func searchReturnedNoResults(query: String) {}
     func searchCorrected(query: String, correctedQuery: String) {}
+    func searchSplit(query: String, parts: [String]) {}
     func searchResultPicked(query: String, position: Int, resultCount: Int) {}
     func customFoodEntryOpened(source: String) {}
     func firstDayRecapShown(lowCount: Int, unnamedCount: Int, isSubscribed: Bool, usedReferenceAge: Bool) {}

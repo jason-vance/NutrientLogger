@@ -68,6 +68,7 @@ protocol EngagementAnalytics {
     func notificationPermissionResult(_ result: NotificationPermissionResult)
     func searchReturnedNoResults(query: String)
     func searchCorrected(query: String, correctedQuery: String)
+    func searchSplit(query: String, parts: [String])
     func searchResultPicked(query: String, position: Int, resultCount: Int)
     func customFoodEntryOpened(source: String)
     func firstDayRecapShown(lowCount: Int, unnamedCount: Int, isSubscribed: Bool, usedReferenceAge: Bool)
@@ -396,11 +397,13 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     private let eventNotificationPermissionResult = "notification_permission_result"
     private let eventSearchNoResults = "search_no_results"
     private let eventSearchCorrected = "search_corrected"
+    private let eventSearchSplit = "search_split"
     private let eventSearchResultPicked = "search_result_picked"
     private let parameterPosition = "position"
     private let parameterResultCount = "result_count"
     private let eventCustomFoodEntryOpened = "custom_food_entry_opened"
     private let parameterCorrectedQuery = "corrected_query"
+    private let parameterSearchParts = "search_parts"
     private let parameterSource = "source"
     private let parameterGoalName = "goal_name"
     private let parameterStreakDays = "streak_days"
@@ -481,6 +484,15 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
         analytics.log(event: eventSearchCorrected, parameters: [
             analytics.parameterSearchTerm: query,
             parameterCorrectedQuery: correctedQuery,
+        ])
+    }
+
+    /// No food matched the whole search, so it was shown as one section per food it names
+    /// ("bagel with cream cheese" -> "Bagel | Cream cheese").
+    public func searchSplit(query: String, parts: [String]) {
+        analytics.log(event: eventSearchSplit, parameters: [
+            analytics.parameterSearchTerm: query,
+            parameterSearchParts: parts.joined(separator: " | "),
         ])
     }
 
