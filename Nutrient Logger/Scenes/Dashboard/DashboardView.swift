@@ -40,6 +40,8 @@ struct DashboardView: View {
     @State private var showAutoMarketingView: Bool = false
     @State private var firstDayRecap: FirstDayRecapRequest? = nil
     @State private var showScreenshotPersonalize = false
+    @State private var showScreenshotFoodDetails = false
+    @State private var screenshotMeal: Meal?
     @State private var isFirstDayRecapWaitingForSearchToClose: Bool = false
     @State private var isReviewRequestWaitingForSearchToClose: Bool = false
     @State private var showStreakStats: Bool = false
@@ -148,6 +150,8 @@ struct DashboardView: View {
         switch ScreenshotScene.current {
         case .firstDayRecap: firstDayRecap = FirstDayRecapRequest(foods: ScreenshotScene.demoDayFoods)
         case .personalize: showScreenshotPersonalize = true
+        case .foodDetails: showScreenshotFoodDetails = true
+        case .logMeal: screenshotMeal = try? modelContext.fetch(FetchDescriptor<Meal>()).first
         case nil: break
         }
     }
@@ -321,6 +325,12 @@ struct DashboardView: View {
             )
         }
         .task { openScreenshotScene() }
+        .navigationDestination(isPresented: $showScreenshotFoodDetails) {
+            FoodDetailsView(mode: .searchResult(fdcId: ScreenshotScene.sampleFoodFdcId), onFoodSaved: { _, _ in })
+        }
+        .navigationDestination(item: $screenshotMeal) { meal in
+            LogMealView(meal: meal)
+        }
         .sheet(isPresented: $showDatePicker) {
             DatePicker(
                 "Date",

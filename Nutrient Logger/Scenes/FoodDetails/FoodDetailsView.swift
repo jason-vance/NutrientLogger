@@ -48,7 +48,6 @@ struct FoodDetailsView: View {
     @State private var selectedMealTime: MealTime
 
     @State private var logDate: SimpleDate
-    @State private var showDatePicker: Bool = false
 
     /// What was logged last time for this food, so the card can say when it's reusing it.
     @State private var lastLogged: LogPortionDefaults.LastLogged?
@@ -356,8 +355,11 @@ struct FoodDetailsView: View {
         .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { Toolbar() }
-        .safeAreaInset(edge: .bottom) { LogButton() }
-        .sheet(isPresented: $showDatePicker) { DatePickerSheet() }
+        .safeAreaInset(edge: .bottom) {
+            LogActionButton(title: logButtonTitle, detail: logButtonDetail, isEnabled: canSave) { saveFood() }
+        }
+        // A logging screen has one bottom action; the tab bar under it made two stacked bars.
+        .toolbar(.hidden, for: .tabBar)
         .onAppear { fetchFoodAndPortions() }
         .onAppear { populateFieldsIfNeeded() }
         .onAppear { engagementAnalytics.screenViewed(screenName: "FoodDetails") }
@@ -459,40 +461,6 @@ struct FoodDetailsView: View {
         .listRowDefaultModifiers()
     }
     
-    /// The main action, which reads back what will be logged, like "Show 41 homes" instead of "Search".
-    @ViewBuilder private func LogButton() -> some View {
-        Button {
-            saveFood()
-        } label: {
-            VStack(spacing: 2) {
-                Text(logButtonTitle)
-                    .font(.headline)
-                    .contentTransition(.numericText())
-                if let detail = logButtonDetail {
-                    Text(detail)
-                        .font(.footnote)
-                        .opacity(0.85)
-                        .contentTransition(.numericText())
-                }
-            }
-            .animation(.snappy, value: logButtonTitle)
-            .animation(.snappy, value: logButtonDetail)
-            .lineLimit(1)
-            .minimumScaleFactor(0.8)
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .background(
-                Capsule().fill(canSave ? AnyShapeStyle(Color.accentColor.gradient) : AnyShapeStyle(Color.gray.opacity(0.5)))
-            )
-            .contentShape(Capsule())
-        }
-        .buttonStyle(.plain)
-        .disabled(!canSave)
-        .padding(.horizontal)
-        .padding(.bottom, 8)
-    }
-    
     @ViewBuilder private func FoodName() -> some View {
         HStack {
             Text(food?.name ?? "Food Name")
@@ -506,9 +474,9 @@ struct FoodDetailsView: View {
     @ViewBuilder private func LogDetailsCard() -> some View {
         VStack(spacing: 0) {
             if askForDateAndMealTime {
-                DateField()
+                LogDateField(logDate: $logDate)
                 Divider().padding(.horizontal)
-                MealTimeField()
+                LogMealTimeField(mealTime: $selectedMealTime)
                 Divider().padding(.horizontal)
             }
             PortionField()
@@ -523,7 +491,7 @@ struct FoodDetailsView: View {
     @ViewBuilder private func PortionField() -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                FieldLabel("Portion")
+                LogFieldLabel("Portion")
                 Spacer()
                 if isSameAsLastTime {
                     Label("Same as last time", systemImage: "clock.arrow.circlepath")
@@ -535,7 +503,7 @@ struct FoodDetailsView: View {
             let shown = showAllPortions
                 ? Array(portions.indices)
                 : LogPortionDefaults.featuredPortionIndices(portions, anchor: featuredAnchor)
-            PillRow(
+            LogPillRow(
                 items: shown,
                 labels: shown.map { labels[$0] },
                 isSelected: { LogPortionDefaults.isSamePortion(selectedPortion, portions[$0]) },
@@ -551,7 +519,7 @@ struct FoodDetailsView: View {
     @ViewBuilder private func PortionAmountField() -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                FieldLabel("Amount")
+                LogFieldLabel("Amount")
                 Spacer()
                 TextField("Amount", text: $amountText, selection: $amountSelection)
                     .keyboardType(.decimalPad)
@@ -565,7 +533,7 @@ struct FoodDetailsView: View {
                         Capsule().stroke(isAmountFocused ? Color.accentColor : .clear, lineWidth: 1.5)
                     )
             }
-            PillRow(
+            LogPillRow(
                 items: LogPortionDefaults.quickAmounts(for: selectedPortion),
                 labels: LogPortionDefaults.quickAmounts(for: selectedPortion).map(LogPortionDefaults.label(for:)),
                 isSelected: { $0 == portionAmountValue },
@@ -579,148 +547,6 @@ struct FoodDetailsView: View {
         .padding(.vertical, 10)
     }
 
-    /// Tappable choices that wrap onto more lines as needed, so every option stays visible
-    /// inside the card.
-    @ViewBuilder private func PillRow<Item: Hashable>(
-        items: [Item],
-        labels: [String],
-        isSelected: @escaping (Item) -> Bool,
-        onSelect: @escaping (Item) -> Void,
-        moreCount: Int = 0,
-        onMore: @escaping () -> Void = {}
-    ) -> some View {
-        FlowLayout(spacing: 8) {
-            // Keyed by item so revealing more pills slides new ones in instead of relabeling old ones.
-            ForEach(Array(zip(items, labels)), id: \.0) { item, label in
-                Button {
-                    onSelect(item)
-                } label: {
-                    Pill(label, isSelected: isSelected(item))
-                }
-                .buttonStyle(.plain)
-            }
-            if moreCount > 0 {
-                Button(action: onMore) {
-                    // Built by hand: a Label here showed only its icon inside FlowLayout.
-                    HStack(spacing: 4) {
-                        Image(systemName: "plus")
-                        Text("\(moreCount) more")
-                    }
-                        .font(.subheadline)
-                        .fixedSize()
-                        .lineLimit(1)
-                        .foregroundStyle(Color.accentColor)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
-                        .overlay(Capsule().strokeBorder(Color.accentColor.opacity(0.5), lineWidth: 1))
-                        .contentShape(Capsule())
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    @ViewBuilder private func Pill(_ text: String, isSelected: Bool, font: Font = .subheadline, fillsWidth: Bool = false) -> some View {
-        Text(text)
-            .font(font.weight(isSelected ? .semibold : .regular))
-            .lineLimit(1)
-            .minimumScaleFactor(fillsWidth ? 0.7 : 1)
-            .padding(.horizontal, fillsWidth ? 6 : 12)
-            .padding(.vertical, 7)
-            .frame(maxWidth: fillsWidth ? .infinity : nil)
-            .foregroundStyle(isSelected ? Color.white : Color.primary)
-            .background(
-                Capsule().fill(isSelected ? AnyShapeStyle(Color.accentColor.gradient) : AnyShapeStyle(Color.gray.opacity(0.18)))
-            )
-            .contentShape(Capsule())
-    }
-
-    /// Field names stay quiet so the chosen options are what you read first.
-    @ViewBuilder private func FieldLabel(_ text: String) -> some View {
-        Text(text)
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-    }
-
-    private enum DateOption: CaseIterable {
-        case today, yesterday, other
-    }
-
-    /// Today and yesterday cover most logging, so they're one tap. Any other day opens a calendar.
-    @ViewBuilder private func DateField() -> some View {
-        let today = SimpleDate.today
-        let yesterday = today.adding(days: -1)
-        let isOtherDay = logDate != today && logDate != yesterday
-        VStack(alignment: .leading, spacing: 8) {
-            FieldLabel("Date")
-            PillRow(
-                items: DateOption.allCases,
-                labels: ["Today", "Yesterday", isOtherDay ? logDate.formatted() : "Other day…"],
-                isSelected: { option in
-                    switch option {
-                    case .today: return logDate == today
-                    case .yesterday: return logDate == yesterday
-                    case .other: return isOtherDay
-                    }
-                },
-                onSelect: { option in
-                    switch option {
-                    case .today: logDate = today
-                    case .yesterday: logDate = yesterday
-                    case .other: showDatePicker = true
-                    }
-                }
-            )
-        }
-        .padding(.horizontal)
-        .padding(.vertical, 10)
-    }
-
-    @ViewBuilder private func MealPill(_ mealTime: MealTime, font: Font = .subheadline) -> some View {
-        Button {
-            selectedMealTime = mealTime
-        } label: {
-            Pill(mealTime.rawValue, isSelected: selectedMealTime == mealTime, font: font, fillsWidth: true)
-        }
-        .buttonStyle(.plain)
-    }
-
-    @ViewBuilder private func DatePickerSheet() -> some View {
-        DatePicker(
-            "Date",
-            selection: .init(
-                get: { logDate.toDate() ?? .now },
-                set: { date in
-                    if let day = SimpleDate(date: date) { logDate = day }
-                    showDatePicker = false
-                }
-            ),
-            displayedComponents: [.date]
-        )
-        .datePickerStyle(.graphical)
-        .padding()
-        .presentationDetents([.medium])
-        .presentationDragIndicator(.visible)
-    }
-
-    @ViewBuilder private func MealTimeField() -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            FieldLabel("Meal")
-                .underlined(!canSave, color: .red, lineWidth: 1)
-            // Always two rows: each snack sits under the meal it follows.
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
-                MealPill(.breakfast)
-                MealPill(.lunch)
-                MealPill(.dinner)
-                MealPill(.morningSnack, font: .footnote)
-                MealPill(.afternoonSnack, font: .footnote)
-                MealPill(.eveningSnack, font: .footnote)
-            }
-        }
-        .padding(.horizontal)
-        .padding(.vertical, 10)
-    }
 }
 
 #Preview {
