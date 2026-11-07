@@ -63,7 +63,7 @@ protocol EngagementAnalytics {
     func onboardingStepCompleted(stepName: String, stepIndex: Int, secondsOnStep: Int)
     func onboardingStepBack(stepName: String, stepIndex: Int)
     func onboardingPersonalizationSelected(diet: String, concern: String)
-    func onboardingFoodBreakdownViewed(food: String, diet: String)
+    func onboardingFoodBreakdownViewed(diet: String)
     func settingsPersonalizationUpdated(diet: String, concern: String)
     func onboardingCompleted(totalSeconds: Int, diet: String, concern: String, subscribed: Bool)
     func customFoodCreated()
@@ -427,7 +427,6 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     private let eventOnboardingStepViewed = "onboarding_step_viewed"
     private let eventOnboardingPersonalizationSelected = "onboarding_personalization_selected"
     private let eventOnboardingFoodBreakdownViewed = "onboarding_food_breakdown_viewed"
-    private let parameterFood = "food"
     private let eventSettingsPersonalizationUpdated = "settings_personalization_updated"
     private let eventOnboardingCompleted = "onboarding_completed"
     private let eventOnboardingStepCompleted = "onboarding_step_completed"
@@ -478,9 +477,10 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
         analytics.setUserProperty(concern, forName: userPropertyFocus)
     }
 
-    public func onboardingFoodBreakdownViewed(food: String, diet: String) {
+    /// Leaves out which food was tapped: the privacy policy promises no food names in analytics
+    /// beyond search text.
+    public func onboardingFoodBreakdownViewed(diet: String) {
         analytics.log(event: eventOnboardingFoodBreakdownViewed, parameters: [
-            parameterFood: food,
             parameterDiet: diet,
         ])
     }

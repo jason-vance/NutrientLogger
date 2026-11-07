@@ -28,7 +28,7 @@ struct OnboardingFoodBreakdownView: View {
 
     private func select(_ food: OnboardingBreakdownFood) {
         guard food != selected else { return }
-        engagementAnalytics.onboardingFoodBreakdownViewed(food: food.name, diet: diet.rawValue)
+        engagementAnalytics.onboardingFoodBreakdownViewed(diet: diet.rawValue)
         guard let base = try? remoteDatabase.getFood(String(food.fdcId)),
               let serving = try? base.applyingPortion(Portion(amount: 1, gramWeight: food.gramWeight))
         else { return }

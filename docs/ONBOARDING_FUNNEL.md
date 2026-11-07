@@ -21,7 +21,7 @@ Before Nov 7 2026 there was no `food_breakdown` step, so `demo` was index 2 and 
 - `onboarding_step_completed` (`step_name`, `step_index`, `seconds_on_step`): the user moved on from a step.
 - `onboarding_step_back` (`step_name`, `step_index`): the user went back from this step.
 - `onboarding_personalization_selected` (`diet`, `concern`)
-- `onboarding_food_breakdown_viewed` (`food`, `diet`): each food tapped on the breakdown step.
+- `onboarding_food_breakdown_viewed` (`diet`): each food tapped on the breakdown step. Which food isn't logged, since the privacy policy keeps food names out of analytics.
 - `paywall_shown` and `paywall_dismissed` with `trigger` = `onboarding`. Before Nov 7 2026 the onboarding paywall logged `smart_paywall`, mixed in with the in-app one, and skipping it logged nothing.
 - `onboarding_completed` (`total_seconds`, `diet`, `concern`, `subscribed` = 1 or 0)
 
@@ -30,7 +30,7 @@ User properties `diet` and `nutrition_focus` are set when the diet question is a
 ## One-time setup in Firebase / GA4
 
 1. **Custom definitions** (GA4 Admin → Custom definitions):
-    - Event-scoped dimensions: `step_name`, `trigger`, `food`, `diet`, `concern`
+    - Event-scoped dimensions: `step_name`, `trigger`, `diet`, `concern`
     - Event-scoped metrics: `seconds_on_step`, `total_seconds`
     - User-scoped dimensions: `diet`, `nutrition_focus`
     - Data only fills in from when a definition is created, so add these first.

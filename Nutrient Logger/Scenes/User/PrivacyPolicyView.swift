@@ -23,7 +23,7 @@ struct PrivacyPolicyView: View {
 
     Here is what does leave your device, and why:
 
-    (1) Anonymous product analytics (Firebase Analytics). We log which screens and features are used - for example, that a food was logged, a barcode was scanned, or a premium feature was tapped - so we know what to improve. These events do not include the name of any food you ate, your weight, or other personal details, and are not linked to your identity.
+    (1) Anonymous product analytics (Firebase Analytics). We log which screens and features are used - for example, that a food was logged, a barcode was scanned, or a premium feature was tapped - so we know what to improve. These events do not include the foods you log, your weight, or other personal details, and are not linked to your identity. Two things they do include: the words you type into food search, so we can improve search and add foods that are missing, and the diet and main focus you choose during setup, so we can see what helps people on each diet.
 
     (2) Barcode lookups (Open Food Facts). When you scan a packaged food's barcode, the barcode number is sent to the Open Food Facts public database to retrieve its nutrition information. No other information about you is sent with that request.
 

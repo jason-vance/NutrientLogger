@@ -55,7 +55,7 @@ Nutrient Logger is an indie answer to a real frustration: the leading micronutri
 
 | Field | Answer |
 |---|---|
-| What makes it unique | Fully offline - entire USDA database on-device; no account, no server, no data collection. 80+ nutrients tracked vs. calories/macros elsewhere. |
+| What makes it unique | Fully offline - entire USDA database on-device; no account, and no server for the food log. 80+ nutrients tracked vs. calories/macros elsewhere. |
 | Apple technologies | SwiftUI, SwiftData, StoreKit 2, HealthKit, WidgetKit |
 | Business model | Free with native ads; Premium subscription (monthly/yearly, 7-day free trial) removes ads and unlocks trends, insights, body goals, Health sync, CSV export |
 | Team | Solo indie developer |

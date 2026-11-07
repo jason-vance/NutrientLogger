@@ -32,9 +32,9 @@ I want to be precise about this rather than making a blanket claim, because vagu
 
 **Stays on your device, always:** everything you log - every food, every meal, every weight entry, every goal. There's no account, and there's no server of ours that any of it gets sent to.
 
-**Leaves the device, and here's why:** anonymous product analytics (which screens and features get used, so I know what to fix or improve) - these events don't include what food you ate or any personal details, and aren't tied to your identity. Barcode scans send the scanned barcode number to the Open Food Facts public database to look up the product - nothing else about you goes with that request.
+**Leaves the device, and here's why:** anonymous product analytics (which screens and features get used, so I know what to fix or improve) - these events don't include the foods you log or any personal details, and aren't tied to your identity. They do include what you type into food search, so I can fix searches that come up empty, and the diet and focus you pick during setup. Barcode scans send the scanned barcode number to the Open Food Facts public database to look up the product - nothing else about you goes with that request.
 
-That's the honest list. It's not "zero data, ever" - that claim doesn't survive contact with how any modern app actually gets built and improved. It's "no account, no cloud copy of your food log, and nothing that reveals what you actually eat leaving the device."
+That's the honest list. It's not "zero data, ever" - that claim doesn't survive contact with how any modern app actually gets built and improved. It's "no account, no cloud copy of your food log, and nothing you log leaving the device."
 
 ## The bottom line
 

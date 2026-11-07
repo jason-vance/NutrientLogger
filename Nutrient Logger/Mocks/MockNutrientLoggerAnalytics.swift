@@ -29,7 +29,7 @@ class MockEngagementAnalytics: EngagementAnalytics {
     func onboardingStepCompleted(stepName: String, stepIndex: Int, secondsOnStep: Int) {}
     func onboardingStepBack(stepName: String, stepIndex: Int) {}
     func onboardingPersonalizationSelected(diet: String, concern: String) {}
-    func onboardingFoodBreakdownViewed(food: String, diet: String) {}
+    func onboardingFoodBreakdownViewed(diet: String) {}
     func settingsPersonalizationUpdated(diet: String, concern: String) {}
     func onboardingCompleted(totalSeconds: Int, diet: String, concern: String, subscribed: Bool) {}
     func customFoodCreated() {}

@@ -56,9 +56,10 @@ struct OnboardingFunnelAnalyticsTests {
         #expect(lastEvent()?.parameters["trigger"] as? String == "onboarding")
     }
 
-    @Test func logsTheFoodTappedOnTheBreakdownStep() {
-        analytics.onboardingFoodBreakdownViewed(food: "Steak", diet: "carnivore")
+    @Test func breakdownStepLogsNoFoodName() {
+        analytics.onboardingFoodBreakdownViewed(diet: "carnivore")
         #expect(lastEvent()?.name == "onboarding_food_breakdown_viewed")
-        #expect(lastEvent()?.parameters["food"] as? String == "Steak")
+        #expect(lastEvent()?.parameters["diet"] as? String == "carnivore")
+        #expect(lastEvent()?.parameters["food"] == nil)
     }
 }
