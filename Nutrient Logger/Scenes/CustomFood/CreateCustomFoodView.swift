@@ -46,6 +46,31 @@ struct CreateCustomFoodView: View {
     @FocusState private var focusedField: String?
     private static let nameField = "name"
     private static let caloriesField = "208"
+    private static let gramsField = "grams"
+
+    /// Every field on screen, top to bottom, for the keyboard bar's previous/next arrows.
+    private var fieldOrder: [String] {
+        var fields = [Self.nameField]
+        if usesOtherUnit { fields.append(Self.unitField) }
+        fields.append(Self.gramsField)
+        let groups: [(String, Bool)] = [
+            ("Macros", true),
+            ("Fatty Acids", showFattyAcids),
+            ("Vitamins", showVitamins),
+            ("Minerals", showMinerals),
+            ("Amino Acids", showAminoAcids),
+        ]
+        for (group, isShown) in groups where isShown {
+            fields += fieldsForGroup(group).map(\.fdcNumber)
+        }
+        return fields + addedOtherFdcNumbers
+    }
+
+    private func focusedFieldMoved(by offset: Int) -> String? {
+        guard let focusedField, let index = fieldOrder.firstIndex(of: focusedField) else { return nil }
+        let next = index + offset
+        return fieldOrder.indices.contains(next) ? fieldOrder[next] : nil
+    }
 
     private var isEditing: Bool { existingFood != nil }
 
@@ -185,11 +210,16 @@ struct CreateCustomFoodView: View {
         .scrollDismissesKeyboard(.interactively)
         .listDefaultModifiers()
         .safeAreaInset(edge: .bottom) {
-            LogActionButton(title: saveButtonTitle, detail: saveButtonDetail, isEnabled: canSave) { save() }
+            // While typing, the bar above the keyboard saves instead, so the big button doesn't
+            // ride up with the keyboard and cover the fields.
+            if focusedField == nil {
+                LogActionButton(title: saveButtonTitle, detail: saveButtonDetail, isEnabled: canSave) { save() }
+            }
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
+        .toolbar { KeyboardBar() }
         .onAppear {
             if let food = existingFood { populate(from: food) }
             engagementAnalytics.screenViewed(screenName: isEditing ? "EditCustomFood" : "CreateCustomFood")
@@ -224,6 +254,38 @@ struct CreateCustomFoodView: View {
         }
     }
 
+    /// Number pads have no return key, so this is how you move between fields and save.
+    @ToolbarContentBuilder private func KeyboardBar() -> some ToolbarContent {
+        ToolbarItemGroup(placement: .keyboard) {
+            let previous = focusedFieldMoved(by: -1)
+            let next = focusedFieldMoved(by: 1)
+            Button {
+                focusedField = previous
+            } label: {
+                Image(systemName: "chevron.up")
+            }
+            .disabled(previous == nil)
+            .accessibilityLabel("Previous field")
+            Button {
+                focusedField = next
+            } label: {
+                Image(systemName: "chevron.down")
+            }
+            .disabled(next == nil)
+            .accessibilityLabel("Next field")
+            Spacer()
+            if canSave {
+                Button(isEditing ? "Save" : (onSaved != nil ? "Save and Log" : "Save")) {
+                    focusedField = nil
+                    save()
+                }
+                .bold()
+            } else {
+                Button("Done") { focusedField = nil }
+            }
+        }
+    }
+
     // MARK: - Sections
 
     @ViewBuilder private func FoodInfoSection() -> some View {
@@ -251,6 +313,7 @@ struct CreateCustomFoodView: View {
                     set: { servingGramWeightText = $0; hasEditedGrams = true }
                 ))
                     .keyboardType(.decimalPad)
+                    .focused($focusedField, equals: Self.gramsField)
                     .multilineTextAlignment(.trailing)
                     .bold()
                     .foregroundStyle(Color.accentColor)
