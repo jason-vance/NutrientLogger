@@ -79,6 +79,7 @@
 				Domain/BodyMeasurementStreak.swift,
 				Domain/BodyMeasurementStreakStore.swift,
 				Domain/BodyWeightUnit.swift,
+				Domain/BundledDatabaseVersion.swift,
 				Domain/CompositeRemoteDatabase.swift,
 				Domain/ConsumedFood.swift,
 				Domain/CustomFood.swift,

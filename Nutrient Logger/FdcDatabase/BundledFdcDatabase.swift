@@ -43,8 +43,22 @@ class BundledFdcDatabase: RemoteDatabase {
         _ = try await Task.init(priority: .userInitiated) {
             let dir = BundledFdcDatabase.dbDir
             let toURL = dir.appendingPathComponent(dbName)
-            if (FileManager().fileExists(atPath: toURL.path)) {
-                return
+            let defaults = UserDefaults.standard
+            let versionKey = BundledDatabaseVersion.key(for: dbName)
+            let bundledVersion = BundledDatabaseVersion.current[dbName] ?? BundledDatabaseVersion.unversioned
+            let fileExists = FileManager().fileExists(atPath: toURL.path)
+            guard BundledDatabaseVersion.needsCopy(
+                fileExists: fileExists,
+                installedVersion: defaults.object(forKey: versionKey) as? Int,
+                bundledVersion: bundledVersion
+            ) else { return }
+
+            // An older copy is replaced whole, along with SQLite's side files. The search index
+            // lives in the copy too and is rebuilt the first time it's opened.
+            if fileExists {
+                for suffix in ["", "-wal", "-shm", "-journal"] {
+                    try? FileManager.default.removeItem(atPath: toURL.path + suffix)
+                }
             }
 
             // On a fresh install the Application Support directory doesn't exist yet, and
@@ -54,6 +68,7 @@ class BundledFdcDatabase: RemoteDatabase {
 
             let fromURL = Bundle.main.url(forResource: dbName, withExtension: nil)
             try FileManager().copyItem(at: fromURL!, to: toURL)
+            defaults.set(bundledVersion, forKey: versionKey)
         }.value
     }
 
