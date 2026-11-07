@@ -95,6 +95,7 @@
 				Domain/LogPortionDefaults.swift,
 				Domain/MealRepeat.swift,
 				Domain/MealTime.swift,
+				Domain/MeasurementChange.swift,
 				Domain/Notifications/GapTip.swift,
 				Domain/Notifications/NotificationPlanner.swift,
 				Domain/Notifications/NotificationSettings.swift,

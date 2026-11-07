@@ -20,6 +20,10 @@ struct WeightEntrySheet: View {
     @AppStorage(HealthKitManager.healthSyncEnabledKey) private var healthSyncEnabled = false
 
     @State private var date: Date = .now
+
+    @Query private var weights: [WeightEntry]
+    @Query private var bodyFats: [BodyFatEntry]
+    @Query private var waists: [WaistEntry]
     @State private var weightText: String = ""
     @State private var bodyFatText: String = ""
     @State private var waistText: String = ""
@@ -66,6 +70,50 @@ struct WeightEntrySheet: View {
         let bodyFatOk = bodyFatText.isEmpty || hasValidBodyFat
         let waistOk = waistText.isEmpty || hasValidWaist
         return hasAtLeastOne && weightOk && bodyFatOk && waistOk
+    }
+
+    private var day: SimpleDate { SimpleDate(date: date) ?? .today }
+
+    private var dayBinding: Binding<SimpleDate> {
+        Binding(get: { day }, set: { date = $0.toDate() ?? .now })
+    }
+
+    private var previousWeight: (date: SimpleDate, value: Double)? {
+        MeasurementChange.previous(before: day, in: weights, date: \.date) { preferredUnit.fromKg($0.weightKg) }
+    }
+
+    private var previousBodyFat: (date: SimpleDate, value: Double)? {
+        MeasurementChange.previous(before: day, in: bodyFats, date: \.date, value: \.percentage)
+    }
+
+    private var previousWaist: (date: SimpleDate, value: Double)? {
+        MeasurementChange.previous(before: day, in: waists, date: \.date) { preferredWaistUnit.fromCm($0.circumferenceCm) }
+    }
+
+    private var isEditing: Bool { existingWeight != nil || existingBodyFat != nil || existingWaist != nil }
+
+    private var saveButtonTitle: String {
+        if !canSave { return "Enter a measurement" }
+        return isEditing ? "Save Changes" : "Log Entry"
+    }
+
+    /// "182 lb, down 0.4 since Tuesday · Today" (weight first, else body fat, else waist).
+    private var saveButtonDetail: String? {
+        guard canSave else { return nil }
+        let summary: String
+        if hasValidWeight, let value = Double(weightText) {
+            summary = MeasurementChange.summary(value: value, unit: preferredUnit.label,
+                                                previous: previousWeight?.value, previousDay: previousWeight?.date.formatted())
+        } else if hasValidBodyFat, let value = Double(bodyFatText) {
+            summary = MeasurementChange.summary(value: value, unit: "% body fat",
+                                                previous: previousBodyFat?.value, previousDay: previousBodyFat?.date.formatted())
+        } else if hasValidWaist, let value = Double(waistText) {
+            summary = MeasurementChange.summary(value: value, unit: preferredWaistUnit.label + " waist",
+                                                previous: previousWaist?.value, previousDay: previousWaist?.date.formatted())
+        } else {
+            return nil
+        }
+        return "\(summary) · \(day.formatted())"
     }
 
     private func populateFromExisting() {
@@ -143,95 +191,60 @@ struct WeightEntrySheet: View {
     var body: some View {
         NavigationStack {
             List {
-                Section {
-                    HStack {
-                        Text("Date")
-                        Spacer()
-                        Button {
-
-                        } label: {
-                            Text(date.formatted(date: .abbreviated, time: .omitted))
-                                .bold()
-                                .foregroundStyle(Color.accentColor)
-                        }
-                        .overlay {
-                            DatePicker(
-                                "",
-                                selection: $date,
-                                displayedComponents: .date
-                            )
-                            .labelsHidden()
-                            .blendMode(.destinationOver)
-                        }
-                    }
+                LogDateField(logDate: dayBinding)
+                    .padding(.horizontal, -16)
                     .listRowDefaultModifiers()
-                }
 
                 Section {
-                    HStack {
-                        Text("Weight")
-                        Spacer()
-                        TextField("--", text: $weightText)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                            .bold()
-                            .foregroundStyle(Color.accentColor)
-                            .frame(maxWidth: 100)
-                        Text(preferredUnit.label)
-                            .fontWeight(.light)
-                            .foregroundStyle(.secondary)
-                    }
-                    .listRowDefaultModifiers()
-
-                    HStack {
-                        Text("Body Fat")
-                        Spacer()
-                        TextField("--", text: $bodyFatText)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                            .bold()
-                            .foregroundStyle(Color.accentColor)
-                            .frame(maxWidth: 100)
-                        Text("%")
-                            .fontWeight(.light)
-                            .foregroundStyle(.secondary)
-                    }
-                    .listRowDefaultModifiers()
-
-                    HStack {
-                        Text("Waist")
-                        Spacer()
-                        TextField("--", text: $waistText)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                            .bold()
-                            .foregroundStyle(Color.accentColor)
-                            .frame(maxWidth: 100)
-                        Text(preferredWaistUnit.label)
-                            .fontWeight(.light)
-                            .foregroundStyle(.secondary)
-                    }
-                    .listRowDefaultModifiers()
+                    MeasurementRow("Weight", text: $weightText, unit: preferredUnit.label, previous: previousWeight)
+                    MeasurementRow("Body Fat", text: $bodyFatText, unit: "%", previous: previousBodyFat)
+                    MeasurementRow("Waist", text: $waistText, unit: preferredWaistUnit.label, previous: previousWaist)
                 }
             }
             .listDefaultModifiers()
             .scrollDismissesKeyboard(.immediately)
             .navigationTitle("Log Entry")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { Toolbar() }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                LogActionButton(title: saveButtonTitle, detail: saveButtonDetail, isEnabled: canSave) { save() }
+            }
             .onAppear { populateFromExisting() }
         }
     }
 
-    @ToolbarContentBuilder private func Toolbar() -> some ToolbarContent {
-        ToolbarItem(placement: .cancellationAction) {
-            Button("Cancel") { dismiss() }
-        }
-        ToolbarItem(placement: .confirmationAction) {
-            Button("Save") { save() }
+    /// A number field with the last entry under its name, so the likely value is right there.
+    @ViewBuilder private func MeasurementRow(
+        _ title: String,
+        text: Binding<String>,
+        unit: String,
+        previous: (date: SimpleDate, value: Double)?
+    ) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                if let previous {
+                    Text("Last: \(MeasurementChange.withUnit(previous.value, unit)) · \(previous.date.formatted())")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Spacer()
+            TextField(previous.map { $0.value.formatted(maxDigits: 1) } ?? "--", text: text)
+                .keyboardType(.decimalPad)
+                .multilineTextAlignment(.trailing)
                 .bold()
-                .disabled(!canSave)
+                .foregroundStyle(Color.accentColor)
+                .frame(maxWidth: 100)
+            Text(unit)
+                .fontWeight(.light)
+                .foregroundStyle(.secondary)
         }
+        .listRowDefaultModifiers()
     }
 }
 

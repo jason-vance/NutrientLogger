@@ -44,6 +44,7 @@ struct DashboardView: View {
     @State private var screenshotMeal: Meal?
     @State private var showScreenshotCustomFood = false
     @State private var screenshotMealToEdit: Meal?
+    @State private var showScreenshotWeightEntry = false
     @State private var isFirstDayRecapWaitingForSearchToClose: Bool = false
     @State private var isReviewRequestWaitingForSearchToClose: Bool = false
     @State private var showStreakStats: Bool = false
@@ -156,7 +157,7 @@ struct DashboardView: View {
         case .logMeal: screenshotMeal = try? modelContext.fetch(FetchDescriptor<Meal>()).first
         case .customFood: showScreenshotCustomFood = true
         case .editMeal: screenshotMealToEdit = try? modelContext.fetch(FetchDescriptor<Meal>()).first
-        case .logWeight: break  // Opened from the Body tab; see WeightTrackingView.
+        case .logWeight: showScreenshotWeightEntry = true
         case nil: break
         }
     }
@@ -339,6 +340,7 @@ struct DashboardView: View {
         .navigationDestination(item: $screenshotMealToEdit) { meal in
             EditMealView(mealToEdit: meal)
         }
+        .sheet(isPresented: $showScreenshotWeightEntry) { WeightEntrySheet() }
         .sheet(isPresented: $showScreenshotCustomFood) {
             NavigationStack {
                 CreateCustomFoodView(initialName: "Homemade Granola") { _ in }
