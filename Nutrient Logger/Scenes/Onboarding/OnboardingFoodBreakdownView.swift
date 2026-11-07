@@ -111,6 +111,12 @@ struct OnboardingFoodBreakdownView: View {
             .padding(.horizontal, 8)
             .padding(.bottom, 32)
         }
+        .onAppear {
+            // Store screenshots show a food already picked.
+            if ScreenshotScene.current == .foodBreakdown, let first = diet.breakdownFoods.first {
+                select(first)
+            }
+        }
     }
 
     @ViewBuilder private func FoodChoices() -> some View {

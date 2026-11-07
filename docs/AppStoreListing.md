@@ -116,9 +116,11 @@ Raw captures for screenshots 1 and 2 (iPhone 17 Pro Max, 1320 × 2868) are in `d
 - `-screenshots -screenshotScene personalize -screenshotDiet carnivore`
 
 ### iPhone Duo
-Apple will require Duo screenshots from April 2027: 1398 × 2034 for the outer display and 2007 × 2853 for the inner one. Raw outer captures for every screen in the current set are in `docs/store-screenshots/v4.5-duo/outer/`, named by screenshot scene. Inner captures are still to do: unfold the iPhone Duo simulator in Device Hub, then capture with `xcrun simctl io <device> screenshot --display=3`. Every screen in the current set now has a scene:
+Apple will require Duo screenshots from April 2027: 1398 × 2034 for the outer display and 2007 × 2853 for the inner one. Raw captures for every screen in the current set, plus the v4.5 test screens, are in `docs/store-screenshots/v4.5-duo/outer/` and `inner/`, named by screenshot scene. The app runs the inner display in landscape, so those come out 2853 × 2007; if App Store Connect only takes 2007 × 2853, rotate them in the mockup tool. To capture again: fold or unfold the iPhone Duo simulator in Device Hub, launch in screenshot mode, then `xcrun simctl io <device> screenshot --display=1` (outer) or `--display=3` (inner). Every screen has a scene:
 
-- `-screenshots` (dashboard), or `-screenshotScene` with `weeklyWatch`, `vitamins`, `body`, `profile`, `nutritionSettings`, `editMeal`, `foodDetails`, `nutrientLibrary`, `search`
+- `-screenshots` (dashboard), or `-screenshotScene` with `weeklyWatch`, `vitamins`, `body`, `profile`, `nutritionSettings`, `editMeal`, `foodDetails`, `nutrientLibrary`, `search`, `firstDayRecap`, `personalize`, `foodBreakdown`
+
+`foodBreakdown` (the new onboarding step, with steak picked) is also in `docs/store-screenshots/v4.5/3-food-breakdown-carnivore.png`. It fits test screenshot 3, "Every Vitamin and Mineral, Not Just Calories".
 
 ### Current set
 1. Every vitamin and mineral, not just calories
