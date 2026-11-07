@@ -18,8 +18,6 @@ struct OnboardingDemoDashboardView: View {
     let diet: NutritionDietPreset
     let onContinue: () -> Void
 
-    @Inject private var remoteDatabase: RemoteDatabase
-
     /// A sexless ~30-year-old adult used only to resolve reference RDIs for the demo, so percentages
     /// show even though the onboarding user hasn't entered a profile yet. `.unknown` sex matches any
     /// life-stage entry (see `LifeStageNutrientRdi.matches`), so no sex is assumed. Never persisted.
@@ -32,39 +30,57 @@ struct OnboardingDemoDashboardView: View {
     @State private var meals: [DashboardMealList.Meal] = []
     @State private var consumedFoods: [ConsumedFood] = []
 
-    private func loadFoods() {
-        Task {
-            var loadedFoods: [FoodItem] = []
-            var consumed: [ConsumedFood] = []
+    /// Loaded before the step is shown, not on appear: content that pops in mid-transition
+    /// doesn't slide with the step and lands on top of the outgoing one.
+    init(diet: NutritionDietPreset, onContinue: @escaping () -> Void) {
+        self.diet = diet
+        self.onContinue = onContinue
+        let day = Self.sampleDay(for: diet)
+        _foods = State(initialValue: day.foods)
+        _meals = State(initialValue: day.meals)
+        _consumedFoods = State(initialValue: day.consumed)
+    }
 
-            for demo in diet.demoDay {
-                let portion = Portion(amount: 1, gramWeight: demo.gramWeight)
-                guard let base = try? remoteDatabase.getFood(String(demo.fdcId)),
-                      var food = try? base.applyingPortion(portion) else { continue }
-                food.mealTime = demo.mealTime
-                food.dateLogged = .today
-                loadedFoods.append(food)
-                // In-memory only (never inserted into a SwiftData context) — just to drive the
-                // existing DashboardMealList / DashboardMealRow meal UI.
-                consumed.append(ConsumedFood(
-                    fdcId: demo.fdcId,
-                    name: food.name,
-                    portionAmount: portion.amount,
-                    portionGramWeight: portion.gramWeight,
-                    portionName: portion.name,
-                    dateLogged: .today,
-                    mealTime: demo.mealTime
-                ))
-            }
+    private struct SampleDay {
+        let foods: [FoodItem]
+        let meals: [DashboardMealList.Meal]
+        let consumed: [ConsumedFood]
+    }
 
-            // Only meals that actually have food — a sample day shouldn't show empty snack rows.
-            let mealList = DashboardMealList.from(consumed).filter { !$0.foods.isEmpty }
-            await MainActor.run {
-                foods = loadedFoods
-                meals = mealList
-                consumedFoods = consumed
-            }
+    /// The view is re-created on every parent update, so each diet's day is built once.
+    @MainActor private static var sampleDays: [NutritionDietPreset: SampleDay] = [:]
+
+    @MainActor private static func sampleDay(for diet: NutritionDietPreset) -> SampleDay {
+        if let day = sampleDays[diet] { return day }
+        let remoteDatabase = swinjectContainer~>RemoteDatabase.self
+        var loadedFoods: [FoodItem] = []
+        var consumed: [ConsumedFood] = []
+
+        for demo in diet.demoDay {
+            let portion = Portion(amount: 1, gramWeight: demo.gramWeight)
+            guard let base = try? remoteDatabase.getFood(String(demo.fdcId)),
+                  var food = try? base.applyingPortion(portion) else { continue }
+            food.mealTime = demo.mealTime
+            food.dateLogged = .today
+            loadedFoods.append(food)
+            // In-memory only (never inserted into a SwiftData context) — just to drive the
+            // existing DashboardMealList / DashboardMealRow meal UI.
+            consumed.append(ConsumedFood(
+                fdcId: demo.fdcId,
+                name: food.name,
+                portionAmount: portion.amount,
+                portionGramWeight: portion.gramWeight,
+                portionName: portion.name,
+                dateLogged: .today,
+                mealTime: demo.mealTime
+            ))
         }
+
+        // Only meals that actually have food — a sample day shouldn't show empty snack rows.
+        let mealList = DashboardMealList.from(consumed).filter { !$0.foods.isEmpty }
+        let day = SampleDay(foods: loadedFoods, meals: mealList, consumed: consumed)
+        sampleDays[diet] = day
+        return day
     }
 
     var body: some View {
@@ -113,7 +129,6 @@ struct OnboardingDemoDashboardView: View {
             .padding(.top, 8)
             .padding(.bottom, 48)
         }
-        .onAppear(perform: loadFoods)
     }
 
     @ViewBuilder private func DashboardContent(foods: [FoodItem]) -> some View {

@@ -107,6 +107,8 @@ struct OnboardingView: View {
                 .padding(.horizontal, 8)
 
                 stepContent
+                    // Each step lays out as one unit, so nothing inside it can skip the slide.
+                    .geometryGroup()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
