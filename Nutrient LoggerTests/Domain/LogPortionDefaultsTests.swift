@@ -52,6 +52,92 @@ struct LogPortionDefaultsTests {
         #expect(LogPortionDefaults.quickAmounts(for: nil).isEmpty)
     }
 
+    @Test func drinksAndOuncesStartAtAUsualServing() {
+        let flOz = Portion(name: "fl oz", amount: 1, gramWeight: 31)
+        let ozCooked = Portion(name: "oz, cooked", amount: 1, gramWeight: 28.35)
+        let oz = Portion(name: "oz", amount: 1, gramWeight: 28.35)
+        let fourOz = Portion(name: "oz", amount: 4, gramWeight: 28.25)
+        #expect(LogPortionDefaults.defaultAmount(for: flOz) == 8)
+        #expect(LogPortionDefaults.defaultAmount(for: ozCooked) == 4)
+        #expect(LogPortionDefaults.defaultAmount(for: oz) == 1)
+        #expect(LogPortionDefaults.defaultAmount(for: fourOz) == 4)
+        #expect(LogPortionDefaults.amountAfterSwitching(from: cup, to: flOz, currentAmount: 1) == 8)
+        #expect(LogPortionDefaults.quickAmounts(for: flOz) == [4, 8, 12, 16, 20])
+    }
+
+    // MARK: - Portion order (names and weights from the bundled USDA data)
+
+    @Test func countedFoodsStartWithOneOfTheThing() {
+        expectFirst("egg", food: "Egg, whole, raw", [("cup", 245), ("egg", 50)])
+        expectFirst("banana", food: "Banana, raw", [
+            ("linear inch", 15), ("cup, mashed", 225), ("cup", 150), ("banana", 126), ("slice", 6),
+        ])
+        expectFirst("fruit", food: "Orange, raw", [("section/slice", 15), ("cup", 180), ("fruit", 154)])
+    }
+
+    @Test func mediumSizeComesFirst() {
+        expectFirst("medium", food: "Apple, raw", [
+            ("single serving package", 34), ("cup", 125), ("extra large", 295), ("large", 242), ("medium", 200),
+        ])
+    }
+
+    @Test func breadStartsWithARegularSlice() {
+        expectFirst("medium or regular slice", food: "Bread, white, toasted", [
+            ("cup", 40), ("cubic inch", 3.9), ("large or thick slice", 39),
+            ("slice, crust not eaten", 12), ("medium or regular slice", 25),
+        ])
+    }
+
+    @Test func drinksStartWithACupOrCanNotACafeSize() {
+        expectFirst("cup (8 fl oz)", food: "Coffee, brewed", [
+            ("large pot (60 FO, 12 servings)", 1800), ("small", 360), ("cup (8 fl oz)", 240), ("fl oz", 30),
+        ])
+        expectFirst("can (12 fl oz)", food: "Soft drink, NFS", [
+            ("large drink", 744), ("small drink", 372), ("fl oz (with ice)", 23), ("can (12 fl oz)", 372),
+        ])
+        expectFirst("fl oz (NFS)", food: "Orange juice, 100%, NFS", [
+            ("individual school container", 124), ("juice box/pouch (6.75 fl oz)", 209),
+            ("fl oz (with ice)", 23), ("fl oz (NFS)", 31),
+        ])
+    }
+
+    @Test func spreadsAndOilsStartWithASpoon() {
+        expectFirst("tablespoon", food: "Olive oil", [("cup", 224), ("tablespoon", 14)])
+        expectFirst("pat", food: "Butter, NFS", [("cup", 224), ("pat", 5), ("tablespoon", 14)])
+        // A cup of lentils is a normal amount, so the spoon doesn't take over.
+        expectFirst("cup", food: "Lentils, raw", [("tablespoon", 12), ("cup", 192)])
+    }
+
+    @Test func ouncesBeatACupForNutsAndMeat() {
+        expectFirst("oz", food: "Almonds, NFS", [("cup", 141), ("oz", 28.35)])
+        expectFirst("oz, boneless, raw", food: "Salmon, raw", [("cup, NFS", 166), ("oz, boneless, raw", 28.35)])
+    }
+
+    @Test func tinyPiecesLoseToACup() {
+        expectFirst("cup", food: "Grapes, raw", [("grape", 7), ("cup", 150)])
+        expectFirst("cup, whole", food: "Strawberries, raw", [("extra large (1-5/8\" dia)", 27), ("cup, whole", 144)])
+        expectFirst("cup", food: "Mushrooms, raw", [("piece/slice", 6), ("cup", 70)])
+        // Garlic is the exception: people log cloves.
+        expectFirst("clove", food: "Garlic, raw", [("cup", 136), ("clove", 3)])
+    }
+
+    @Test func oddPortionsGoLastAndGramsStayAtTheEnd() {
+        let portions = [
+            Portion(name: "surface inch", amount: 1, gramWeight: 1.9),
+            Portion(name: "Guideline amount per cup of hot cereal", amount: 1, gramWeight: 61),
+            grams,
+            Portion(name: "medium pancake", amount: 1, gramWeight: 50),
+        ]
+        let ordered = LogPortionDefaults.ordered(portions, foodName: "Pancakes, NFS").map(\.name)
+        #expect(ordered.first == "medium pancake")
+        #expect(ordered.last == "g")
+    }
+
+    private func expectFirst(_ expected: String, food: String, _ portions: [(String, Double)]) {
+        let list = portions.map { Portion(name: $0.0, amount: 1, gramWeight: $0.1) } + [grams]
+        #expect(LogPortionDefaults.ordered(list, foodName: food).first?.name == expected)
+    }
+
     @Test func labels() {
         #expect(LogPortionDefaults.label(for: 0.5) == "½")
         #expect(LogPortionDefaults.label(for: 1) == "1")

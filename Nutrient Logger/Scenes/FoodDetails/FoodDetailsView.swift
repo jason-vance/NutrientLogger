@@ -109,7 +109,8 @@ struct FoodDetailsView: View {
         do {
             prototypeFood = try remoteDatabase.getFood(String(fdcId))
             if let food = prototypeFood {
-                applyInitialSelection(portions: try remoteDatabase.getPortions(food))
+                let portions = try remoteDatabase.getPortions(food)
+                applyInitialSelection(portions: LogPortionDefaults.ordered(portions, foodName: food.name))
             } else {
                 print("Failed to find remote food with id \(fdcId)")
             }
