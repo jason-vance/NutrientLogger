@@ -113,6 +113,19 @@ struct NutritionPersonalizationPlanTests {
         ])
     }
 
+    @Test func carnivoreWatchesMagnesiumAndPaleoWatchesCalciumAndVitaminD() {
+        let carnivore = NutritionPersonalizationPlan.make(diet: .carnivore, concern: .generalHealth, defaultOrders: defaultOrders)
+        #expect(Array(carnivore.orderByGroup[.minerals]!.prefix(3)) == [
+            FdcNutrientGroupMapper.NutrientNumber_Magnesium_Mg,
+            FdcNutrientGroupMapper.NutrientNumber_Manganese_Mn,
+            FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca,
+        ])
+
+        let paleo = NutritionPersonalizationPlan.make(diet: .paleo, concern: .generalHealth, defaultOrders: defaultOrders)
+        #expect(paleo.orderByGroup[.minerals]!.first == FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca)
+        #expect(paleo.orderByGroup[.vitamins]!.first == FdcNutrientGroupMapper.NutrientNumber_VitaminD_D2_Plus_D3)
+    }
+
     @Test func visibleCountNeverDropsBelowDefault() {
         // Pescatarian promotes a single vitamin (D) ⇒ count clamps up to the default of 3.
         let plan = NutritionPersonalizationPlan.make(

@@ -10,21 +10,23 @@ Micronutrients, Fully Offline
 - Primary: Lifestyle
 - Secondary: Health & Fitness
 
-## Keywords (100/100 chars)
-vitamin,mineral,deficiency,cronometer,myfitnesspal,vitacost,carnivore,keto,vegan,macro,usda,diet,log
+## Keywords (97/100 chars)
+vitamin,mineral,deficiency,cronometer,myfitnesspal,paleo,carnivore,keto,vegan,macro,usda,diet,log
 
-## Promotional Text (165/170 chars)
-v4.4: Set your own upper limits, not just goals - cap sodium where you want it. And when a nutrient ratio drifts, see the foods behind it. Still ad-free and offline.
+## Promotional Text (158/170 chars)
+Carnivore, keto or paleo? See which vitamins and minerals your diet runs short on, starting with your first full day of logging. Ad-free, offline, no account.
 
 ## Description
 Nutrient Logger is the offline-first nutrition tracker for people who want to know what's actually in their food - not just calories and macros, but the full spectrum of vitamins, minerals, and amino acids your body needs.
+
+Eating carnivore, keto or paleo? Cutting out whole food groups also cuts the vitamins and minerals they carry. After your first full day of logging, Nutrient Logger names the ones you're running short on - like vitamin C and magnesium on carnivore, or calcium and vitamin D on paleo - so you can fix them with food instead of guessing.
 
 Unlike cloud-based trackers, your food log never leaves your device - no account, no cloud, and no ads. And unlike macro-focused apps, every entry breaks down 80+ nutrients so you can spot gaps before they become deficiencies.
 
 Key Features:
 
 * Personalized From Day One
-Tell us how you eat - balanced, plant-based, keto or low-carb, carnivore, or pescatarian - and what you care about most, from energy to bone and joint health. Nutrient Logger moves the nutrients you're most likely to run low on to the top of your Nutrition tab, so the gaps that matter to you are the first thing you see. Change your answers anytime in settings.
+Tell us how you eat - balanced, plant-based, keto or low-carb, carnivore, paleo, or pescatarian - and what you care about most, from energy to bone and joint health. Nutrient Logger moves the nutrients you're most likely to run low on to the top of your Nutrition tab, so the gaps that matter to you are the first thing you see. Change your answers anytime in settings.
 
 * Detailed Nutrient Breakdown
 See your daily intake of both macro and micronutrients, from protein and fiber to magnesium and vitamin B12. Choose which nutrients matter to you, reorder them, and set how many each group shows at a glance to build a Nutrition tab that fits your goals.
@@ -70,6 +72,14 @@ Nutrient Logger is perfect for anyone serious about nutrition-whether you’re o
 
 * Apple Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
 
+## What's New (v4.5)
+• After your first full day of logging, see the vitamins and minerals you're shortest on - and which of them are common gaps for your diet
+• Paleo joins the diets you can pick, with calcium and vitamin D up top; carnivore now watches magnesium too
+• Search is more forgiving: typos, plurals and shortcuts like "bbq" and "donut" find the food, and everyday searches like "toast" or "coffee" lead with the plain food
+• Fewer taps to log: foods start at the portion people usually log - one egg, a slice of bread, a cup of coffee - and your last amount is remembered
+• See what you've logged so far while you search
+• Manual entry opens straight to the form
+
 ## What's New (v4.4)
 • Set your own upper limit for any vitamin or mineral, not just a goal - Micronutrient Goals is now Micronutrient Targets
 • Sodium joins the minerals you can set a target for, so you can cap it where you want it
@@ -80,6 +90,21 @@ Nutrient Logger is perfect for anyone serious about nutrition-whether you’re o
 • Tapping a meal on the dashboard scrolls straight to that meal
 
 ## Screenshots
+
+### v4.5 test: lead with the diet gap (product page optimization)
+Run this as a treatment against the current set below, at 50% of traffic, for at least 4 weeks or until App Store Connect calls a winner on conversion rate. Keep the treatment to 3-4 new screenshots up front; the rest stay as they are.
+
+1. What Your Diet Leaves Out
+    The first-day recap: "You're low on vitamin C, magnesium and folate today" with the carnivore note under it
+2. Built for Carnivore, Keto and Paleo
+    Pick your diet - its usual gaps come first
+3. Every Vitamin and Mineral, Not Just Calories
+4. Your Data Never Leaves Your Phone
+    100% offline. No account, no cloud, no ads - ever
+
+Then the current set from "Build a Habit That Sticks" onward.
+
+### Current set
 1. Every vitamin and mineral, not just calories
 2. Tuned to How You Eat
     Pick your diet and focus - your top nutrients come first

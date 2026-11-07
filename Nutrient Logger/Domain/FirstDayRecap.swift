@@ -55,6 +55,21 @@ struct FirstDayRecap: Equatable {
         return parts.isEmpty ? nil : Self.naturalList(parts)
     }
 
+    /// Ties the shown gaps to the user's diet, e.g. "Vitamin C and folate are common gaps on a
+    /// carnivore diet, so they sit at the top of your Nutrition tab." Names only the shown gaps the
+    /// diet is known to run short on (its promoted nutrients). Nil when none match.
+    func dietNote(for diet: NutritionDietPreset?) -> String? {
+        guard let diet, let phrase = diet.gapPhrase else { return nil }
+        let dietGapIds = Set(diet.promotedNutrients.values.joined())
+        let names = shownGaps.filter { dietGapIds.contains($0.id) }.map { Self.inSentence($0.name) }
+        guard let first = names.first else { return nil }
+
+        let list = Self.naturalList([first.prefix(1).uppercased() + first.dropFirst()] + names.dropFirst())
+        return names.count == 1
+            ? "\(list) is a common gap \(phrase), so it sits at the top of your Nutrition tab."
+            : "\(list) are common gaps \(phrase), so they sit at the top of your Nutrition tab."
+    }
+
     /// "a", "a and b", "a, b and c".
     static func naturalList(_ items: [String]) -> String {
         switch items.count {

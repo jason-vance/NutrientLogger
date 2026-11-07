@@ -15,6 +15,7 @@ enum NutritionDietPreset: String, CaseIterable, Identifiable, Codable, Sendable 
     case plantBased
     case ketoLowCarb
     case carnivore
+    case paleo
     case pescatarian
 
     var id: String { rawValue }
@@ -29,7 +30,20 @@ enum NutritionDietPreset: String, CaseIterable, Identifiable, Codable, Sendable 
         case .plantBased: return "Plant-based"
         case .ketoLowCarb: return "Keto / Low-carb"
         case .carnivore: return "Carnivore"
+        case .paleo: return "Paleo"
         case .pescatarian: return "Pescatarian"
+        }
+    }
+
+    /// How the diet reads in "Vitamin C is a common gap on a carnivore diet". Nil for `.balanced`.
+    var gapPhrase: String? {
+        switch self {
+        case .balanced: return nil
+        case .plantBased: return "on plant-based diets"
+        case .ketoLowCarb: return "on keto and low-carb diets"
+        case .carnivore: return "on a carnivore diet"
+        case .paleo: return "on a paleo diet"
+        case .pescatarian: return "for pescatarians"
         }
     }
 
@@ -43,7 +57,9 @@ enum NutritionDietPreset: String, CaseIterable, Identifiable, Codable, Sendable 
         case .ketoLowCarb:
             return "Low-carb diets can run short on electrolytes — we'll watch your magnesium, potassium, and sodium."
         case .carnivore:
-            return "Carnivore is rich in B12 and zinc but can lack Vitamin C, folate, and manganese — we'll flag those."
+            return "Carnivore is rich in B12 and zinc but can lack Vitamin C, folate, magnesium, and manganese — we'll flag those."
+        case .paleo:
+            return "Skipping dairy and grains can leave calcium and Vitamin D short — we'll keep them front and center."
         case .pescatarian:
             return "Great omega-3s — we'll keep an eye on the iron and zinc from the meat you're skipping."
         }
@@ -91,7 +107,17 @@ enum NutritionDietPreset: String, CaseIterable, Identifiable, Codable, Sendable 
                     FdcNutrientGroupMapper.NutrientNumber_Folate_DFE,
                 ],
                 .minerals: [
+                    FdcNutrientGroupMapper.NutrientNumber_Magnesium_Mg,
                     FdcNutrientGroupMapper.NutrientNumber_Manganese_Mn,
+                    FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca,
+                ],
+            ]
+        case .paleo:
+            return [
+                .vitamins: [
+                    FdcNutrientGroupMapper.NutrientNumber_VitaminD_D2_Plus_D3,
+                ],
+                .minerals: [
                     FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca,
                 ],
             ]

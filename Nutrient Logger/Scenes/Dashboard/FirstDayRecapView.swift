@@ -230,6 +230,18 @@ struct FirstDayRecapView: View {
                 }
                 .padding()
                 .inCard(backgroundColor: .orange)
+
+                if let note = recap.dietNote(for: userService.currentUser.dietPreset) {
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: "fork.knife")
+                            .foregroundStyle(Color.accentColor)
+                            .frame(width: 20)
+                        Text(note)
+                            .font(.subheadline)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 0)
+                    }
+                }
             }
 
             if let summary = recap.unnamedSummary {

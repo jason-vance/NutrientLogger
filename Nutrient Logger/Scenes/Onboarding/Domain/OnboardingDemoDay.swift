@@ -59,6 +59,17 @@ extension NutritionDietPreset {
                 OnboardingDemoFood(fdcId: 1098213, gramWeight: 250, mealTime: .dinner),    // Ground beef
                 OnboardingDemoFood(fdcId: 1098962, gramWeight: 240, mealTime: .dinner),    // Salmon
             ]
+        case .paleo:
+            return [
+                OnboardingDemoFood(fdcId: 1100236, gramWeight: 150, mealTime: .breakfast), // Scrambled eggs
+                OnboardingDemoFood(fdcId: 1102702, gramWeight: 150, mealTime: .breakfast), // Blueberries
+                OnboardingDemoFood(fdcId: 1098445, gramWeight: 200, mealTime: .lunch),     // Chicken breast
+                OnboardingDemoFood(fdcId: 1103235, gramWeight: 200, mealTime: .lunch),     // Sweet potato
+                OnboardingDemoFood(fdcId: 1103172, gramWeight: 150, mealTime: .lunch),     // Broccoli
+                OnboardingDemoFood(fdcId: 1098213, gramWeight: 220, mealTime: .dinner),    // Ground beef
+                OnboardingDemoFood(fdcId: 1102652, gramWeight: 100, mealTime: .dinner),    // Avocado
+                OnboardingDemoFood(fdcId: 1100507, gramWeight: 30, mealTime: .lunch),      // Almonds
+            ]
         case .pescatarian:
             return [
                 OnboardingDemoFood(fdcId: 1097562, gramWeight: 250, mealTime: .breakfast), // Greek yogurt

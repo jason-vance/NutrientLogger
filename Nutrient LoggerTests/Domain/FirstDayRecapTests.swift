@@ -55,6 +55,44 @@ struct FirstDayRecapTests {
         #expect(FirstDayRecap.inSentence("Vitamin K") == "vitamin K")
     }
 
+    @Test func dietNoteNamesTheGapsTheDietRunsShortOn() {
+        let recap = FirstDayRecap(
+            lows: [
+                FirstDayRecap.Gap(id: FdcNutrientGroupMapper.NutrientNumber_VitaminC_TotalAscorbicAcid, name: "Vitamin C", percentOfGoal: 0.02),
+                FirstDayRecap.Gap(id: FdcNutrientGroupMapper.NutrientNumber_VitaminE_Alpha_Tocopherol, name: "Vitamin E", percentOfGoal: 0.2),
+                FirstDayRecap.Gap(id: FdcNutrientGroupMapper.NutrientNumber_Magnesium_Mg, name: "Magnesium", percentOfGoal: 0.5),
+            ],
+            highCount: 0,
+            balanceCount: 0
+        )
+        #expect(recap.dietNote(for: .carnivore)
+            == "Vitamin C and magnesium are common gaps on a carnivore diet, so they sit at the top of your Nutrition tab.")
+        #expect(recap.dietNote(for: .ketoLowCarb)
+            == "Vitamin C and magnesium are common gaps on keto and low-carb diets, so they sit at the top of your Nutrition tab.")
+    }
+
+    @Test func dietNoteForASingleGap() {
+        let recap = FirstDayRecap(
+            lows: [FirstDayRecap.Gap(id: FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca, name: "Calcium", percentOfGoal: 0.4)],
+            highCount: 0,
+            balanceCount: 0
+        )
+        #expect(recap.dietNote(for: .paleo)
+            == "Calcium is a common gap on a paleo diet, so it sits at the top of your Nutrition tab.")
+    }
+
+    @Test func noDietNoteWithoutADietOrAMatchingGap() {
+        let recap = FirstDayRecap(
+            lows: [FirstDayRecap.Gap(id: FdcNutrientGroupMapper.NutrientNumber_Calcium_Ca, name: "Calcium", percentOfGoal: 0.4)],
+            highCount: 0,
+            balanceCount: 0
+        )
+        #expect(recap.dietNote(for: nil) == nil)
+        #expect(recap.dietNote(for: .balanced) == nil)
+        #expect(recap.dietNote(for: .ketoLowCarb) == nil)
+        #expect(FirstDayRecap(lows: [], highCount: 0, balanceCount: 0).dietNote(for: .carnivore) == nil)
+    }
+
     @Test func showsOnlyOnTheFirstFullDay() {
         #expect(FirstDayRecapTrigger.shouldShow(isFullLoggingDay: true, hasShownBefore: false))
         #expect(!FirstDayRecapTrigger.shouldShow(isFullLoggingDay: false, hasShownBefore: false))
