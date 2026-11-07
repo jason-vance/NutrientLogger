@@ -33,6 +33,16 @@ struct CreateCustomFoodView: View {
     @State private var showAlert: Bool = false
     @State private var alertMessage: String = ""
 
+    /// True when the serving unit is typed in rather than picked from `commonUnits`.
+    @State private var usesOtherUnit: Bool = false
+    /// Whether the user has typed a gram weight, so picking "oz" doesn't overwrite it.
+    @State private var hasEditedGrams: Bool = false
+
+    /// The units on most nutrition labels, as one-tap pills. Anything else is "Other…".
+    private static let commonUnits = ["serving", "cup", "oz", "slice", "piece", "tbsp", "scoop", "bar"]
+    private static let otherUnit = "Other…"
+    private static let unitField = "unit"
+
     @FocusState private var focusedField: String?
     private static let nameField = "name"
     private static let caloriesField = "208"
@@ -59,6 +69,27 @@ struct CreateCustomFoodView: View {
         CustomFood.otherFields.filter { !addedOtherFdcNumbers.contains($0.fdcNumber) }
     }
 
+    private var trimmedName: String { name.trimmingCharacters(in: .whitespaces) }
+    private var trimmedUnit: String { servingUnit.trimmingCharacters(in: .whitespaces) }
+
+    private var saveButtonTitle: String {
+        if trimmedName.isEmpty { return "Add a name" }
+        if trimmedUnit.isEmpty { return "Pick a serving" }
+        if isEditing { return "Save Changes" }
+        // From search, saving goes straight on to logging the food.
+        return onSaved != nil ? "Save and Log" : "Save Food"
+    }
+
+    /// "1 cup (240 g) · 210 kcal"
+    private var saveButtonDetail: String? {
+        guard !trimmedUnit.isEmpty, let grams = Double(servingGramWeightText), grams > 0 else { return nil }
+        var parts = ["1 \(trimmedUnit) (\(grams.formatted(maxDigits: 1)) g)"]
+        if let calories = Double(nutrientTexts[Self.caloriesField] ?? "") {
+            parts.append("\(calories.formatted(maxDigits: 0)) kcal")
+        }
+        return parts.joined(separator: " · ")
+    }
+
     private var canSave: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty
             && !servingUnit.trimmingCharacters(in: .whitespaces).isEmpty
@@ -70,7 +101,9 @@ struct CreateCustomFoodView: View {
     private func populate(from food: CustomFood) {
         name = food.name
         servingUnit = food.servingUnit
+        usesOtherUnit = !Self.commonUnits.contains(food.servingUnit)
         servingGramWeightText = food.servingGramWeight.formatted(maxDigits: 2)
+        hasEditedGrams = true
 
         let formFdcNumbers = Set(CustomFood.formFields.map { $0.fdcNumber })
 
@@ -151,6 +184,9 @@ struct CreateCustomFoodView: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .listDefaultModifiers()
+        .safeAreaInset(edge: .bottom) {
+            LogActionButton(title: saveButtonTitle, detail: saveButtonDetail, isEnabled: canSave) { save() }
+        }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
@@ -186,10 +222,6 @@ struct CreateCustomFoodView: View {
                 Image(systemName: "xmark")
             }
         }
-        ToolbarItem(placement: .topBarTrailing) {
-            Button { save() } label: { Image(systemName: "checkmark") }
-                .disabled(!canSave)
-        }
     }
 
     // MARK: - Sections
@@ -209,20 +241,15 @@ struct CreateCustomFoodView: View {
             }
             .listRowDefaultModifiers()
 
-            HStack {
-                Text("Serving Unit")
-                Spacer()
-                TextField("e.g. serving, cup, oz", text: $servingUnit)
-                    .multilineTextAlignment(.trailing)
-                    .bold()
-                    .foregroundStyle(Color.accentColor)
-            }
-            .listRowDefaultModifiers()
+            ServingUnitRow()
 
             HStack {
-                Text("Grams per Serving")
+                Text("Grams per \(trimmedUnit.isEmpty ? "serving" : trimmedUnit)")
                 Spacer()
-                TextField("100", text: $servingGramWeightText)
+                TextField("100", text: Binding(
+                    get: { servingGramWeightText },
+                    set: { servingGramWeightText = $0; hasEditedGrams = true }
+                ))
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.trailing)
                     .bold()
@@ -230,6 +257,41 @@ struct CreateCustomFoodView: View {
             }
             .listRowDefaultModifiers()
         }
+    }
+
+    /// The serving as one-tap pills, since nearly every label uses one of a few units.
+    @ViewBuilder private func ServingUnitRow() -> some View {
+        let options = Self.commonUnits + [Self.otherUnit]
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Serving")
+            LogPillRow(
+                items: options,
+                labels: options,
+                isSelected: { option in
+                    option == Self.otherUnit ? usesOtherUnit : (!usesOtherUnit && option == servingUnit)
+                },
+                onSelect: { option in
+                    if option == Self.otherUnit {
+                        usesOtherUnit = true
+                        servingUnit = ""
+                        focusedField = Self.unitField
+                    } else {
+                        usesOtherUnit = false
+                        servingUnit = option
+                        // An ounce always weighs the same, so fill it in.
+                        if option == "oz" && !hasEditedGrams { servingGramWeightText = "28.35" }
+                    }
+                }
+            )
+            if usesOtherUnit {
+                TextField("e.g. muffin, container, packet", text: $servingUnit)
+                    .focused($focusedField, equals: Self.unitField)
+                    .bold()
+                    .foregroundStyle(Color.accentColor)
+            }
+        }
+        .padding(.vertical, 4)
+        .listRowDefaultModifiers()
     }
 
     @ViewBuilder private func OtherNutrientsSection() -> some View {
