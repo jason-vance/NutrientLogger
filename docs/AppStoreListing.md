@@ -82,6 +82,7 @@ Nutrient Logger is perfect for anyone serious about nutrition-whether you’re o
 • Searches that found nothing now do: "bagel with cream cheese" or "avocado toast" shows each part to log, and "a cup of coffee" or "cold brew" finds the drink
 • Cooking a batch? Set how many servings a saved meal makes and log it one serving at a time
 • Eat the same breakfast most days? An empty meal offers to repeat yesterday's in one tap
+• Just logged a meal you'll eat again? Save it as a meal right from the search screen's logged list
 • Low on something? The nutrient watch and your first-day recap now name everyday foods that help, matched to your diet
 • After a full day of logging, a morning tip names yesterday's biggest gap and what to eat for it (turn it off in Profile)
 

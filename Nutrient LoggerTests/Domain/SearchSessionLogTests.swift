@@ -42,4 +42,13 @@ struct SearchSessionLogTests {
         #expect(SearchSessionLog.title(date: today, mealTime: .lunch, today: today, dayName: "Today") == "Lunch")
         #expect(SearchSessionLog.title(date: yesterday, mealTime: .lunch, today: today, dayName: "Yesterday") == "Lunch · Yesterday")
     }
+
+    @Test func suggestsAMealNameFromTheFoods() {
+        #expect(SearchSessionLog.suggestedMealName(for: ["Egg, whole, fried", "Bacon, cooked", "Coffee, brewed"])
+            == "Egg, Bacon & Coffee")
+        #expect(SearchSessionLog.suggestedMealName(for: ["Steak", "Egg, whole", "Egg, yolk only"]) == "Steak & Egg")
+        #expect(SearchSessionLog.suggestedMealName(for: ["Oatmeal, made with water"]) == "Oatmeal")
+        #expect(SearchSessionLog.suggestedMealName(for: ["A", "B", "C", "D"]) == "A, B & C")
+        #expect(SearchSessionLog.suggestedMealName(for: []) == "My Meal")
+    }
 }

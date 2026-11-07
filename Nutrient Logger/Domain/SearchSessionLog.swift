@@ -49,6 +49,18 @@ enum SearchSessionLog {
             .sorted { ($0.date, $0.mealTime.order) < ($1.date, $1.mealTime.order) }
     }
 
+    /// A name for saving a group of foods as a meal, from the start of each food's name:
+    /// "Egg, whole, fried" + "Bacon, cooked" + "Coffee, brewed" -> "Egg, Bacon & Coffee".
+    static func suggestedMealName(for names: [String], limit: Int = 3) -> String {
+        var seen = Set<String>()
+        let short = names
+            .map { $0.split(separator: ",").first.map(String.init)?.trimmingCharacters(in: .whitespaces) ?? $0 }
+            .filter { !$0.isEmpty && seen.insert($0.lowercased()).inserted }
+            .prefix(limit)
+        guard let last = short.last else { return "My Meal" }
+        return short.count == 1 ? last : short.dropLast().joined(separator: ", ") + " & " + last
+    }
+
     /// "Breakfast" for today, "Breakfast · Yesterday" for any other day.
     static func title(date: SimpleDate, mealTime: MealTime, today: SimpleDate, dayName: String) -> String {
         date == today ? mealTime.rawValue : "\(mealTime.rawValue) · \(dayName)"

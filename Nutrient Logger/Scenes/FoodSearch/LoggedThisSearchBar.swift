@@ -90,8 +90,31 @@ private struct LoggedThisSearchList: View {
     @EnvironmentObject private var dataController: DataController
 
     @State private var foodBeingEdited: ConsumedFood?
+    @State private var groupBeingSaved: SearchSessionLog.Group<ConsumedFood>?
+    @State private var mealName: String = ""
+    @State private var savedGroupIds: Set<String> = []
 
     @Inject private var engagementAnalytics: EngagementAnalytics
+    @Inject private var mealsAnalytics: UserMealsAnalytics
+
+    /// Saves a group's foods and portions as a reusable meal, found in search next time.
+    private func saveAsMeal(_ group: SearchSessionLog.Group<ConsumedFood>, name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespaces)
+        let meal = Meal(name: trimmed.isEmpty ? SearchSessionLog.suggestedMealName(for: group.items.map(\.name)) : trimmed)
+        meal.addFoods(group.items.map {
+            Meal.FoodWithPortion(
+                foodFdcId: $0.fdcId,
+                foodName: $0.name,
+                portionAmount: $0.portionAmount,
+                portionGramWeight: $0.portionGramWeight,
+                portionName: $0.portionName
+            )
+        })
+        modelContext.insert(meal)
+        savedGroupIds.insert(group.id)
+        mealsAnalytics.mealCreated()
+        engagementAnalytics.searchLogFoodChanged(action: "saved_as_meal")
+    }
 
     private var groups: [SearchSessionLog.Group<ConsumedFood>] {
         SearchSessionLog.groups(foods, date: \.dateLogged, mealTime: \.mealTime)
@@ -109,15 +132,12 @@ private struct LoggedThisSearchList: View {
                     .listRowBackground(Color.clear)
                 }
                 ForEach(groups) { group in
-                    Section(SearchSessionLog.title(
-                        date: group.date,
-                        mealTime: group.mealTime,
-                        today: .today,
-                        dayName: group.date.formatted()
-                    )) {
+                    Section {
                         ForEach(group.items) { food in
                             FoodRow(food)
                         }
+                    } header: {
+                        GroupHeader(group)
                     }
                 }
             }
@@ -128,6 +148,19 @@ private struct LoggedThisSearchList: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
                 }
+            }
+            .alert("Save as Meal", isPresented: .init(
+                get: { groupBeingSaved != nil },
+                set: { if !$0 { groupBeingSaved = nil } }
+            )) {
+                TextField("Meal name", text: $mealName)
+                Button("Save") {
+                    if let group = groupBeingSaved { saveAsMeal(group, name: mealName) }
+                    groupBeingSaved = nil
+                }
+                Button("Cancel", role: .cancel) { groupBeingSaved = nil }
+            } message: {
+                Text("Next time, find it in search and log all of these in one tap.")
             }
             .navigationDestination(item: $foodBeingEdited) { food in
                 FoodDetailsView(
@@ -144,6 +177,34 @@ private struct LoggedThisSearchList: View {
                 )
             }
         }
+    }
+
+    @ViewBuilder private func GroupHeader(_ group: SearchSessionLog.Group<ConsumedFood>) -> some View {
+        HStack {
+            Text(SearchSessionLog.title(
+                date: group.date,
+                mealTime: group.mealTime,
+                today: .today,
+                dayName: group.date.formatted()
+            ))
+            Spacer()
+            if group.items.count >= 2 {
+                if savedGroupIds.contains(group.id) {
+                    Label("Saved", systemImage: "checkmark")
+                        .font(.caption.bold())
+                        .foregroundStyle(.secondary)
+                } else {
+                    Button {
+                        mealName = SearchSessionLog.suggestedMealName(for: group.items.map(\.name))
+                        groupBeingSaved = group
+                    } label: {
+                        Label("Save as Meal", systemImage: "square.and.arrow.down")
+                            .font(.caption.bold())
+                    }
+                }
+            }
+        }
+        .textCase(nil)
     }
 
     @ViewBuilder private func FoodRow(_ food: ConsumedFood) -> some View {
