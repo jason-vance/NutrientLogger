@@ -65,82 +65,40 @@ struct OnboardingPersonalizationView: View {
                         .padding(.top, 12)
                         .padding(.bottom, 32)
 
-                    QuestionCard(title: "My diet", value: diet.label, reflectBack: diet.reflectBack) {
-                        Picker("My diet", selection: $diet) {
-                            ForEach(NutritionDietPreset.allCases) { preset in
-                                Text(preset.label).tag(preset)
-                            }
-                        }
+                    VStack(spacing: 0) {
+                        ChoiceQuestion(
+                            title: "How do you eat?",
+                            options: NutritionDietPreset.allCases,
+                            label: \.label,
+                            selection: $diet,
+                            note: diet.reflectBack
+                        )
+                        .padding()
+                        Divider().padding(.horizontal)
+                        ChoiceQuestion(
+                            title: "What matters most to you?",
+                            options: NutritionConcern.allCases,
+                            label: \.label,
+                            selection: $concern,
+                            note: concern.reflectBack
+                        )
+                        .padding()
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 16)
-
-                    QuestionCard(title: "I care most about", value: concern.label, reflectBack: concern.reflectBack) {
-                        Picker("I care most about", selection: $concern) {
-                            ForEach(NutritionConcern.allCases) { concern in
-                                Text(concern.label).tag(concern)
-                            }
-                        }
-                    }
+                    .inCard(backgroundColor: Color.gray)
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
                 }
             }
 
-            Button(action: continueAction) {
-                Text("Let's see it in action")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.accentColor)
-                    .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
-            }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 48)
-        }
-    }
-
-    @ViewBuilder private func QuestionCard<Options: View>(
-        title: String,
-        value: String,
-        reflectBack: String,
-        @ViewBuilder options: () -> Options
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Menu {
-                options()
-            } label: {
-                HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(title)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text(value)
-                            .font(.headline)
-                            .foregroundStyle(Color.accentColor)
-                    }
-                    Spacer()
-                    Image(systemName: "chevron.up.chevron.down")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(Color.accentColor)
-                }
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 14)
-                        .fill(Color.primary.opacity(0.06))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 14)
-                                .stroke(Color.primary.opacity(0.12), lineWidth: 1)
-                        )
-                )
-            }
-
-            Text(reflectBack)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 4)
-                .animation(.easeInOut(duration: 0.2), value: reflectBack)
+            // Reads back the answers, so the button says what it'll set up.
+            LogActionButton(
+                title: "Let's see it in action",
+                detail: "\(diet.label) · \(concern.label)",
+                isEnabled: true,
+                action: continueAction
+            )
+            .padding(.horizontal, 8)
+            .padding(.bottom, 32)
         }
     }
 }

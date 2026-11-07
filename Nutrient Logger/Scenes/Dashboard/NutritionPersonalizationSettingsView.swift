@@ -69,25 +69,24 @@ struct NutritionPersonalizationSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Picker("Diet", selection: $diet) {
-                    ForEach(NutritionDietPreset.allCases) { preset in
-                        Text(preset.label).tag(preset)
-                    }
-                }
-                Picker("Focus", selection: $concern) {
-                    ForEach(NutritionConcern.allCases) { concern in
-                        Text(concern.label).tag(concern)
-                    }
-                }
+                ChoiceQuestion(
+                    title: "Diet",
+                    options: NutritionDietPreset.allCases,
+                    label: \.label,
+                    selection: $diet,
+                    note: diet.reflectBack
+                )
+                .padding(.vertical, 6)
+                ChoiceQuestion(
+                    title: "Focus",
+                    options: NutritionConcern.allCases,
+                    label: \.label,
+                    selection: $concern,
+                    note: concern.reflectBack
+                )
+                .padding(.vertical, 6)
             } header: {
                 Text("Diet & Focus")
-            } footer: {
-                VStack(alignment: .leading, spacing: 8) {
-                    ReflectBackLine(diet.reflectBack)
-                    ReflectBackLine(concern.reflectBack)
-                }
-                .animation(.easeInOut(duration: 0.2), value: diet)
-                .animation(.easeInOut(duration: 0.2), value: concern)
             }
 
             Section {
@@ -133,21 +132,6 @@ struct NutritionPersonalizationSettingsView: View {
     }
 }
 
-/// One reflect-back line under the pickers, prefixed with a small accent bullet so the two read as a
-/// short list.
-private struct ReflectBackLine: View {
-    let text: String
-    init(_ text: String) { self.text = text }
-
-    var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 6) {
-            Image(systemName: "circle.fill")
-                .font(.system(size: 4))
-                .foregroundStyle(Color.accentColor)
-            Text(text)
-        }
-    }
-}
 
 #Preview("No customization") {
     let _ = swinjectContainer.autoregister(UserService.self) { MockUserService(currentUser: .sample) }
