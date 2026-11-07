@@ -821,7 +821,14 @@ struct FoodSearchView: View {
             LogMealView(meal: meal.meal)
         } label: {
             HStack {
-                Text(meal.mealName)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(meal.mealName)
+                    if let makes = Meal.makesText(servings: meal.meal.servings) {
+                        Text(makes)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
                 Spacer()
             }
         }

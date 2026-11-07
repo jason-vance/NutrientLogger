@@ -17,7 +17,9 @@ struct LogMealView: View {
 
     let meal: Meal
     
-    @State private var prototypeFoods: [FoodItem] = []
+    /// Each of the meal's foods with the portion saved for it, in the meal's order. Kept as pairs
+    /// so a food listed twice (oil for the pan and for the dressing) keeps both portions.
+    @State private var prototypeFoods: [(food: FoodItem, portion: Meal.FoodWithPortion)] = []
     @State private var foods: [FoodItem] = []
     
     @State private var portionAmountValue: Double = 1
@@ -45,8 +47,25 @@ struct LogMealView: View {
         return "(\(grams.formatted(maxDigits: 2))g)"
     }
     
+    private var isBatchDish: Bool { meal.servings > 1 }
+
     private var portionValue: String {
-        "\(portionAmountValue.formatted(maxDigits: 2)) \(meal.name)"
+        let amount = portionAmountValue.formatted(maxDigits: 2)
+        guard isBatchDish else { return "\(amount) \(meal.name)" }
+        return "\(amount) serving\(portionAmountValue == 1 ? "" : "s") of \(meal.name)"
+    }
+
+    /// How much of each saved portion to log: the servings eaten, out of what the dish makes.
+    private var portionMultiplier: Double {
+        Meal.portionMultiplier(servingsEaten: portionAmountValue, servingsMade: meal.servings)
+    }
+
+    private func scaledPortion(_ saved: Meal.FoodWithPortion) -> Portion {
+        Portion(
+            name: saved.portionName,
+            amount: saved.portionAmount * portionMultiplier,
+            gramWeight: saved.portionGramWeight
+        )
     }
     
     private var displayNutrients: [Nutrient] {
@@ -77,10 +96,10 @@ struct LogMealView: View {
     private func fetchRemoteFoodsAndPortions() {
         Task {
             do {
-                var foods: [FoodItem] = []
+                var foods: [(food: FoodItem, portion: Meal.FoodWithPortion)] = []
                 for foodAndPortion in meal.foodsWithPortions {
                     if let food = try remoteDatabase.getFood(String(foodAndPortion.foodFdcId)) {
-                        foods.append(food)
+                        foods.append((food, foodAndPortion))
                     }
                 }
                 
@@ -93,73 +112,42 @@ struct LogMealView: View {
     }
     
     private func applyPortions() {
-        Task {
-            let portions: [String:Meal.FoodWithPortion] = meal
-                .foodsWithPortions.reduce(into: [:]) { result, foodAndPortion in
-                    result[String(foodAndPortion.foodFdcId)] = foodAndPortion
-                }
-            
-            self.foods = prototypeFoods.compactMap { food in
-                if let prototypePortion = portions[String(food.fdcId)] {
-                    let portion = Portion(
-                        name: prototypePortion.portionName,
-                        amount: prototypePortion.portionAmount * portionAmountValue,
-                        gramWeight: prototypePortion.portionGramWeight
-                    )
-                    
-                    do {
-                        return try food.applyingPortion(portion)
-                    } catch {
-                        print("Failed to apply portion. Error: \(error.localizedDescription)")
-                    }
-                } else {
-                    print("No prototype portion found for \(food.fdcId)")
-                }
+        foods = prototypeFoods.compactMap { pair in
+            do {
+                return try pair.food.applyingPortion(scaledPortion(pair.portion))
+            } catch {
+                print("Failed to apply portion. Error: \(error.localizedDescription)")
                 return nil
             }
         }
     }
-    
+
     private func saveMeal() {
         Task {
             let foodSaver = FoodSaver.forConsumedFoods(modelContext: modelContext)
-            let portions: [String:Meal.FoodWithPortion] = meal
-                .foodsWithPortions.reduce(into: [:]) { result, foodAndPortion in
-                    result[String(foodAndPortion.foodFdcId)] = foodAndPortion
-                }
-            
-            prototypeFoods.forEach { food in
-                if let prototypePortion = portions[String(food.fdcId)] {
-                    var food = food
-                    food.dateLogged = logDate
-                    food.mealTime = selectedMealTime
-                    
-                    let portion = Portion(
-                        name: prototypePortion.portionName,
-                        amount: prototypePortion.portionAmount * portionAmountValue,
-                        gramWeight: prototypePortion.portionGramWeight
-                    )
 
-                    do {
-                        try foodSaver.saveFoodItem(food, portion)
-                    } catch {
-                        let message = "Failed to save meal foods: \(error.localizedDescription)"
-                        print(message)
-                        show(alert: message)
-                    }
-                } else {
-                    print("No prototype portion found for \(food.fdcId)")
+            for pair in prototypeFoods {
+                var food = pair.food
+                food.dateLogged = logDate
+                food.mealTime = selectedMealTime
+
+                do {
+                    try foodSaver.saveFoodItem(food, scaledPortion(pair.portion))
+                } catch {
+                    let message = "Failed to save meal foods: \(error.localizedDescription)"
+                    print(message)
+                    show(alert: message)
                 }
             }
-            
+
             presentationMode.wrappedValue.dismiss()
-            
+
             DispatchQueue.main.async {
                 dataController.updateDailySummary()
             }
         }
     }
-    
+
     private func show(alert message: String) {
         showAlert = true
         alertMessage = message
@@ -232,7 +220,14 @@ struct LogMealView: View {
     
     @ViewBuilder private func PortionAmountField() -> some View {
         HStack {
-            Text("Portion Amount")
+            VStack(alignment: .leading, spacing: 2) {
+                Text(isBatchDish ? "Servings" : "Portion Amount")
+                if let makes = Meal.makesText(servings: meal.servings) {
+                    Text(makes)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
             Spacer()
             TextField(
                 "Portion Amount",

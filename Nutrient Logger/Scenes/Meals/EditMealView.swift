@@ -20,6 +20,7 @@ struct EditMealView: View {
     @State private var isPrepopulated: Bool = false
     @State var mealName: String = ""
     @State var foodsWithPortions: [Meal.FoodWithPortion] = []
+    @State private var servings: Double = 1
     
     @State private var showFoodSearch: Bool = false
     @State private var showDiscardDialog: Bool = false
@@ -40,9 +41,9 @@ struct EditMealView: View {
     
     private var hasChanges: Bool {
         if let meal = meal {
-            return meal.name != mealName || meal.foodsWithPortions != foodsWithPortions
+            return meal.name != mealName || meal.foodsWithPortions != foodsWithPortions || meal.servings != servings
         } else {
-            return !mealName.isEmpty || hasFoods
+            return !mealName.isEmpty || hasFoods || servings != 1
         }
     }
     
@@ -50,7 +51,8 @@ struct EditMealView: View {
         if let meal = meal, !isPrepopulated {
             self.mealName = meal.name
             self.foodsWithPortions = meal.foodsWithPortions
-            
+            self.servings = meal.servings
+
             isPrepopulated = true
         }
     }
@@ -59,10 +61,13 @@ struct EditMealView: View {
         if let meal = meal {
             meal.name = mealName
             meal.foodsWithPortions = foodsWithPortions
+            meal.servings = servings
         } else {
             let meal = Meal(name: mealName)
             meal.addFoods(foodsWithPortions)
+            meal.servings = servings
             modelContext.insert(meal)
+            analytics.mealCreated()
         }
         
         presentationMode.wrappedValue.dismiss()
@@ -77,6 +82,7 @@ struct EditMealView: View {
         List {
             PremiumCTARow(trigger: .smartPaywall, size: .small)
             NameField()
+            ServingsSection()
             FoodsSection()
         }
         .listDefaultModifiers()
@@ -162,6 +168,25 @@ struct EditMealView: View {
         .listRowDefaultModifiers()
     }
     
+    @ViewBuilder private func ServingsSection() -> some View {
+        Section {
+            Stepper(value: $servings, in: 1...50, step: 1) {
+                HStack {
+                    Text("Makes")
+                    Spacer()
+                    Text(servings == 1 ? "1 serving" : "\(servings.formatted(maxDigits: 2)) servings")
+                        .bold()
+                        .foregroundStyle(Color.accentColor)
+                }
+            }
+            .listRowDefaultModifiers()
+        } header: {
+            Text("Servings")
+        } footer: {
+            Text("Cooking a dish? Add the ingredients for the whole batch, then set how many servings it makes. You'll log it one serving at a time.")
+        }
+    }
+
     @ViewBuilder private func FoodsSection() -> some View {
         Section(header: Text("Foods")) {
             if hasFoods {

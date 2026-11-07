@@ -13,6 +13,9 @@ class Meal: Identifiable {
     
     var created: Date = Date.now
     var name: String
+    /// How many servings the foods make together. 1 for a meal; more for a dish cooked in a batch,
+    /// like a pot of chili that makes 6. Logging then goes by servings, not the whole batch.
+    var servings: Double = 1
     
     @Relationship(deleteRule: .cascade)
     var foodsWithPortions: [FoodWithPortion] = []
@@ -21,6 +24,17 @@ class Meal: Identifiable {
         self.name = name
     }
     
+    /// How much of each food to log for `servingsEaten` of a dish that makes `servingsMade`.
+    static func portionMultiplier(servingsEaten: Double, servingsMade: Double) -> Double {
+        servingsEaten / max(servingsMade, 1)
+    }
+
+    /// "Makes 6 servings", or nil for a plain meal.
+    static func makesText(servings: Double) -> String? {
+        guard servings > 1 else { return nil }
+        return "Makes \(servings.formatted(maxDigits: 2)) servings"
+    }
+
     public var foodCount: Int {
         get { foodsWithPortions.count }
     }

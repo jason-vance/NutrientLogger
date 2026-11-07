@@ -38,7 +38,7 @@ Scan any packaged food to instantly pull in its nutrition data. If we don't reco
 Search from tens of thousands of foods, including whole ingredients and packaged items, to log meals with precision. Smart search understands what you mean - type "whole milk" and find it instantly, or shortcuts like "OJ" and "PB".
 
 * Saved Meals
-Save the meals you eat often and log them again in a single tap.
+Save the meals you eat often and log them again in a single tap. Cooking a batch? Add the whole recipe, say how many servings it makes, and log it one serving at a time.
 
 * Personalized Targets
 Set your own calorie, macro, and micronutrient goals - and your own upper limits, so you can cap sodium, or any other nutrient, exactly where you want it. Or use recommended daily values based on your age and sex, and track your progress with trend charts for calories, macros, and water alongside every nutrient.
@@ -79,6 +79,8 @@ Nutrient Logger is perfect for anyone serious about nutrition-whether you’re o
 • Fewer taps to log: foods start at the portion people usually log - one egg, a slice of bread, a cup of coffee - and your last amount is remembered
 • See what you've logged so far while you search
 • Manual entry opens straight to the form
+• Searches that found nothing now do: "bagel with cream cheese" or "avocado toast" shows each part to log, and "a cup of coffee" or "cold brew" finds the drink
+• Cooking a batch? Set how many servings a saved meal makes and log it one serving at a time
 
 ## What's New (v4.4)
 • Set your own upper limit for any vitamin or mineral, not just a goal - Micronutrient Goals is now Micronutrient Targets

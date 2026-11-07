@@ -90,7 +90,14 @@ struct UserMealsView: View {
         NavigationLink {
             EditMealView(mealToEdit: meal)
         } label: {
-            Text(meal.name)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(meal.name)
+                if let makes = Meal.makesText(servings: meal.servings) {
+                    Text(makes)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
         .listRowDefaultModifiers()
     }
