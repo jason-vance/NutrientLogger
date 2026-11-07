@@ -16,7 +16,9 @@ class UserServiceForScreenshots: UserService {
             calorieGoal: 1700,
             carbsGoalGrams: 200,
             fatGoalGrams: 55,
-            proteinGoalGrams: 100
+            proteinGoalGrams: 100,
+            // Set by the -screenshotDiet launch option (see ScreenshotScene).
+            dietPreset: UserDefaults.standard.string(forKey: "screenshotDiet").flatMap(NutritionDietPreset.init(rawValue:))
         )
     }
 

@@ -98,6 +98,7 @@
 				Domain/Notifications/NotificationPlanner.swift,
 				Domain/Notifications/NotificationSettings.swift,
 				Domain/Nutrient.swift,
+				Domain/NutrientCoverage.swift,
 				Domain/NutrientFoodPair.swift,
 				Domain/NutrientGroup.swift,
 				Domain/Portion.swift,

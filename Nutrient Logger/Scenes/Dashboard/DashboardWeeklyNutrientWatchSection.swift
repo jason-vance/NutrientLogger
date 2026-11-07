@@ -153,7 +153,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
     ) -> WeeklyWatchResults {
         let ratioIds = Set(ratios.flatMap { $0.allNutrientIds })
         let idsToAggregate = Set(trackedNutrientIds).union(ratioIds)
-        let (daysWithData, totals, gramsByNutrientAndFood) = aggregateTotals(
+        let (daysWithData, totals, gramsByNutrientAndFood, measuredIds) = aggregateTotals(
             foods: foods,
             nutrientIds: idsToAggregate,
             contributionNutrientIds: ratioIds,
@@ -165,6 +165,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
         let ratiosById = Dictionary(uniqueKeysWithValues: ratios.map { ($0.id, $0) })
 
         let deficiencies = computeDeficiencies(totals: totals, daysWithData: daysWithData, user: user, rdiLibrary: rdiLibrary)
+            .filter { measuredIds.contains($0.id) }
             .map { deficiency in
                 var deficiency = deficiency
                 deficiency.suggestions = GapFoodSuggester.shared.suggestions(
@@ -205,11 +206,15 @@ struct DashboardWeeklyNutrientWatchSection: View {
     ) -> (
         daysWithData: Int,
         totals: [String: (total: Double, nutrient: Nutrient)],
-        gramsByNutrientAndFood: [String: [String: Double]]
+        gramsByNutrientAndFood: [String: [String: Double]],
+        measuredIds: Set<String>
     ) {
         let foodsByDate = Dictionary(grouping: foods) { $0.dateLogged }
         var totals: [String: (total: Double, nutrient: Nutrient)] = [:]
         var gramsByNutrientAndFood: [String: [String: Double]] = [:]
+        // Food weight eaten, and the part of it from foods that report each nutrient at all.
+        var totalFoodGrams = 0.0
+        var reportedFoodGrams: [String: Double] = [:]
 
         for (_, dayFoods) in foodsByDate {
             let foodItems: [FoodItem] = dayFoods.compactMap { consumedFood in
@@ -223,10 +228,12 @@ struct DashboardWeeklyNutrientWatchSection: View {
             }
 
             let dayAggregator = NutrientDataAggregator(foodItems)
+            totalFoodGrams += foodItems.reduce(0) { $0 + $1.amount * $1.gramWeight }
 
             for nutrientId in nutrientIds {
                 let pairs = dayAggregator.nutrientsByNutrientNumber[nutrientId] ?? []
                 let amount = pairs.reduce(into: 0.0) { $0 += $1.nutrient.amount }
+                reportedFoodGrams[nutrientId, default: 0] += pairs.reduce(0) { $0 + $1.food.amount * $1.food.gramWeight }
 
                 if contributionNutrientIds.contains(nutrientId) {
                     for pair in pairs {
@@ -248,7 +255,10 @@ struct DashboardWeeklyNutrientWatchSection: View {
             }
         }
 
-        return (foodsByDate.count, totals, gramsByNutrientAndFood)
+        let measuredIds = Set(nutrientIds.filter {
+            NutrientCoverage.isMeasured(reportedGrams: reportedFoodGrams[$0] ?? 0, totalGrams: totalFoodGrams)
+        })
+        return (foodsByDate.count, totals, gramsByNutrientAndFood, measuredIds)
     }
 
     private static func computeDeficiencies(

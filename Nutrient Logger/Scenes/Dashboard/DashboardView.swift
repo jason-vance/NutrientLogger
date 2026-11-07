@@ -39,6 +39,7 @@ struct DashboardView: View {
 
     @State private var showAutoMarketingView: Bool = false
     @State private var firstDayRecap: FirstDayRecapRequest? = nil
+    @State private var showScreenshotPersonalize = false
     @State private var isFirstDayRecapWaitingForSearchToClose: Bool = false
     @State private var isReviewRequestWaitingForSearchToClose: Bool = false
     @State private var showStreakStats: Bool = false
@@ -142,6 +143,15 @@ struct DashboardView: View {
 
     /// Returns true when the first-day recap is due, in which case it stands in for the generic
     /// paywall. While the user is still in search adding foods it waits until they come back here.
+    /// App Store screenshot mode only. See `ScreenshotScene`.
+    private func openScreenshotScene() {
+        switch ScreenshotScene.current {
+        case .firstDayRecap: firstDayRecap = FirstDayRecapRequest(foods: ScreenshotScene.demoDayFoods)
+        case .personalize: showScreenshotPersonalize = true
+        case nil: break
+        }
+    }
+
     private func checkFirstDayRecap() -> Bool {
         guard FirstDayRecapTrigger.shouldShow(
             isFullLoggingDay: FullLoggingDay.isComplete(todaysFoods, on: .today),
@@ -303,6 +313,14 @@ struct DashboardView: View {
             FirstDayRecapView(foods: request.foods)
                 .presentationDragIndicator(.visible)
         }
+        .fullScreenCover(isPresented: $showScreenshotPersonalize) {
+            OnboardingPersonalizationView(
+                diet: .constant(ScreenshotScene.diet ?? .carnivore),
+                concern: .constant(.generalHealth),
+                onContinue: {}
+            )
+        }
+        .task { openScreenshotScene() }
         .sheet(isPresented: $showDatePicker) {
             DatePicker(
                 "Date",

@@ -110,6 +110,11 @@ Run this as a treatment against the current set below, at 50% of traffic, for at
 
 Then the current set from "Build a Habit That Sticks" onward.
 
+Raw captures for screenshots 1 and 2 (iPhone 17 Pro Max, 1320 × 2868) are in `docs/store-screenshots/v4.5/`. Add the captions and frame in your usual tool. To capture again, or for another diet (`ketoLowCarb`, `paleo`, ...), launch the app in screenshot mode with:
+
+- `-screenshots -screenshotScene firstDayRecap -screenshotDiet carnivore`
+- `-screenshots -screenshotScene personalize -screenshotDiet carnivore`
+
 ### Current set
 1. Every vitamin and mineral, not just calories
 2. Tuned to How You Eat
