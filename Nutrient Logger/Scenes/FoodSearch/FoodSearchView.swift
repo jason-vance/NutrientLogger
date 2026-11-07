@@ -561,6 +561,9 @@ struct FoodSearchView: View {
             prompt: Text("Foods, Meals, Nutrients...")
         )
         .searchFocused($isSearchFocused)
+        // Keep the nav bar (scan and add-food buttons) on screen while typing. By default iOS
+        // hides it whenever the search field has focus, which is most of the time on this screen.
+        .searchPresentationToolbarBehavior(.avoidHidingContent)
         .onChange(of: searchText) {
             hasSearched = false
             searchDebounceTask?.cancel()
