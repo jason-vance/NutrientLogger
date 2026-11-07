@@ -40,6 +40,7 @@ class MockEngagementAnalytics: EngagementAnalytics {
     func searchCorrected(query: String, correctedQuery: String) {}
     func searchSplit(query: String, parts: [String]) {}
     func mealRepeated(foodCount: Int, daysBack: Int) {}
+    func firstFullDayLogged(minutesSinceOnboarding: Int?, dayNumber: Int?, foodCount: Int) {}
     func searchResultPicked(query: String, position: Int, resultCount: Int) {}
     func customFoodEntryOpened(source: String) {}
     func firstDayRecapShown(lowCount: Int, unnamedCount: Int, isSubscribed: Bool, usedReferenceAge: Bool) {}

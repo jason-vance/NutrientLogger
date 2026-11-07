@@ -47,6 +47,7 @@ struct DashboardView: View {
     @State private var now: Date = .now
 
     @AppStorage("onboardingStartedAt") private var onboardingStartedAt: Double = 0
+    @AppStorage(FirstFullDayTiming.loggedKey) private var hasLoggedFirstFullDay: Bool = false
 
     private var isInDiscountWindow: Bool {
         guard onboardingStartedAt > 0 else { return false }
@@ -163,8 +164,23 @@ struct DashboardView: View {
         firstDayRecap = FirstDayRecapRequest(foods: todaysFoods)
     }
 
+    /// Logs `first_full_day_logged` once, on the user's first-ever full day.
+    private func checkFirstFullDay() {
+        guard !hasLoggedFirstFullDay, FullLoggingDay.isComplete(todaysFoods, on: .today) else { return }
+        hasLoggedFirstFullDay = true
+        // Someone who had full days before this was measured isn't a new user's first day.
+        guard !FullLoggingDay.hasEarlierFullDay(consumedFoods, before: .today) else { return }
+        let now = Date.now
+        engagementAnalytics.firstFullDayLogged(
+            minutesSinceOnboarding: FirstFullDayTiming.minutes(onboardingStartedAt: onboardingStartedAt, now: now),
+            dayNumber: FirstFullDayTiming.dayNumber(onboardingStartedAt: onboardingStartedAt, now: now),
+            foodCount: todaysFoods.count
+        )
+    }
+
     private func onTodaysFoodsChanged() {
         updateLoggingStreak()
+        checkFirstFullDay()
         if !checkFirstDayRecap() && !checkAutoMarketingPrompt() {
             checkReviewRequest()
         }

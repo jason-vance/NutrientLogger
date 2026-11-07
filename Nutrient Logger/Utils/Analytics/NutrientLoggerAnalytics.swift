@@ -70,6 +70,7 @@ protocol EngagementAnalytics {
     func searchCorrected(query: String, correctedQuery: String)
     func searchSplit(query: String, parts: [String])
     func mealRepeated(foodCount: Int, daysBack: Int)
+    func firstFullDayLogged(minutesSinceOnboarding: Int?, dayNumber: Int?, foodCount: Int)
     func searchResultPicked(query: String, position: Int, resultCount: Int)
     func customFoodEntryOpened(source: String)
     func firstDayRecapShown(lowCount: Int, unnamedCount: Int, isSubscribed: Bool, usedReferenceAge: Bool)
@@ -400,6 +401,7 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     private let eventSearchCorrected = "search_corrected"
     private let eventSearchSplit = "search_split"
     private let eventMealRepeated = "meal_repeated"
+    private let eventFirstFullDayLogged = "first_full_day_logged"
     private let eventSearchResultPicked = "search_result_picked"
     private let parameterPosition = "position"
     private let parameterResultCount = "result_count"
@@ -486,6 +488,16 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
         analytics.log(event: eventSearchCorrected, parameters: [
             analytics.parameterSearchTerm: query,
             parameterCorrectedQuery: correctedQuery,
+        ])
+    }
+
+    /// The user's first day with breakfast, lunch and dinner logged. `minutesSinceOnboarding` and
+    /// `dayNumber` (1 = the day onboarding started) are -1 when onboarding's start wasn't recorded.
+    public func firstFullDayLogged(minutesSinceOnboarding: Int?, dayNumber: Int?, foodCount: Int) {
+        analytics.log(event: eventFirstFullDayLogged, parameters: [
+            "minutes_since_onboarding": minutesSinceOnboarding ?? -1,
+            "day_number": dayNumber ?? -1,
+            "food_count": foodCount,
         ])
     }
 
