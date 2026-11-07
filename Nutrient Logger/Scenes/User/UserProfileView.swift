@@ -53,6 +53,8 @@ struct UserProfileView: View {
     private var dailyReminderMinute = NotificationSettings.defaultDailyReminderMinute
     @AppStorage(NotificationSettings.streakWarningEnabledKey)
     private var streakWarningEnabled = NotificationSettings.defaultStreakWarningEnabled
+    @AppStorage(NotificationSettings.gapTipEnabledKey)
+    private var gapTipEnabled = NotificationSettings.defaultGapTipEnabled
 
     private var preferredUnit: BodyWeightUnit {
         BodyWeightUnit(rawValue: preferredUnitRaw) ?? .lbs
@@ -525,6 +527,21 @@ struct UserProfileView: View {
                     Toggle("", isOn: $streakWarningEnabled)
                         .labelsHidden()
                         .onChange(of: streakWarningEnabled) { rescheduleNotifications() }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+                Divider().padding(.horizontal)
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Morning Nutrient Tip")
+                        Text("After a full day, the next morning names your biggest gap and foods that help")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Toggle("", isOn: $gapTipEnabled)
+                        .labelsHidden()
+                        .onChange(of: gapTipEnabled) { rescheduleNotifications() }
                 }
                 .padding(.horizontal)
                 .padding(.vertical, 10)

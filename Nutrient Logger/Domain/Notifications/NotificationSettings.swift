@@ -14,9 +14,11 @@ enum NotificationSettings {
     static let dailyReminderHourKey = "dailyReminderHour"
     static let dailyReminderMinuteKey = "dailyReminderMinute"
     static let streakWarningEnabledKey = "streakWarningEnabled"
+    static let gapTipEnabledKey = "gapTipEnabled"
 
     static let defaultDailyReminderEnabled = true
     static let defaultDailyReminderHour = 20
     static let defaultDailyReminderMinute = 0
     static let defaultStreakWarningEnabled = true
+    static let defaultGapTipEnabled = true
 }

@@ -14,6 +14,7 @@ class NotificationManager {
 
     static let dailyReminderIdentifier = "dailyLoggingReminder"
     static let streakAtRiskIdentifier = "streakAtRisk"
+    static let gapTipIdentifier = "gapTip"
 
     private let center: UNUserNotificationCenter
 
@@ -30,12 +31,18 @@ class NotificationManager {
         }
     }
 
-    /// Cancels any pending "habit loop" notifications and schedules new ones based on `plan`.
-    func apply(_ plan: NotificationPlanner.Plan) {
+    /// Cancels any pending "habit loop" notifications and schedules new ones based on `plan`, plus
+    /// the morning gap tip when there is one.
+    func apply(_ plan: NotificationPlanner.Plan, gapTip: (fireDate: Date, body: String)? = nil) {
         center.removePendingNotificationRequests(withIdentifiers: [
             Self.dailyReminderIdentifier,
             Self.streakAtRiskIdentifier,
+            Self.gapTipIdentifier,
         ])
+
+        if let gapTip {
+            schedule(identifier: Self.gapTipIdentifier, title: GapTip.title, body: gapTip.body, fireDate: gapTip.fireDate)
+        }
 
         if let fireDate = plan.dailyReminderFireDate {
             schedule(
