@@ -42,6 +42,8 @@ struct DashboardView: View {
     @State private var showScreenshotPersonalize = false
     @State private var showScreenshotFoodDetails = false
     @State private var screenshotMeal: Meal?
+    @State private var showScreenshotCustomFood = false
+    @State private var screenshotMealToEdit: Meal?
     @State private var isFirstDayRecapWaitingForSearchToClose: Bool = false
     @State private var isReviewRequestWaitingForSearchToClose: Bool = false
     @State private var showStreakStats: Bool = false
@@ -152,6 +154,9 @@ struct DashboardView: View {
         case .personalize: showScreenshotPersonalize = true
         case .foodDetails: showScreenshotFoodDetails = true
         case .logMeal: screenshotMeal = try? modelContext.fetch(FetchDescriptor<Meal>()).first
+        case .customFood: showScreenshotCustomFood = true
+        case .editMeal: screenshotMealToEdit = try? modelContext.fetch(FetchDescriptor<Meal>()).first
+        case .logWeight: break  // Opened from the Body tab; see WeightTrackingView.
         case nil: break
         }
     }
@@ -330,6 +335,15 @@ struct DashboardView: View {
         }
         .navigationDestination(item: $screenshotMeal) { meal in
             LogMealView(meal: meal)
+        }
+        .navigationDestination(item: $screenshotMealToEdit) { meal in
+            EditMealView(mealToEdit: meal)
+        }
+        .sheet(isPresented: $showScreenshotCustomFood) {
+            NavigationStack {
+                CreateCustomFoodView(initialName: "Homemade Granola") { _ in }
+            }
+            .environmentObject(CustomFoodDatabase.shared)
         }
         .sheet(isPresented: $showDatePicker) {
             DatePicker(

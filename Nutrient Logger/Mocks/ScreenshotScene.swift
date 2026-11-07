@@ -13,6 +13,9 @@ import Foundation
 ///     -screenshots -screenshotScene personalize -screenshotDiet carnivore
 ///     -screenshots -screenshotScene foodDetails
 ///     -screenshots -screenshotScene logMeal
+///     -screenshots -screenshotScene customFood
+///     -screenshots -screenshotScene editMeal
+///     -screenshots -screenshotScene logWeight
 ///
 /// `firstDayRecap` shows the recap for the diet's onboarding demo day. `personalize` shows the
 /// onboarding diet question with the diet picked. The diet defaults to carnivore. `foodDetails`
@@ -22,6 +25,9 @@ enum ScreenshotScene: String {
     case personalize
     case foodDetails
     case logMeal
+    case customFood
+    case editMeal
+    case logWeight
 
     /// "Soft drink, cola, diet", a food with several portion sizes.
     static let sampleFoodFdcId = 1104312

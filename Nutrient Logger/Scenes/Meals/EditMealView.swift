@@ -15,12 +15,17 @@ struct EditMealView: View {
     @Environment(\.modelContext) private var modelContext
     
     @Inject var analytics: UserMealsAnalytics
+    @Inject private var remoteDatabase: RemoteDatabase
     
     private let meal: Meal?
     @State private var isPrepopulated: Bool = false
     @State var mealName: String = ""
     @State var foodsWithPortions: [Meal.FoodWithPortion] = []
     @State private var servings: Double = 1
+    /// Calories for the whole meal, worked out from its foods.
+    @State private var totalCalories: Double?
+
+    private static let servingOptions: [Double] = [1, 2, 3, 4, 6, 8, 10, 12]
     
     @State private var showFoodSearch: Bool = false
     @State private var showDiscardDialog: Bool = false
@@ -73,6 +78,34 @@ struct EditMealView: View {
         presentationMode.wrappedValue.dismiss()
     }
     
+    private var saveButtonTitle: String {
+        if mealName.trimmingCharacters(in: .whitespaces).isEmpty { return "Name this meal" }
+        if !hasFoods { return "Add a food" }
+        return meal == nil ? "Save Meal" : "Save Changes"
+    }
+
+    /// "4 foods · 540 kcal per serving"
+    private var saveButtonDetail: String? {
+        guard hasFoods else { return nil }
+        var parts = ["\(foodsWithPortions.count) food\(foodsWithPortions.count == 1 ? "" : "s")"]
+        if let totalCalories {
+            let perServing = totalCalories / max(servings, 1)
+            parts.append("\(perServing.formatted(maxDigits: 0)) kcal" + (servings > 1 ? " per serving" : ""))
+        }
+        return parts.joined(separator: " · ")
+    }
+
+    private func updateCalories() async {
+        var total = 0.0
+        for item in foodsWithPortions {
+            let portion = Portion(name: item.portionName, amount: item.portionAmount, gramWeight: item.portionGramWeight)
+            guard let food = try? remoteDatabase.getFood(String(item.foodFdcId))?.applyingPortion(portion) else { continue }
+            total += food.nutrientGroups.flatMap(\.nutrients)
+                .first { $0.fdcNumber == FdcNutrientGroupMapper.NutrientNumber_Energy_KCal }?.amount ?? 0
+        }
+        totalCalories = foodsWithPortions.isEmpty ? nil : total
+    }
+
     private var canSave: Bool {
         !mealName.isEmpty
         && hasFoods
@@ -88,9 +121,11 @@ struct EditMealView: View {
         .listDefaultModifiers()
         .navigationBarBackButtonHidden()
         .toolbar { Toolbar() }
-        .overlay(alignment: .bottomTrailing) {
-            AddFoodButton()
+        .safeAreaInset(edge: .bottom) {
+            LogActionButton(title: saveButtonTitle, detail: saveButtonDetail, isEnabled: canSave) { saveMeal() }
         }
+        .toolbar(.hidden, for: .tabBar)
+        .task(id: foodsWithPortions.map(\.foodFdcId)) { await updateCalories() }
         .scrollDismissesKeyboard(.immediately)
         .animation(.snappy, value: meal)
         .animation(.snappy, value: foodsWithPortions)
@@ -124,9 +159,6 @@ struct EditMealView: View {
         ToolbarItem(placement: .topBarLeading) {
             BackButton()
         }
-        ToolbarItem(placement: .topBarTrailing) {
-            SaveButton()
-        }
     }
     
     @ViewBuilder private func BackButton() -> some View {
@@ -138,21 +170,6 @@ struct EditMealView: View {
             }
         } label: {
             Image(systemName: "arrow.backward")
-        }
-    }
-    
-    @ViewBuilder private func SaveButton() -> some View {
-        Button {
-            saveMeal()
-        } label: {
-            Image(systemName: "checkmark")
-        }
-        .disabled(!canSave)
-    }
-    
-    @ViewBuilder private func AddFoodButton() -> some View {
-        ButtonFab(systemName: "plus") {
-            showFoodSearch = true
         }
     }
     
@@ -168,58 +185,53 @@ struct EditMealView: View {
         .listRowDefaultModifiers()
     }
     
+    /// How many servings the foods make, as one-tap pills. 1 is a plain meal; more is a batch dish.
     @ViewBuilder private func ServingsSection() -> some View {
+        let options = Self.servingOptions.contains(servings)
+            ? Self.servingOptions
+            : (Self.servingOptions + [servings]).sorted()
         Section {
-            Stepper(value: $servings, in: 1...50, step: 1) {
-                HStack {
-                    Text("Makes")
-                    Spacer()
-                    Text(servings == 1 ? "1 serving" : "\(servings.formatted(maxDigits: 2)) servings")
-                        .bold()
-                        .foregroundStyle(Color.accentColor)
-                }
-            }
+            LogPillRow(
+                items: options,
+                labels: options.map { $0.formatted(maxDigits: 2) },
+                isSelected: { $0 == servings },
+                onSelect: { option in withAnimation(.snappy) { servings = option } }
+            )
             .listRowDefaultModifiers()
         } header: {
-            Text("Servings")
+            Text("Makes how many servings?")
         } footer: {
-            Text("Cooking a dish? Add the ingredients for the whole batch, then set how many servings it makes. You'll log it one serving at a time.")
+            Text("Cooking a dish? Add the ingredients for the whole batch, then pick how many servings it makes. You'll log it one serving at a time.")
         }
     }
 
     @ViewBuilder private func FoodsSection() -> some View {
         Section(header: Text("Foods")) {
-            if hasFoods {
-                ForEach(foodsWithPortions) { food in
-                    FoodRow(food)
-                }
-                .onDelete {
-                    foodsWithPortions.remove(atOffsets: $0)
-                }
-            } else {
-                ContentUnavailableView(
-                    "Add Some Foods!",
-                    systemImage: "carrot",
-                    description: Text("You haven't added any foods to this meal yet. Tap the plus (+) button in the bottom right corner to get started!")
-                )
-                .listRowDefaultModifiers()
+            ForEach(foodsWithPortions) { food in
+                FoodRow(food)
             }
+            .onDelete {
+                foodsWithPortions.remove(atOffsets: $0)
+            }
+            Button {
+                showFoodSearch = true
+            } label: {
+                Label(hasFoods ? "Add Another Food" : "Add a Food", systemImage: "plus.circle.fill")
+                    .fontWeight(.semibold)
+            }
+            .listRowDefaultModifiers()
         }
     }
     
     @ViewBuilder private func FoodRow(_ foodWithPortion: Meal.FoodWithPortion) -> some View {
-        VStack {
-            HStack {
-                Text(foodWithPortion.foodName)
-                    .bold()
-                Spacer()
-            }
-            HStack {
-                Text("\(foodWithPortion.portionAmount.formatted()) \(foodWithPortion.portionName)")
-                    .font(.caption)
-                Spacer()
-            }
+        VStack(alignment: .leading, spacing: 2) {
+            Text(foodWithPortion.foodName)
+                .lineLimit(2)
+            Text(LogPortionDefaults.summary(amount: foodWithPortion.portionAmount, portionName: foodWithPortion.portionName))
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .listRowDefaultModifiers()
     }
 }
