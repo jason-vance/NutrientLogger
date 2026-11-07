@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 /// Opens a screen that normally takes setup, for App Store screenshots. Only in screenshot mode:
 ///
@@ -16,10 +17,19 @@ import Foundation
 ///     -screenshots -screenshotScene customFood
 ///     -screenshots -screenshotScene editMeal
 ///     -screenshots -screenshotScene logWeight
+///     -screenshots -screenshotScene weeklyWatch
+///     -screenshots -screenshotScene vitamins
+///     -screenshots -screenshotScene body
+///     -screenshots -screenshotScene profile
+///     -screenshots -screenshotScene nutritionSettings
+///     -screenshots -screenshotScene nutrientLibrary
+///     -screenshots -screenshotScene search
 ///
 /// `firstDayRecap` shows the recap for the diet's onboarding demo day. `personalize` shows the
 /// onboarding diet question with the diet picked. The diet defaults to carnivore. `foodDetails`
 /// and `logMeal` push the logging screens for a sample food and a sample saved meal.
+/// `weeklyWatch` and `vitamins` scroll the dashboard to that card, `profile` scrolls to the
+/// Apple Health row, and `body` and `profile` open those tabs.
 enum ScreenshotScene: String {
     case firstDayRecap
     case personalize
@@ -28,6 +38,13 @@ enum ScreenshotScene: String {
     case customFood
     case editMeal
     case logWeight
+    case weeklyWatch
+    case vitamins
+    case body
+    case profile
+    case nutritionSettings
+    case nutrientLibrary
+    case search
 
     /// "Soft drink, cola, diet", a food with several portion sizes.
     static let sampleFoodFdcId = 1104312
@@ -40,6 +57,27 @@ enum ScreenshotScene: String {
     static var diet: NutritionDietPreset? {
         guard DataController.isScreenshots else { return nil }
         return UserDefaults.standard.string(forKey: "screenshotDiet").flatMap(NutritionDietPreset.init(rawValue:))
+    }
+
+    /// Scroll ids for the scenes that show a card further down a screen.
+    static let weeklyWatchId = "screenshot.weeklyWatch"
+    static let vitaminsId = "screenshot.vitamins"
+    static let profileDataId = "screenshot.profileData"
+
+    private var scrollTarget: String? {
+        switch self {
+        case .weeklyWatch: Self.weeklyWatchId
+        case .vitamins: Self.vitaminsId
+        case .profile: Self.profileDataId
+        default: nil
+        }
+    }
+
+    /// Scrolls to the current scene's card, if it has one, once the screen has loaded its data.
+    @MainActor static func scrollIfNeeded(_ proxy: ScrollViewProxy) async {
+        guard let target = current?.scrollTarget else { return }
+        try? await Task.sleep(for: .seconds(1.5))
+        proxy.scrollTo(target, anchor: .top)
     }
 
     /// The diet's demo day as logged foods for today.

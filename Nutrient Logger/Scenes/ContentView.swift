@@ -146,6 +146,11 @@ struct ContentView: View {
         }
         .onAppear {
             profileSetupComplete = userService.currentUser.isProfileComplete
+            switch ScreenshotScene.current {
+            case .body: selectedTab = .body
+            case .profile: selectedTab = .profile
+            default: break
+            }
         }
         .onChange(of: selectedTab, initial: true) { _, tab in
             let name: String = switch tab {

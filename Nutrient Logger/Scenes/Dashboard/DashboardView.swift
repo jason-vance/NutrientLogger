@@ -45,6 +45,7 @@ struct DashboardView: View {
     @State private var showScreenshotCustomFood = false
     @State private var screenshotMealToEdit: Meal?
     @State private var showScreenshotWeightEntry = false
+    @State private var showScreenshotNutrientLibrary = false
     @State private var isFirstDayRecapWaitingForSearchToClose: Bool = false
     @State private var isReviewRequestWaitingForSearchToClose: Bool = false
     @State private var showStreakStats: Bool = false
@@ -158,7 +159,10 @@ struct DashboardView: View {
         case .customFood: showScreenshotCustomFood = true
         case .editMeal: screenshotMealToEdit = try? modelContext.fetch(FetchDescriptor<Meal>()).first
         case .logWeight: showScreenshotWeightEntry = true
-        case nil: break
+        case .nutritionSettings: showCustomizeNutrients = true
+        case .nutrientLibrary: showScreenshotNutrientLibrary = true
+        case .search: showSearch = true
+        case .weeklyWatch, .vitamins, .body, .profile, nil: break
         }
     }
 
@@ -270,7 +274,7 @@ struct DashboardView: View {
     }
     
     var body: some View {
-        ScrollView {
+        ScrollViewReader { proxy in ScrollView {
             VStack {
                 PremiumCTARow(trigger: .smartPaywall, size: .small)
                     .padding(.horizontal)
@@ -284,6 +288,8 @@ struct DashboardView: View {
             }
         }
         .readableContentWidth()
+        .task { await ScreenshotScene.scrollIfNeeded(proxy) }
+        }
         .toolbar { Toolbar() }
         .navigationTitle(Text(navigationTitle))
         .task { await subscriptionManager.checkSubscriptionTransitions(analytics: subscriptionAnalytics) }
@@ -342,6 +348,7 @@ struct DashboardView: View {
             EditMealView(mealToEdit: meal)
         }
         .sheet(isPresented: $showScreenshotWeightEntry) { WeightEntrySheet() }
+        .navigationDestination(isPresented: $showScreenshotNutrientLibrary) { NutrientLibraryView() }
         .sheet(isPresented: $showScreenshotCustomFood) {
             NavigationStack {
                 CreateCustomFoodView(initialName: "Homemade Granola") { _ in }

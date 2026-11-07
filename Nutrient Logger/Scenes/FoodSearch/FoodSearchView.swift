@@ -597,7 +597,8 @@ struct FoodSearchView: View {
         .onAppear { fetchInitialSuggestions() }
         .onAppear {
             // Ready to type on open and after each logged food (which clears the search).
-            guard searchText.isEmpty else { return }
+            // Store screenshots show the list, not the keyboard.
+            guard searchText.isEmpty, !DataController.isScreenshots else { return }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { isSearchFocused = true }
         }
         .navigationBarTitleDisplayMode(.inline)

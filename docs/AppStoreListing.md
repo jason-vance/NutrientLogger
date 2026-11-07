@@ -115,6 +115,11 @@ Raw captures for screenshots 1 and 2 (iPhone 17 Pro Max, 1320 × 2868) are in `d
 - `-screenshots -screenshotScene firstDayRecap -screenshotDiet carnivore`
 - `-screenshots -screenshotScene personalize -screenshotDiet carnivore`
 
+### iPhone Duo
+Apple will require Duo screenshots from April 2027: 1398 × 2034 for the outer display and 2007 × 2853 for the inner one. Raw outer captures for every screen in the current set are in `docs/store-screenshots/v4.5-duo/outer/`, named by screenshot scene. Inner captures are still to do: unfold the iPhone Duo simulator in Device Hub, then capture with `xcrun simctl io <device> screenshot --display=3`. Every screen in the current set now has a scene:
+
+- `-screenshots` (dashboard), or `-screenshotScene` with `weeklyWatch`, `vitamins`, `body`, `profile`, `nutritionSettings`, `editMeal`, `foodDetails`, `nutrientLibrary`, `search`
+
 ### Current set
 1. Every vitamin and mineral, not just calories
 2. Tuned to How You Eat

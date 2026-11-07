@@ -115,13 +115,14 @@ struct UserProfileView: View {
     }
 
     var body: some View {
-        ScrollView {
+        ScrollViewReader { proxy in ScrollView {
             VStack(spacing: 2 * .spacingDefault) {
                 PremiumCTARow(trigger: .profileUpsell, size: .small)
                 ProfileCard()
                 SubscriptionCard()
                 AchievementsCard()
                 DataCard()
+                    .id(ScreenshotScene.profileDataId)
                 BodyCard()
                 NotificationsCard()
                 AboutFooter()
@@ -130,6 +131,8 @@ struct UserProfileView: View {
             .padding(.horizontal)
         }
         .readableContentWidth()
+        .task { await ScreenshotScene.scrollIfNeeded(proxy) }
+        }
         .scrollDismissesKeyboard(.immediately)
         .navigationBarTitle("Profile")
         .onAppear { fetchUser() }
