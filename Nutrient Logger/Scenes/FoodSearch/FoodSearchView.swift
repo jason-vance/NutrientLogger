@@ -430,6 +430,16 @@ struct FoodSearchView: View {
         customFoodToLog = food
     }
 
+    private func logPickedPosition(of food: FdcSearchableFood) {
+        let foodResults = searchResults.filter(\.isFdcFood)
+        guard let index = foodResults.firstIndex(of: .fdcFood(food)) else { return }
+        engagementAnalytics.searchResultPicked(
+            query: correctedSearchText ?? searchText,
+            position: index + 1,
+            resultCount: foodResults.count
+        )
+    }
+
     private func openCustomFoodEntry(source: String) {
         let typed = searchText.trimmingCharacters(in: .whitespaces)
         engagementAnalytics.customFoodEntryOpened(source: source)
@@ -742,6 +752,7 @@ struct FoodSearchView: View {
                 initialMealTime: mealTimeForNextFood,
                 onFoodSaved: { foodItem, portion in
                     try saveAndRemember(foodItem, portion)
+                    logPickedPosition(of: food)
                     resetViewState()
                 }
             )

@@ -53,23 +53,39 @@ enum FoodSearchRanker {
         let words = Set(SearchSpellCorrector.words(in: description))
         let firstPartWords = SearchSpellCorrector.words(in: parts.first ?? "")
 
+        // "Rice, brown, cooked" is brown rice; "Beans and brown rice" is a dish that contains it.
         let firstPartIsJustTheQuery = !firstPartWords.isEmpty
-            && firstPartWords.allSatisfy { isCovered($0, by: variants) }
+            && firstPartWords.allSatisfy { isCovered($0, by: variants) || FtsQueryGenerator.isStopWord($0) }
+
+        // Query words found only as the start of a longer word: "egg" in "eggplant", "pita" in "pitanga".
+        let partialMatchCount = variants.filter { wordVariants in
+            !words.contains { isCovered($0, by: [wordVariants]) }
+        }.count
 
         let unusualCount = words.filter { unusualFormWords.contains($0) && !queryWords.contains($0) }.count
         var everydayScore = 0
         if words.contains("nfs") { everydayScore += 1 }  // USDA's "not further specified" = the generic entry
-        if !words.isDisjoint(with: everydayFormWords) { everydayScore += 1 }
+        if !everydayWords(words, in: description).isDisjoint(with: everydayFormWords) { everydayScore += 1 }
 
         return [
-            positionScore(parts: parts, variants: variants),
+            partialMatchCount,
             firstPartIsJustTheQuery ? 0 : 1,
-            unusualCount - everydayScore,
+            unusualCount,
+            positionScore(parts: parts, variants: variants),
+            -everydayScore,
             hasUntypedBrand(description, variants: variants) ? 1 : 0,
             parts.count,
             description.count,
             index,
         ]
+    }
+
+    // "Whole" marks the everyday form in "Egg, whole" and "Milk, whole", but not in "whole wheat"
+    // or "whole grain", which are a specific kind of the food.
+    private static func everydayWords(_ words: Set<String>, in description: String) -> Set<String> {
+        let lower = description.lowercased()
+        let isWholeGrain = ["whole wheat", "whole-wheat", "whole grain", "whole-grain"].contains { lower.contains($0) }
+        return isWholeGrain ? words.subtracting(["whole"]) : words
     }
 
     // Lower is better. Each query word adds the index of the comma-separated part where it
@@ -107,10 +123,6 @@ enum FoodSearchRanker {
     }
 
     private static func variants(of word: String) -> [String] {
-        var result = [word]
-        if let stemmed = FtsQueryGenerator.stemToken(word).stemmed?.lowercased() {
-            result.append(stemmed)
-        }
-        return result
+        [word] + FtsQueryGenerator.stems(of: word).map { $0.lowercased() }
     }
 }

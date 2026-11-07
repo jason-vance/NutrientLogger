@@ -94,6 +94,57 @@ struct FoodSearchRankerTests {
         #expect(FoodSearchRanker.rank([wet, red], tokens: ["kale"]).map(\.fdcId) == [2, 1])
     }
 
+    @Test func plainFoodBeatsDishThatContainsIt() {
+        expectFirst("brown rice", "Rice, brown, cooked, no added fat", among: [
+            "Beans and brown rice",
+            "Black beans and brown rice",
+            "Rice, brown, cooked, no added fat",
+        ])
+        expectFirst("cheddar cheese", "Cheese, Cheddar", among: [
+            "Cheddar cheese soup, home recipe, canned or ready-to-serve",
+            "Cheese, Cheddar",
+        ])
+    }
+
+    @Test func wholeWordBeatsLongerWordWithSamePrefix() {
+        expectFirst("fried egg", "Egg, whole, fried with oil", among: [
+            "Fried eggplant",
+            "Egg, whole, fried with oil",
+        ])
+        expectFirst("pita", "Bread, pita", among: [
+            "Pitanga, (surinam-cherry), raw",
+            "Bread, pita",
+        ])
+    }
+
+    @Test func partialWordsStillMatchWhileTyping() {
+        expectFirst("straw", "Strawberries, raw", among: [
+            "Strawberries, raw",
+            "Strawberry milk, NFS",
+        ])
+    }
+
+    @Test func stopWordsDoNotMakeANameADish() {
+        expectFirst("pepperoni pizza", "Pizza with pepperoni, stuffed crust", among: [
+            "Pepperoni pizza rolls",
+            "Pizza with pepperoni, stuffed crust",
+        ])
+    }
+
+    @Test func wholeWheatIsNotTheEverydayForm() {
+        expectFirst("pizza", "Pizza, cheese, stuffed crust", among: [
+            "Pizza, cheese, whole wheat thin crust",
+            "Pizza, cheese, stuffed crust",
+        ])
+    }
+
+    @Test func iesPluralFindsIeSingular() {
+        expectFirst("cookies", "Cookie, NFS", among: [
+            "Cookies, peanut butter sandwich, regular",
+            "Cookie, NFS",
+        ])
+    }
+
     // MARK: - Helpers
 
     private func rank(_ query: String, _ descriptions: [String]) -> [String] {

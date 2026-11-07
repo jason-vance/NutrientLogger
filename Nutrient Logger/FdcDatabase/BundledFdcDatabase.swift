@@ -174,6 +174,18 @@ class BundledFdcDatabase: RemoteDatabase {
     }
 
     public func search(_ query: String) throws -> [FdcSearchableFood] {
+        let tokens = FtsQueryGenerator.tokenize(query)
+        let results = FoodSearchRanker.rank(try unrankedSearch(query), tokens: tokens)
+
+        let leads = try EverydayFoodNames.leadingDescriptions(for: query).compactMap { try food(named: $0) }
+        return EverydayFoodNames.withLeads(leads, before: results)
+    }
+
+    private func food(named description: String) throws -> FdcSearchableFood? {
+        try unrankedSearch(description).first { $0.description.caseInsensitiveCompare(description) == .orderedSame }
+    }
+
+    private func unrankedSearch(_ query: String) throws -> [FdcSearchableFood] {
         let prefixQuery = FtsQueryGenerator.generateFrom(query)
         let exactQuery = FtsQueryGenerator.generateExactFrom(query)
         let phraseQuery = FtsQueryGenerator.generatePhraseFrom(query)
@@ -191,10 +203,7 @@ class BundledFdcDatabase: RemoteDatabase {
         ))
 
         var seen = Set<Int>()
-        foods = foods.filter { seen.insert($0.fdcId).inserted }
-
-        let tokens = FtsQueryGenerator.tokenize(query)
-        return FoodSearchRanker.rank(foods, tokens: tokens)
+        return foods.filter { seen.insert($0.fdcId).inserted }
     }
 
     // Built on first use from every food name, so typos can be matched to real words.

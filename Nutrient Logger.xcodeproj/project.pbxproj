@@ -197,6 +197,7 @@
 				Scenes/FoodSearch/Domain/RecentSearch.swift,
 				Scenes/FoodSearch/Domain/SearchCategory.swift,
 				Scenes/FoodSearch/Domain/SearchResult.swift,
+				Scenes/FoodSearch/Workers/EverydayFoodNames.swift,
 				Scenes/FoodSearch/Workers/FoodSearchRanker.swift,
 				Scenes/FoodSearch/Workers/FtsQueryGenerator.swift,
 				Scenes/FoodSearch/Workers/RemoteDatabase.swift,

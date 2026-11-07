@@ -9,6 +9,10 @@ import Foundation
 
 public class FtsQueryGenerator {
 
+    static func isStopWord(_ word: String) -> Bool {
+        stopWords.contains(word.lowercased())
+    }
+
     private static let stopWords: Set<String> = [
         "with", "and", "in", "of", "the", "a", "an", "or", "for",
         "to", "on", "at", "by", "no", "not"
@@ -25,6 +29,7 @@ public class FtsQueryGenerator {
         "parm": "parmesan",
         "veg": "vegetable",
         "vegs": "vegetables",
+        "bbq": "barbecue",
     ]
 
     private static let doNotStem: Set<String> = [
@@ -77,6 +82,12 @@ public class FtsQueryGenerator {
         "garbanzo": "chickpeas",
         "coriander": "cilantro",
         "capsicum": "pepper",
+        "donut": "doughnut",
+        "donuts": "doughnut",
+        "omelette": "omelet",
+        "omelettes": "omelet",
+        "milkshake": "milk shake",
+        "milkshakes": "milk shake",
     ]
 
     private static let quantityUnits: Set<String> = [
@@ -116,11 +127,19 @@ public class FtsQueryGenerator {
     }
 
     static func stemmedWithWildcards(_ token: String) -> String {
-        let (original, stemmed) = stemToken(token)
-        if let stemmed = stemmed {
-            return "(\(withWildcards(original)) OR \(withWildcards(stemmed)))"
+        let alternatives = [token] + stems(of: token)
+        guard alternatives.count > 1 else { return withWildcards(token) }
+        return "(" + alternatives.map(withWildcards).joined(separator: " OR ") + ")"
+    }
+
+    /// The other forms a word's prefix search should cover. Usually one stem, but "ies" words get
+    /// two: "berries" -> "berry" and "cookies" -> "cookie" both happen in food names.
+    static func stems(of token: String) -> [String] {
+        guard let stemmed = stemToken(token).stemmed else { return [] }
+        if token.lowercased().hasSuffix("ies") {
+            return [stemmed, String(token.dropLast())]
         }
-        return withWildcards(original)
+        return [stemmed]
     }
 
     static func stemToken(_ token: String) -> (original: String, stemmed: String?) {

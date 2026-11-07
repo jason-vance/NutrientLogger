@@ -68,6 +68,7 @@ protocol EngagementAnalytics {
     func notificationPermissionResult(_ result: NotificationPermissionResult)
     func searchReturnedNoResults(query: String)
     func searchCorrected(query: String, correctedQuery: String)
+    func searchResultPicked(query: String, position: Int, resultCount: Int)
     func customFoodEntryOpened(source: String)
     func firstDayRecapShown(lowCount: Int, unnamedCount: Int, isSubscribed: Bool, usedReferenceAge: Bool)
     func firstDayRecapAction(action: String)
@@ -395,6 +396,9 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     private let eventNotificationPermissionResult = "notification_permission_result"
     private let eventSearchNoResults = "search_no_results"
     private let eventSearchCorrected = "search_corrected"
+    private let eventSearchResultPicked = "search_result_picked"
+    private let parameterPosition = "position"
+    private let parameterResultCount = "result_count"
     private let eventCustomFoodEntryOpened = "custom_food_entry_opened"
     private let parameterCorrectedQuery = "corrected_query"
     private let parameterSource = "source"
@@ -477,6 +481,16 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
         analytics.log(event: eventSearchCorrected, parameters: [
             analytics.parameterSearchTerm: query,
             parameterCorrectedQuery: correctedQuery,
+        ])
+    }
+
+    /// A USDA food from search results was logged. `position` is 1-based within the Foods list, so
+    /// searches where people keep logging something far down show where ranking needs work.
+    public func searchResultPicked(query: String, position: Int, resultCount: Int) {
+        analytics.log(event: eventSearchResultPicked, parameters: [
+            analytics.parameterSearchTerm: query,
+            parameterPosition: position,
+            parameterResultCount: resultCount,
         ])
     }
 

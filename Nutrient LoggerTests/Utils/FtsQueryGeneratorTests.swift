@@ -59,8 +59,14 @@ struct FtsQueryGeneratorTests {
     }
 
     @Test func stemSuffix_ies() {
-        expectGenerated("berries", "(berries* OR berry*)")
-        expectGenerated("cherries", "(cherries* OR cherry*)")
+        expectGenerated("berries", "(berries* OR berry* OR berrie*)")
+        expectGenerated("cherries", "(cherries* OR cherry* OR cherrie*)")
+    }
+
+    @Test func iesPluralAlsoMatchesIeSingular() {
+        // "cookies" has to find "Cookie, NFS", not just "Cooky".
+        expectGenerated("cookies", "(cookies* OR cooky* OR cookie*)")
+        expectGenerated("brownies", "(brownies* OR browny* OR brownie*)")
     }
 
     @Test func consonantYAlsoMatchesIesPlural() {
