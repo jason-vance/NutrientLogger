@@ -17,6 +17,8 @@ struct FirstDayRecap: Equatable {
         let name: String
         /// Fraction of the daily goal reached, e.g. 0.38 for 38%.
         let percentOfGoal: Double
+        /// Foods that would help: "beef liver (3 oz), oysters (3 oz) or sardines (3 oz)".
+        var foodsThatHelp: String? = nil
     }
 
     static let maxGapsShown = 3

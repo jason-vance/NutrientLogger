@@ -87,6 +87,8 @@ struct DashboardWeeklyNutrientWatchSection: View {
         let name: String
         let percentage: Double
         let nutrient: Nutrient
+        /// Everyday foods that would help, fitting the user's diet. See `GapFoods`.
+        var suggestions: [GapFoods.Suggestion] = []
     }
 
     struct HighNutrient: Identifiable {
@@ -162,8 +164,20 @@ struct DashboardWeeklyNutrientWatchSection: View {
         let balances = computeBalances(totals: totals, ratios: ratios)
         let ratiosById = Dictionary(uniqueKeysWithValues: ratios.map { ($0.id, $0) })
 
+        let deficiencies = computeDeficiencies(totals: totals, daysWithData: daysWithData, user: user, rdiLibrary: rdiLibrary)
+            .map { deficiency in
+                var deficiency = deficiency
+                deficiency.suggestions = GapFoodSuggester.shared.suggestions(
+                    for: deficiency.id,
+                    user: user,
+                    rdiLibrary: rdiLibrary,
+                    remoteDatabase: remoteDatabase
+                )
+                return deficiency
+            }
+
         return WeeklyWatchResults(
-            deficiencies: computeDeficiencies(totals: totals, daysWithData: daysWithData, user: user, rdiLibrary: rdiLibrary),
+            deficiencies: deficiencies,
             highNutrients: computeHighs(totals: totals, daysWithData: daysWithData, user: user, rdiLibrary: rdiLibrary),
             balances: balances,
             balanceContributions: balances.reduce(into: [:]) { result, balance in
@@ -415,6 +429,25 @@ struct DashboardWeeklyNutrientWatchSection: View {
         }
     }
 
+    /// For the two lowest nutrients: "Magnesium: try pumpkin seeds (1 oz), cooked spinach (1 cup)
+    /// or almonds (1 oz)".
+    @ViewBuilder private func FoodsThatHelp() -> some View {
+        let lines = deficiencies.prefix(2).compactMap { deficiency -> (String, String)? in
+            GapFoods.sentence(deficiency.suggestions).map { (deficiency.name, $0) }
+        }
+        if !lines.isEmpty {
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(lines, id: \.0) { name, foods in
+                    Text("**\(name):** try \(foods)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(.top, 2)
+        }
+    }
+
     @ViewBuilder private func WeeklyWatchCard() -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
@@ -442,6 +475,7 @@ struct DashboardWeeklyNutrientWatchSection: View {
                         }
                     }
                 }
+                FoodsThatHelp()
             }
 
             if !highNutrients.isEmpty {

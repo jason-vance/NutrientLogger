@@ -65,7 +65,12 @@ struct FirstDayRecapView: View {
             )
             let recap = FirstDayRecap(
                 lows: results.deficiencies.map {
-                    FirstDayRecap.Gap(id: $0.id, name: $0.name, percentOfGoal: $0.percentage)
+                    FirstDayRecap.Gap(
+                        id: $0.id,
+                        name: $0.name,
+                        percentOfGoal: $0.percentage,
+                        foodsThatHelp: GapFoods.sentence($0.suggestions)
+                    )
                 },
                 highCount: results.highNutrients.count,
                 balanceCount: results.balances.count
@@ -291,6 +296,12 @@ struct FirstDayRecapView: View {
                 }
             }
             .frame(height: 8)
+            if let foods = gap.foodsThatHelp {
+                Text("Try \(foods)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
     }
 
