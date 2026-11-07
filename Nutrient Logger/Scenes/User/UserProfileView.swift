@@ -32,6 +32,7 @@ struct UserProfileView: View {
 
     #if DEBUG
     @State private var showDebugMenu: Bool = false
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = true
     #endif
 
     @Query private var consumedFoods: [ConsumedFood]
@@ -588,13 +589,18 @@ struct UserProfileView: View {
                 showDebugMenu = true
             }
             .confirmationDialog("Debug Menu", isPresented: $showDebugMenu, titleVisibility: .visible) {
+                // Shows onboarding again without deleting the app. Logged food is kept, but
+                // finishing it re-sorts the Nutrition tab for the diet picked.
+                Button("Replay Onboarding") {
+                    hasCompletedOnboarding = false
+                }
                 Button("Reset Streaks", role: .destructive) {
                     LoggingStreakStore().reset()
                     BodyMeasurementStreakStore().reset()
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("Clears the daily logging streak and weekly body-measurement streak from both local storage and iCloud, so a reinstall won't bring them back.")
+                Text("Replay Onboarding keeps your logs, but finishing it re-sorts the Nutrition tab for the diet you pick. Reset Streaks clears the daily logging and weekly body-measurement streaks from local storage and iCloud, so a reinstall won't bring them back.")
             }
             #endif
     }
