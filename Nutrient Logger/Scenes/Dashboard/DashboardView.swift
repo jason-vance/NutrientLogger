@@ -283,6 +283,7 @@ struct DashboardView: View {
                 DashboardNutrientSections(date: date, foods: foodItems, consumedFoods: todaysConsumedFoods, allConsumedFoods: consumedFoods)
             }
         }
+        .readableContentWidth()
         .toolbar { Toolbar() }
         .navigationTitle(Text(navigationTitle))
         .task { await subscriptionManager.checkSubscriptionTransitions(analytics: subscriptionAnalytics) }

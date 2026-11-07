@@ -19,6 +19,7 @@ struct NutrientInfoView: View {
             Text(infoString)
                 .padding()
         }
+        .readableContentWidth()
         .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

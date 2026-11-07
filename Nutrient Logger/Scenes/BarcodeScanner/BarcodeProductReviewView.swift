@@ -77,6 +77,7 @@ struct BarcodeProductReviewView: View {
                 attributionFooter
             }
         }
+        .readableContentWidth()
     }
 
     private var attributionFooter: some View {
@@ -364,6 +365,7 @@ private struct SimilarFoodsPickerView: View {
                 .padding(.horizontal)
             }
         }
+        .readableContentWidth()
         .alert("About Similar Foods", isPresented: $showInfo) {
             Button("OK", role: .cancel) {}
         } message: {

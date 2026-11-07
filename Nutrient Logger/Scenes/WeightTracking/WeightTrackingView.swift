@@ -335,6 +335,7 @@ struct WeightTrackingView: View {
             }
             .padding(.horizontal)
         }
+        .readableContentWidth()
         .scrollDismissesKeyboard(.immediately)
         .navigationTitle("Body")
         .toolbar { Toolbar() }

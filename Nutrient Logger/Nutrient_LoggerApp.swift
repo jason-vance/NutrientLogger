@@ -19,6 +19,11 @@ struct Nutrient_LoggerApp: App {
         if DataController.isScreenshots {
             UserDefaults.standard.set(true, forKey: "hasLaunchedAppBefore")
             UserDefaults.standard.set(true, forKey: "hasPromptedForNotifications")
+            // Go straight to the app on a fresh simulator; the personalize scene shows onboarding's question.
+            UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+            // The demo day is a full day, which would pop the recap over every scene; the
+            // firstDayRecap scene opens it on purpose.
+            UserDefaults.standard.set(true, forKey: FirstDayRecapTrigger.hasShownKey)
             UserDefaults.standard.set(false, forKey: HealthKitManager.healthSyncEnabledKey)
             UserDefaults.standard.set(72.57, forKey: "weightGoalKg")
             UserDefaults.standard.set(18.0, forKey: "bodyFatGoalPercentage")

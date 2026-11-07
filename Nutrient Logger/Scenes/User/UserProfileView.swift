@@ -129,6 +129,7 @@ struct UserProfileView: View {
             }
             .padding(.horizontal)
         }
+        .readableContentWidth()
         .scrollDismissesKeyboard(.immediately)
         .navigationBarTitle("Profile")
         .onAppear { fetchUser() }

@@ -218,6 +218,7 @@ struct LogActionButton: View {
         .buttonStyle(.plain)
         .disabled(!isEnabled)
         .padding(.horizontal)
+        .frame(maxWidth: .readableContentWidth)
         .padding(.bottom, 8)
     }
 }

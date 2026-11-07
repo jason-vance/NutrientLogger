@@ -35,6 +35,7 @@ struct DataSourcesView: View {
             }
             .padding()
         }
+        .readableContentWidth()
         .navigationTitle("Data Sources")
         .navigationBarTitleDisplayMode(.inline)
     }

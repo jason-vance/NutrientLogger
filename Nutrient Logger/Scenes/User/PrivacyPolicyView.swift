@@ -39,6 +39,7 @@ struct PrivacyPolicyView: View {
             }
             .padding()
         }
+        .readableContentWidth()
         .navigationTitle("Privacy Policy")
         .navigationBarTitleDisplayMode(.inline)
     }

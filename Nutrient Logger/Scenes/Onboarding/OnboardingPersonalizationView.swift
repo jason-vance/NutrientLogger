@@ -89,6 +89,7 @@ struct OnboardingPersonalizationView: View {
                     .padding(.bottom, 24)
                 }
             }
+            .readableContentWidth()
 
             // Reads back the answers, so the button says what it'll set up.
             LogActionButton(

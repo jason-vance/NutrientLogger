@@ -110,6 +110,8 @@ struct DashboardMacrosSection: View {
                     .padding(lineWidthPts + 6)
                 }
                 .aspectRatio(1, contentMode: .fit)
+                // On wide screens the ring would fill the whole display; phones never reach this.
+                .frame(maxWidth: 380)
                 Spacer()
             }
             .padding(lineWidthPts / 2)

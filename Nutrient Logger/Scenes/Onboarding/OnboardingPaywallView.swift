@@ -121,6 +121,7 @@ struct OnboardingPaywallView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 16)
             }
+            .readableContentWidth()
             
             VStack {
                 if subscriptionManager.isLoading {

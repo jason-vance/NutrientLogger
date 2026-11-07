@@ -104,6 +104,7 @@ struct StreakStatsView: View {
             }
             .padding()
         }
+        .readableContentWidth()
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
     }

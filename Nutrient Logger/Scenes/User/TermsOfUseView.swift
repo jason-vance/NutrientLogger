@@ -45,6 +45,7 @@ struct TermsOfUseView: View {
             }
             .padding()
         }
+        .readableContentWidth()
         .navigationTitle("Terms of Use")
         .navigationBarTitleDisplayMode(.inline)
     }

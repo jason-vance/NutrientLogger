@@ -30,12 +30,15 @@ struct OnboardingHeroView: View {
             Text("Are you ready to track every vitamin, mineral, and amino acid?")
                 .font(.largeTitle.bold())
                 .multilineTextAlignment(.center)
+                // Short screens (iPhone SE, the folded iPhone Duo) shrink it rather than cut it off.
+                .minimumScaleFactor(0.6)
                 .foregroundStyle(.primary)
                 .padding(.horizontal, 32)
 
             Text("Completely offline. Your data never leaves your device.")
                 .font(.title3)
                 .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.7)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 32)
                 .padding(.top, 16)
@@ -61,6 +64,7 @@ struct OnboardingHeroView: View {
             .padding(.horizontal, 24)
             .padding(.bottom, 48)
         }
+        .frame(maxWidth: .readableContentWidth)
     }
 }
 

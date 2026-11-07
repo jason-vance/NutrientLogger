@@ -29,6 +29,8 @@ struct OnboardingReviewQuote: View {
                 .italic()
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.primary.opacity(0.8))
+                // Keep the whole quote; the headline above shrinks to make room instead.
+                .fixedSize(horizontal: false, vertical: true)
 
             Text("\u{2014} \(author)")
                 .font(.caption)

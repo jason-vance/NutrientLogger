@@ -136,6 +136,7 @@ struct OnboardingDemoDashboardView: View {
             .padding(.horizontal)
             .padding(.bottom, 8)
         }
+        .readableContentWidth()
         .mask(
             // Fade the top edge so content scrolls away cleanly under the header.
             LinearGradient(

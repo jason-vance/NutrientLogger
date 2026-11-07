@@ -153,6 +153,7 @@ struct MarketingView: View {
                 }
                 .padding()
             }
+            .readableContentWidth()
             .toolbar { Toolbar() }
             .alert("Purchase Error", isPresented: $showError, actions: {
                 Button("OK", role: .cancel) { }

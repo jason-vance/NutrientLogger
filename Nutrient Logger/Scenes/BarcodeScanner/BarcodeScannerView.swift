@@ -27,6 +27,10 @@ class BarcodeScannerViewController: UIViewController, AVCaptureMetadataOutputObj
 
     private let captureSession = AVCaptureSession()
     private var previewLayer: AVCaptureVideoPreviewLayer!
+    // Keeps the camera image upright however the screen is turned, including the unfolded
+    // iPhone Duo, whose inner display is landscape even though the app is portrait only.
+    private var rotationCoordinator: AVCaptureDevice.RotationCoordinator?
+    private var rotationObservation: NSKeyValueObservation?
     private var hasDetected = false
 
     private let cutoutView = UIView()
@@ -79,6 +83,20 @@ class BarcodeScannerViewController: UIViewController, AVCaptureMetadataOutputObj
         previewLayer.videoGravity = .resizeAspectFill
         previewLayer.frame = view.bounds
         view.layer.addSublayer(previewLayer)
+
+        let coordinator = AVCaptureDevice.RotationCoordinator(device: device, previewLayer: previewLayer)
+        rotationCoordinator = coordinator
+        applyPreviewRotation()
+        rotationObservation = coordinator.observe(\.videoRotationAngleForHorizonLevelPreview) { [weak self] _, _ in
+            DispatchQueue.main.async { self?.applyPreviewRotation() }
+        }
+    }
+
+    private func applyPreviewRotation() {
+        guard let angle = rotationCoordinator?.videoRotationAngleForHorizonLevelPreview,
+              let connection = previewLayer?.connection,
+              connection.isVideoRotationAngleSupported(angle) else { return }
+        connection.videoRotationAngle = angle
     }
 
     private func setupOverlay() {
@@ -98,7 +116,8 @@ class BarcodeScannerViewController: UIViewController, AVCaptureMetadataOutputObj
     private var cutoutBorderLayer: CAShapeLayer?
 
     private var scanRect: CGRect {
-        let width = view.bounds.width * 0.75
+        // A barcode-shaped window; on wide screens it stays barcode-sized instead of spanning the view.
+        let width = min(view.bounds.width * 0.75, 360)
         let height: CGFloat = 200
         return CGRect(
             x: (view.bounds.width - width) / 2,
