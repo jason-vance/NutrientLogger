@@ -13,6 +13,7 @@ struct OnboardingView: View {
     let onComplete: () -> Void
 
     @Inject private var engagementAnalytics: EngagementAnalytics
+    @EnvironmentObject private var subscriptionManager: SubscriptionManager
 
     @AppStorage("hasStartedOnboarding") private var hasStartedOnboarding: Bool = false
     @AppStorage("onboardingStartedAt") private var onboardingStartedAt: Double = 0
@@ -23,6 +24,8 @@ struct OnboardingView: View {
     @State private var navigatingBackward = false
     @State private var selectedDiet: NutritionDietPreset = .default
     @State private var selectedConcern: NutritionConcern = .default
+    /// When the current step came on screen, for time-per-step.
+    @State private var stepStartedAt: Date = .now
 
     private static let totalSteps = 6
     private static let stepNames = ["hero", "personalization", "food_breakdown", "demo", "notification", "paywall"]
@@ -32,7 +35,17 @@ struct OnboardingView: View {
         engagementAnalytics.onboardingStepViewed(stepName: Self.stepNames[step], stepIndex: step)
     }
 
+    private func trackStepCompleted() {
+        guard Self.stepNames.indices.contains(step) else { return }
+        engagementAnalytics.onboardingStepCompleted(
+            stepName: Self.stepNames[step],
+            stepIndex: step,
+            secondsOnStep: Int(Date.now.timeIntervalSince(stepStartedAt))
+        )
+    }
+
     private func advance() {
+        trackStepCompleted()
         navigatingBackward = false
         withAnimation(.easeInOut(duration: 0.3)) {
             step += 1
@@ -40,6 +53,9 @@ struct OnboardingView: View {
     }
 
     private func goBack() {
+        if Self.stepNames.indices.contains(step) {
+            engagementAnalytics.onboardingStepBack(stepName: Self.stepNames[step], stepIndex: step)
+        }
         navigatingBackward = true
         withAnimation(.easeInOut(duration: 0.3)) {
             step -= 1
@@ -55,7 +71,13 @@ struct OnboardingView: View {
     private func finishOnboarding() {
         hasPromptedForNotifications = true
         onboardingCompletedAt = Date.now.timeIntervalSince1970
-        engagementAnalytics.onboardingCompleted()
+        trackStepCompleted()
+        engagementAnalytics.onboardingCompleted(
+            totalSeconds: onboardingStartedAt > 0 ? Int(Date.now.timeIntervalSince1970 - onboardingStartedAt) : 0,
+            diet: selectedDiet.rawValue,
+            concern: selectedConcern.rawValue,
+            subscribed: subscriptionManager.isSubscribed
+        )
         onComplete()
     }
 
@@ -96,6 +118,7 @@ struct OnboardingView: View {
             trackStepViewed(step)
         }
         .onChange(of: step) { _, newStep in
+            stepStartedAt = .now
             trackStepViewed(newStep)
         }
     }

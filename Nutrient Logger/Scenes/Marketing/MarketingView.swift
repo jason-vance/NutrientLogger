@@ -56,7 +56,7 @@ struct MarketingView: View {
             return "Don't miss out on this week's low, high & out-of-balance nutrient alerts"
         case .firstDayRecap:
             return "Don't miss out on what your food is missing, every day"
-        case .smartPaywall, .deepLink, .profileUpsell:
+        case .smartPaywall, .deepLink, .profileUpsell, .onboarding:
             return nil
         }
     }

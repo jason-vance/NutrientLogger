@@ -26,10 +26,12 @@ class MockPremiumAnalytics: PremiumAnalytics {
 class MockEngagementAnalytics: EngagementAnalytics {
     func screenViewed(screenName: String) {}
     func onboardingStepViewed(stepName: String, stepIndex: Int) {}
+    func onboardingStepCompleted(stepName: String, stepIndex: Int, secondsOnStep: Int) {}
+    func onboardingStepBack(stepName: String, stepIndex: Int) {}
     func onboardingPersonalizationSelected(diet: String, concern: String) {}
     func onboardingFoodBreakdownViewed(food: String, diet: String) {}
     func settingsPersonalizationUpdated(diet: String, concern: String) {}
-    func onboardingCompleted() {}
+    func onboardingCompleted(totalSeconds: Int, diet: String, concern: String, subscribed: Bool) {}
     func customFoodCreated() {}
     func customFoodEdited() {}
     func customFoodDeleted() {}

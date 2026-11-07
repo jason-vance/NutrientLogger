@@ -340,7 +340,7 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 
 These are worth tracking but don't have a clear version slot yet:
 
-- **Analytics:** Build the onboarding funnel tracking on Google Analytics
+- **Analytics:** Build the onboarding funnel tracking on Google Analytics. App side done Nov 7 2026 (time per step, back taps, its own paywall trigger, completion details, diet and focus as user properties). Left: the GA4 setup in `docs/ONBOARDING_FUNNEL.md`.
 - **Food database coverage** — evaluate supplementing or replacing the underlying food database to close common-food gaps surfaced in reviews (beyond the search-ranking fix in v3.9). Separate problem from matching/ranking: this is about what's *in* the database, not how it's found.
 - **AI photo logging** — the market is moving here fast (PlateLens, Nutrola). Expensive to build well; consider a third-party API (LogMeal, Calorie Mama) rather than training your own model.
 - **Carnivore/keto mode** — preset nutrient goals for specific diet protocols. Natural cross-sell with Carnivore Diet Guide & Recipes.

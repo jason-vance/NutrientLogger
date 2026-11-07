@@ -18,7 +18,7 @@ struct PremiumCTARow: View {
 
     private var teaser: String {
         switch trigger {
-        case .smartPaywall, .deepLink, .profileUpsell:
+        case .smartPaywall, .deepLink, .profileUpsell, .onboarding:
             return "Unlock every Premium feature"
         case .trendCharts:
             return "See 7 & 30-day nutrient trends"

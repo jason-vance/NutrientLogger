@@ -21,4 +21,8 @@ class FirebaseAnalytics: AnalyticsEngine {
     public func log(event: String, parameters: [String : Any]) {
         Analytics.logEvent(event, parameters: parameters)
     }
+
+    public func setUserProperty(_ value: String?, forName name: String) {
+        Analytics.setUserProperty(value, forName: name)
+    }
 }

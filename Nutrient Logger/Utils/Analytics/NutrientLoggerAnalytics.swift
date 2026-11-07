@@ -14,6 +14,8 @@ protocol AnalyticsEngine {
 
     func log(event: String)
     func log(event: String, parameters: [String:Any])
+    /// Attaches a value to every later event from this user, for segmenting (nil clears it).
+    func setUserProperty(_ value: String?, forName name: String)
 }
 
 
@@ -30,6 +32,8 @@ enum PaywallTrigger: String {
     case csvExport = "csv_export"
     case weeklyNutrientWatch = "weekly_nutrient_watch"
     case firstDayRecap = "first_day_recap"
+    /// The last step of onboarding, kept apart from the in-app smart paywall.
+    case onboarding = "onboarding"
 }
 
 protocol SubscriptionAnalytics {
@@ -56,10 +60,12 @@ enum NotificationPermissionResult: String {
 protocol EngagementAnalytics {
     func screenViewed(screenName: String)
     func onboardingStepViewed(stepName: String, stepIndex: Int)
+    func onboardingStepCompleted(stepName: String, stepIndex: Int, secondsOnStep: Int)
+    func onboardingStepBack(stepName: String, stepIndex: Int)
     func onboardingPersonalizationSelected(diet: String, concern: String)
     func onboardingFoodBreakdownViewed(food: String, diet: String)
     func settingsPersonalizationUpdated(diet: String, concern: String)
-    func onboardingCompleted()
+    func onboardingCompleted(totalSeconds: Int, diet: String, concern: String, subscribed: Bool)
     func customFoodCreated()
     func customFoodEdited()
     func customFoodDeleted()
@@ -424,6 +430,13 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     private let parameterFood = "food"
     private let eventSettingsPersonalizationUpdated = "settings_personalization_updated"
     private let eventOnboardingCompleted = "onboarding_completed"
+    private let eventOnboardingStepCompleted = "onboarding_step_completed"
+    private let eventOnboardingStepBack = "onboarding_step_back"
+    private let parameterSecondsOnStep = "seconds_on_step"
+    private let parameterTotalSeconds = "total_seconds"
+    private let parameterSubscribed = "subscribed"
+    private let userPropertyDiet = "diet"
+    private let userPropertyFocus = "nutrition_focus"
     private let parameterStepName = "step_name"
     private let parameterStepIndex = "step_index"
     private let parameterDiet = "diet"
@@ -436,11 +449,33 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
         ])
     }
 
+    public func onboardingStepCompleted(stepName: String, stepIndex: Int, secondsOnStep: Int) {
+        analytics.log(event: eventOnboardingStepCompleted, parameters: [
+            parameterStepName: stepName,
+            parameterStepIndex: stepIndex,
+            parameterSecondsOnStep: secondsOnStep,
+        ])
+    }
+
+    public func onboardingStepBack(stepName: String, stepIndex: Int) {
+        analytics.log(event: eventOnboardingStepBack, parameters: [
+            parameterStepName: stepName,
+            parameterStepIndex: stepIndex,
+        ])
+    }
+
     public func onboardingPersonalizationSelected(diet: String, concern: String) {
         analytics.log(event: eventOnboardingPersonalizationSelected, parameters: [
             parameterDiet: diet,
             parameterConcern: concern,
         ])
+        setPersonalizationUserProperties(diet: diet, concern: concern)
+    }
+
+    /// So trial starts, purchases and retention can be split by diet and focus.
+    private func setPersonalizationUserProperties(diet: String, concern: String) {
+        analytics.setUserProperty(diet, forName: userPropertyDiet)
+        analytics.setUserProperty(concern, forName: userPropertyFocus)
     }
 
     public func onboardingFoodBreakdownViewed(food: String, diet: String) {
@@ -455,10 +490,17 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
             parameterDiet: diet,
             parameterConcern: concern,
         ])
+        setPersonalizationUserProperties(diet: diet, concern: concern)
     }
 
-    public func onboardingCompleted() {
-        analytics.log(event: eventOnboardingCompleted)
+    public func onboardingCompleted(totalSeconds: Int, diet: String, concern: String, subscribed: Bool) {
+        analytics.log(event: eventOnboardingCompleted, parameters: [
+            parameterTotalSeconds: totalSeconds,
+            parameterDiet: diet,
+            parameterConcern: concern,
+            // GA4 parameters have no boolean type.
+            parameterSubscribed: subscribed ? 1 : 0,
+        ])
     }
 
     public func customFoodCreated() {

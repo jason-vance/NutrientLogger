@@ -10,10 +10,15 @@ import Foundation
 class MockAnalyticsEngine: AnalyticsEngine {
     
     var loggedEvents: [(String, [String: Any])] = []
+    var userProperties: [String: String] = [:]
 
     var eventSearch: String { "eventSearch" }
     
     var parameterSearchTerm: String { "parameterSearchTerm" }
+
+    func setUserProperty(_ value: String?, forName name: String) {
+        userProperties[name] = value
+    }
 
     func log(event: String) {
         loggedEvents.append(("\(event)", [:]))

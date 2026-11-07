@@ -148,7 +148,10 @@ struct OnboardingPaywallView: View {
                         }
                         Image(systemName: "circle.fill")
                             .scaleEffect(0.25)
-                        Button(action: onComplete) {
+                        Button {
+                            subscriptionAnalytics.paywallDismissed(trigger: .onboarding)
+                            onComplete()
+                        } label: {
                             Text("Skip for Now")
                         }
                     }
@@ -181,7 +184,7 @@ struct OnboardingPaywallView: View {
             if displayProducts.isEmpty {
                 subscriptionManager.refreshProducts()
             }
-            subscriptionAnalytics.paywallShown(trigger: .smartPaywall)
+            subscriptionAnalytics.paywallShown(trigger: .onboarding)
         }
     }
 
