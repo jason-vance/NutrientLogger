@@ -13,6 +13,9 @@ struct DashboardMealRow: View {
 
     let meal: DashboardMealList.Meal
     let date: SimpleDate
+    /// Shown under an empty meal: "Repeat yesterday's breakfast". Nil to offer nothing.
+    var repeatLabel: String? = nil
+    var onRepeat: (() -> Void)? = nil
 
     @Inject private var remoteDatabase: RemoteDatabase
 
@@ -55,6 +58,21 @@ struct DashboardMealRow: View {
     }
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            MealLink()
+            if meal.foods.isEmpty, let repeatLabel, let onRepeat {
+                Button(action: onRepeat) {
+                    Label(repeatLabel, systemImage: "arrow.uturn.backward.circle")
+                        .font(.caption.bold())
+                }
+                .buttonStyle(.borderless)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 10)
+            }
+        }
+    }
+
+    @ViewBuilder private func MealLink() -> some View {
         NavigationLink {
             ConsumedMealsView(date: date, scrollToMealTime: meal.mealTime)
         } label: {

@@ -81,6 +81,8 @@ Nutrient Logger is perfect for anyone serious about nutrition-whether you’re o
 • Manual entry opens straight to the form
 • Searches that found nothing now do: "bagel with cream cheese" or "avocado toast" shows each part to log, and "a cup of coffee" or "cold brew" finds the drink
 • Cooking a batch? Set how many servings a saved meal makes and log it one serving at a time
+• Eat the same breakfast most days? An empty meal offers to repeat yesterday's in one tap
+• Low on something? The nutrient watch and your first-day recap now name everyday foods that help, matched to your diet
 
 ## What's New (v4.4)
 • Set your own upper limit for any vitamin or mineral, not just a goal - Micronutrient Goals is now Micronutrient Targets

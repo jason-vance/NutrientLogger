@@ -15,6 +15,10 @@ struct DashboardNutrientSections: View {
     private let allConsumedFoods: [ConsumedFood]
     private let aggregator: NutrientDataAggregator
 
+    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataController: DataController
+    @Inject private var engagementAnalytics: EngagementAnalytics
+
     init(date: SimpleDate, foods: [FoodItem], consumedFoods: [ConsumedFood], allConsumedFoods: [ConsumedFood]) {
         self.date = date
         self.foods = foods
@@ -41,6 +45,15 @@ struct DashboardNutrientSections: View {
         .padding(.horizontal)
     }
 
+    private func repeatMeal(_ previous: MealRepeat.Previous) {
+        for food in MealRepeat.copies(of: previous.foods, to: date) {
+            modelContext.insert(food)
+        }
+        try? modelContext.save()
+        engagementAnalytics.mealRepeated(foodCount: previous.foods.count, daysBack: previous.daysBack)
+        dataController.updateDailySummary()
+    }
+
     @ViewBuilder private func MealsSection() -> some View {
         // DashboardMealList.from always returns every valid meal time (empty ones included), so
         // this section stays visible as a logging entry point even on a day with nothing logged.
@@ -58,7 +71,15 @@ struct DashboardNutrientSections: View {
                         Divider()
                             .padding(.leading, 16)
                     }
-                    DashboardMealRow(meal: meal, date: date)
+                    let previous = date <= .today && meal.foods.isEmpty
+                        ? MealRepeat.previous(meal.mealTime, before: date, in: allConsumedFoods)
+                        : nil
+                    DashboardMealRow(
+                        meal: meal,
+                        date: date,
+                        repeatLabel: previous.map { MealRepeat.label(for: $0, mealTime: meal.mealTime, selectedDate: date) },
+                        onRepeat: previous.map { previous in { repeatMeal(previous) } }
+                    )
                 }
             }
             .padding(.vertical, 4)

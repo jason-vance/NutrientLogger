@@ -69,6 +69,7 @@ protocol EngagementAnalytics {
     func searchReturnedNoResults(query: String)
     func searchCorrected(query: String, correctedQuery: String)
     func searchSplit(query: String, parts: [String])
+    func mealRepeated(foodCount: Int, daysBack: Int)
     func searchResultPicked(query: String, position: Int, resultCount: Int)
     func customFoodEntryOpened(source: String)
     func firstDayRecapShown(lowCount: Int, unnamedCount: Int, isSubscribed: Bool, usedReferenceAge: Bool)
@@ -398,6 +399,7 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
     private let eventSearchNoResults = "search_no_results"
     private let eventSearchCorrected = "search_corrected"
     private let eventSearchSplit = "search_split"
+    private let eventMealRepeated = "meal_repeated"
     private let eventSearchResultPicked = "search_result_picked"
     private let parameterPosition = "position"
     private let parameterResultCount = "result_count"
@@ -484,6 +486,14 @@ class DefaultAnalytics: NutrientLoggerAnalytics, UserProfileAnalytics, UserMeals
         analytics.log(event: eventSearchCorrected, parameters: [
             analytics.parameterSearchTerm: query,
             parameterCorrectedQuery: correctedQuery,
+        ])
+    }
+
+    /// An empty meal was filled in one tap from the same meal on an earlier day.
+    public func mealRepeated(foodCount: Int, daysBack: Int) {
+        analytics.log(event: eventMealRepeated, parameters: [
+            "food_count": foodCount,
+            "days_back": daysBack,
         ])
     }
 

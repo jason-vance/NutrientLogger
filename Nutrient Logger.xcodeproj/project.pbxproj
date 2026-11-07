@@ -92,6 +92,7 @@
 				Domain/LoggingStreak.swift,
 				Domain/LoggingStreakStore.swift,
 				Domain/LogPortionDefaults.swift,
+				Domain/MealRepeat.swift,
 				Domain/MealTime.swift,
 				Domain/Notifications/NotificationPlanner.swift,
 				Domain/Notifications/NotificationSettings.swift,
