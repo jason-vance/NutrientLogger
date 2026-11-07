@@ -69,48 +69,59 @@ struct EditProfileView: View {
         .listRowDefaultModifiers()
     }
 
+    /// Both choices on screen, so it's one tap instead of a menu.
     @ViewBuilder private func GenderField() -> some View {
-        HStack {
+        let options: [Gender] = [.male, .female]
+        VStack(alignment: .leading, spacing: 8) {
             Text("Sex")
-            Spacer()
-            Menu {
-                Button(Gender.male.rawValue) {
-                    user?.gender = .male
-                }
-                Button(Gender.female.rawValue) {
-                    user?.gender = .female
-                }
-            } label: {
-                Text(user?.gender.rawValue ?? "Not Set")
-                    .bold()
-            }
+            LogPillRow(
+                items: options,
+                labels: options.map { $0.rawValue.capitalized },
+                isSelected: { user?.gender == $0 },
+                onSelect: { user?.gender = $0 }
+            )
         }
+        .padding(.vertical, 4)
         .listRowDefaultModifiers()
     }
 
     @ViewBuilder private func HeightField() -> some View {
+        if preferredHeightUnit == .ftIn {
+            // Feet and inches as pills instead of two pickers hidden inside a menu.
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Height")
+                    Spacer()
+                    Text(user?.heightCm.map { preferredHeightUnit.formattedHeight(cm: $0) } ?? "Not Set")
+                        .bold()
+                        .foregroundStyle(Color.accentColor)
+                }
+                LogFieldLabel("Feet")
+                LogPillRow(
+                    items: Array(4...7),
+                    labels: (4...7).map { "\($0) ft" },
+                    isSelected: { user?.heightCm != nil && $0 == heightFeet },
+                    onSelect: { setHeight(feet: $0, inches: heightInches) }
+                )
+                LogFieldLabel("Inches")
+                LogPillRow(
+                    items: Array(0...11),
+                    labels: (0...11).map { "\($0)" },
+                    isSelected: { user?.heightCm != nil && $0 == heightInches },
+                    onSelect: { setHeight(feet: heightFeet, inches: $0) }
+                )
+            }
+            .padding(.vertical, 4)
+            .listRowDefaultModifiers()
+        } else {
+            HeightInCentimetersField()
+        }
+    }
+
+    @ViewBuilder private func HeightInCentimetersField() -> some View {
         HStack {
             Text("Height")
             Spacer()
-            if preferredHeightUnit == .ftIn {
-                Menu {
-                    Picker("Feet", selection: Binding(
-                        get: { heightFeet },
-                        set: { setHeight(feet: $0, inches: heightInches) }
-                    )) {
-                        ForEach(3...7, id: \.self) { Text("\($0) ft").tag($0) }
-                    }
-                    Picker("Inches", selection: Binding(
-                        get: { heightInches },
-                        set: { setHeight(feet: heightFeet, inches: $0) }
-                    )) {
-                        ForEach(0...11, id: \.self) { Text("\($0) in").tag($0) }
-                    }
-                } label: {
-                    Text(user?.heightCm.map { preferredHeightUnit.formattedHeight(cm: $0) } ?? "Not Set")
-                        .bold()
-                }
-            } else {
                 TextField(
                     "Not Set",
                     text: Binding(
@@ -134,10 +145,9 @@ struct EditProfileView: View {
                 .bold()
                 .foregroundStyle(Color.accentColor)
                 .frame(maxWidth: 100)
-                Text("cm")
-                    .fontWeight(.light)
-                    .foregroundStyle(.secondary)
-            }
+            Text("cm")
+                .fontWeight(.light)
+                .foregroundStyle(.secondary)
         }
         .listRowDefaultModifiers()
     }

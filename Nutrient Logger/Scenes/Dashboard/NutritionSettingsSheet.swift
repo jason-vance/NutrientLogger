@@ -344,21 +344,45 @@ struct NutritionSettingsSheet: View {
 
     @ViewBuilder private func WeeklyWatchSection() -> some View {
         Section {
-            HStack {
+            VStack(alignment: .leading, spacing: 8) {
                 Text("Look Back")
-                Spacer()
-                Picker("Look Back", selection: $watchWindowDays) {
-                    ForEach(WeeklyWatchWindow.options, id: \.self) { days in
-                        Text(WeeklyWatchWindow.optionLabel(forDays: days)).tag(days)
-                    }
-                }
-                .labelsHidden()
+                LogPillRow(
+                    items: WeeklyWatchWindow.options,
+                    labels: WeeklyWatchWindow.options.map { WeeklyWatchWindow.optionLabel(forDays: $0) },
+                    isSelected: { $0 == watchWindowDays },
+                    onSelect: { watchWindowDays = $0 }
+                )
             }
+            .padding(.vertical, 4)
         } header: {
             Text("Weekly Watch")
         } footer: {
             Text("How many days back the dashboard's low, high, and out-of-balance nutrient warnings look when averaging your intake.")
         }
+    }
+
+    /// How many nutrients a group shows before "More", as a few one-tap choices plus "All".
+    @ViewBuilder private func VisibleCountPills(visibleCount: Binding<Int>, total: Int) -> some View {
+        let options = Self.visibleCountOptions(current: visibleCount.wrappedValue, total: total)
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Show before \u{201C}More\u{201D}")
+            LogPillRow(
+                items: options,
+                labels: options.map { $0 == total ? "All" : "\($0)" },
+                isSelected: { $0 == min(visibleCount.wrappedValue, total) },
+                onSelect: { visibleCount.wrappedValue = $0 }
+            )
+        }
+        .padding(.vertical, 4)
+    }
+
+    /// 3, 5 and 8 (when the group is that big), the current count if it's something else, and all.
+    static func visibleCountOptions(current: Int, total: Int) -> [Int] {
+        guard total > 0 else { return [] }
+        var options = Set([3, 5, 8].filter { $0 < total })
+        options.insert(total)
+        options.insert(min(max(current, 1), total))
+        return options.sorted()
     }
 
     @ViewBuilder private func GoalRow(
@@ -444,18 +468,8 @@ struct NutritionSettingsSheet: View {
         onMove: @escaping (IndexSet, Int) -> Void
     ) -> some View {
         Section {
-            Stepper(
-                value: visibleCount,
-                in: 1...max(CustomizableNutrientGroup.defaultVisibleCount, items.wrappedValue.count)
-            ) {
-                HStack {
-                    Text("Show before \u{201C}More\u{201D}")
-                    Spacer()
-                    Text("\(visibleCount.wrappedValue)")
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .moveDisabled(true)
+            VisibleCountPills(visibleCount: visibleCount, total: items.wrappedValue.count)
+                .moveDisabled(true)
             ForEach(items.wrappedValue, id: \.self) { nutrientId in
                 HStack {
                     Toggle("", isOn: enabledBinding(for: nutrientId, hiddenRaw: hiddenRaw))
