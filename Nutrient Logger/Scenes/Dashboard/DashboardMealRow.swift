@@ -23,8 +23,7 @@ struct DashboardMealRow: View {
     @State private var caloriesString: String = ""
 
     // `meal`'s identity (mealTime) is stable across days, so a plain `.task { }` would only run
-    // once and never notice the day changing underneath it. Keying on `date` forces a refetch
-    // whenever the dashboard's selected day changes.
+    // once and never notice the day or its foods changing underneath it. See `refreshKey`.
     private func fetchFoods() async {
         guard !meal.foods.isEmpty else {
             foodItems = []
@@ -51,6 +50,12 @@ struct DashboardMealRow: View {
         let calsAmount = aggregator.nutrientsByNutrientNumber[Self.calsKey]?
             .reduce(into: 0.0) { $0 += $1.nutrient.amount } ?? 0
         caloriesString = "\(calsAmount.formatted(maxDigits: 0)) kcal"
+    }
+
+    /// Changes when the day or the meal's foods change (one added by "Repeat yesterday's", an
+    /// amount edited), so the calories are recalculated instead of staying on the placeholder.
+    private var refreshKey: String {
+        "\(date)|" + meal.foods.map { "\($0.fdcId):\($0.portionAmount):\($0.portionGramWeight)" }.joined(separator: ",")
     }
 
     private var foodNamesString: String {
@@ -99,7 +104,7 @@ struct DashboardMealRow: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
         }
-        .task(id: date) { await fetchFoods() }
+        .task(id: refreshKey) { await fetchFoods() }
     }
 }
 

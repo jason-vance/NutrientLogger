@@ -18,6 +18,8 @@ enum EverydayFoodNames {
     /// What people type → exact USDA descriptions to show first, in order.
     static let leadingEntries: [String: [String]] = [
         "toast": ["Bread, white, toasted", "Bread, whole wheat, toasted"],
+        "bagel": ["Bagel"],
+        "bagels": ["Bagel"],
         "bread": ["Bread, white", "Bread, whole wheat"],
         "fries": ["Potato, french fries, NFS"],
         "burger": ["Hamburger, NFS", "Cheeseburger, NFS"],
