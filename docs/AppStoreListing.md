@@ -1,17 +1,26 @@
 # App Store Listing - Nutrient Logger
 
-## Title (?/30 chars)
+## Title (30/30 chars)
 Nutrient Logger - Food Tracker
 
-## Subtitle (29/30 chars)
-Micronutrients, Fully Offline
+## Subtitle (30/30 chars)
+Carnivore Diet Vitamin Tracker
 
 ## Categories
 - Primary: Lifestyle
 - Secondary: Health & Fitness
 
-## Keywords (97/100 chars)
-vitamin,mineral,deficiency,cronometer,myfitnesspal,paleo,carnivore,keto,vegan,macro,usda,diet,log
+## Keywords (93/100 chars)
+vitamin,mineral,deficiency,carnivore,paleo,keto,sodium,diet,macro,protein,cholesterol,vegan,d
+
+### Why (v4.5, from Astro's US data, Nov 10 2026)
+Popularity runs 5-100 in Astro, and 5 means almost no one searches it.
+
+- The old subtitle, "Micronutrients, Fully Offline", ranked #1 for *micronutrient logger* and *offline food tracker*, but both have popularity 5. The new one targets *carnivore diet* (popularity 24, difficulty 38, unranked), *carnivore diet app tracker* (24/15, #91) and *vitamin tracker* (6/21, unranked). "Offline" stays in the promotional text.
+- Dropped *cronometer* and *myfitnesspal*: other apps' names break guideline 2.3.7, and they ranked #146 and unranked. Dropped *usda* (popularity 5) and *log* (unranked, and "Logger" is in the title).
+- Added *sodium* (*sodium tracker* 11/15, *sodium tracker free* 22/38), *d* (*vitamin d tracker* 17/17), *cholesterol* (*cholesterol tracker* 6/17) and *protein* (6/45).
+- Apple combines words across the title, subtitle and keywords, so "food", "tracker", "nutrient" and "logger" aren't repeated here.
+- Leave these alone for a few weeks after release, then check the same keywords in Astro again.
 
 ## Promotional Text (158/170 chars)
 Carnivore, keto or paleo? See which vitamins and minerals your diet runs short on, starting with your first full day of logging. Ad-free, offline, no account.

@@ -323,6 +323,33 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 ## v4.5 — "First Session"
 **Theme:** The 90-day plan (Nov 2026): fix the first session, show the payoff early, speak to carnivore, keto and paleo eaters, and stop underpricing.
 
+### Release checklist
+All code is on `dev` (pushed through 86d0982). App Store Connect has 4.4 live and no 4.5 version yet. The newest build, 72 from Nov 5, predates the v4.5 work.
+
+**Before building**
+- [ ] Create the GA4 custom definitions in `docs/ONBOARDING_FUNNEL.md` (step 1). They only collect from the day they exist, so do this before release or launch week's funnel is lost.
+- [ ] Merge `dev` into `main`, if releases ship from `main`.
+
+**Build**
+- [ ] Build 4.5 from the latest commit (Xcode Cloud, or Archive → Distribute in Xcode) and wait for it to finish processing.
+- [ ] TestFlight check on a phone: Replay Onboarding (Debug only, so on TestFlight delete and reinstall), log a food, scan a barcode, add a custom food.
+
+**App Store Connect: version 4.5**
+- [ ] Create iOS version 4.5 and attach the build.
+- [ ] English: paste What's New (v4.5) from `AppStoreListing.md`. Compare the description, promotional text and keywords with the doc, too.
+- [ ] Other 10 languages: What's New is required for each. The localized docs stop at v4.4, so translate the v4.5 notes or use the English ones.
+- [ ] Screenshots: caption 4 is now "Your Food Log Never Leaves Your Phone" (translated in each localized doc). Update it in the `.mockup` files, re-export every language and upload.
+- [ ] iPhone Duo screenshots: optional until April 2027. Raw captures are in `docs/store-screenshots/v4.5-duo/`.
+- [ ] App Privacy: add **Search History** (used for Analytics, not linked to the user, not used for tracking), and **Health & Fitness** if you count the diet answer as that. Remove any advertising data types left over from AdMob, since the app has no ad SDK now.
+- [ ] App Information → Privacy Policy URL: make sure it points to a real policy. The website footer's "Privacy Policy" link goes to Apple's standard terms of use.
+- [ ] Release option (manual or automatic after approval), then Submit for Review.
+
+**After approval**
+- [ ] Raise prices (below). They're independent of the release, so this can happen any time.
+- [ ] Start the gap-first product page test (below).
+- [ ] Deploy the website so the new "food log" wording goes live, and add a privacy policy page.
+- [ ] A week in: check the onboarding funnel. `food_breakdown` → `demo` should be near 100%.
+
 ### App Store Connect
 - [ ] **Raise prices** (pricing check, Nov 6 2026). Full prices sit below every comparable tracker (Carb Manager ~$40/yr, Cronometer Gold ~$50–60/yr, MacroFactor ~$72/yr, MyFitnessPal and Lose It ~$80/yr). The 24-hour launch price is what nearly everyone pays, and because the launch prices are separate products they renew at that price for good.
   - [ ] Launch yearly (`nutrient.logger.premium.yearly`): $9.99 → $19.99
