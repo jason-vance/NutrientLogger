@@ -1,0 +1,79 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Keep in step with PrivacyPolicyView.swift in the app.
+---
+
+<Base
+  title="Privacy Policy — Nutrient Logger"
+  description="What Nutrient Logger keeps on your device, what leaves it, and why. No account, no ads, and your food log never leaves your phone."
+>
+  <article class="blog-post">
+    <div class="container">
+      <header class="post-header">
+        <h1>Privacy Policy</h1>
+        <div class="post-meta">
+          <span>Last updated November 9, 2026</span>
+        </div>
+      </header>
+      <div class="post-content">
+        <p>
+          Nutrient Logger does not require an account or sign-in, and does not operate any server that
+          your food log is sent to or stored on. Everything you log (foods, meals, weight, goals) is
+          stored locally in the app's data store on your device.
+        </p>
+        <p>
+          We do not sell your personal information, and we do not share what you eat, your weight, or
+          any other data you enter with advertisers or other third parties.
+        </p>
+
+        <h2>What leaves your device, and why</h2>
+
+        <h3>1. Anonymous product analytics (Firebase Analytics)</h3>
+        <p>
+          We log which screens and features are used (for example, that a food was logged, a barcode
+          was scanned, or a premium feature was tapped) so we know what to improve. These events do not
+          include the foods you log, your weight, or other personal details, and are not linked to your
+          identity.
+        </p>
+        <p>Two things they do include:</p>
+        <ul>
+          <li>the words you type into food search, so we can improve search and add foods that are missing</li>
+          <li>the diet and main focus you choose during setup, so we can see what helps people on each diet</li>
+        </ul>
+
+        <h3>2. Barcode lookups (Open Food Facts)</h3>
+        <p>
+          When you scan a packaged food's barcode, the barcode number is sent to the
+          <a href="https://world.openfoodfacts.org/">Open Food Facts</a> public database to retrieve its
+          nutrition information. No other information about you is sent with that request.
+        </p>
+
+        <h3>3. Apple Health, only if you turn it on</h3>
+        <p>
+          If you enable Health sync, your calorie, macro, and water data is written to Apple Health, and
+          weight data can be imported from Health. This stays within Apple's Health system on your device
+          and is governed by Apple's own Health privacy protections, not sent to us.
+        </p>
+
+        <h2>No ads</h2>
+        <p>
+          Nutrient Logger does not show ads. Free-tier users occasionally see a prompt suggesting Premium
+          in a handful of screens throughout the app. It's not served by any ad network, and no
+          information about you is sent anywhere to show it.
+        </p>
+
+        <h2>Your choices and contact</h2>
+        <p>
+          You can request details about what analytics data has been collected, or ask us to stop
+          collecting it, by contacting us through the Support link at the bottom of the app's Profile
+          tab.
+        </p>
+        <p>
+          If you believe at any point that we are not following this privacy policy as stated, please
+          contact us the same way.
+        </p>
+      </div>
+    </div>
+  </article>
+</Base>

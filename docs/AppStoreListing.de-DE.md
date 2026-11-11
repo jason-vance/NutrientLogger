@@ -12,7 +12,7 @@ Mikronährstoffe, ganz offline
 vitamine,mineralstoffe,mangel,cronometer,myfitnesspal,kalorien,keto,vegan,makros,ernährung,tagebuch
 
 ## Promotional Text (168/170 chars)
-v4.4: Setze eigene Obergrenzen, nicht nur Ziele — deckle Natrium, wo du willst. Und kippt ein Nährstoff-Verhältnis, siehst du die Lebensmittel dahinter. Weiter offline.
+Carnivore, Keto oder Paleo? Sieh, welche Vitamine und Mineralstoffe deiner Ernährung fehlen — ab deinem ersten voll protokollierten Tag. Werbefrei, offline, kein Konto.
 
 ## Description
 Nutrient Logger ist der Offline-First-Ernährungstracker für alle, die wissen wollen, was wirklich in ihrem Essen steckt — nicht nur Kalorien und Makros, sondern das volle Spektrum an Vitaminen, Mineralstoffen und Aminosäuren, die dein Körper braucht.
@@ -67,6 +67,26 @@ Nutrient Logger ist perfekt für alle, die Ernährung ernst nehmen — ob spezie
 
 
 * Apple-Nutzungsbedingungen: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
+
+## What's New (v4.5)
+• Nach deinem ersten voll protokollierten Tag siehst du, welche Vitamine und Mineralstoffe dir am meisten fehlen — und welche davon bei deiner Ernährung typische Lücken sind
+• Paleo ist jetzt als Ernährungsform wählbar, mit Calcium und Vitamin D ganz oben; bei Carnivore wird jetzt auch Magnesium beobachtet
+• Die Suche verzeiht mehr: Tippfehler, Pluralformen und Kürzel wie „bbq“ und „donut“ finden das Lebensmittel, und Alltagssuchen wie „toast“ oder „coffee“ zeigen zuerst das einfache Lebensmittel
+• Weniger Tippen beim Eintragen: Lebensmittel starten mit der üblichen Portion — ein Ei, eine Scheibe Brot, eine Tasse Kaffee — und deine letzte Menge wird gemerkt
+• Sieh beim Suchen, was du bisher eingetragen hast
+• Die manuelle Eingabe öffnet direkt das Formular
+• Suchen ohne Treffer finden jetzt etwas: „bagel with cream cheese“ oder „avocado toast“ zeigt jeden Bestandteil zum Eintragen, und „a cup of coffee“ oder „cold brew“ findet das Getränk
+• Kochst du auf Vorrat? Leg fest, wie viele Portionen eine gespeicherte Mahlzeit ergibt, und trag sie Portion für Portion ein
+• Fast jeden Tag dasselbe Frühstück? Eine leere Mahlzeit bietet an, die von gestern mit einem Tipp zu wiederholen
+• Gerade eine Mahlzeit eingetragen, die du wieder isst? Speichere sie direkt aus der Liste des Eingetragenen im Suchbildschirm als Mahlzeit
+• Fehlt dir etwas? Der Wochen-Check und deine Bilanz nach dem ersten Tag nennen jetzt alltägliche Lebensmittel, die helfen — passend zu deiner Ernährung
+• Nach einem voll protokollierten Tag nennt ein Tipp am Morgen die größte Lücke von gestern und was du dagegen essen kannst (abschaltbar im Profil)
+• Ein aufgeräumter Eintragsbildschirm: Datum, Mahlzeit und Portion mit einem Tipp wählen, und der Button zum Hinzufügen zeigt genau, was du einträgst
+• Die Buttons zum Scannen und Hinzufügen bleiben sichtbar, während du eine Suche tippst
+• Eigenes Lebensmittel anlegen: direkt über die Tastatur zwischen Feldern wechseln und speichern
+• Pantothensäure und Mangan erscheinen jetzt bei Tausenden alltäglichen Lebensmitteln, die bisher 0 zeigten, und Nährstoffe, die ein Lebensmittel nicht angibt, gelten nicht mehr als niedrig
+• Gemacht für das iPhone Duo, zugeklappt oder aufgeklappt
+• Behoben: Die Kalorien einer wiederholten Mahlzeit erscheinen jetzt sofort
 
 ## What's New (v4.4)
 • Lege für jedes Vitamin und jeden Mineralstoff eine eigene Obergrenze fest, nicht nur ein Ziel

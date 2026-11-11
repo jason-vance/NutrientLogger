@@ -327,37 +327,37 @@ The goal of this roadmap is to convert a high-download, low-revenue app into a s
 All code is on `dev` (pushed through 86d0982). App Store Connect has 4.4 live and no 4.5 version yet. The newest build, 72 from Nov 5, predates the v4.5 work.
 
 **Before building**
-- [ ] Create the GA4 custom definitions in `docs/ONBOARDING_FUNNEL.md` (step 1). They only collect from the day they exist, so do this before release or launch week's funnel is lost.
-- [ ] Merge `dev` into `main`, if releases ship from `main`.
+- [x] Create the GA4 custom definitions in `docs/ONBOARDING_FUNNEL.md` (step 1). They only collect from the day they exist, so do this before release or launch week's funnel is lost.
+- [x] Merge `dev` into `main`, if releases ship from `main`.
 
 **Build**
-- [ ] Build 4.5 from the latest commit (Xcode Cloud, or Archive → Distribute in Xcode) and wait for it to finish processing.
-- [ ] TestFlight check on a phone: Replay Onboarding (Debug only, so on TestFlight delete and reinstall), log a food, scan a barcode, add a custom food.
+- [x] Build 4.5 from the latest commit (Xcode Cloud, or Archive → Distribute in Xcode) and wait for it to finish processing.
+- [x] TestFlight check on a phone: Replay Onboarding (Debug only, so on TestFlight delete and reinstall), log a food, scan a barcode, add a custom food.
 
 **App Store Connect: version 4.5**
-- [ ] Create iOS version 4.5 and attach the build.
-- [ ] English: paste What's New (v4.5) from `AppStoreListing.md`. Compare the description, promotional text and keywords with the doc, too.
-- [ ] Other 10 languages: What's New is required for each. The localized docs stop at v4.4, so translate the v4.5 notes or use the English ones.
+- [x] Create iOS version 4.5 and attach the build.
+- [x] English: paste What's New (v4.5) from `AppStoreListing.md`. Compare the description, promotional text and keywords with the doc, too.
+- [x] Other 10 languages: paste What's New (v4.5) and the new promotional text from each localized doc (translated Nov 9 2026). Search examples like "bbq" and "cold brew" stay in English, since the food database is English.
 - [ ] Screenshots: caption 4 is now "Your Food Log Never Leaves Your Phone" (translated in each localized doc). Update it in the `.mockup` files, re-export every language and upload.
-- [ ] iPhone Duo screenshots: optional until April 2027. Raw captures are in `docs/store-screenshots/v4.5-duo/`.
-- [ ] App Privacy: add **Search History** (used for Analytics, not linked to the user, not used for tracking), and **Health & Fitness** if you count the diet answer as that. Remove any advertising data types left over from AdMob, since the app has no ad SDK now.
-- [ ] App Information → Privacy Policy URL: make sure it points to a real policy. The website footer's "Privacy Policy" link goes to Apple's standard terms of use.
-- [ ] Release option (manual or automatic after approval), then Submit for Review.
+- [x] iPhone Duo screenshots: optional until April 2027. Raw captures are in `docs/store-screenshots/v4.5-duo/`.
+- [x] App Privacy: add **Search History** (used for Analytics, not linked to the user, not used for tracking), and **Health & Fitness** if you count the diet answer as that. Remove any advertising data types left over from AdMob, since the app has no ad SDK now.
+- [x] App Information → Privacy Policy URL: make sure it points to a real policy. The website footer's "Privacy Policy" link goes to Apple's standard terms of use.
+- [x] Release option (manual or automatic after approval), then Submit for Review. Submitted Nov 9 2026, approved Nov 11 2026.
 
 **After approval**
-- [ ] Raise prices (below). They're independent of the release, so this can happen any time.
+- [x] Raise prices (below). They're independent of the release, so this can happen any time.
 - [ ] Start the gap-first product page test (below).
-- [ ] Deploy the website so the new "food log" wording goes live, and add a privacy policy page.
+- [ ] Deploy the website so the new "food log" wording goes live. The privacy policy page is built (`website/src/pages/privacy.astro`, Nov 11 2026) and the footer links to it; pushing `website/` to `main` deploys it to https://nutrientlogger.com/privacy/. Then set that as the Privacy Policy URL in App Store Connect.
 - [ ] A week in: check the onboarding funnel. `food_breakdown` → `demo` should be near 100%.
 
 ### App Store Connect
-- [ ] **Raise prices** (pricing check, Nov 6 2026). Full prices sit below every comparable tracker (Carb Manager ~$40/yr, Cronometer Gold ~$50–60/yr, MacroFactor ~$72/yr, MyFitnessPal and Lose It ~$80/yr). The 24-hour launch price is what nearly everyone pays, and because the launch prices are separate products they renew at that price for good.
-  - [ ] Launch yearly (`nutrient.logger.premium.yearly`): $9.99 → $19.99
-  - [ ] Launch monthly (`nutrient.logger.premium.monthly`): $1.99 → $3.99
-  - [ ] Full yearly (`nutrient.logger.premium.yearly.full.price`): $29.99 → $39.99
-  - [ ] Full monthly (`nutrient.logger.premium.monthly.full.price`): $5.99 → $7.99
-  - [ ] Choose "keep current price for existing subscribers" on each change
-  - [ ] Note the change date, then compare the following 60 days of proceeds per download with the 60 days before. Too few purchases (~5/month) for an A/B test.
+- [x] **Raise prices** (pricing check, Nov 6 2026). Raised Nov 9 2026. Full prices sit below every comparable tracker (Carb Manager ~$40/yr, Cronometer Gold ~$50–60/yr, MacroFactor ~$72/yr, MyFitnessPal and Lose It ~$80/yr). The 24-hour launch price is what nearly everyone pays, and because the launch prices are separate products they renew at that price for good.
+  - [x] Launch yearly (`nutrient.logger.premium.yearly`): $9.99 → $19.99
+  - [x] Launch monthly (`nutrient.logger.premium.monthly`): $1.99 → $3.99
+  - [x] Full yearly (`nutrient.logger.premium.yearly.full.price`): $29.99 → $39.99
+  - [x] Full monthly (`nutrient.logger.premium.monthly.full.price`): $5.99 → $7.99
+  - [x] Choose "keep current price for existing subscribers" on each change
+  - [ ] Changed Nov 9 2026. Around Jan 8 2027, compare the following 60 days of proceeds per download with the 60 days before. Too few purchases (~5/month) for an A/B test.
   - No code change needed: paywalls read prices from StoreKit and compute the "% off" labels.
 - [ ] Run the gap-first screenshot test with product page optimization (see `AppStoreListing.md`)
 
@@ -367,7 +367,7 @@ All code is on `dev` (pushed through 86d0982). App Store Connect has 4.4 live an
 
 These are worth tracking but don't have a clear version slot yet:
 
-- **Analytics:** Build the onboarding funnel tracking on Google Analytics. App side done Nov 7 2026 (time per step, back taps, its own paywall trigger, completion details, diet and focus as user properties). Left: the GA4 setup in `docs/ONBOARDING_FUNNEL.md`.
+- **Analytics:** Build the onboarding funnel tracking on Google Analytics. App side done Nov 7 2026 (time per step, back taps, its own paywall trigger, completion details, diet and focus as user properties). GA4 custom definitions created Nov 9 2026.
 - **Food database coverage** — evaluate supplementing or replacing the underlying food database to close common-food gaps surfaced in reviews (beyond the search-ranking fix in v3.9). Separate problem from matching/ranking: this is about what's *in* the database, not how it's found.
 - **AI photo logging** — the market is moving here fast (PlateLens, Nutrola). Expensive to build well; consider a third-party API (LogMeal, Calorie Mama) rather than training your own model.
 - **Carnivore/keto mode** — preset nutrient goals for specific diet protocols. Natural cross-sell with Carnivore Diet Guide & Recipes.

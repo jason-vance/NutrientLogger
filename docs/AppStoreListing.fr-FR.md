@@ -11,8 +11,8 @@ Micronutriments hors ligne
 ## Keywords (99/100 chars)
 vitamine,minéraux,carence,cronometer,myfitnesspal,calories,céto,végan,macro,nutrition,journal,repas
 
-## Promotional Text (156/170 chars)
-v4.4 : définissez vos propres limites, pas seulement des objectifs — plafonnez le sodium où vous voulez. Et si un ratio dérive, voyez les aliments derrière.
+## Promotional Text (170/170 chars)
+Carnivore, céto ou paléo ? Voyez les vitamines et minéraux qui manquent à votre alimentation, dès votre premier jour complet de saisie. Sans pub, hors ligne, sans compte.
 
 ## Description
 Nutrient Logger est le tracker nutritionnel 100 % hors ligne pour qui veut savoir ce que contient vraiment son alimentation — pas seulement les calories et les macros, mais tout le spectre de vitamines, minéraux et acides aminés dont votre corps a besoin.
@@ -67,6 +67,26 @@ Nutrient Logger est parfait pour quiconque prend la nutrition au sérieux — r�
 
 
 * Conditions d'utilisation Apple : https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
+
+## What's New (v4.5)
+• Après votre premier jour complet de saisie, voyez les vitamines et minéraux qui vous manquent le plus — et lesquels sont des manques courants pour votre régime
+• Le régime paléo rejoint les régimes proposés, avec le calcium et la vitamine D en tête ; le régime carnivore surveille désormais aussi le magnésium
+• La recherche est plus tolérante : fautes de frappe, pluriels et raccourcis comme « bbq » et « donut » trouvent l'aliment, et les recherches courantes comme « toast » ou « coffee » placent l'aliment simple en premier
+• Moins de touches pour enregistrer : les aliments démarrent à la portion habituelle — un œuf, une tranche de pain, une tasse de café — et votre dernière quantité est mémorisée
+• Voyez ce que vous avez déjà enregistré pendant votre recherche
+• La saisie manuelle ouvre directement le formulaire
+• Les recherches sans résultat en trouvent désormais : « bagel with cream cheese » ou « avocado toast » affiche chaque élément à enregistrer, et « a cup of coffee » ou « cold brew » trouve la boisson
+• Vous cuisinez en grande quantité ? Indiquez combien de portions donne un repas enregistré et saisissez-le portion par portion
+• Le même petit-déjeuner presque tous les jours ? Un repas vide propose de répéter celui d'hier d'une seule touche
+• Vous venez d'enregistrer un repas que vous remangerez ? Sauvegardez-le comme repas directement depuis la liste des aliments enregistrés de l'écran de recherche
+• Il vous manque quelque chose ? Le bilan hebdomadaire et votre bilan du premier jour citent désormais des aliments courants qui aident, adaptés à votre régime
+• Après un jour complet de saisie, un conseil matinal indique le plus gros manque de la veille et quoi manger pour le combler (désactivable dans Profil)
+• Un écran de saisie épuré : choisissez la date, le repas et la portion d'une touche, et le bouton Ajouter rappelle exactement ce que vous enregistrez
+• Les boutons de scan et d'ajout d'aliment restent à l'écran pendant que vous tapez une recherche
+• Ajout d'un aliment personnalisé : passez d'un champ à l'autre et enregistrez directement depuis le clavier
+• L'acide pantothénique et le manganèse s'affichent désormais pour des milliers d'aliments courants qui indiquaient 0, et les nutriments qu'un aliment ne renseigne pas ne sont plus signalés comme faibles
+• Conçu pour l'iPhone Duo, plié ou ouvert
+• Corrigé : les calories d'un repas répété s'affichent désormais immédiatement
 
 ## What's New (v4.4)
 • Définissez votre propre limite haute pour chaque vitamine et minéral, pas seulement un objectif

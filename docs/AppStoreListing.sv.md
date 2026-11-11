@@ -11,8 +11,8 @@ Mikronäring, helt offline
 ## Keywords (99/100 chars)
 vitamin,mineral,brist,cronometer,myfitnesspal,kalorier,keto,vegan,makro,näring,kostdagbok,matdagbok
 
-## Promotional Text (155/170 chars)
-v4.4: sätt egna övre gränser, inte bara mål — håll natrium där du vill. Och när en kvot glider, se livsmedlen bakom den. Fortfarande annonsfri och offline.
+## Promotional Text (160/170 chars)
+Carnivore, keto eller paleo? Se vilka vitaminer och mineraler din kost har för lite av, redan från din första helt loggade dag. Annonsfri, offline, inget konto.
 
 ## Description
 Nutrient Logger är den offline-first-baserade näringstrackern för dig som vill veta vad din mat faktiskt innehåller — inte bara kalorier och makron, utan hela spektrumet av vitaminer, mineraler och aminosyror som kroppen behöver.
@@ -67,6 +67,26 @@ Nutrient Logger passar alla som tar näring på allvar — oavsett om du följer
 
 
 * Apples användarvillkor: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
+
+## What's New (v4.5)
+• Efter din första helt loggade dag ser du vilka vitaminer och mineraler du har minst av — och vilka av dem som är vanliga luckor för din kost
+• Paleo finns nu bland kosterna du kan välja, med kalcium och D-vitamin överst; carnivore håller nu också koll på magnesium
+• Sökningen är mer förlåtande: stavfel, pluralformer och förkortningar som "bbq" och "donut" hittar livsmedlet, och vardagliga sökningar som "toast" eller "coffee" visar det enkla livsmedlet först
+• Färre tryck för att logga: livsmedel börjar på den portion folk oftast loggar — ett ägg, en brödskiva, en kopp kaffe — och appen minns din senaste mängd
+• Se vad du har loggat hittills medan du söker
+• Manuell inmatning öppnar formuläret direkt
+• Sökningar som inte hittade något gör det nu: "bagel with cream cheese" eller "avocado toast" visar varje del att logga, och "a cup of coffee" eller "cold brew" hittar drycken
+• Lagar du mat i omgångar? Ange hur många portioner en sparad måltid ger och logga den en portion i taget
+• Äter du samma frukost de flesta dagar? En tom måltid erbjuder att upprepa gårdagens med ett tryck
+• Precis loggat en måltid du kommer att äta igen? Spara den som måltid direkt från listan över loggat på sökskärmen
+• Har du för lite av något? Veckokollen och sammanfattningen av din första dag föreslår nu vardagliga livsmedel som hjälper, anpassade till din kost
+• Efter en helt loggad dag nämner ett morgontips gårdagens största lucka och vad du kan äta för den (stäng av i Profil)
+• En renare loggningsskärm: välj datum, måltid och portion med ett tryck, och Lägg till-knappen visar exakt vad du loggar
+• Knapparna för att skanna och lägga till livsmedel stannar kvar på skärmen medan du skriver en sökning
+• Lägga till ett eget livsmedel: hoppa mellan fälten och spara direkt från tangentbordet
+• Pantotensyra och mangan visas nu för tusentals vardagliga livsmedel som tidigare visade 0, och näringsämnen som ett livsmedel inte anger kallas inte längre låga
+• Gjord för iPhone Duo, hopfälld eller utfälld
+• Fixat: en upprepad måltids kalorier visas nu direkt
 
 ## What's New (v4.4)
 • Sätt en egen övre gräns för vilket vitamin eller mineral som helst, inte bara ett mål

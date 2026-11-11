@@ -11,8 +11,8 @@ Micronutriënten, 100% offline
 ## Keywords (99/100 chars)
 vitamine,mineralen,tekort,cronometer,myfitnesspal,calorieën,keto,veganistisch,macro,voeding,dagboek
 
-## Promotional Text (151/170 chars)
-v4.4: stel je eigen bovengrenzen in, niet alleen doelen — begrens natrium waar jij wilt. En loopt een verhouding scheef, zie dan de producten erachter.
+## Promotional Text (157/170 chars)
+Carnivoor, keto of paleo? Zie welke vitamines en mineralen je voeding mist, vanaf je eerste volledig gelogde dag. Zonder advertenties, offline, geen account.
 
 ## Description
 Nutrient Logger is de offline-first voedingstracker voor iedereen die wil weten wat er écht in hun eten zit — niet alleen calorieën en macro's, maar het volledige spectrum aan vitaminen, mineralen en aminozuren dat je lichaam nodig heeft.
@@ -67,6 +67,26 @@ Nutrient Logger is perfect voor iedereen die voeding serieus neemt — of je nu 
 
 
 * Apple-gebruiksvoorwaarden: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
+
+## What's New (v4.5)
+• Na je eerste volledig gelogde dag zie je welke vitamines en mineralen je het meest tekortkomt — en welke daarvan bij jouw voeding vaak ontbreken
+• Paleo staat nu tussen de voedingspatronen die je kunt kiezen, met calcium en vitamine D bovenaan; carnivoor let nu ook op magnesium
+• Zoeken is vergevingsgezinder: typfouten, meervouden en afkortingen als "bbq" en "donut" vinden het product, en alledaagse zoekopdrachten als "toast" of "coffee" tonen eerst het gewone product
+• Minder tikken om te loggen: producten beginnen bij de portie die mensen meestal loggen — één ei, een snee brood, een kop koffie — en je laatste hoeveelheid wordt onthouden
+• Zie tijdens het zoeken wat je al hebt gelogd
+• Handmatige invoer opent meteen het formulier
+• Zoekopdrachten zonder resultaat vinden nu wel iets: "bagel with cream cheese" of "avocado toast" toont elk onderdeel om te loggen, en "a cup of coffee" of "cold brew" vindt het drankje
+• Kook je voor meerdere dagen? Stel in hoeveel porties een opgeslagen maaltijd oplevert en log hem portie voor portie
+• Bijna elke dag hetzelfde ontbijt? Een lege maaltijd biedt aan dat van gisteren met één tik te herhalen
+• Net een maaltijd gelogd die je vaker eet? Sla hem op als maaltijd, direct vanuit de gelogde lijst in het zoekscherm
+• Ergens een tekort aan? Het weekoverzicht en je samenvatting van de eerste dag noemen nu alledaagse producten die helpen, passend bij je voeding
+• Na een volledig gelogde dag noemt een ochtendtip het grootste tekort van gisteren en wat je ertegen kunt eten (uit te zetten in Profiel)
+• Een overzichtelijker logscherm: kies datum, maaltijd en portie met één tik, en de Toevoegen-knop laat precies zien wat je logt
+• De knoppen om te scannen en een product toe te voegen blijven in beeld terwijl je een zoekopdracht typt
+• Eigen product toevoegen: spring tussen velden en bewaar direct vanaf het toetsenbord
+• Pantotheenzuur en mangaan worden nu getoond bij duizenden alledaagse producten die eerst 0 aangaven, en voedingsstoffen die een product niet vermeldt, gelden niet meer als laag
+• Gemaakt voor de iPhone Duo, dichtgeklapt of open
+• Opgelost: de calorieën van een herhaalde maaltijd zijn nu meteen zichtbaar
 
 ## What's New (v4.4)
 • Stel voor elke vitamine of mineraal je eigen bovengrens in, niet alleen een doel

@@ -11,8 +11,8 @@ Micronutrienti, 100% offline
 ## Keywords (99/100 chars)
 vitamine,minerali,carenza,cronometer,myfitnesspal,calorie,keto,vegano,macro,nutrizione,diario,dieta
 
-## Promotional Text (154/170 chars)
-v4.4: imposta limiti massimi tuoi, non solo obiettivi — tieni il sodio dove vuoi. E se un rapporto si sbilancia, vedi gli alimenti dietro. Sempre offline.
+## Promotional Text (166/170 chars)
+Carnivora, keto o paleo? Scopri quali vitamine e minerali mancano alla tua dieta dal primo giorno completo di registrazione. Senza pubblicità, offline, senza account.
 
 ## Description
 Nutrient Logger è il tracker nutrizionale offline-first per chi vuole sapere cosa c'è davvero nel proprio cibo — non solo calorie e macro, ma l'intero spettro di vitamine, minerali e amminoacidi di cui il tuo corpo ha bisogno.
@@ -67,6 +67,26 @@ Nutrient Logger è perfetto per chi prende sul serio la nutrizione — che tu se
 
 
 * Termini d'uso Apple: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
+
+## What's New (v4.5)
+• Dopo il tuo primo giorno completo di registrazione, vedi le vitamine e i minerali che ti mancano di più — e quali sono carenze comuni per la tua dieta
+• La paleo si aggiunge alle diete tra cui scegliere, con calcio e vitamina D in cima; la carnivora ora tiene d'occhio anche il magnesio
+• La ricerca è più tollerante: errori di battitura, plurali e abbreviazioni come "bbq" e "donut" trovano l'alimento, e ricerche comuni come "toast" o "coffee" mostrano per primo l'alimento semplice
+• Meno tocchi per registrare: gli alimenti partono dalla porzione più comune — un uovo, una fetta di pane, una tazza di caffè — e la tua ultima quantità viene ricordata
+• Vedi cosa hai già registrato mentre cerchi
+• L'inserimento manuale apre direttamente il modulo
+• Le ricerche che non trovavano nulla ora trovano: "bagel with cream cheese" o "avocado toast" mostra ogni parte da registrare, e "a cup of coffee" o "cold brew" trova la bevanda
+• Cucini in grandi quantità? Imposta quante porzioni rende un pasto salvato e registralo una porzione alla volta
+• Stessa colazione quasi ogni giorno? Un pasto vuoto ti propone di ripetere quella di ieri con un tocco
+• Hai appena registrato un pasto che mangerai di nuovo? Salvalo come pasto direttamente dall'elenco dei registrati nella schermata di ricerca
+• Ti manca qualcosa? Il controllo settimanale e il riepilogo del primo giorno ora indicano alimenti di tutti i giorni che aiutano, adatti alla tua dieta
+• Dopo un giorno completo di registrazione, un consiglio al mattino indica la carenza più grande di ieri e cosa mangiare per colmarla (si disattiva nel Profilo)
+• Una schermata di registrazione più pulita: scegli data, pasto e porzione con un tocco, e il pulsante Aggiungi riporta esattamente cosa stai registrando
+• I pulsanti per scansionare e aggiungere un alimento restano sullo schermo mentre scrivi una ricerca
+• Aggiungere un alimento personalizzato: passa da un campo all'altro e salva direttamente dalla tastiera
+• Acido pantotenico e manganese ora compaiono per migliaia di alimenti comuni che prima segnavano 0, e i nutrienti che un alimento non riporta non vengono più indicati come bassi
+• Pensata per iPhone Duo, chiuso o aperto
+• Corretto: le calorie di un pasto ripetuto ora compaiono subito
 
 ## What's New (v4.4)
 • Imposta un limite massimo tuo per qualsiasi vitamina o minerale, non solo un obiettivo

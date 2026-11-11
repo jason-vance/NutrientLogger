@@ -11,8 +11,8 @@ Micronutrientes, 100% offline
 ## Keywords (96/100 chars)
 vitamina,mineral,deficiência,cronometer,myfitnesspal,calorias,keto,vegano,macros,nutrição,diário
 
-## Promotional Text (151/170 chars)
-v4.4: defina seus próprios limites máximos, não só metas — segure o sódio onde quiser. E se uma proporção sai do eixo, veja os alimentos por trás dela.
+## Promotional Text (163/170 chars)
+Carnívora, keto ou paleo? Veja quais vitaminas e minerais faltam na sua dieta a partir do seu primeiro dia completo de registro. Sem anúncios, offline e sem conta.
 
 ## Description
 O Nutrient Logger é o rastreador nutricional offline para quem quer saber o que realmente tem na sua comida — não só calorias e macros, mas todo o espectro de vitaminas, minerais e aminoácidos de que o seu corpo precisa.
@@ -67,6 +67,26 @@ O Nutrient Logger é perfeito para quem leva nutrição a sério — seja numa d
 
 
 * Termos de Uso da Apple: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/ *
+
+## What's New (v4.5)
+• Depois do seu primeiro dia completo de registro, veja as vitaminas e minerais que mais estão faltando — e quais deles são lacunas comuns na sua dieta
+• A paleo entra nas dietas que você pode escolher, com cálcio e vitamina D no topo; a carnívora agora também acompanha o magnésio
+• A busca ficou mais tolerante: erros de digitação, plurais e atalhos como "bbq" e "donut" encontram o alimento, e buscas do dia a dia como "toast" ou "coffee" mostram primeiro o alimento simples
+• Menos toques para registrar: os alimentos já começam na porção que as pessoas costumam registrar — um ovo, uma fatia de pão, uma xícara de café — e a sua última quantidade fica salva
+• Veja o que você já registrou enquanto busca
+• A entrada manual abre direto no formulário
+• Buscas que não achavam nada agora acham: "bagel with cream cheese" ou "avocado toast" mostra cada parte para registrar, e "a cup of coffee" ou "cold brew" encontra a bebida
+• Cozinhando para a semana? Defina quantas porções uma refeição salva rende e registre uma porção de cada vez
+• Come o mesmo café da manhã quase todo dia? Uma refeição vazia oferece repetir a de ontem com um toque
+• Acabou de registrar uma refeição que vai comer de novo? Salve como refeição direto na lista de registrados da tela de busca
+• Faltando algo? O resumo semanal e o resumo do seu primeiro dia agora indicam alimentos do dia a dia que ajudam, de acordo com a sua dieta
+• Depois de um dia completo de registro, uma dica pela manhã aponta a maior lacuna de ontem e o que comer para cobri-la (desative em Perfil)
+• Uma tela de registro mais limpa: escolha data, refeição e porção com um toque, e o botão Adicionar mostra exatamente o que você está registrando
+• Os botões de escanear e adicionar alimento continuam na tela enquanto você digita uma busca
+• Ao adicionar um alimento personalizado: passe de um campo para outro e salve direto do teclado
+• Ácido pantotênico e manganês agora aparecem em milhares de alimentos do dia a dia que antes mostravam 0, e nutrientes que um alimento não informa não são mais chamados de baixos
+• Feito para o iPhone Duo, fechado ou aberto
+• Corrigido: as calorias de uma refeição repetida agora aparecem na hora
 
 ## What's New (v4.4)
 • Defina seu próprio limite máximo para qualquer vitamina ou mineral, não só uma meta
