@@ -18,8 +18,27 @@ enum NotificationPlanner {
 
     struct Plan: Equatable {
         var dailyReminderFireDate: Date?
+        var dailyReminderMessage: Message = .dailyReminder
         var streakAtRiskFireDate: Date?
         var streakCount: Int
+    }
+
+    struct Message: Equatable {
+        let title: String
+        let body: String
+
+        static let dailyReminder = Message(
+            title: "Don't forget to log today!",
+            body: "You haven't logged anything since lunch. Add what you've eaten to keep your nutrient tracking up to date."
+        )
+    }
+
+    /// Where a new user stands on the way to their first full logged day. See `FirstDayReminder`.
+    struct FirstDayProgress: Equatable {
+        var mealTimesLoggedToday: Set<MealTime>
+        /// Whether anything was logged on an earlier day.
+        var hasLoggedBefore: Bool
+        var diet: NutritionDietPreset?
     }
 
     /// The streak must exceed this many days before a "streak at risk" notification is relevant.
@@ -40,17 +59,33 @@ enum NotificationPlanner {
         dailyReminderHour: Int,
         dailyReminderMinute: Int,
         streakWarningEnabled: Bool = true,
+        firstDay: FirstDayProgress? = nil,
         calendar: Calendar = .current
     ) -> Plan {
-        Plan(
-            dailyReminderFireDate: dailyReminderFireDate(
+        let dailyReminder: (fireDate: Date, message: Message)?
+        if let firstDay {
+            dailyReminder = firstDayReminder(
+                now: now,
+                progress: firstDay,
+                enabled: dailyReminderEnabled,
+                hour: dailyReminderHour,
+                minute: dailyReminderMinute,
+                calendar: calendar
+            )
+        } else {
+            dailyReminder = dailyReminderFireDate(
                 now: now,
                 loggedSinceNoonToday: loggedSinceNoonToday,
                 enabled: dailyReminderEnabled,
                 hour: dailyReminderHour,
                 minute: dailyReminderMinute,
                 calendar: calendar
-            ),
+            ).map { ($0, .dailyReminder) }
+        }
+
+        return Plan(
+            dailyReminderFireDate: dailyReminder?.fireDate,
+            dailyReminderMessage: dailyReminder?.message ?? .dailyReminder,
             streakAtRiskFireDate: streakAtRiskFireDate(
                 now: now,
                 loggedAnythingToday: loggedAnythingToday,
@@ -83,6 +118,40 @@ enum NotificationPlanner {
         }
 
         return calendar.date(byAdding: .day, value: 1, to: reminderTimeToday)
+    }
+
+    /// For a new user before their first full day: fires at the user's chosen time unless today
+    /// is already full, even if they logged since noon, since a missing dinner is what stands
+    /// between them and the first-day recap. Past that time, schedules (provisionally) for
+    /// tomorrow, worded for a day with nothing logged yet.
+    private static func firstDayReminder(
+        now: Date,
+        progress: FirstDayProgress,
+        enabled: Bool,
+        hour: Int,
+        minute: Int,
+        calendar: Calendar
+    ) -> (fireDate: Date, message: Message)? {
+        guard enabled,
+              let reminderTimeToday = calendar.date(bySettingHour: hour, minute: minute, second: 0, of: now)
+        else { return nil }
+
+        if now < reminderTimeToday {
+            let todayIsFull = FullLoggingDay.requiredMealTimes.allSatisfy(progress.mealTimesLoggedToday.contains)
+            guard !todayIsFull else { return nil }
+            return (reminderTimeToday, FirstDayReminder.message(
+                mealTimesLogged: progress.mealTimesLoggedToday,
+                hasLoggedBefore: progress.hasLoggedBefore,
+                diet: progress.diet
+            ))
+        }
+
+        guard let tomorrow = calendar.date(byAdding: .day, value: 1, to: reminderTimeToday) else { return nil }
+        return (tomorrow, FirstDayReminder.message(
+            mealTimesLogged: [],
+            hasLoggedBefore: progress.hasLoggedBefore || !progress.mealTimesLoggedToday.isEmpty,
+            diet: progress.diet
+        ))
     }
 
     /// Fires at `streakAtRiskHour` today if the streak is long enough to be worth protecting and

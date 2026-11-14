@@ -46,6 +46,7 @@ enum NotificationCoordinator {
                 ?? NotificationSettings.defaultDailyReminderMinute,
             streakWarningEnabled: defaults.object(forKey: NotificationSettings.streakWarningEnabledKey) as? Bool
                 ?? NotificationSettings.defaultStreakWarningEnabled,
+            firstDay: firstDayProgress(todaysFoods: todaysFoods, today: today, now: now, calendar: calendar, modelContext: modelContext),
             calendar: calendar
         )
 
@@ -61,6 +62,39 @@ enum NotificationCoordinator {
         }
 
         NotificationManager().apply(plan, gapTip: gapTip)
+    }
+
+    /// Where a new user stands on the way to their first full day, or nil once the first-day
+    /// reminder no longer applies. Earlier days are only read inside the first week after
+    /// onboarding, when there are few of them.
+    private static func firstDayProgress(
+        todaysFoods: [ConsumedFood],
+        today: SimpleDate,
+        now: Date,
+        calendar: Calendar,
+        modelContext: ModelContext
+    ) -> NotificationPlanner.FirstDayProgress? {
+        let defaults = UserDefaults.standard
+        let hasHadFullDay = defaults.bool(forKey: FirstFullDayTiming.loggedKey)
+            || FullLoggingDay.isComplete(todaysFoods, on: today)
+        guard FirstDayReminder.applies(
+            onboardingStartedAt: defaults.double(forKey: "onboardingStartedAt"),
+            hasHadFullDay: hasHadFullDay,
+            now: now,
+            calendar: calendar
+        ) else { return nil }
+
+        let earlierFoods = (try? modelContext.fetch(FetchDescriptor<ConsumedFood>(
+            predicate: #Predicate { $0.dateLogged < today }
+        ))) ?? []
+        guard !FullLoggingDay.hasEarlierFullDay(earlierFoods, before: today) else { return nil }
+
+        let userService: UserService = swinjectContainer~>UserService.self
+        return .init(
+            mealTimesLoggedToday: Set(todaysFoods.map(\.mealTime)),
+            hasLoggedBefore: !earlierFoods.isEmpty,
+            diet: userService.currentUser.dietPreset
+        )
     }
 
     // Reading the day's foods hits the database, and reschedule runs on every backgrounding, so the

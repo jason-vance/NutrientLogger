@@ -347,7 +347,8 @@ All code is on `dev` (pushed through 86d0982). App Store Connect has 4.4 live an
 **After approval**
 - [x] Raise prices (below). They're independent of the release, so this can happen any time.
 - [ ] Start the gap-first product page test (below).
-- [ ] Deploy the website so the new "food log" wording goes live. The privacy policy page is built (`website/src/pages/privacy.astro`, Nov 11 2026) and the footer links to it; pushing `website/` to `main` deploys it to https://nutrientlogger.com/privacy/. Then set that as the Privacy Policy URL in App Store Connect.
+- [x] Deploy the website so the new "food log" wording goes live, with a privacy policy page at https://nutrientlogger.com/privacy/ (live Nov 11 2026).
+- [ ] Set https://nutrientlogger.com/privacy/ as the Privacy Policy URL in App Store Connect (App Information), if it isn't already.
 - [ ] A week in: check the onboarding funnel. `food_breakdown` → `demo` should be near 100%.
 
 ### App Store Connect
@@ -360,6 +361,19 @@ All code is on `dev` (pushed through 86d0982). App Store Connect has 4.4 live an
   - [ ] Changed Nov 9 2026. Around Jan 8 2027, compare the following 60 days of proceeds per download with the 60 days before. Too few purchases (~5/month) for an A/B test.
   - No code change needed: paywalls read prices from StoreKit and compute the "% off" labels.
 - [ ] Run the gap-first screenshot test with product page optimization (see `AppStoreListing.md`)
+
+
+---
+
+## v4.6 — "First Week"
+**Theme:** Day-1 retention is the 90-day plan's red flag (about 2.7% come back the next day). Get new users to their first full logged day, where the gaps recap is, and give the diet-guide audience a way in.
+
+### Code
+- [x] **First-day reminders** (Nov 11 2026): for a user's first 7 days after onboarding, until their first full day (breakfast, lunch and dinner), the evening reminder fires whenever today isn't full, not only when nothing was logged since noon, and names what's missing: "One meal to go: Log dinner to see which vitamins and minerals your carnivore day is short on." Everyone else gets the usual reminder. Measure with `first_full_day_logged` (share of new users who reach it, and `day_number`), before vs. after.
+- [ ] **Carnivore Diet Guide promo** (Nov 11 2026, in that project, not yet committed): a Nutrient Logger card at the end of every article. Taps log `nutrient_logger_promo_tapped` there; downloads show in Nutrient Logger's App Analytics under Sources → App Referrer.
+
+### Store Listing
+- **What's New:** "New users get a nudge toward their first full day of logging, when Nutrient Logger shows what their diet is short on."
 
 ---
 

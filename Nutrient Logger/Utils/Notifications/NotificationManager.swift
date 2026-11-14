@@ -47,8 +47,8 @@ class NotificationManager {
         if let fireDate = plan.dailyReminderFireDate {
             schedule(
                 identifier: Self.dailyReminderIdentifier,
-                title: "Don't forget to log today!",
-                body: "You haven't logged anything since lunch. Add what you've eaten to keep your nutrient tracking up to date.",
+                title: plan.dailyReminderMessage.title,
+                body: plan.dailyReminderMessage.body,
                 fireDate: fireDate
             )
         }

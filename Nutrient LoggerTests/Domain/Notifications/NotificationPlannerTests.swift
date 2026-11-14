@@ -149,4 +149,66 @@ struct NotificationPlannerTests {
 
         #expect(plan.streakAtRiskFireDate == nil)
     }
+
+    // MARK: - First-Day Reminder
+
+    private func firstDayPlan(
+        now: Date,
+        loggedSinceNoonToday: Bool,
+        mealTimes: Set<MealTime>,
+        hasLoggedBefore: Bool = false,
+        enabled: Bool = true
+    ) -> NotificationPlanner.Plan {
+        NotificationPlanner.plan(
+            now: now,
+            loggedSinceNoonToday: loggedSinceNoonToday,
+            loggedAnythingToday: !mealTimes.isEmpty,
+            streakCount: 0,
+            dailyReminderEnabled: enabled,
+            dailyReminderHour: 20,
+            dailyReminderMinute: 0,
+            firstDay: .init(mealTimesLoggedToday: mealTimes, hasLoggedBefore: hasLoggedBefore, diet: .carnivore)
+        )
+    }
+
+    @Test func testFirstDayReminderFiresEvenAfterLoggingSinceNoonWhenDinnerIsMissing() throws {
+        let plan = firstDayPlan(now: afternoon, loggedSinceNoonToday: true, mealTimes: [.breakfast, .lunch])
+
+        #expect(plan.dailyReminderFireDate == reminderTime8pm)
+        #expect(plan.dailyReminderMessage.title == "One meal to go")
+        #expect(plan.dailyReminderMessage.body == "Log dinner to see which vitamins and minerals your carnivore day is short on.")
+    }
+
+    @Test func testNoFirstDayReminderOnceTodayIsFull() throws {
+        let plan = firstDayPlan(now: afternoon, loggedSinceNoonToday: true, mealTimes: [.breakfast, .lunch, .dinner])
+
+        #expect(plan.dailyReminderFireDate == nil)
+    }
+
+    @Test func testFirstDayReminderPastReminderTimeIsWordedForTomorrow() throws {
+        let plan = firstDayPlan(now: lateNight, loggedSinceNoonToday: false, mealTimes: [.breakfast])
+
+        #expect(plan.dailyReminderFireDate == reminderTime8pmTomorrow)
+        #expect(plan.dailyReminderMessage.title == "One full day shows your gaps")
+    }
+
+    @Test func testNoFirstDayReminderWhenRemindersAreOff() throws {
+        let plan = firstDayPlan(now: afternoon, loggedSinceNoonToday: false, mealTimes: [], enabled: false)
+
+        #expect(plan.dailyReminderFireDate == nil)
+    }
+
+    @Test func testUsualReminderKeepsItsWordingWithoutFirstDayProgress() throws {
+        let plan = NotificationPlanner.plan(
+            now: afternoon,
+            loggedSinceNoonToday: false,
+            loggedAnythingToday: true,
+            streakCount: 0,
+            dailyReminderEnabled: true,
+            dailyReminderHour: 20,
+            dailyReminderMinute: 0
+        )
+
+        #expect(plan.dailyReminderMessage == .dailyReminder)
+    }
 }
