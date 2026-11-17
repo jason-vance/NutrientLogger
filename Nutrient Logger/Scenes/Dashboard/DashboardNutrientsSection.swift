@@ -150,6 +150,7 @@ struct DashboardNutrientsSection: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .foregroundStyle(Color.text)
+            .modifier(GoalReachedPulse(isReached: (percentage ?? 0) >= 1))
         }
     }
 
@@ -193,6 +194,65 @@ struct DashboardNutrientsSection: View {
 
     private func formatAmount(_ amount: Double, unit: String) -> String {
         "\(amount.formatted(maxDigits: 1))\(unit)"
+    }
+}
+
+extension EnvironmentValues {
+    /// The day of the foods the dashboard is showing, or nil before any have loaded. Lets a
+    /// nutrient row tell a log that reached its goal apart from a day's foods loading in or the day
+    /// changing. Unset (nil) anywhere else, such as the onboarding demo, so rows there never pulse.
+    @Entry var goalPulseDay: SimpleDate? = nil
+}
+
+/// A short green flash and a light tap when a nutrient reaches its goal because of something just
+/// logged or edited on the same day. Foods are usually logged from search, with the dashboard
+/// underneath, so a goal reached off screen flashes when the user comes back.
+private struct GoalReachedPulse: ViewModifier {
+
+    let isReached: Bool
+
+    @Environment(\.goalPulseDay) private var day
+    @State private var pulses = 0
+    @State private var isVisible = false
+    @State private var isPulseWaiting = false
+
+    private struct Snapshot: Equatable {
+        let day: SimpleDate?
+        let isReached: Bool
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .background {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.green)
+                    .padding(.horizontal, 4)
+                    .keyframeAnimator(initialValue: 0.0, trigger: pulses) { flash, opacity in
+                        flash.opacity(opacity)
+                    } keyframes: { _ in
+                        CubicKeyframe(0.22, duration: 0.15)
+                        CubicKeyframe(0, duration: 0.75)
+                    }
+            }
+            .onChange(of: Snapshot(day: day, isReached: isReached)) { old, new in
+                if old.day != nil, old.day == new.day, !old.isReached, new.isReached {
+                    if isVisible { pulses += 1 } else { isPulseWaiting = true }
+                } else if old.day != new.day || !new.isReached {
+                    isPulseWaiting = false
+                }
+            }
+            .onAppear {
+                isVisible = true
+                guard isPulseWaiting else { return }
+                isPulseWaiting = false
+                Task {
+                    // Let the navigation back finish so the flash is seen.
+                    try? await Task.sleep(for: .seconds(0.35))
+                    pulses += 1
+                }
+            }
+            .onDisappear { isVisible = false }
+            .sensoryFeedback(.impact(weight: .light), trigger: pulses)
     }
 }
 

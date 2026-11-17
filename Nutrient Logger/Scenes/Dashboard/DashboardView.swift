@@ -424,6 +424,7 @@ struct DashboardView: View {
             IncrementDateButton()
         }
         .bold()
+        .sensoryFeedback(.selection, trigger: date)
     }
     
     @ViewBuilder private func DecrementDateButton() -> some View {

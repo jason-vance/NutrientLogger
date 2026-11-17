@@ -33,6 +33,9 @@ class SubscriptionManager: ObservableObject {
     }
     @Published var activeProductId: String? = nil
     @Published var expirationDate: Date? = nil
+    /// Goes up with each purchase made in this session (not a restore or a launch that finds an
+    /// existing subscription), so the app can mark the moment Premium unlocks. See `PremiumUnlockedToast`.
+    @Published private(set) var completedPurchases: Int = 0
 
     var planDisplayName: String? {
         switch activeProductId {
@@ -163,10 +166,12 @@ class SubscriptionManager: ObservableObject {
             switch verification {
             case .verified(let transaction):
                 let isTrial = transaction.offerType == .introductory
-                self.isSubscribed = true
+                // Animated, so upgrade prompts and lock icons fade away instead of vanishing.
+                withAnimation(.smooth) { self.isSubscribed = true }
                 storedSubscriptionStateRaw = (isTrial ? SubscriptionState.trial : .paid).rawValue
                 await transaction.finish()
                 await refreshEntitlementDetails()
+                completedPurchases += 1
                 return .completed(isTrial: isTrial)
             case .unverified:
                 throw SubscriptionError.verificationFailed

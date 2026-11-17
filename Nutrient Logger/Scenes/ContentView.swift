@@ -94,6 +94,7 @@ struct ContentView: View {
 
     var body: some View {
         AppSetupRouter()
+            .modifier(PremiumUnlockedToast())
             .animation(.snappy, value: isSetup)
             .animation(.snappy, value: showNotificationPrompt)
             .onChange(of: scenePhase, onScenePhaseChange)

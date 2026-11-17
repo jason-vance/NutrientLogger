@@ -370,6 +370,7 @@ All code is on `dev` (pushed through 86d0982). App Store Connect has 4.4 live an
 
 ### Code
 - [x] **First-day reminders** (Nov 11 2026): for a user's first 7 days after onboarding, until their first full day (breakfast, lunch and dinner), the evening reminder fires whenever today isn't full, not only when nothing was logged since noon, and names what's missing: "One meal to go: Log dinner to see which vitamins and minerals your carnivore day is short on." Everyone else gets the usual reminder. Measure with `first_full_day_logged` (share of new users who reach it, and `day_number`), before vs. after.
+- [x] **Delightful interactions** (Nov 17 2026): a success haptic when a food is logged and a bounce on the "logged" checkmark; the first-day recap reveals its gaps one by one with bars filling; a weekly gap that closes turns green with a checkmark before leaving the card; a repeated meal fills in food by food; water taps per glass and splashes at the goal; a nutrient row flashes green when a log reaches its goal; a "Premium unlocked" card after any purchase; streak haptics, shown when the user is back on the dashboard; selection haptics on every pill row and the day arrows. Bigger animations turn off with Reduce Motion.
 - [ ] **Carnivore Diet Guide promo** (Nov 11 2026, in that project, not yet committed): a Nutrient Logger card at the end of every article. Taps log `nutrient_logger_promo_tapped` there; downloads show in Nutrient Logger's App Analytics under Sources → App Referrer.
 
 ### Store Listing

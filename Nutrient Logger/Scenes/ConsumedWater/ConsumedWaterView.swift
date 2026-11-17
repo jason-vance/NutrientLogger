@@ -42,6 +42,12 @@ private struct WaterWaveCircle: View {
     let totalGrams: Double
     let goalGrams: Double
     let waterUnit: WaterUnit
+    /// Goes up each time a log reaches the day's goal, setting off the splash.
+    var goalSplash: Int = 0
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var hasReachedGoal: Bool { goalGrams > 0 && totalGrams >= goalGrams }
 
     // A small visual floor so the wave never reads as a totally dry/empty state first thing in
     // the day — the amount/goal text below stays accurate regardless.
@@ -81,6 +87,7 @@ private struct WaterWaveCircle: View {
                         Image(systemName: "drop.fill")
                             .foregroundStyle(progress > 0.5 ? Color.white : Color.blue)
                             .font(.title3)
+                            .symbolEffect(.bounce, value: goalSplash)
                         Text(waterUnit.formatted(totalGrams))
                             .font(.title)
                             .fontWeight(.bold)
@@ -90,7 +97,11 @@ private struct WaterWaveCircle: View {
                         Text(waterUnit.rawValue)
                             .font(.caption)
                             .foregroundStyle(progress > 0.5 ? Color.white.opacity(0.8) : Color.secondary)
-                        if goalGrams > 0 {
+                        if hasReachedGoal {
+                            Label("Goal reached", systemImage: "checkmark")
+                                .font(.caption2.bold())
+                                .foregroundStyle(progress > 0.5 ? Color.white : Color.blue)
+                        } else if goalGrams > 0 {
                             Text("of \(waterUnit.formatted(goalGrams)) goal")
                                 .font(.caption2)
                                 .foregroundStyle(progress > 0.5 ? Color.white.opacity(0.7) : Color.secondary)
@@ -98,10 +109,49 @@ private struct WaterWaveCircle: View {
                     }
                 }
                 .frame(width: size, height: size)
+                .background {
+                    if !reduceMotion {
+                        ForEach([0.0, 0.18], id: \.self) { delay in
+                            SplashRing(trigger: goalSplash, delay: delay)
+                        }
+                    }
+                }
                 .position(x: geo.size.width / 2, y: geo.size.height / 2)
             }
         }
         .animation(.easeInOut(duration: 0.6), value: displayProgress)
+    }
+}
+
+/// A ring that spreads out from the circle and fades, once per change of `trigger`. Invisible
+/// otherwise.
+private struct SplashRing: View {
+    let trigger: Int
+    let delay: Double
+
+    private struct Frame {
+        var scale = 1.0
+        var opacity = 0.0
+    }
+
+    var body: some View {
+        Circle()
+            .stroke(Color.blue, lineWidth: 3)
+            .keyframeAnimator(initialValue: Frame(), trigger: trigger) { ring, frame in
+                ring
+                    .scaleEffect(frame.scale)
+                    .opacity(frame.opacity)
+            } keyframes: { _ in
+                KeyframeTrack(\.scale) {
+                    LinearKeyframe(1.0, duration: delay)
+                    CubicKeyframe(1.18, duration: 0.9)
+                }
+                KeyframeTrack(\.opacity) {
+                    LinearKeyframe(0, duration: delay)
+                    LinearKeyframe(0.7, duration: 0.01)
+                    CubicKeyframe(0, duration: 0.9)
+                }
+            }
     }
 }
 
@@ -130,6 +180,7 @@ struct ConsumedWaterView: View {
     @State private var showCustomAmountSheet: Bool = false
     @State private var customAmountText: String = ""
     @State private var showMarketingView: Bool = false
+    @State private var goalSplash: Int = 0
 
     let date: SimpleDate
     let aggregator: NutrientDataAggregator
@@ -181,10 +232,17 @@ struct ConsumedWaterView: View {
             .sorted { $0.mealTime < $1.mealTime }
     }
 
+    /// A light tap for each glass, and a splash with a success haptic for the one that reaches the goal.
     private func logWater(grams: Double) {
+        let reachesGoal = goalGrams > 0 && totalWaterGrams < goalGrams && totalWaterGrams + grams >= goalGrams
         let entry = WaterEntry(date: date, amountGrams: grams)
         modelContext.insert(entry)
         try? modelContext.save()
+        if reachesGoal {
+            goalSplash += 1
+        } else {
+            Haptics.tap(.light)
+        }
     }
 
     var body: some View {
@@ -207,6 +265,7 @@ struct ConsumedWaterView: View {
         .fullScreenCover(isPresented: $showMarketingView) {
             MarketingView(trigger: .trendCharts)
         }
+        .sensoryFeedback(.success, trigger: goalSplash)
     }
 
     // MARK: - Wave card
@@ -218,7 +277,8 @@ struct ConsumedWaterView: View {
                 progress: waterProgress,
                 totalGrams: totalWaterGrams,
                 goalGrams: goalGrams,
-                waterUnit: waterUnit
+                waterUnit: waterUnit,
+                goalSplash: goalSplash
             )
             .frame(width: 240, height: 240)
             Spacer()

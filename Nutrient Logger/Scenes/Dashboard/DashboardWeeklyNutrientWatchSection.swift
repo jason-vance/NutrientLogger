@@ -58,6 +58,21 @@ struct DashboardWeeklyNutrientWatchSection: View {
     @State private var balances: [NutrientBalanceResult] = []
     @State private var balanceContributions: [String: BalanceContributions] = [:]
     @State private var selectedBalance: NutrientBalanceResult?
+    /// Nutrients that stopped running low because of what was just logged. Each shows as a green
+    /// chip for a moment before leaving the card (see `celebrateClosedGaps`).
+    @State private var closedGaps: [DeficientNutrient] = []
+    /// Gaps closed while the card was off screen (usually while logging from search). They stay on
+    /// the card as low until the user comes back, then close where they can see it.
+    @State private var gapsClosedOffScreen: [DeficientNutrient] = []
+    @State private var isVisible = false
+    @State private var celebrations = 0
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var isUnlocked: Bool { subscriptionManager.isSubscribed || forceUnlocked }
+
+    /// How long a closed gap stays on the card.
+    private static let closedGapDuration: Duration = .seconds(1.8)
 
     @AppStorage(NutrientBalanceSettings.hiddenKey) private var balanceHiddenRaw: String = ""
     @AppStorage(NutrientBalanceSettings.customKey) private var balanceCustomRaw: String = ""
@@ -103,9 +118,13 @@ struct DashboardWeeklyNutrientWatchSection: View {
         return allConsumedFoods.filter { $0.dateLogged >= startDate && $0.dateLogged <= date }
     }
 
-    private func updateWeeklyNutrients() {
+    /// `celebrateClosures` is true only when the foods changed on the same day, so switching days or
+    /// settings never reads as having closed a gap.
+    private func updateWeeklyNutrients(celebrateClosures: Bool = false) {
         let foods = recentFoods
         guard !foods.isEmpty else {
+            closedGaps = []
+            gapsClosedOffScreen = []
             deficiencies = []
             highNutrients = []
             balances = []
@@ -126,10 +145,54 @@ struct DashboardWeeklyNutrientWatchSection: View {
                 rdiLibrary: rdiLibrary,
                 remoteDatabase: remoteDatabase
             )
-            deficiencies = results.deficiencies
+            let previous = deficiencies
+            let stillLow = Set(results.deficiencies.map(\.id))
+            // Only the unlocked card names nutrients, so only it can show one closing.
+            let closed = celebrateClosures && isUnlocked ? previous.filter { !stillLow.contains($0.id) } : []
+            if isVisible || closed.isEmpty {
+                withAnimation(closed.isEmpty || reduceMotion ? nil : .snappy) {
+                    deficiencies = results.deficiencies
+                    closedGaps.removeAll { stillLow.contains($0.id) }
+                    closedGaps.append(contentsOf: closed)
+                }
+                gapsClosedOffScreen = []
+                if !closed.isEmpty { celebrateClosedGaps(closed) }
+            } else {
+                deficiencies = results.deficiencies + closed
+                gapsClosedOffScreen = closed
+            }
             highNutrients = results.highNutrients
             balances = results.balances
             balanceContributions = results.balanceContributions
+        }
+    }
+
+    /// Closes, on screen, the gaps that closed while the user was away from the card.
+    private func closeGapsClosedOffScreen() {
+        guard !gapsClosedOffScreen.isEmpty else { return }
+        Task {
+            // Let the navigation back finish so the change is seen.
+            try? await Task.sleep(for: .seconds(0.35))
+            let held = gapsClosedOffScreen.filter { held in deficiencies.contains { $0.id == held.id } }
+            gapsClosedOffScreen = []
+            guard !held.isEmpty else { return }
+            let ids = Set(held.map(\.id))
+            withAnimation(reduceMotion ? nil : .snappy) {
+                deficiencies.removeAll { ids.contains($0.id) }
+                closedGaps.append(contentsOf: held)
+            }
+            celebrateClosedGaps(held)
+        }
+    }
+
+    private func celebrateClosedGaps(_ closed: [DeficientNutrient]) {
+        let ids = Set(closed.map(\.id))
+        celebrations += 1
+        Task {
+            try? await Task.sleep(for: Self.closedGapDuration)
+            withAnimation(reduceMotion ? nil : .snappy) {
+                closedGaps.removeAll { ids.contains($0.id) }
+            }
         }
     }
 
@@ -363,7 +426,12 @@ struct DashboardWeeklyNutrientWatchSection: View {
     }
 
     private var hasAnyWatchItems: Bool {
-        !deficiencies.isEmpty || !highNutrients.isEmpty || !balances.isEmpty
+        !deficiencies.isEmpty || !highNutrients.isEmpty || !balances.isEmpty || !closedGaps.isEmpty
+    }
+
+    /// Low nutrients, then any that just closed, in one list so a chip keeps its place as it turns green.
+    private var lowChips: [(deficiency: DeficientNutrient, isClosed: Bool)] {
+        deficiencies.map { ($0, false) } + closedGaps.map { ($0, true) }
     }
 
     private func summaryText(lowCount: Int, highCount: Int, balanceCount: Int) -> String {
@@ -391,8 +459,18 @@ struct DashboardWeeklyNutrientWatchSection: View {
                 }
             }
         }
-        .onChange(of: date, initial: true) { updateWeeklyNutrients() }
-        .onChange(of: allConsumedFoods) { updateWeeklyNutrients() }
+        .onChange(of: date, initial: true) {
+            closedGaps = []
+            gapsClosedOffScreen = []
+            updateWeeklyNutrients()
+        }
+        .onChange(of: allConsumedFoods) { updateWeeklyNutrients(celebrateClosures: true) }
+        .onAppear {
+            isVisible = true
+            closeGapsClosedOffScreen()
+        }
+        .onDisappear { isVisible = false }
+        .sensoryFeedback(.success, trigger: celebrations)
         .onChange(of: balanceHiddenRaw) { updateWeeklyNutrients() }
         .onChange(of: balanceCustomRaw) { updateWeeklyNutrients() }
         .onChange(of: windowDays) { updateWeeklyNutrients() }
@@ -471,18 +549,23 @@ struct DashboardWeeklyNutrientWatchSection: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-            if !deficiencies.isEmpty {
+            if !lowChips.isEmpty {
                 SubsectionLabel("Low", color: .orange)
                 FlowLayout(spacing: 6) {
-                    ForEach(deficiencies) { deficiency in
+                    ForEach(lowChips, id: \.deficiency.id) { deficiency, isClosed in
                         NavigationLink {
                             NutrientTrendView(
                                 nutrient: deficiency.nutrient,
                                 colorPalette: colorPalette(for: deficiency.id)
                             )
                         } label: {
-                            Chip(dotColor: deficiencyColor(for: deficiency.percentage), text: deficiency.name)
+                            if isClosed {
+                                ClosedGapChip(text: deficiency.name)
+                            } else {
+                                Chip(dotColor: deficiencyColor(for: deficiency.percentage), text: deficiency.name)
+                            }
                         }
+                        .transition(.scale(scale: 0.6).combined(with: .opacity))
                     }
                 }
                 FoodsThatHelp()
@@ -663,6 +746,42 @@ struct DashboardWeeklyNutrientWatchSection: View {
                 .fill(Color.gray.opacity(0.15))
         )
         .foregroundStyle(Color.text)
+    }
+
+}
+
+/// A nutrient that's no longer low: green, with a checkmark that draws itself in.
+private struct ClosedGapChip: View {
+
+    let text: String
+
+    @State private var showsCheck = false
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ZStack {
+                if showsCheck {
+                    Image(systemName: "checkmark")
+                        .font(.caption2.bold())
+                        .foregroundStyle(.green)
+                        .transition(.symbolEffect(.drawOn))
+                }
+            }
+            .frame(width: 10)
+            Text(text)
+                .font(.caption)
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(
+            Capsule()
+                .fill(Color.green.opacity(0.2))
+        )
+        .foregroundStyle(Color.text)
+        .task {
+            try? await Task.sleep(for: .milliseconds(150))
+            withAnimation { showsCheck = true }
+        }
     }
 }
 

@@ -42,11 +42,14 @@ struct LogPillRow<Item: Hashable>: View {
     var moreCount: Int = 0
     var onMore: () -> Void = {}
 
+    @State private var taps = 0
+
     var body: some View {
         FlowLayout(spacing: 8) {
             // Keyed by item so revealing more pills slides new ones in instead of relabeling old ones.
             ForEach(Array(zip(items, labels)), id: \.0) { item, label in
                 Button {
+                    taps += 1
                     onSelect(item)
                 } label: {
                     LogPill(text: label, isSelected: isSelected(item))
@@ -73,6 +76,7 @@ struct LogPillRow<Item: Hashable>: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .sensoryFeedback(.selection, trigger: taps)
     }
 }
 

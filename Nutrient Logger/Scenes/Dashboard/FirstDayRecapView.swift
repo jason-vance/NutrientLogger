@@ -35,6 +35,10 @@ struct FirstDayRecapView: View {
     @State private var showError = false
     @State private var showAllPlans = false
     @State private var hasLoggedAction = false
+    /// Flips once the recap is on screen, starting the staged reveal (see `revealStep`).
+    @State private var isRevealed = false
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var usedReferenceAge: Bool { userService.currentUser.birthdate == nil }
 
@@ -201,6 +205,14 @@ struct FirstDayRecapView: View {
         .onDisappear { logAction(subscriptionManager.isSubscribed ? "done" : "not_now") }
     }
 
+    /// When the gap rows start appearing, one after another, and when what follows them does.
+    private static let firstGapDelay = 0.25
+    private static let gapStagger = 0.15
+
+    private func afterGapsDelay(_ recap: FirstDayRecap) -> Double {
+        Self.firstGapDelay + Double(max(recap.shownGaps.count, 1)) * Self.gapStagger + 0.2
+    }
+
     @ViewBuilder private func RecapContent(_ recap: FirstDayRecap) -> some View {
         VStack(alignment: .leading, spacing: 20) {
             VStack(alignment: .leading, spacing: 8) {
@@ -217,6 +229,7 @@ struct FirstDayRecapView: View {
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            .revealStep(isRevealed, delay: 0, reduceMotion: reduceMotion)
 
             if recap.shownGaps.isEmpty {
                 HStack(spacing: 8) {
@@ -227,10 +240,11 @@ struct FirstDayRecapView: View {
                 }
                 .padding()
                 .inCard(backgroundColor: .green)
+                .revealStep(isRevealed, delay: Self.firstGapDelay, reduceMotion: reduceMotion)
             } else {
                 VStack(spacing: 14) {
-                    ForEach(recap.shownGaps) { gap in
-                        GapRow(gap)
+                    ForEach(Array(recap.shownGaps.enumerated()), id: \.element.id) { index, gap in
+                        GapRow(gap, delay: Self.firstGapDelay + Double(index) * Self.gapStagger)
                     }
                 }
                 .padding()
@@ -246,6 +260,7 @@ struct FirstDayRecapView: View {
                             .fixedSize(horizontal: false, vertical: true)
                         Spacer(minLength: 0)
                     }
+                    .revealStep(isRevealed, delay: afterGapsDelay(recap), reduceMotion: reduceMotion)
                 }
             }
 
@@ -261,6 +276,7 @@ struct FirstDayRecapView: View {
                         .fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: 0)
                 }
+                .revealStep(isRevealed, delay: afterGapsDelay(recap), reduceMotion: reduceMotion)
             }
 
             if !subscriptionManager.isSubscribed {
@@ -271,28 +287,37 @@ struct FirstDayRecapView: View {
                     FeatureRow(icon: "chart.line.uptrend.xyaxis", text: "7- and 30-day trends, so one off day doesn't mislead you")
                     FeatureRow(icon: "target", text: "Your own goals and upper limits")
                 }
+                .revealStep(isRevealed, delay: afterGapsDelay(recap) + 0.1, reduceMotion: reduceMotion)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .onAppear { isRevealed = true }
+        .sensoryFeedback(.success, trigger: isRevealed) { _, isRevealed in isRevealed }
     }
 
-    @ViewBuilder private func GapRow(_ gap: FirstDayRecap.Gap) -> some View {
+    /// Each row fades in on its turn, then its bar fills from empty and its percentage counts up.
+    @ViewBuilder private func GapRow(_ gap: FirstDayRecap.Gap, delay: Double) -> some View {
         let color: Color = gap.percentOfGoal < 0.25 ? .red : .orange
+        let percent = Int((gap.percentOfGoal * 100).rounded())
+        let fill: Animation? = reduceMotion ? nil : .spring(duration: 0.8, bounce: 0.15).delay(delay + 0.1)
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .firstTextBaseline) {
                 Text(gap.name)
                     .font(.body.bold())
                 Spacer()
-                Text("\(Int((gap.percentOfGoal * 100).rounded()))% of goal")
+                Text("\(isRevealed ? percent : 0)% of goal")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                    .contentTransition(.numericText(value: Double(isRevealed ? percent : 0)))
+                    .animation(fill, value: isRevealed)
             }
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     Capsule().fill(Color.gray.opacity(0.2))
                     Capsule()
                         .fill(color.gradient)
-                        .frame(width: max(6, geometry.size.width * min(1, gap.percentOfGoal)))
+                        .frame(width: max(6, geometry.size.width * (isRevealed ? min(1, gap.percentOfGoal) : 0)))
+                        .animation(fill, value: isRevealed)
                 }
             }
             .frame(height: 8)
@@ -303,6 +328,7 @@ struct FirstDayRecapView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+        .revealStep(isRevealed, delay: delay, reduceMotion: reduceMotion)
     }
 
     @ViewBuilder private func FeatureRow(icon: String, text: String) -> some View {
@@ -383,5 +409,16 @@ struct FirstDayRecapView: View {
     Color.clear.sheet(isPresented: .constant(true)) {
         FirstDayRecapView(foods: [.dashboardSample])
             .environmentObject(SubscriptionManager(isForScreenshots: false))
+    }
+}
+
+private extension View {
+    /// Hidden until `isRevealed`, then fades and rises into place after `delay`. With Reduce Motion
+    /// on it just appears.
+    func revealStep(_ isRevealed: Bool, delay: Double, reduceMotion: Bool) -> some View {
+        self
+            .opacity(isRevealed ? 1 : 0)
+            .offset(y: isRevealed || reduceMotion ? 0 : 12)
+            .animation(reduceMotion ? nil : .smooth(duration: 0.5).delay(delay), value: isRevealed)
     }
 }

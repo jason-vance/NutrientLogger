@@ -10,6 +10,10 @@ struct StreakCardView: View {
     @State private var cardScale: CGFloat = 1.0
     @State private var particles: [StreakParticle] = []
     @State private var displayedProgress: Double = 0
+    @State private var isVisible = false
+    /// A streak that went up while the card was off screen (usually while logging from search),
+    /// celebrated when the user comes back to it instead of unseen.
+    @State private var unseenIncrement: Int?
 
     private var sortedMilestones: [Int] { milestones.sorted() }
 
@@ -64,17 +68,33 @@ struct StreakCardView: View {
         .scaleEffect(cardScale)
         .onTapGesture { onTap?() }
         .onAppear {
-            withAnimation(.easeOut(duration: 0.7).delay(0.2)) {
-                displayedProgress = max(progress, Self.minimumVisualProgress)
+            isVisible = true
+            if let unseenIncrement {
+                self.unseenIncrement = nil
+                Task {
+                    // Let the navigation back finish so the bump is seen.
+                    try? await Task.sleep(for: .seconds(0.35))
+                    animateIncrement(isMilestone: milestones.contains(unseenIncrement))
+                }
+            } else {
+                withAnimation(.easeOut(duration: 0.7).delay(0.2)) {
+                    displayedProgress = max(progress, Self.minimumVisualProgress)
+                }
             }
         }
+        .onDisappear { isVisible = false }
         .onChange(of: count) { oldCount, newCount in
             guard newCount > oldCount else { return }
-            animateIncrement(isMilestone: milestones.contains(newCount))
+            if isVisible {
+                animateIncrement(isMilestone: milestones.contains(newCount))
+            } else {
+                unseenIncrement = newCount
+            }
         }
     }
 
     private func animateIncrement(isMilestone: Bool) {
+        if isMilestone { Haptics.success() } else { Haptics.tap(.light) }
         flameBouncing.toggle()
         withAnimation(.easeInOut(duration: 0.5).delay(0.1)) {
             displayedProgress = max(progress, Self.minimumVisualProgress)

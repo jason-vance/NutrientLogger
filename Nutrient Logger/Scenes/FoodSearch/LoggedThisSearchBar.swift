@@ -56,6 +56,7 @@ struct LoggedThisSearchBar: View {
             Image(systemName: "checkmark.circle.fill")
                 .font(.title2)
                 .foregroundStyle(Color.accentColor)
+                .symbolEffect(.bounce, value: foods.count)
             VStack(alignment: .leading, spacing: 1) {
                 Text("\(foods.count) logged")
                     .font(.subheadline.weight(.semibold))

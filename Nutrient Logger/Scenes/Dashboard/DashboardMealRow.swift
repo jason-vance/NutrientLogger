@@ -73,6 +73,7 @@ struct DashboardMealRow: View {
                 .buttonStyle(.borderless)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 10)
+                .transition(.opacity.combined(with: .scale(scale: 0.9, anchor: .leading)))
             }
         }
     }

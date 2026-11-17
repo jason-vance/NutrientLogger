@@ -297,6 +297,7 @@ struct FoodDetailsView: View {
         
         do {
             try onFoodSaved(food, portion)
+            Haptics.success()
             presentationMode.wrappedValue.dismiss()
         } catch {
             print("Failed to save food item: \(error.localizedDescription)")

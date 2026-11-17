@@ -18,6 +18,7 @@ struct DashboardNutrientSections: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var dataController: DataController
     @Inject private var engagementAnalytics: EngagementAnalytics
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(date: SimpleDate, foods: [FoodItem], consumedFoods: [ConsumedFood], allConsumedFoods: [ConsumedFood]) {
         self.date = date
@@ -45,15 +46,28 @@ struct DashboardNutrientSections: View {
             DashboardAminoAcidsSection(aggregator: aggregator)
         }
         .padding(.horizontal)
+        .environment(\.goalPulseDay, foods.first?.dateLogged)
     }
 
+    /// Adds the foods one at a time, each with a light tap, so the meal visibly fills in rather
+    /// than appearing all at once. With Reduce Motion on they're added together.
     private func repeatMeal(_ previous: MealRepeat.Previous) {
-        for food in MealRepeat.copies(of: previous.foods, to: date) {
-            modelContext.insert(food)
-        }
-        try? modelContext.save()
+        let copies = MealRepeat.copies(of: previous.foods, to: date)
         engagementAnalytics.mealRepeated(foodCount: previous.foods.count, daysBack: previous.daysBack)
-        dataController.updateDailySummary()
+        Task {
+            for (index, food) in copies.enumerated() {
+                if index > 0 && !reduceMotion {
+                    try? await Task.sleep(for: .milliseconds(140))
+                }
+                withAnimation(reduceMotion ? nil : .snappy) {
+                    modelContext.insert(food)
+                    try? modelContext.save()
+                }
+                Haptics.tap(.light)
+            }
+            dataController.updateDailySummary()
+            Haptics.success()
+        }
     }
 
     @ViewBuilder private func MealsSection() -> some View {
